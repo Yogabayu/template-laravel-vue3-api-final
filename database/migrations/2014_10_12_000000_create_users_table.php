@@ -22,12 +22,12 @@ return new class extends Migration
             $table->string('telegram_chatid')->nullable();
 
             $table->uuid('position_id')->nullable();
-            $table->uuid('dirut_id')->nullable();
-            $table->uuid('dir_id')->nullable();
-            $table->uuid('bm_id')->nullable();
-            $table->uuid('asmen_id')->nullable();
-            $table->uuid('brm_id')->nullable();
-            $table->uuid('ca_id')->nullable();
+            $table->unsignedBigInteger('dirut_id')->nullable();
+            $table->unsignedBigInteger('dir_id')->nullable();
+            $table->unsignedBigInteger('bm_id')->nullable();
+            $table->unsignedBigInteger('asmen_id')->nullable();
+            $table->unsignedBigInteger('brm_id')->nullable();
+            $table->unsignedBigInteger('ca_id')->nullable();
             $table->rememberToken();
             $table->timestamps();
 

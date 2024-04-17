@@ -20,7 +20,6 @@ class UserSeeder extends Seeder
         $positionIds = DB::table('positions')->pluck('id');
         $users = [
             [
-                'id' => Str::uuid(),
                 'nik' => '12345678',
                 'name' => 'Administrator',
                 'email' => 'admin@gmail.com',
