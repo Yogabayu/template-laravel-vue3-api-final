@@ -105,7 +105,7 @@ class OfficeController extends Controller
     public function destroy(string $id)
     {
         try {
-            $office = Office::where('id', $id)->delete();
+            $office = Office::findOrFail($id)->delete();
             return ResponseHelper::successRes('Berhasil hapus data kantor', $office);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());

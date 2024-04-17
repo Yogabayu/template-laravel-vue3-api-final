@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
-use App\Models\Role;
+use App\Models\Position;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
-class RoleController extends Controller
+class PositionController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,7 +16,8 @@ class RoleController extends Controller
     public function index()
     {
         try {
-            return ResponseHelper::successRes('Berhasil mendapatkan data role', Role::all());
+            $positions = Position::all();
+            return ResponseHelper::successRes('Berhasil mendapatkan data jabatan', $positions);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -27,7 +28,6 @@ class RoleController extends Controller
      */
     public function create()
     {
-        //
     }
 
     /**
@@ -38,16 +38,22 @@ class RoleController extends Controller
         try {
             $request->validate([
                 'name' => 'required',
+                'office_id' => 'required',
+                'role_id' => 'required',
             ], [
                 'name.required' => 'Nama wajib diisi',
+                'office_id.required' => 'Kantor wajib diisi',
+                'role_id.required' => 'Role wajib diisi',
             ]);
 
-            $role = new Role();
-            $role->id = Str::uuid();
-            $role->name = $request->name;
-            $role->save();
+            $position = new Position();
+            $position->id = Str::uuid();
+            $position->name = $request->name;
+            $position->office_id = $request->office_id;
+            $position->role_id = $request->role_id;
+            $position->save();
 
-            return ResponseHelper::successRes('Berhasil input data role', $role);
+            return ResponseHelper::successRes('Berhasil input data jabatan', $position);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -77,15 +83,21 @@ class RoleController extends Controller
         try {
             $request->validate([
                 'name' => 'required',
+                'office_id' => 'required',
+                'role_id' => 'required',
             ], [
-                'name.required' => 'Nama kantor wajib diisi',
+                'name.required' => 'Nama wajib diisi',
+                'office_id.required' => 'Kantor wajib diisi',
+                'role_id.required' => 'Role wajib diisi',
             ]);
 
-            $role = Role::where('id', $id)->first();
-            $role->name = $request->name;
-            $role->save();
+            $position = Position::findOrfail($id);
+            $position->name = $request->name;
+            $position->office_id = $request->office_id;
+            $position->role_id = $request->role_id;
+            $position->save();
 
-            return ResponseHelper::successRes('Berhasil update data role', $role);
+            return ResponseHelper::successRes('Berhasil update data jabatan', $position);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -97,8 +109,8 @@ class RoleController extends Controller
     public function destroy(string $id)
     {
         try {
-            $role = Role::findOrFail($id)->delete();
-            return ResponseHelper::successRes('Berhasil hapus data role', $role);
+            $position = Position::findOrFail($id)->delete();
+            return ResponseHelper::successRes('Berhasil hapus data jabatan', $position);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
