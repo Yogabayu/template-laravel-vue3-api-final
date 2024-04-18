@@ -37,4 +37,9 @@ class Position extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    public function notificationConfigurations()
+    {
+        return $this->hasMany(NotificationConfiguration::class);
+    }
 }

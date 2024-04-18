@@ -19,9 +19,9 @@ return new class extends Migration
             $table->string('password');
             $table->boolean('isActive')->default(1);
             $table->string('telegram_username')->nullable();
-            $table->string('telegram_chatid')->nullable();
+            $table->string('telegram_chat_id')->nullable();
 
-            $table->uuid('position_id')->nullable();
+            $table->uuid('position_id');
             $table->unsignedBigInteger('dirut_id')->nullable();
             $table->unsignedBigInteger('dir_id')->nullable();
             $table->unsignedBigInteger('bm_id')->nullable();

@@ -13,6 +13,18 @@ class Role extends Model
     protected $fillable = [
         'id',
         'name',
+        'isPhase1Access',
+        'isPhase2Access',
+        'isPhase3Access',
+        'isPhase4Access',
+        'canApprovePhase1',
+        'canApprovePhase2',
+        'canApprovePhase3',
+        'canApprovePhase4',
+        'canAppeal',
+        'canApprove',
+        'canInsertData',
+        'canComment',
     ];
     public function positions()
     {

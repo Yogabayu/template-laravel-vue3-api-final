@@ -11,11 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::table('roles', function (Blueprint $table) {
             $table->boolean('isPhase1Access')->default(true);
             $table->boolean('isPhase2Access')->default(false);
             $table->boolean('isPhase3Access')->default(false);
             $table->boolean('isPhase4Access')->default(false);
+            $table->boolean('canApprovePhase1')->default(true);
+            $table->boolean('canApprovePhase2')->default(false);
+            $table->boolean('canApprovePhase3')->default(false);
+            $table->boolean('canApprovePhase4')->default(false);
             $table->boolean('canAppeal')->default(false);
             $table->boolean('canApprove')->default(false);
             $table->boolean('canInsertData')->default(false);

@@ -22,7 +22,7 @@ class User extends Authenticatable
         'email',
         'password',
         'telegram_username',
-        'telegram_chatid',
+        'telegram_chat_id',
         'isActive',
         'position_id',
         'dirut_id',
@@ -106,5 +106,35 @@ class User extends Authenticatable
     public function clientAdvisor()
     {
         return $this->belongsTo(User::class, 'ca_id');
+    }
+
+    public function files()
+    {
+        return $this->hasMany(File::class, 'user_id', 'id');
+    }
+
+    public function approvals()
+    {
+        return $this->hasMany(Approval::class);
+    }
+
+    public function notes()
+    {
+        return $this->hasMany(Note::class);
+    }
+
+    public function appeals()
+    {
+        return $this->hasMany(Appeal::class);
+    }
+
+    public function fileActivities()
+    {
+        return $this->hasMany(FileActivity::class);
+    }
+
+    public function userActivities()
+    {
+        return $this->hasMany(UserActivity::class);
     }
 }
