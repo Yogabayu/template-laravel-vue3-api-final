@@ -60,7 +60,21 @@ const upgradeBanner = computed(() => {
         :item="{
           title: 'Kantor',
           icon: 'bx-building',
-          to: '',
+          to: '/office',
+        }"
+      />
+      <VerticalNavLink
+        :item="{
+          title: 'Role',
+          icon: 'bx-shield',
+          to: '/role',
+        }"
+      />
+      <VerticalNavLink
+        :item="{
+          title: 'Jabatan',
+          icon: 'bx-area',
+          to: '/position',
         }"
       />
       <!-- <VerticalNavLink

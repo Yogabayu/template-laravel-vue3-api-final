@@ -16,7 +16,7 @@ class PositionController extends Controller
     public function index()
     {
         try {
-            $positions = Position::all();
+            $positions = Position::withCount('users')->with('office', 'role')->get();
             return ResponseHelper::successRes('Berhasil mendapatkan data jabatan', $positions);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());

@@ -3,7 +3,7 @@
     <VCard class="auth-card pa-4 pt-5">
       <VCardItem class="align-left">
         <VCardTitle class="text-2xl font-weight-bold">
-          Daftar Jabatan
+          Daftar Kantor
         </VCardTitle>
       </VCardItem>
       <div class="d-flex justify-space-between mb-6">
@@ -29,7 +29,6 @@
           ></v-text-field>
         </div>
       </div>
-
       <v-dialog v-model="insert" width="auto">
         <v-card>
           <template v-slot:title> Tambah Data </template>
@@ -38,31 +37,23 @@
               <VRow>
                 <VCol md="12" cols="12">
                   <VTextField
-                    placeholder="Nama Jabatan"
-                    label="Jabatan"
-                    v-model="dataForm.name"
+                    placeholder="Kode Kantor"
+                    label="Kode"
+                    v-model="dataForm.code"
                     autofocus
                     :rules="[rules.required]"
                     prepend-icon="mdi-devide"
                   />
                 </VCol>
-                <VCol cols="12" md="6">
-                  <v-select
-                    label="Pilih Jabatan"
-                    :items="offices"
-                    v-model="dataForm.office_id"
+                <VCol md="12" cols="12">
+                  <VTextField
+                    placeholder="Nama Kantor"
+                    label="Nama"
+                    v-model="dataForm.name"
+                    autofocus
                     :rules="[rules.required]"
-                    prepend-icon="mdi-divide"
-                  ></v-select>
-                </VCol>
-                <VCol cols="12" md="6">
-                  <v-select
-                    label="Pilih Role"
-                    :items="roles"
-                    v-model="dataForm.role_id"
-                    :rules="[rules.required]"
-                    prepend-icon="mdi-divide"
-                  ></v-select>
+                    prepend-icon="mdi-devide"
+                  />
                 </VCol>
                 <VCol cols="12" class="d-flex flex-wrap gap-4">
                   <VBtn type="submit">Simpan</VBtn>
@@ -80,7 +71,6 @@
           </template>
         </v-card>
       </v-dialog>
-
       <v-dialog v-model="edit" width="auto">
         <v-card>
           <template v-slot:title> Update Data </template>
@@ -89,39 +79,31 @@
               <VRow>
                 <VCol md="12" cols="12">
                   <VTextField
-                    placeholder="Nama Jabatan"
-                    label="Jabatan"
+                    placeholder="Kode Kantor"
+                    label="Kode"
+                    v-model="dataForm.code"
+                    autofocus
+                    :rules="[rules.required]"
+                    prepend-icon="mdi-devide"
+                  />
+                </VCol>
+                <VCol md="12" cols="12">
+                  <VTextField
+                    placeholder="Nama Kantor"
+                    label="Nama"
                     v-model="dataForm.name"
                     autofocus
                     :rules="[rules.required]"
                     prepend-icon="mdi-devide"
                   />
                 </VCol>
-                <VCol cols="12" md="6">
-                  <v-select
-                    label="Pilih Jabatan"
-                    :items="offices"
-                    v-model="dataForm.office_id"
-                    :rules="[rules.required]"
-                    prepend-icon="mdi-divide"
-                  ></v-select>
-                </VCol>
-                <VCol cols="12" md="6">
-                  <v-select
-                    label="Pilih Role"
-                    :items="roles"
-                    v-model="dataForm.role_id"
-                    :rules="[rules.required]"
-                    prepend-icon="mdi-divide"
-                  ></v-select>
-                </VCol>
                 <VCol cols="12" class="d-flex flex-wrap gap-4">
-                  <VBtn type="submit">Update</VBtn>
+                  <VBtn type="submit">Simpan</VBtn>
 
                   <button
                     type="button"
                     class="btn btn-blue"
-                    @click="closeModal(2)"
+                    @click="closeModal(1)"
                   >
                     Batal
                   </button>
@@ -160,7 +142,7 @@
                 size="20"
                 icon="bx-trash"
                 color="red"
-                @click="deletePosition(item)"
+                @click="deleteOffice(item)"
               />
             </button>
           </div>
@@ -179,18 +161,13 @@ export default {
       },
       dataForm: {
         id: null,
+        code: "",
         name: "",
-        office_id: null,
-        role_id: null,
       },
       items: [],
-      offices: [],
-      roles: [],
       headers: [
-        { text: "Nama Posisi", value: "name", sortable: true },
-        { text: "Kantor", value: "office.name", sortable: true },
-        { text: "Role", value: "role.name", sortable: true },
-        { text: "Jumlah User", value: "users_count", sortable: true },
+        { text: "Nama Kantor", value: "name", sortable: true },
+        { text: "Kode Kantor", value: "code", sortable: true },
         { text: "Operation", value: "operation" },
       ],
       searchValue: "",
@@ -199,17 +176,17 @@ export default {
     };
   },
   methods: {
-    async deletePosition(item: { id: any }) {
+    async deleteOffice(item: { id: any }) {
       try {
         const confirmDelete = window.confirm(
           "Apakah Anda yakin ingin menghapus data?"
         );
         if (!confirmDelete) return;
 
-        const response = await mainURL.delete(`/position/${item.id}`);
+        const response = await mainURL.delete(`/office/${item.id}`);
 
         if (response.status === 200) {
-          this.getAllPositions();
+          this.getAllOffices();
           this.$showToast("success", "Berhasil", response.data.message);
         } else {
           this.$showToast("error", "Sorry", response.data.message);
@@ -221,18 +198,17 @@ export default {
     async updateData() {
       try {
         const formData = new FormData();
+        formData.append("code", this.dataForm.code);
         formData.append("name", this.dataForm.name);
-        formData.append("office_id", this.dataForm.office_id);
-        formData.append("role_id", this.dataForm.role_id);
         formData.append("_method", "PUT");
 
         const response = await mainURL.post(
-          `/position/${this.dataForm.id}`,
+          `/office/${this.dataForm.id}`,
           formData
         );
         if (response.status === 200) {
           this.closeModal(2);
-          this.getAllPositions();
+          this.getAllOffices();
           this.$showToast("success", "Success", response.data.message);
         } else {
           this.$showToast("error", "Sorry", response.data.message);
@@ -254,14 +230,13 @@ export default {
 
         const formData = new FormData();
         formData.append("name", this.dataForm.name);
-        formData.append("office_id", this.dataForm.office_id);
-        formData.append("role_id", this.dataForm.role_id);
+        formData.append("code", this.dataForm.code);
         formData.append("_method", "POST");
 
-        const response = await mainURL.post("/position", formData);
+        const response = await mainURL.post("/office", formData);
         if (response.status === 200) {
           this.closeModal(1);
-          this.getAllPositions();
+          this.getAllOffices();
           this.$showToast("success", "Success", response.data.message);
         } else {
           this.$showToast("error", "Sorry", response.data.message);
@@ -282,34 +257,29 @@ export default {
     resetForm() {
       this.dataForm = {
         id: null,
+        code: "",
         name: "",
-        office_id: null,
-        role_id: null,
       };
     },
     openModal(type: number, item = null) {
       if (type === 1) {
-        this.getOffices();
-        this.getRoles();
         this.insert = true;
       } else if (type === 2) {
         if (item) {
-          this.getOffices();
-          this.getRoles();
-          this.dataForm.id = item.id;
+          this.dataForm.code = item.code;
           this.dataForm.name = item.name;
-          this.dataForm.office_id = item.office_id;
-          this.dataForm.role_id = item.role_id;
+          this.dataForm.id = item.id;
           this.edit = true;
         }
       }
     },
-    async getAllPositions() {
+    async getAllOffices() {
       try {
-        const response = await mainURL.get("/position");
+        const response = await mainURL.get("/office");
 
         if (response.status === 200) {
           this.items = response.data.data;
+        //   this.$showToast("success", "Berhasil", response.data.message);
         } else {
           this.$showToast("error", "Sorry", response.data.data.message);
         }
@@ -317,43 +287,9 @@ export default {
         this.$showToast("error", "Sorry", error.response.data.message);
       }
     },
-    async getOffices() {
-      try {
-        const response = await mainURL.get("/office");
-        if (response.status === 200) {
-          this.offices = response.data.data.map(
-            (item: { id: any; name: any; code: any }) => ({
-              value: item.id,
-              title: item.code + " - " + item.name,
-            })
-          );
-        } else {
-          this.$showToast("error", "Sorry", "error get data office");
-        }
-      } catch (error) {
-        this.$showToast("error", "Sorry", "error get data office");
-      }
-    },
-    async getRoles() {
-      try {
-        const response = await mainURL.get("/role");
-        if (response.status === 200) {
-          this.roles = response.data.data.map(
-            (item: { id: any; name: any; code: any }) => ({
-              value: item.id,
-              title: item.name,
-            })
-          );
-        } else {
-          this.$showToast("error", "Sorry", "error get data role");
-        }
-      } catch (error) {
-        this.$showToast("error", "Sorry", "error get data role");
-      }
-    },
   },
   mounted() {
-    this.getAllPositions();
+    this.getAllOffices();
   },
 };
 </script>
