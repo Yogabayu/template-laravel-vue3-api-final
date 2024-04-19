@@ -60,54 +60,6 @@ class User extends Authenticatable
         return $this->belongsTo(Position::class, 'position_id', 'id');
     }
 
-    /**
-     * Get the director associated with the user.
-     */
-    public function director()
-    {
-        return $this->belongsTo(User::class, 'dir_id');
-    }
-
-    /**
-     * Get the director general associated with the user.
-     */
-    public function directorGeneral()
-    {
-        return $this->belongsTo(User::class, 'dirut_id');
-    }
-
-    /**
-     * Get the branch manager associated with the user.
-     */
-    public function branchManager()
-    {
-        return $this->belongsTo(User::class, 'bm_id');
-    }
-
-    /**
-     * Get the assistant manager associated with the user.
-     */
-    public function assistantManager()
-    {
-        return $this->belongsTo(User::class, 'asmen_id');
-    }
-
-    /**
-     * Get the branch relation manager associated with the user.
-     */
-    public function branchRelationManager()
-    {
-        return $this->belongsTo(User::class, 'brm_id');
-    }
-
-    /**
-     * Get the client advisor associated with the user.
-     */
-    public function clientAdvisor()
-    {
-        return $this->belongsTo(User::class, 'ca_id');
-    }
-
     public function files()
     {
         return $this->hasMany(File::class, 'user_id', 'id');

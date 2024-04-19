@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Position;
+use App\Models\PositionToOffice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -16,7 +17,7 @@ class PositionController extends Controller
     public function index()
     {
         try {
-            $positions = Position::withCount('users')->with('office', 'role')->get();
+            $positions = Position::withCount('users')->with('offices', 'role')->get();
             return ResponseHelper::successRes('Berhasil mendapatkan data jabatan', $positions);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
@@ -38,20 +39,27 @@ class PositionController extends Controller
         try {
             $request->validate([
                 'name' => 'required',
-                'office_id' => 'required',
+                'offices' => 'required|array',
                 'role_id' => 'required',
             ], [
                 'name.required' => 'Nama wajib diisi',
-                'office_id.required' => 'Kantor wajib diisi',
+                'offices.required' => 'Office wajib diisi',
                 'role_id.required' => 'Role wajib diisi',
             ]);
 
             $position = new Position();
             $position->id = Str::uuid();
             $position->name = $request->name;
-            $position->office_id = $request->office_id;
             $position->role_id = $request->role_id;
             $position->save();
+
+            $offices = $request->offices;
+            foreach ($offices as $office) {
+                $officeMapping = new PositionToOffice();
+                $officeMapping->position_id = $position->id;
+                $officeMapping->office_id = $office;
+                $officeMapping->save();
+            }
 
             return ResponseHelper::successRes('Berhasil input data jabatan', $position);
         } catch (\Exception $e) {
@@ -83,19 +91,22 @@ class PositionController extends Controller
         try {
             $request->validate([
                 'name' => 'required',
-                'office_id' => 'required',
+                'offices' => 'array',
                 'role_id' => 'required',
             ], [
                 'name.required' => 'Nama wajib diisi',
-                'office_id.required' => 'Kantor wajib diisi',
                 'role_id.required' => 'Role wajib diisi',
             ]);
 
             $position = Position::findOrfail($id);
             $position->name = $request->name;
-            $position->office_id = $request->office_id;
             $position->role_id = $request->role_id;
             $position->save();
+
+            if ($request->has('offices')) {
+                $position->offices()->detach();
+                $position->offices()->sync($request->offices);
+            }
 
             return ResponseHelper::successRes('Berhasil update data jabatan', $position);
         } catch (\Exception $e) {
@@ -109,7 +120,9 @@ class PositionController extends Controller
     public function destroy(string $id)
     {
         try {
-            $position = Position::findOrFail($id)->delete();
+            $position = Position::findOrFail($id);
+            $position->offices()->detach();
+            $position->delete();
             return ResponseHelper::successRes('Berhasil hapus data jabatan', $position);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());

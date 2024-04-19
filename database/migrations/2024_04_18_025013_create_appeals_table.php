@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('file_id');
             $table->unsignedBigInteger('user_id');
             $table->string('note')->nullable();
+            $table->enum('phase', ['1', '2', '3', '4']);
             $table->string('file1')->comment('additional file')->nullable();
             $table->string('file2')->comment('additional file')->nullable();
             $table->string('file3')->comment('additional file')->nullable();

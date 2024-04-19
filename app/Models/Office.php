@@ -17,6 +17,10 @@ class Office extends Model
     ];
     public function positions()
     {
-        return $this->hasMany(Position::class);
+        return $this->belongsToMany(Position::class, 'positiontooffices', 'office_id', 'position_id');
+    }
+    public function notificationConfigurations()
+    {
+        return $this->hasMany(NotificationConfiguration::class);
     }
 }

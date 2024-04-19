@@ -18,6 +18,8 @@ return new class extends Migration
             $table->dateTime('startTime')->nullable();
             $table->dateTime('endTime')->nullable();
             $table->timestamps();
+
+            $table->foreign('file_id')->references('id')->on('files');
         });
     }
 

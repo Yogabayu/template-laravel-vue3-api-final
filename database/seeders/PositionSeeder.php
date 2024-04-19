@@ -21,7 +21,6 @@ class PositionSeeder extends Seeder
             $position = [
                 'id' => Str::uuid()->toString(),
                 'name' => 'administrator',
-                'office_id' => $officeId,
                 'role_id' => $roleId,
             ];
 

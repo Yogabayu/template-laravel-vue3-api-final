@@ -2,22 +2,23 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class NotificationConfiguration extends Model
+class PositionToOffice extends Model
 {
+    use HasFactory;
+    protected $table = 'positiontooffices';
     protected $fillable = [
-        'office_id',
         'position_id',
-        'phase',
-        'minPlafon',
-        'maxPlafon',
+        'office_id',
     ];
 
     public function position()
     {
         return $this->belongsTo(Position::class);
     }
+
     public function office()
     {
         return $this->belongsTo(Office::class);

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->enum('phase', ['1', '2', '3', '4']);
+            $table->string('name')->comment('nama pemohon')->nullable();
             $table->string('plafon')->comment('plafon pinjaman')->nullable();
             $table->longText('surveyResult')->comment('hasil survei')->nullable();
             $table->longText('otsResult')->comment('ots')->nullable();
@@ -45,6 +46,8 @@ return new class extends Migration
             $table->string('file20')->comment('berkas lain')->nullable();
             $table->string('file21')->comment('berkas lain')->nullable();
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

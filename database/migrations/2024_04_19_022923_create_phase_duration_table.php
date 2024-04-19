@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('notification_configurations', function (Blueprint $table) {
+        Schema::create('phase_durations', function (Blueprint $table) {
             $table->id();
             $table->uuid('position_id');
             $table->enum('phase', ['1', '2', '3', '4']);
-            $table->string('minPlafon')->comment('minimum plafon pinjaman')->nullable();
-            $table->string('maxPlafon')->comment('maximum plafon pinjaman')->nullable();
+            $table->integer('duration_days');
             $table->timestamps();
 
             $table->foreign('position_id')->references('id')->on('positions');
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('notification_configuration');
+        Schema::dropIfExists('phase_durations');
     }
 };

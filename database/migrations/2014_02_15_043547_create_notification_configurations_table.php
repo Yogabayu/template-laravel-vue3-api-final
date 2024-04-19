@@ -11,19 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('notification_configurations', function (Blueprint $table) {
             $table->id();
-            $table->string('nik')->unique();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->string('password');
-            $table->boolean('isActive')->default(1);
-            $table->string('telegram_username')->nullable();
-            $table->string('telegram_chat_id')->nullable();
+            $table->uuid('office_id');
             $table->uuid('position_id');
-            $table->rememberToken();
+            $table->enum('phase', ['1', '2', '3', '4']);
+            $table->string('minPlafon')->comment('minimum plafon pinjaman')->nullable();
+            $table->string('maxPlafon')->comment('maximum plafon pinjaman')->nullable();
             $table->timestamps();
 
+            $table->foreign('office_id')->references('id')->on('offices');
             $table->foreign('position_id')->references('id')->on('positions');
         });
     }
@@ -33,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('notification_configuration');
     }
 };

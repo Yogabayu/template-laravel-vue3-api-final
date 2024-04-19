@@ -13,18 +13,13 @@ class Position extends Model
     protected $fillable = [
         'id',
         'name',
-        'office_id',
         'role_id',
     ];
 
-    /**
-     * Get the office that owns the position.
-     */
-    public function office()
+    public function offices()
     {
-        return $this->belongsTo(Office::class);
+        return $this->belongsToMany(Office::class, 'positiontooffices', 'position_id', 'office_id');
     }
-
     /**
      * Get the role that owns the position.
      */
@@ -41,5 +36,10 @@ class Position extends Model
     public function notificationConfigurations()
     {
         return $this->hasMany(NotificationConfiguration::class);
+    }
+
+    public function phasedurations()
+    {
+        return $this->hasMany(PhaseDuration::class);
     }
 }

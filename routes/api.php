@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\OfficeController;
 use App\Http\Controllers\Admin\PositionController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -41,6 +42,13 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
         Route::post('position', [PositionController::class, 'store']);
         Route::put('position/{id}', [PositionController::class, 'update']);
         Route::delete('position/{id}', [PositionController::class, 'destroy']);
+
+        //user
+        Route::get('user', [UserController::class, 'index']);
+        Route::post('user', [UserController::class, 'store']);
+        Route::put('user/{id}', [UserController::class, 'update']);
+        Route::delete('user/{id}', [UserController::class, 'destroy']);
+        Route::get('changeStatusUser/{id}', [UserController::class, 'changeUserStatus']);
 
         //////// Route User \\\\\\\\\
         Route::group(['prefix' => 'user'], function () {

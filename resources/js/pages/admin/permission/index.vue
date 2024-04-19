@@ -3,7 +3,7 @@
     <VCard class="auth-card pa-4 pt-5">
       <VCardItem class="align-left">
         <VCardTitle class="text-2xl font-weight-bold">
-          Daftar Role dan Permission
+          Daftar Permission
         </VCardTitle>
       </VCardItem>
       <div class="d-flex justify-space-between mb-6">
@@ -485,7 +485,7 @@ export default {
       },
       items: [],
       headers: [
-        { text: "Nama Role", value: "name", sortable: true },
+        { text: "Nama", value: "name", sortable: true },
         { text: "Akses Phase 1", value: "isPhase1Access", sortable: true },
         { text: "Akses Phase 2", value: "isPhase2Access", sortable: true },
         { text: "Akses Phase 3", value: "isPhase3Access", sortable: true },
@@ -542,6 +542,8 @@ export default {
         formData.append("canInsertData", this.dataForm.canInsertData);
         formData.append("canComment", this.dataForm.canComment);
         formData.append("_method", "PUT");
+
+        // console.log(...formData);
 
         const response = await mainURL.post(
           `/role/${this.dataForm.id}`,

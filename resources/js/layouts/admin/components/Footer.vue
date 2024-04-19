@@ -4,7 +4,7 @@
     <span class="d-flex align-center">
       &copy;
       {{ new Date().getFullYear() }}
-      | v2-kerinci
+      | v1
       <!-- Made With -->
       <!-- <VIcon
         icon="bx-heart"

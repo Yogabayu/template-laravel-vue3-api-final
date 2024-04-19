@@ -65,9 +65,9 @@ const upgradeBanner = computed(() => {
       />
       <VerticalNavLink
         :item="{
-          title: 'Role',
+          title: 'Permission',
           icon: 'bx-shield',
-          to: '/role',
+          to: '/permission',
         }"
       />
       <VerticalNavLink
@@ -75,6 +75,13 @@ const upgradeBanner = computed(() => {
           title: 'Jabatan',
           icon: 'bx-area',
           to: '/position',
+        }"
+      />
+      <VerticalNavLink
+        :item="{
+          title: 'User',
+          icon: 'bx-user',
+          to: '/users',
         }"
       />
       <!-- <VerticalNavLink

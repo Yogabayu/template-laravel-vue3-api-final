@@ -18,6 +18,9 @@ return new class extends Migration
             $table->enum('phase', ['1', '2', '3', '4']);
             $table->boolean('approved')->default(false);
             $table->timestamps();
+
+            $table->foreign('file_id')->references('id')->on('files');
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

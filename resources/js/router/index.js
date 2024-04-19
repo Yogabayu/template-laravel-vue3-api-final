@@ -74,12 +74,12 @@ const router = createRouter({
       ],
     },    
     {
-      path: "/role",
+      path: "/permission",
       component: () => import("../layouts/admin/default.vue"),
       children: [
         {
           path: "",
-          component: () => import("../pages/admin/role/index.vue"),
+          component: () => import("../pages/admin/permission/index.vue"),
           beforeEnter: (to, from, next) => {
             checkAdminLogin(next);
           },
@@ -93,6 +93,19 @@ const router = createRouter({
         {
           path: "",
           component: () => import("../pages/admin/position/index.vue"),
+          beforeEnter: (to, from, next) => {
+            checkAdminLogin(next);
+          },
+        },
+      ],
+    },    
+    {
+      path: "/users",
+      component: () => import("../layouts/admin/default.vue"),
+      children: [
+        {
+          path: "",
+          component: () => import("../pages/admin/user/index.vue"),
           beforeEnter: (to, from, next) => {
             checkAdminLogin(next);
           },

@@ -2,24 +2,20 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class NotificationConfiguration extends Model
+class PhaseDuration extends Model
 {
+    use HasFactory;
     protected $fillable = [
-        'office_id',
         'position_id',
         'phase',
-        'minPlafon',
-        'maxPlafon',
+        'duration_days',
     ];
 
     public function position()
     {
         return $this->belongsTo(Position::class);
-    }
-    public function office()
-    {
-        return $this->belongsTo(Office::class);
     }
 }

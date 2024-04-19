@@ -61,46 +61,7 @@
             </template>
 
             <VListItemTitle>Profile</VListItemTitle>
-          </VListItem>
-
-          <!-- 👉 Settings -->
-          <!-- <VListItem link>
-            <template #prepend>
-              <VIcon
-                class="me-2"
-                icon="bx-cog"
-                size="22"
-              />
-            </template>
-
-            <VListItemTitle>Settings</VListItemTitle>
-          </VListItem> -->
-
-          <!-- 👉 Pricing -->
-          <!-- <VListItem link>
-            <template #prepend>
-              <VIcon
-                class="me-2"
-                icon="bx-dollar"
-                size="22"
-              />
-            </template>
-
-            <VListItemTitle>Pricing</VListItemTitle>
-          </VListItem> -->
-
-          <!-- 👉 FAQ -->
-          <!-- <VListItem link>
-            <template #prepend>
-              <VIcon
-                class="me-2"
-                icon="bx-help-circle"
-                size="22"
-              />
-            </template>
-
-            <VListItemTitle>FAQ</VListItemTitle>
-          </VListItem> -->
+          </VListItem>          
 
           <!-- Divider -->
           <VDivider class="my-2" />
@@ -135,7 +96,7 @@ export default {
     return {
       avatar1: avatar1,
       userData: null, 
-      photoURL: this.$userPhotoUrl + JSON.parse(localStorage.getItem("userData")).photo,
+      photoURL: 'https://bankarthaya.com/wp-content/uploads/2023/07/arthayann.png',
     }
   },
   methods: {

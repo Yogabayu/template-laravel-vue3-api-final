@@ -139,7 +139,6 @@ class RoleController extends Controller
             ]);
 
             $role = Role::where('id', $id)->first();
-            $role->id = Str::uuid();
             $role->name = $request->name; // Mengambil nilai 'name' dari dataForm
             $role->isPhase1Access = $request->isPhase1Access;
             $role->isPhase2Access = $request->isPhase2Access;

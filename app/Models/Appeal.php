@@ -12,6 +12,7 @@ class Appeal extends Model
     protected $fillable = [
         'file_id',
         'user_id',
+        'phase',
         'note',
         'file1',
         'file2',
