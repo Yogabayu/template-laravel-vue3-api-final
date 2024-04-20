@@ -49,6 +49,7 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
         Route::put('user/{id}', [UserController::class, 'update']);
         Route::delete('user/{id}', [UserController::class, 'destroy']);
         Route::get('changeStatusUser/{id}', [UserController::class, 'changeUserStatus']);
+        Route::post('userGetChatId', [UserController::class, 'getChatIdByUsername']);
 
         //////// Route User \\\\\\\\\
         Route::group(['prefix' => 'user'], function () {

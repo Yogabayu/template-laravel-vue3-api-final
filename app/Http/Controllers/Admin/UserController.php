@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Notifications\TelegramNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use NotificationChannels\Telegram\TelegramUpdates;
 
 class UserController extends Controller
 {
@@ -22,14 +24,6 @@ class UserController extends Controller
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -87,14 +81,6 @@ class UserController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
@@ -144,7 +130,6 @@ class UserController extends Controller
         }
     }
 
-
     /**
      * Remove the specified resource from storage.
      */
@@ -155,6 +140,40 @@ class UserController extends Controller
             $user->delete();
 
             return ResponseHelper::successRes('Berhasi menghapus data', $user);
+        } catch (\Exception $e) {
+            return ResponseHelper::errorRes($e->getMessage());
+        }
+    }
+
+    public function getChatIdByUsername(Request $request)
+    {
+        try {
+            $chatId = null;
+            // Mengambil update dari Telegram
+            $updates = TelegramUpdates::create()
+                ->options([
+                    'timeout' => 0,
+                ])
+                ->get();
+            if ($updates['ok']) {
+                $update = $updates['result'];
+                foreach ($update as $updt) {
+                    if (isset($updt['message']['chat']['username'])) {
+                        if ($updt['message']['chat']['username'] == $request->username) {
+                            $chatId = $updt['message']['chat']['id'];
+                            $user = User::findOrFail($request->id);
+                            $user->telegram_username = $request->username;
+                            $user->telegram_chat_id = $chatId;
+                            $user->save();
+
+                            $user->notify(new TelegramNotification('Berhasil mengkoneksikan ke sistem'));
+                            return ResponseHelper::successRes('Selamat, Berhasil Terkoneksi Dengan sistem', $chatId);
+                        }
+                    }
+                }
+            } else {
+                return ResponseHelper::errorRes('gagal');
+            }
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
