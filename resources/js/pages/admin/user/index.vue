@@ -276,7 +276,7 @@
               </v-tooltip>
               <v-tooltip location="top" text="Connect ke Telegram">
                 <template v-slot:activator="{ props }">
-                  <button v-bind="props">
+                  <button v-bind="props" @click="openModal(3, item)">
                     <VIcon size="20" icon="bx-bxl-telegram" color="info"/>
                   </button>
                 </template>
@@ -339,6 +339,12 @@ export default defineComponent({
       edit: false,
       isShowDetailOffice: false,
       isPasswordVisible: false,
+
+      //telegram
+      isTelegram: false,
+      dataTele : {
+        'username': '',
+      }
     };
   },
   methods: {
@@ -472,6 +478,8 @@ export default defineComponent({
           this.dataForm.position_id = item.position_id;
           this.edit = true;
         }
+      } else if(type === 3){
+        console.log('masuk');
       }
     },
     async getAllUsers() {
