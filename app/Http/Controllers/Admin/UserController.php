@@ -148,8 +148,15 @@ class UserController extends Controller
     public function getChatIdByUsername(Request $request)
     {
         try {
+            if ($request->type == '2') {
+                $user = User::findOrFail($request->id);
+                $user->telegram_username = null;
+                $user->telegram_chat_id = null;
+                $user->save();
+
+                return ResponseHelper::successRes('Sukses, user tidak terkoneksi dengan telegram sistem', $user);
+            }
             $chatId = null;
-            // Mengambil update dari Telegram
             $updates = TelegramUpdates::create()
                 ->options([
                     'timeout' => 0,
@@ -172,7 +179,7 @@ class UserController extends Controller
                     }
                 }
             } else {
-                return ResponseHelper::errorRes('gagal');
+                return ResponseHelper::errorRes('Gagal Username tidak ditemukan');
             }
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());

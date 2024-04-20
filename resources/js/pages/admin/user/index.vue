@@ -1,4 +1,18 @@
 <template>
+  <v-overlay
+    :absolute="true"
+    v-model="overlay"
+    contained
+    persistent
+    class="align-center justify-center"
+  >
+    <v-col>
+      <v-progress-circular color="primary" size="32" indeterminate>
+      </v-progress-circular>
+      <br />
+      <span class="font-weight-bold text-lg">Loading....</span>
+    </v-col>
+  </v-overlay>
   <div>
     <VCard class="auth-card pa-4 pt-5">
       <VCardItem class="align-left">
@@ -187,6 +201,84 @@
         </v-card>
       </v-dialog>
 
+      <v-dialog v-model="isTelegram" width="auto">
+        <v-card>
+          <template v-slot:title> Connect ke Telegram </template>
+          <template v-slot:text>
+            <VRow class="mb-3">
+              <VCol md="12" cols="12">
+                <v-alert
+                  density="compact"
+                  title="Langkah-langkah untuk Menghubungkan Akun Telegram Anda:"
+                  type="warning"
+                >
+                  <ol>
+                    <li>1. Pastikan Anda telah masuk ke akun Telegram Anda.</li>
+                    <li>
+                      2. Isi bagian Username pada pengaturan profil Telegram
+                      Anda.
+                    </li>
+                    <li>
+                      3. Chat Bot Telegram :
+                      <a
+                        href="https://t.me/bprarthaya_bot"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        >@bprarthaya_bot</a
+                      >
+                    </li>
+                    <li>4. Klik /start</li>
+                    <li>
+                      5. Kemudian isi username dibawah sesuai dengan profile
+                      anda sebelumnya, dan klik connect
+                    </li>
+                  </ol>
+                </v-alert>
+              </VCol>
+            </VRow>
+
+            <v-divider
+              :thickness="2"
+              class="border-opacity-100"
+              color="info"
+            ></v-divider>
+            <VForm class="mt-3 mb-3" @submit.prevent="connectTelegram">
+              <VRow>
+                <VCol md="12" cols="12">
+                  <VTextField
+                    placeholder="Username Telegram"
+                    label="Username"
+                    v-model="dataTelegram.username"
+                    :rules="[rules.required]"
+                    prepend-icon="mdi-user"
+                  />
+                </VCol>
+
+                <VCol cols="12" class="d-flex flex-wrap gap-4">
+                  <VBtn type="submit">Connect</VBtn>
+
+                  <button
+                    type="button"
+                    class="btn btn-blue"
+                    @click="closeModal(3)"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-blue"
+                    color="error"
+                    @click="connectTelegram(2)"
+                  >
+                    disconnect
+                  </button>
+                </VCol>
+              </VRow>
+            </VForm>
+          </template>
+        </v-card>
+      </v-dialog>
+
       <EasyDataTable
         show-index
         :headers="headers"
@@ -263,21 +355,32 @@
               <v-tooltip location="top" text="Edit User">
                 <template v-slot:activator="{ props }">
                   <button v-bind="props" @click="openModal(2, item)">
-                    <VIcon size="20" icon="bx-edit" color="info"/>
+                    <VIcon size="20" icon="bx-edit" color="info" />
                   </button>
                 </template>
               </v-tooltip>
               <v-tooltip location="top" text="Hapus User">
                 <template v-slot:activator="{ props }">
                   <button v-bind="props" @click="deleteUser(item)">
-                    <VIcon size="20" icon="bx-trash" color="error"/>
+                    <VIcon size="20" icon="bx-trash" color="error" />
                   </button>
                 </template>
               </v-tooltip>
               <v-tooltip location="top" text="Connect ke Telegram">
                 <template v-slot:activator="{ props }">
                   <button v-bind="props" @click="openModal(3, item)">
-                    <VIcon size="20" icon="bx-bxl-telegram" color="info"/>
+                    <VIcon
+                      v-if="item.telegram_chat_id"
+                      size="20"
+                      icon="bx-bxl-telegram"
+                      color="info"
+                    />
+                    <VIcon
+                      v-else
+                      size="20"
+                      icon="bx-bxl-telegram"
+                      color="error"
+                    />
                   </button>
                 </template>
               </v-tooltip>
@@ -310,6 +413,7 @@ export default defineComponent({
   },
   data() {
     return {
+      overlay: false,
       rules: {
         required: (value: any) => !!value || "Required",
       },
@@ -342,12 +446,73 @@ export default defineComponent({
 
       //telegram
       isTelegram: false,
-      dataTele : {
-        'username': '',
-      }
+      dataTelegram: {
+        id: null,
+        type: 1,
+        username: "",
+      },
     };
   },
   methods: {
+    async connectTelegram(type: any) {
+      try {
+        this.overlay = true;
+        if (type == 2) {
+          for (let key in this.dataTelegram) {
+            if (this.dataTelegram[key] === null) {
+              this.closeModal(3);
+              this.$showToast("error", "Sorry", `Properti ${key} harus diisi.`);
+            }
+          }
+          this.dataTelegram.type = 2;
+          const formData = new FormData();
+          formData.append("id", this.dataTelegram.id);
+          formData.append("username", this.dataTelegram.username);
+          formData.append("type", this.dataTelegram.type);
+          formData.append("_method", "POST");
+
+          const response = await mainURL.post("/userGetChatId", formData);
+          if (response.status === 200) {
+            this.overlay = false;
+            this.closeModal(3);
+            this.getAllUsers();
+            this.$showToast("success", "Success", response.data.message);
+          } else {
+            this.closeModal(3);
+            this.$showToast("error", "Sorry", response.data.message);
+          }
+        } else {
+          for (let key in this.dataTelegram) {
+            if (this.dataTelegram[key] === null) {
+              this.closeModal(3);
+              this.$showToast("error", "Sorry", `Properti ${key} harus diisi.`);
+            }
+          }
+
+          const formData = new FormData();
+          formData.append("id", this.dataTelegram.id);
+          formData.append("username", this.dataTelegram.username);
+          formData.append("type", this.dataTelegram.type);
+          formData.append("_method", "POST");
+
+          const response = await mainURL.post("/userGetChatId", formData);
+          if (response.status === 200) {
+            this.overlay = false;
+            this.closeModal(3);
+            this.getAllUsers();
+            this.$showToast("success", "Success", response.data.message);
+          } else {
+            this.closeModal(3);
+            this.$showToast("error", "Sorry", response.data.message);
+          }
+        }
+      } catch (error) {
+        console.log(error);
+        this.overlay = false;
+        this.closeModal(3);
+        this.getAllUsers();
+      }
+    },
     async changeStatus(item: any) {
       try {
         const response = await mainURL.get(`/changeStatusUser/${item.id}`);
@@ -452,6 +617,12 @@ export default defineComponent({
       } else if (type === 2) {
         this.resetForm();
         this.edit = false;
+      } else if (type === 3) {
+        this.dataTelegram = {
+          id: null,
+          username: "",
+        };
+        this.isTelegram = false;
       }
     },
     resetForm() {
@@ -478,8 +649,12 @@ export default defineComponent({
           this.dataForm.position_id = item.position_id;
           this.edit = true;
         }
-      } else if(type === 3){
-        console.log('masuk');
+      } else if (type === 3) {
+        if (item) {
+          this.dataTelegram.id = item.id;
+          this.dataTelegram.username = item.telegram_username;
+          this.isTelegram = true;
+        }
       }
     },
     async getAllUsers() {
