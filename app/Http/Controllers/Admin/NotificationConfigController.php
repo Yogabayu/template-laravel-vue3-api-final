@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-// TODO : need to be configurate
+// URUNG : need to be configurate
 
 class NotificationConfigController extends Controller
 {
