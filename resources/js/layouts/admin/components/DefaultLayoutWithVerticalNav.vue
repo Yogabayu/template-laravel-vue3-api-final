@@ -84,6 +84,13 @@ const upgradeBanner = computed(() => {
           to: '/users',
         }"
       />
+      <VerticalNavLink
+        :item="{
+          title: 'Notifikasi',
+          icon: 'bx-bell',
+          to: '/notifconf',
+        }"
+      />
       <!-- <VerticalNavLink
         :item="{
           title: 'User',

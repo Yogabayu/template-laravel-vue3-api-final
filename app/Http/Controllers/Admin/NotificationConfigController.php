@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
+use App\Models\NotificationConfiguration;
+use App\Models\Office;
 use Illuminate\Http\Request;
 
 // URUNG : need to be configurate
@@ -14,15 +17,44 @@ class NotificationConfigController extends Controller
      */
     public function index()
     {
-        //
+        // try {
+        //     $notif = NotificationConfiguration::with('office', 'position')->get();
+
+        //     return ResponseHelper::successRes('Berhasi mendapatkan data', $notif);
+        // } catch (\Exception $e) {
+        //     return ResponseHelper::errorRes($e->getMessage());
+        // }
+        // try {
+        //     $notif = NotificationConfiguration::with('office', 'position')
+        //         ->orderBy('id')
+        //         ->get()
+        //         ->groupBy('phase', 'office_id');
+
+        //     return ResponseHelper::successRes('Berhasi mendapatkan data', $notif);
+        // } catch (\Exception $e) {
+        //     return ResponseHelper::errorRes($e->getMessage());
+        // }
+
+        try {
+            $office = Office::withCount('notificationConfigurations')->get();
+            return ResponseHelper::successRes('Berhasi mendapatkan data', $office);
+        } catch (\Exception $e) {
+            return ResponseHelper::errorRes($e->getMessage());
+        }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function detailOfficeConfig(Request $request)
     {
-        //
+        try {
+            $notif = NotificationConfiguration::where('office_id', $request->officeId)
+                ->where('phase', $request->phase)
+                ->with('office', 'position')
+                ->orderBy('minPlafon', 'asc')
+                ->get();
+            return ResponseHelper::successRes('Berhasi mendapatkan data', $notif);
+        } catch (\Exception $e) {
+            return ResponseHelper::errorRes($e->getMessage());
+        }
     }
 
     /**
@@ -30,7 +62,31 @@ class NotificationConfigController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $request->validate([
+                'office_id' => 'required',
+                'position_id' => 'required',
+                'phase' => 'required',
+                'minPlafon' => 'required',
+                'maxPlafon' => 'required',
+            ]);
+
+            // Check if a record with the same phase, position_id, and office_id already exists
+            $existingNotif = NotificationConfiguration::where('phase', $request->phase)
+                ->where('position_id', $request->position_id)
+                ->where('office_id', $request->office_id)
+                ->first();
+
+            if ($existingNotif) {
+                return ResponseHelper::errorRes('Data notifikasi dengan fase, jabatan, dan jabatan yang sama sudah ada');
+            }
+
+            $notif = NotificationConfiguration::create($request->all());
+
+            return ResponseHelper::successRes('Berhasi menambahkan data', $notif);
+        } catch (\Exception $e) {
+            return ResponseHelper::errorRes($e->getMessage());
+        }
     }
 
     /**
@@ -46,7 +102,6 @@ class NotificationConfigController extends Controller
      */
     public function edit(string $id)
     {
-        //
     }
 
     /**
@@ -54,7 +109,37 @@ class NotificationConfigController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        try {
+            $request->validate([
+                'office_id' => 'required',
+                'position_id' => 'required',
+                'phase' => 'required',
+                'minPlafon' => 'required',
+                'maxPlafon' => 'required',
+            ]);
+
+            // Check if a record with the same phase, position_id, and office_id already exists
+            $existingNotif = NotificationConfiguration::where('phase', $request->phase)
+                ->where('position_id', $request->position_id)
+                ->where('office_id', $request->office_id)
+                ->where('id', '!=', $id)  // Exclude the current record from the check
+                ->first();
+
+            if ($existingNotif) {
+                return ResponseHelper::errorRes('Data notifikasi dengan fase, jabatan, dan jabatan yang sama sudah ada');
+            }
+
+            $notif = NotificationConfiguration::find($id);
+            if (!$notif) {
+                return ResponseHelper::errorRes('Data notifikasi tidak ditemukan');
+            }
+
+            $notif->update($request->all());
+
+            return ResponseHelper::successRes('Berhasil memperbarui data', $notif);
+        } catch (\Exception $e) {
+            return ResponseHelper::errorRes($e->getMessage());
+        }
     }
 
     /**
@@ -62,6 +147,11 @@ class NotificationConfigController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $notif = NotificationConfiguration::findOrFail($id)->delete();
+            return ResponseHelper::successRes('Berhasi menghapus data', $notif);
+        } catch (\Exception $e) {
+            return ResponseHelper::errorRes($e->getMessage());
+        }
     }
 }

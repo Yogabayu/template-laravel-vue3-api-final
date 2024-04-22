@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\NotificationConfigController;
 use App\Http\Controllers\Admin\OfficeController;
 use App\Http\Controllers\Admin\PositionController;
 use App\Http\Controllers\Admin\RoleController;
@@ -50,6 +51,13 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
         Route::delete('user/{id}', [UserController::class, 'destroy']);
         Route::get('changeStatusUser/{id}', [UserController::class, 'changeUserStatus']);
         Route::post('userGetChatId', [UserController::class, 'getChatIdByUsername']);
+
+        //notif-conf
+        Route::get('notifconf', [NotificationConfigController::class, 'index']);
+        Route::post('notifconf', [NotificationConfigController::class, 'store']);
+        Route::put('notifconf/{id}', [NotificationConfigController::class, 'update']);
+        Route::delete('notifconf/{id}', [NotificationConfigController::class, 'destroy']);
+        Route::post('detailnotifconf', [NotificationConfigController::class, 'detailOfficeConfig']);
 
         //////// Route User \\\\\\\\\
         Route::group(['prefix' => 'user'], function () {

@@ -112,6 +112,32 @@ const router = createRouter({
         },
       ],
     },    
+    {
+      path: "/notifconf",
+      component: () => import("../layouts/admin/default.vue"),
+      children: [
+        {
+          path: "",
+          component: () => import("../pages/admin/notification/index.vue"),
+          beforeEnter: (to, from, next) => {
+            checkAdminLogin(next);
+          },
+        },
+      ],
+    },    
+    {
+      path: "/notifconf/:officeId",
+      component: () => import("../layouts/admin/default.vue"),
+      children: [
+        {
+          path: "",
+          component: () => import("../pages/admin/notification/detail.vue"),
+          beforeEnter: (to, from, next) => {
+            checkAdminLogin(next);
+          },
+        },
+      ],
+    },    
     // {
     //   path: "/account-profile",
     //   component: () => import("../layouts/admin/default.vue"),
