@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\PositionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\User\UserController as UserUserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -61,6 +62,10 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
 
         //////// Route User \\\\\\\\\
         Route::group(['prefix' => 'user'], function () {
+            //profile
+            Route::get('user-profile', [UserUserController::class, 'getProfile']);
+            Route::post('update-user-profile', [UserUserController::class, 'updateProfile']);
+            Route::post('update-user-telegram', [UserUserController::class, 'getChatIdByUsername']);
         });
     });
 });

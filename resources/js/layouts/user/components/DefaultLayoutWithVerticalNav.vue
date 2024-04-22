@@ -1,5 +1,4 @@
 <script setup>
-import VerticalNavSectionTitle from "@/@layouts/components/VerticalNavSectionTitle.vue";
 import VerticalNavLayout from '@layouts/components/VerticalNavLayout.vue';
 import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
 import { useTheme } from 'vuetify';
@@ -42,7 +41,7 @@ const userData = JSON.parse(localStorage.getItem("userData"));
         to: '/user-dashboard',
       }" />
       
-      <VerticalNavLink :item="{
+      <!-- <VerticalNavLink :item="{
         title: 'Cari File',
         icon: 'bx-file-find',
         to:'/u-search'
@@ -69,7 +68,7 @@ const userData = JSON.parse(localStorage.getItem("userData"));
         title: 'Draft',
         icon: 'bx-file',
         to:'/u-draft'
-      }" />
+      }" /> -->
 
 
     </template>
@@ -88,7 +87,7 @@ const userData = JSON.parse(localStorage.getItem("userData"));
           <span>Home</span>
         </v-btn>
 
-        <v-btn value="search" :to="'/u-search'">
+        <!-- <v-btn value="search" :to="'/u-search'">
           <v-icon>mdi-text-box-search</v-icon>
 
           <span>Cari File</span>
@@ -104,7 +103,7 @@ const userData = JSON.parse(localStorage.getItem("userData"));
           <v-icon>mdi-eye-outline</v-icon>
 
           <span>Riwayat</span>
-        </v-btn>
+        </v-btn> -->
 
       </v-bottom-navigation>
     </template>

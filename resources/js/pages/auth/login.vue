@@ -102,7 +102,7 @@ export default {
           if (response.data.user.position.role.name=="administrator") {
             await this.$router.push("/dashboard");
           } else {
-            console.log('else');            
+            await this.$router.push("/user-dashboard");     
           }
 
           this.$showToast("success", "Yeay", "Selamat anda berhasil login, mengarahkan ke dashboard.....");

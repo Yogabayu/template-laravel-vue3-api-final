@@ -186,13 +186,10 @@ class UserController extends Controller
 
                             $user->notify(new TelegramNotification('Berhasil mengkoneksikan ke sistem'));
                             return ResponseHelper::successRes('Selamat, Berhasil Terkoneksi Dengan sistem', $chatId);
-                        } else {
-                            return ResponseHelper::errorRes('Gagal Username tidak ditemukan');
                         }
-                    } else {
-                        return ResponseHelper::errorRes('Gagal Username tidak ditemukan');
                     }
                 }
+                return ResponseHelper::errorRes('Gagal Username tidak ditemukan');
             } else {
                 return ResponseHelper::errorRes('Gagal Username tidak ditemukan');
             }

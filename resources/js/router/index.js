@@ -167,6 +167,19 @@ const router = createRouter({
         },
       ],
     },
+    {
+      path: "/u-profile",
+      component: () => import("../layouts/user/default.vue"),
+      children: [
+        {
+          path: "",
+          component: () => import("../pages/user/profile/profile.vue"),
+          beforeEnter: (to, from, next) => {
+            checkLogin(next);
+          },
+        },
+      ],
+    },
     
   ],
 });

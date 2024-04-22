@@ -51,7 +51,7 @@
           <VDivider class="my-2" />
 
           <!-- 👉 Profile -->
-          <VListItem to="/user-profile">
+          <VListItem to="/u-profile">
             <template #prepend>
               <VIcon
                 class="me-2"
@@ -96,7 +96,7 @@ export default {
     return {
       avatar1: avatar1,
       userData: null,      
-      photoURL: this.$userPhotoUrl + JSON.parse(localStorage.getItem("userData")).photo,
+      photoURL: 'https://bankarthaya.com/wp-content/uploads/2023/07/arthayann.png',
     }
   },
   methods: {
