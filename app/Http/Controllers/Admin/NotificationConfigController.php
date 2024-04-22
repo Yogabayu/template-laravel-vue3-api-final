@@ -8,8 +8,6 @@ use App\Models\NotificationConfiguration;
 use App\Models\Office;
 use Illuminate\Http\Request;
 
-// URUNG : need to be configurate
-
 class NotificationConfigController extends Controller
 {
     /**
