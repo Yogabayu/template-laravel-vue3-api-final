@@ -457,6 +457,7 @@ export default defineComponent({
     async connectTelegram(type: any) {
       try {
         this.overlay = true;
+        
         if (type == 2) {
           for (let key in this.dataTelegram) {
             if (this.dataTelegram[key] === null) {
@@ -507,9 +508,9 @@ export default defineComponent({
           }
         }
       } catch (error) {
-        console.log(error);
         this.overlay = false;
         this.closeModal(3);
+        this.$showToast("error", "Sorry", error.response.data.message);
         this.getAllUsers();
       }
     },

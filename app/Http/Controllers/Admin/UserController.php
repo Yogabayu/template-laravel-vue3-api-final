@@ -150,13 +150,25 @@ class UserController extends Controller
         try {
             if ($request->type == '2') {
                 $user = User::findOrFail($request->id);
+
+                $user->notify(new TelegramNotification('Akun anda tidak terkoneksi dengan sistem'));
+
                 $user->telegram_username = null;
                 $user->telegram_chat_id = null;
                 $user->save();
 
                 return ResponseHelper::successRes('Sukses, user tidak terkoneksi dengan telegram sistem', $user);
             }
+
+            // Check if the requested username already exists
+            $existingUser = User::where('telegram_username', $request->username)->first();
+            if ($existingUser) {
+                return ResponseHelper::errorRes('Username Telegram sudah digunakan.');
+            }
+
             $chatId = null;
+            $user = User::findOrFail($request->id);
+
             $updates = TelegramUpdates::create()
                 ->options([
                     'timeout' => 0,
@@ -168,14 +180,17 @@ class UserController extends Controller
                     if (isset($updt['message']['chat']['username'])) {
                         if ($updt['message']['chat']['username'] == $request->username) {
                             $chatId = $updt['message']['chat']['id'];
-                            $user = User::findOrFail($request->id);
                             $user->telegram_username = $request->username;
                             $user->telegram_chat_id = $chatId;
                             $user->save();
 
                             $user->notify(new TelegramNotification('Berhasil mengkoneksikan ke sistem'));
                             return ResponseHelper::successRes('Selamat, Berhasil Terkoneksi Dengan sistem', $chatId);
+                        } else {
+                            return ResponseHelper::errorRes('Gagal Username tidak ditemukan');
                         }
+                    } else {
+                        return ResponseHelper::errorRes('Gagal Username tidak ditemukan');
                     }
                 }
             } else {
