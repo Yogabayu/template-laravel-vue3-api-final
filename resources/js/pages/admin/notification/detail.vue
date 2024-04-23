@@ -56,7 +56,12 @@
           <template #item-operation="item">
             <div class="operation-wrapper">
               <button>
-                <VIcon size="20" icon="bx-edit" color="blue" @click="openModal(2,item)"/>
+                <VIcon
+                  size="20"
+                  icon="bx-edit"
+                  color="blue"
+                  @click="openModal(2, item)"
+                />
               </button>
               &nbsp;
               <button>
@@ -90,7 +95,27 @@
           <template #item-maxPlafon="item">
             <p>{{ formatInput(item.maxPlafon) }}</p>
           </template>
-          <template #item-operation="item"> </template>
+          <template #item-operation="item"
+            ><div class="operation-wrapper">
+              <button>
+                <VIcon
+                  size="20"
+                  icon="bx-edit"
+                  color="blue"
+                  @click="openModal(2, item)"
+                />
+              </button>
+              &nbsp;
+              <button>
+                <VIcon
+                  size="20"
+                  icon="bx-trash"
+                  color="red"
+                  @click="deleteNotifConf(item)"
+                />
+              </button>
+            </div>
+          </template>
         </EasyDataTable>
       </v-card>
 
@@ -112,7 +137,27 @@
           <template #item-maxPlafon="item">
             <p>{{ formatInput(item.maxPlafon) }}</p>
           </template>
-          <template #item-operation="item"> </template>
+          <template #item-operation="item">
+            <div class="operation-wrapper">
+              <button>
+                <VIcon
+                  size="20"
+                  icon="bx-edit"
+                  color="blue"
+                  @click="openModal(2, item)"
+                />
+              </button>
+              &nbsp;
+              <button>
+                <VIcon
+                  size="20"
+                  icon="bx-trash"
+                  color="red"
+                  @click="deleteNotifConf(item)"
+                />
+              </button>
+            </div>
+          </template>
         </EasyDataTable>
       </v-card>
 
@@ -134,7 +179,27 @@
           <template #item-maxPlafon="item">
             <p>{{ formatInput(item.maxPlafon) }}</p>
           </template>
-          <template #item-operation="item"> </template>
+          <template #item-operation="item">
+            <div class="operation-wrapper">
+              <button>
+                <VIcon
+                  size="20"
+                  icon="bx-edit"
+                  color="blue"
+                  @click="openModal(2, item)"
+                />
+              </button>
+              &nbsp;
+              <button>
+                <VIcon
+                  size="20"
+                  icon="bx-trash"
+                  color="red"
+                  @click="deleteNotifConf(item)"
+                />
+              </button>
+            </div>
+          </template>
         </EasyDataTable>
       </v-card>
 
@@ -450,7 +515,10 @@ export default {
           this.dataFormIn.maxPlafon.replace(/\D/g, "")
         );
         formData.append("_method", "PUT");
-        const response = await mainURL.post(`/notifconf/${this.dataFormIn.id}`, formData);
+        const response = await mainURL.post(
+          `/notifconf/${this.dataFormIn.id}`,
+          formData
+        );
         if (response.status === 200) {
           this.closeModal(2);
           this.getAll();
@@ -492,7 +560,7 @@ export default {
         this.dataFormIn.office_id = this.officeId;
         this.insert = true;
       } else if (type === 2) {
-        if (item) {            
+        if (item) {
           this.getOffices();
           this.getPositions();
           this.dataFormIn.id = item.id;

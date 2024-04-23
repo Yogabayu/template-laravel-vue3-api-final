@@ -61,7 +61,6 @@ export default {
       if (savedUserData) {
         this.userData = JSON.parse(savedUserData);
       }
-      console.log(this.userData);
     },
     // async getTotalFileAvailable() {
     //   try {

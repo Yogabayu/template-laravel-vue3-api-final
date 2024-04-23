@@ -43,7 +43,7 @@ const userData = JSON.parse(localStorage.getItem("userData"));
       <VerticalNavLink :item="{
         title: 'Kredit',
         icon: 'bx-file',
-        to:''
+        to:'/u-credit'
       }" />
       
       <!-- <VerticalNavLink :item="{
@@ -91,7 +91,7 @@ const userData = JSON.parse(localStorage.getItem("userData"));
 
           <span>Home</span>
         </v-btn>
-        <v-btn value="kredit" >
+        <v-btn value="kredit" :to="'/u-credit'">
           <v-icon>mdi-file</v-icon>
 
           <span>Kredit</span>
