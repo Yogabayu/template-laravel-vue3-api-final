@@ -67,10 +67,18 @@
               <template #item-operation="item">
                 <div class="operation-wrapper">
                   <button>
-                    <VIcon size="20" icon="bx-file-find" color="blue" />
+                    <VIcon
+                      size="20"
+                      icon="bx-file-find"
+                      color="blue"
+                      @click="toDetail(item)"
+                    />
                   </button>
                   &nbsp;
-                  <button v-if="userData && item.user_id == userData.id">
+                  <button
+                    v-if="userData && item.user_id == userData.id"
+                    @click="deleteFile(item)"
+                  >
                     <VIcon size="20" icon="bx-trash" color="red" />
                   </button>
                 </div>
@@ -391,8 +399,27 @@ export default {
     },
   },
   methods: {
-    cekLog(id: any) {
-      console.log(id);
+    toDetail(item: any) {
+      this.$router.push(`/u-credit/${item.id}`);
+    },
+    async deleteFile(item: { id: any }) {
+      try {
+        const confirmDelete = window.confirm(
+          "Apakah Anda yakin ingin menghapus data? Semua Data akan terhapus secara permanen."
+        );
+        if (!confirmDelete) return;
+
+        const response = await mainURL.delete(`/user/credit/${item.id}`);
+
+        if (response.status === 200) {
+          this.getAllFiles();
+          this.$showToast("success", "Berhasil", response.data.message);
+        } else {
+          this.$showToast("error", "Sorry", response.data.message);
+        }
+      } catch (error) {
+        this.$showToast("error", "Sorry", error.response.data.message);
+      }
     },
     resetFile(fileKey: string | number) {
       if (!this.dataForm[fileKey] != null) {
@@ -409,7 +436,26 @@ export default {
         "image/png",
       ];
       if (selectedFile && allowedTypes.includes(selectedFile.type)) {
-        this.dataForm[fileKey] = selectedFile;
+        this.dataForm[fileKey] = selectedFile; // Menambahkan catatan file sesuai dengan file yang dipilih
+        if (fileKey == "file1") {
+          this.dataForm.noteFile1 = "KTP Pemohon";
+        } else if (fileKey == "file2") {
+          this.dataForm.noteFile2 = "KTP Pasangan";
+        } else if (fileKey == "file3") {
+          this.dataForm.noteFile3 = "KTP Atas Nama Jaminan";
+        } else if (fileKey == "file4") {
+          this.dataForm.noteFile4 = "Kartu Keluarga";
+        } else if (fileKey == "file5") {
+          this.dataForm.noteFile5 = "Buku Nikah";
+        } else if (fileKey == "file7") {
+          this.dataForm.noteFile7 = "Jaminan SHM";
+        } else if (fileKey == "file8") {
+          this.dataForm.noteFile8 = "Jaminan BPKB";
+        } else if (fileKey == "file9") {
+          this.dataForm.noteFile9 = "Foto Detail Mesin";
+        } else if (fileKey == "file10") {
+          this.dataForm.noteFile10 = "Foto Kunjungan";
+        }
       } else {
         this.$showToast(
           "error",
@@ -494,28 +540,31 @@ export default {
       value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ","); // Add comma as thousand separator
       event.target.value = value;
     },
-
     async insertData() {
       try {
-        // URUNG : tinnggal input
-        console.log(this.dataForm);
+        this.overlay = true;
         const formData = new FormData();
         formData.append("name", this.dataForm.name);
-        formData.append("plafon", this.dataForm.plafon);
+        formData.append("plafon", this.dataForm.plafon.replace(/\D/g, ""));
 
         // Append files to formData
         for (let i = 1; i <= 10; i++) {
-          // Skip file6 as it's not in the validation rules
           if (i === 6) continue;
 
           let fileKey = "file" + i;
+          let noteFileKey = "noteFile" + i;
           let hasFileKey = "hasFile" + i;
 
           // Check if the file has a corresponding hasFile property
-          if (this.dataForm.hasOwnProperty(hasFileKey)) {
-            // If it does, check if hasFile is true and the file exists
-            if (this.dataForm[hasFileKey] && this.dataForm[fileKey]) {
+          if (
+            (this.dataForm.hasOwnProperty(hasFileKey) &&
+              this.dataForm[hasFileKey]) ||
+            this.dataForm[fileKey]
+          ) {
+            // If it does, check if the file exists
+            if (this.dataForm[fileKey]) {
               formData.append(fileKey, this.dataForm[fileKey]);
+              formData.append(noteFileKey, this.dataForm[noteFileKey]);
             }
           } else {
             // If it doesn't, just check if the file exists
@@ -531,53 +580,51 @@ export default {
           !this.dataForm.file8 &&
           !this.dataForm.file9
         ) {
-          console.error("At least one of file7, file8, and file9 must exist");
+          // console.error("At least one of file7, file8, and file9 must exist");
+          this.overlay = false;
+          this.$showToast(
+            "success",
+            "Success",
+            "Wajib memasukkan salah satu jenis jaminan"
+          );
           return;
         }
 
-        for (let pair of formData.entries()) {
-          console.log(pair[0] + ": " + pair[1]);
+
+        formData.append("_method", "POST");
+        const config = {
+          onUploadProgress: (progressEvent) => {
+            try {
+              this.uploadProgress = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total
+              );
+            } catch (error) {
+              console.error("Error calculating progress:", error);
+            }
+          },
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        };
+
+        const response = await mainURL.post("/user/credit", formData, config);
+        if (response.status === 200) {
+          this.overlay = false;
+          this.closeModal(1);
+          this.getAllFiles();
+          this.uploadProgress = null;
+          this.$showToast("success", "Success", response.data.message);
+        } else {
+          this.overlay = false;
+          this.uploadProgress = null;
+          this.getAllFiles();
+          this.$showToast("error", "Sorry", response.data.message);
         }
-
-        // const formData = new FormData();
-        // for (let key in this.dataForm) {
-        //   if (key !== "id") {
-        //     formData.append(key, this.dataForm[key]);
-        //   }
-        // }
-
-        // formData.append("_method", "POST");
-
-        // console.log(...formData);
-        // const config = {
-        //   onUploadProgress: (progressEvent: AxiosProgressEvent) => {
-        //     try {
-        //       this.uploadProgress = Math.round(
-        //         (progressEvent.loaded * 100) / progressEvent.total
-        //       );
-        //     } catch (error) {
-        //       console.error("Error calculating progress:", error);
-        //     }
-        //   },
-        //   headers: {
-        //     "Content-Type": "multipart/form-data",
-        //   },
-        // };
-
-        // const response = await mainURL.post("/file", formData, config);
-
-        // if (response.status === 200) {
-        //   this.closeModal(1);
-        //   this.getAllFiles();
-        //   this.uploadProgress = null;
-        //   this.$showToast("success", "Success", response.data.message);
-        // } else {
-        //   this.uploadProgress = null;
-        //   this.$showToast("error", "Sorry", response.data.message);
-        // }
       } catch (error) {
+        this.overlay = false;
         this.uploadProgress = null;
         this.closeModal(1);
+        this.getAllFiles();
         this.$showToast("error", "Sorry", error.response.data.message);
       }
     },

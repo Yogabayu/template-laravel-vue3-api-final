@@ -25,6 +25,7 @@ class Role extends Model
         'canApprove',
         'canInsertData',
         'canComment',
+        'isSlikAccess'
     ];
     public function positions()
     {

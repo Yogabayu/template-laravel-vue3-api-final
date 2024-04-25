@@ -73,6 +73,12 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
             Route::get('credit/{id}', [FileController::class, 'detailFile']);
             Route::post('credit', [FileController::class, 'store']);
             Route::delete('credit/{id}', [FileController::class, 'destroy']);
+
+            Route::post('note', [FileController::class, 'addNote']);
+            //=>attchment
+            Route::post('add-attach', [FileController::class, 'addAttchment']);
+            Route::put('edit-attach/{id}', [FileController::class, 'editAttachment']);
+            Route::delete('delete-attach/{id}', [FileController::class, 'deleteAttachment']);
         });
     });
 });

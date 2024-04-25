@@ -68,21 +68,7 @@ const showToast = (icon, title, text) => {
 app.config.globalProperties.$showToast = showToast
 
 /** localhost */
-app.config.globalProperties.$userPhotoUrl = 'http://localhost:8000/user/photo/';
+app.config.globalProperties.$filePath = 'http://localhost:8000/file/';
 /** development */
 /** production */
 
-/** localhost */
-app.config.globalProperties.$filePath = 'http://localhost:8000/file/file/';
-/** development */
-/** production */
-
-/** localhost */
-app.config.globalProperties.$draftUrl = 'http://localhost:8000/draft/';
-/** development */
-/** production */
-
-/** localhost */
-app.config.globalProperties.$drafCommenttUrl = 'http://localhost:8000/draft/comment/';
-/** development */
-/** production */

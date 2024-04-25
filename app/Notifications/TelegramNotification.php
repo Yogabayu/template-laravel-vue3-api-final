@@ -3,6 +3,9 @@
 namespace App\Notifications;
 
 // use Illuminate\Bus\Queueable;
+
+use App\Models\Attachment;
+use App\Models\File;
 use Illuminate\Notifications\Notification;
 use NotificationChannels\Telegram\TelegramChannel;
 use NotificationChannels\Telegram\TelegramMessage;
@@ -11,13 +14,17 @@ class TelegramNotification extends Notification
 {
     // use Queueable;
     protected $message;
+    protected $file;
+    protected $attachments;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(string $message)
+    public function __construct(string $message, File $file, $attachment)
     {
-        $this->message = $message;
+        $this->message    = $message;
+        $this->file       = $file;
+        $this->attachments = $attachment;
     }
 
     /**
@@ -35,9 +42,16 @@ class TelegramNotification extends Notification
      */
     public function toTelegram(object $notifiable)
     {
-        return TelegramMessage::create()
+        $telegramMessage = TelegramMessage::create()
             ->to($notifiable->telegram_chat_id)
             ->content($this->message);
+
+        foreach ($this->attachments as $attachment) {
+            // $urlAttachmentPath = url('file/' . $this->file->id . '/' . $attachment->path);
+            $urlAttachmentPath = 'https://yogabayuap.com/file/' . $this->file->id . '/' . $attachment->path;
+            $telegramMessage->button($attachment->name, $urlAttachmentPath);
+        }
+        return $telegramMessage;
     }
 
     /**

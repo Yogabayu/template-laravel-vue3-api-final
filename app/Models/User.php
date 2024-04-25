@@ -25,12 +25,12 @@ class User extends Authenticatable
         'telegram_chat_id',
         'isActive',
         'position_id',
-        'dirut_id',
-        'dir_id',
-        'bm_id',
-        'asmen_id',
-        'brm_id',
-        'ca_id',
+        // 'dirut_id',
+        // 'dir_id',
+        // 'bm_id',
+        // 'asmen_id',
+        // 'brm_id',
+        // 'ca_id',
     ];
 
     /**

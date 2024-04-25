@@ -457,7 +457,7 @@ export default defineComponent({
     async connectTelegram(type: any) {
       try {
         this.overlay = true;
-        
+
         if (type == 2) {
           for (let key in this.dataTelegram) {
             if (this.dataTelegram[key] === null) {
@@ -560,21 +560,22 @@ export default defineComponent({
           }
         }
         formData.append("_method", "PUT");
-
         const response = await mainURL.post(
           `/user/${this.dataForm.id}`,
           formData
         );
         if (response.status === 200) {
           this.closeModal(2);
-          this.getPositions();
+          this.getAllUsers();
           this.$showToast("success", "Success", response.data.message);
         } else {
           this.closeModal(2);
+          this.getAllUsers();
           this.$showToast("error", "Sorry", response.data.message);
         }
       } catch (error) {
         this.closeModal(2);
+        this.getAllUsers();
         this.$showToast("error", "Sorry", error.response.data.message);
       }
     },
@@ -632,7 +633,7 @@ export default defineComponent({
         nik: "",
         name: "",
         email: "",
-        password: "",
+        password: null,
         position_id: null,
       };
     },

@@ -97,6 +97,18 @@
 
                 <VCol md="12" cols="12">
                   <v-select
+                    label="Akses SLIK?"
+                    :items="[
+                      { value: 1, title: 'Ya' },
+                      { value: 0, title: 'Tidak' },
+                    ]"
+                    v-model="dataForm.isSlikAccess"
+                    prepend-icon="mdi-help-rhombus"
+                  ></v-select>
+                </VCol>
+
+                <VCol md="12" cols="12">
+                  <v-select
                     label="Approve Phase 1?"
                     :items="[
                       { value: 1, title: 'Ya' },
@@ -275,6 +287,18 @@
 
                 <VCol md="12" cols="12">
                   <v-select
+                    label="Akses SLIK?"
+                    :items="[
+                      { value: 1, title: 'Ya' },
+                      { value: 0, title: 'Tidak' },
+                    ]"
+                    v-model="dataForm.isSlikAccess"
+                    prepend-icon="mdi-help-rhombus"
+                  ></v-select>
+                </VCol>
+
+                <VCol md="12" cols="12">
+                  <v-select
                     label="Approve Phase 1?"
                     :items="[
                       { value: 1, title: 'Ya' },
@@ -410,6 +434,9 @@
         <template #item-isPhase4Access="item">
           <p>{{ item.isPhase4Access == 1 ? "&#x2713;" : "x" }}</p>
         </template>
+        <template #item-isSlikAccess="item">
+          <p>{{ item.isSlikAccess == 1 ? "&#x2713;" : "x" }}</p>
+        </template>
         <template #item-canApprovePhase1="item">
           <p>{{ item.canApprovePhase1 == 1 ? "&#x2713;" : "x" }}</p>
         </template>
@@ -474,6 +501,7 @@ export default {
         isPhase2Access: 0,
         isPhase3Access: 0,
         isPhase4Access: 0,
+        isSlikAccess: 0,
         canApprovePhase1: 1,
         canApprovePhase2: 0,
         canApprovePhase3: 0,
@@ -490,6 +518,7 @@ export default {
         { text: "Akses Phase 2", value: "isPhase2Access", sortable: true },
         { text: "Akses Phase 3", value: "isPhase3Access", sortable: true },
         { text: "Akses Phase 4", value: "isPhase4Access", sortable: true },
+        { text: "Akses Slik", value: "isSlikAccess", sortable: true },
         { text: "Approve Phase 1", value: "canApprovePhase1", sortable: true },
         { text: "Approve Phase 2", value: "canApprovePhase2", sortable: true },
         { text: "Approve Phase 3", value: "canApprovePhase3", sortable: true },
@@ -533,6 +562,7 @@ export default {
         formData.append("isPhase2Access", this.dataForm.isPhase2Access);
         formData.append("isPhase3Access", this.dataForm.isPhase3Access);
         formData.append("isPhase4Access", this.dataForm.isPhase4Access);
+        formData.append("isSlikAccess", this.dataForm.isSlikAccess);
         formData.append("canApprovePhase1", this.dataForm.canApprovePhase1);
         formData.append("canApprovePhase2", this.dataForm.canApprovePhase2);
         formData.append("canApprovePhase3", this.dataForm.canApprovePhase3);
@@ -542,8 +572,6 @@ export default {
         formData.append("canInsertData", this.dataForm.canInsertData);
         formData.append("canComment", this.dataForm.canComment);
         formData.append("_method", "PUT");
-
-        // console.log(...formData);
 
         const response = await mainURL.post(
           `/role/${this.dataForm.id}`,
@@ -577,6 +605,7 @@ export default {
         formData.append("isPhase2Access", this.dataForm.isPhase2Access);
         formData.append("isPhase3Access", this.dataForm.isPhase3Access);
         formData.append("isPhase4Access", this.dataForm.isPhase4Access);
+        formData.append("isSlikAccess", this.dataForm.isSlikAccess);
         formData.append("canApprovePhase1", this.dataForm.canApprovePhase1);
         formData.append("canApprovePhase2", this.dataForm.canApprovePhase2);
         formData.append("canApprovePhase3", this.dataForm.canApprovePhase3);
@@ -616,6 +645,7 @@ export default {
         isPhase2Access: 0,
         isPhase3Access: 0,
         isPhase4Access: 0,
+        isSlikAccess: 0,
         canApprovePhase1: 1,
         canApprovePhase2: 0,
         canApprovePhase3: 0,
@@ -637,6 +667,7 @@ export default {
           this.dataForm.isPhase2Access = item.isPhase2Access;
           this.dataForm.isPhase3Access = item.isPhase3Access;
           this.dataForm.isPhase4Access = item.isPhase4Access;
+          this.dataForm.isSlikAccess = item.isSlikAccess;
           this.dataForm.canApprovePhase1 = item.canApprovePhase1;
           this.dataForm.canApprovePhase2 = item.canApprovePhase2;
           this.dataForm.canApprovePhase3 = item.canApprovePhase3;
