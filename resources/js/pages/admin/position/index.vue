@@ -7,26 +7,13 @@
         </VCardTitle>
       </VCardItem>
       <div class="d-flex justify-space-between mb-6">
-        <v-btn
-          color="primary"
-          size="small"
-          class="my-3 mx-3"
-          @click="openModal(1)"
-        >
+        <v-btn color="primary" size="small" class="my-3 mx-3" @click="openModal(1)">
           Tambah Data
         </v-btn>
 
         <div class="d-flex align-center pe-2 w-25">
-          <v-text-field
-            prepend-inner-icon="mdi-magnify"
-            density="compact"
-            label="Search"
-            single-line
-            flat
-            hide-details
-            variant="solo-filled"
-            v-model="searchValue"
-          ></v-text-field>
+          <v-text-field prepend-inner-icon="mdi-magnify" density="compact" label="Search" single-line flat hide-details
+            variant="solo-filled" v-model="searchValue"></v-text-field>
         </div>
       </div>
 
@@ -37,45 +24,22 @@
             <VForm @submit.prevent="insertData">
               <VRow>
                 <VCol md="12" cols="12">
-                  <VTextField
-                    placeholder="Nama Jabatan"
-                    label="Jabatan"
-                    v-model="dataForm.name"
-                    autofocus
-                    :rules="[rules.required]"
-                    prepend-icon="mdi-devide"
-                  />
+                  <VTextField placeholder="Nama Jabatan" label="Jabatan" v-model="dataForm.name" autofocus
+                    :rules="[rules.required]" prepend-icon="mdi-devide" />
                 </VCol>
                 <VCol cols="12" md="12">
-                  <v-autocomplete
-                    v-model="dataForm.offices"
-                    :items="offices"
-                    hint="Pilih Cakupan Kantor"
-                    label="Cakupan Kantor"
-                    multiple
-                    chips
-                    clearable
-                    persistent-hint
-                    prepend-icon="mdi-divide"
-                  ></v-autocomplete>
+                  <v-autocomplete v-model="dataForm.offices" :items="offices" hint="Pilih Cakupan Kantor"
+                    label="Cakupan Kantor" multiple chips clearable persistent-hint
+                    prepend-icon="mdi-divide"></v-autocomplete>
                 </VCol>
                 <VCol cols="12" md="12">
-                  <v-autocomplete
-                    label="Pilih Role"
-                    :items="roles"
-                    v-model="dataForm.role_id"
-                    :rules="[rules.required]"
-                    prepend-icon="mdi-divide"
-                  ></v-autocomplete>
+                  <v-autocomplete label="Pilih Role" :items="roles" v-model="dataForm.role_id" :rules="[rules.required]"
+                    prepend-icon="mdi-divide"></v-autocomplete>
                 </VCol>
                 <VCol cols="12" class="d-flex flex-wrap gap-4">
                   <VBtn type="submit">Simpan</VBtn>
 
-                  <button
-                    type="button"
-                    class="btn btn-blue"
-                    @click="closeModal(1)"
-                  >
+                  <button type="button" class="btn btn-blue" @click="closeModal(1)">
                     Batal
                   </button>
                 </VCol>
@@ -92,45 +56,22 @@
             <VForm @submit.prevent="updateData">
               <VRow>
                 <VCol md="12" cols="12">
-                  <VTextField
-                    placeholder="Nama Jabatan"
-                    label="Jabatan"
-                    v-model="dataForm.name"
-                    autofocus
-                    :rules="[rules.required]"
-                    prepend-icon="mdi-devide"
-                  />
+                  <VTextField placeholder="Nama Jabatan" label="Jabatan" v-model="dataForm.name" autofocus
+                    :rules="[rules.required]" prepend-icon="mdi-devide" />
                 </VCol>
                 <VCol cols="12" md="12">
-                  <v-autocomplete
-                    v-model="dataForm.offices"
-                    :items="offices"
-                    hint="Pilih Cakupan Kantor"
-                    label="Cakupan Kantor"
-                    multiple
-                    chips
-                    clearable
-                    persistent-hint
-                    prepend-icon="mdi-divide"
-                  ></v-autocomplete>
+                  <v-autocomplete v-model="dataForm.offices" :items="offices" hint="Pilih Cakupan Kantor"
+                    label="Cakupan Kantor" multiple chips clearable persistent-hint
+                    prepend-icon="mdi-divide"></v-autocomplete>
                 </VCol>
                 <VCol cols="12" md="12">
-                  <v-autocomplete
-                    label="Pilih Role"
-                    :items="roles"
-                    v-model="dataForm.role_id"
-                    :rules="[rules.required]"
-                    prepend-icon="mdi-divide"
-                  ></v-autocomplete>
+                  <v-autocomplete label="Pilih Role" :items="roles" v-model="dataForm.role_id" :rules="[rules.required]"
+                    prepend-icon="mdi-divide"></v-autocomplete>
                 </VCol>
                 <VCol cols="12" class="d-flex flex-wrap gap-4">
                   <VBtn type="submit">Simpan</VBtn>
 
-                  <button
-                    type="button"
-                    class="btn btn-blue"
-                    @click="closeModal(1)"
-                  >
+                  <button type="button" class="btn btn-blue" @click="closeModal(1)">
                     Batal
                   </button>
                 </VCol>
@@ -140,12 +81,7 @@
         </v-card>
       </v-dialog>
 
-      <EasyDataTable
-        show-index
-        :headers="headers"
-        :items="items"
-        :search-value="searchValue"
-      >
+      <EasyDataTable show-index :headers="headers" :items="items" :search-value="searchValue">
         <template #empty-message>
           <p>Data Kantor Kosong</p>
         </template>
@@ -167,10 +103,7 @@
                   {{ x.name }}
                 </VChip>
               </div>
-              <VChip
-                style="color: rgb(6, 84, 107)"
-                @click="showAllOffice(item)"
-              >
+              <VChip style="color: rgb(6, 84, 107)" @click="showAllOffice(item)">
                 +{{ item.positions.length - 5 }} lainnya
               </VChip>
 
@@ -181,10 +114,7 @@
                   </v-card-title>
                   <v-card-text>
                     <v-chip-group selected-class="text-primary" column>
-                      <div
-                        v-for="(x, index) in detailOffice.positions"
-                        :key="index"
-                      >
+                      <div v-for="(x, index) in detailOffice.positions" :key="index">
                         <VChip style="color: rgb(6, 84, 107)">
                           {{ x.name }}
                         </VChip>
@@ -199,21 +129,11 @@
         <template #item-operation="item">
           <div class="operation-wrapper">
             <button>
-              <VIcon
-                size="20"
-                icon="bx-edit"
-                color="blue"
-                @click="openModal(2, item)"
-              />
+              <VIcon size="20" icon="bx-edit" color="blue" @click="openModal(2, item)" />
             </button>
             &nbsp;
             <button>
-              <VIcon
-                size="20"
-                icon="bx-trash"
-                color="red"
-                @click="deletePosition(item)"
-              />
+              <VIcon size="20" icon="bx-trash" color="red" @click="deletePosition(item)" />
             </button>
           </div>
         </template>
@@ -278,10 +198,12 @@ export default {
     },
     async updateData() {
       try {
+        // console.log(this.dataForm);
+        
         const formData = new FormData();
         formData.append("name", this.dataForm.name);
         this.dataForm.offices.forEach((office: string | Blob) => {
-          formData.append("offices[]", office);
+          formData.append("offices[]", office['value']);
         });
         formData.append("role_id", this.dataForm.role_id);
         formData.append("_method", "PUT");

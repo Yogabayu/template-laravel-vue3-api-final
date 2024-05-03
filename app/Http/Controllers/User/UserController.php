@@ -63,7 +63,7 @@ class UserController extends Controller
             if ($request->type == '2') {
                 $user = User::findOrFail(Auth::user()->id);
 
-                $user->notify(new TelegramNotification('Akun anda tidak terkoneksi dengan sistem'));
+                $user->notify(new TelegramNotification('Akun anda tidak terkoneksi dengan sistem', null, null));
 
                 $user->telegram_username = null;
                 $user->telegram_chat_id = null;
@@ -94,7 +94,7 @@ class UserController extends Controller
                             $user->telegram_chat_id = $chatId;
                             $user->save();
 
-                            $user->notify(new TelegramNotification('Berhasil mengkoneksikan ke sistem'));
+                            $user->notify(new TelegramNotification('Berhasil mengkoneksikan ke sistem', null, null));
                             return ResponseHelper::successRes('Selamat, Berhasil Terkoneksi Dengan sistem', $chatId);
                         }
                     }

@@ -17,15 +17,15 @@ class Role extends Model
         'isPhase2Access',
         'isPhase3Access',
         'isPhase4Access',
-        'canApprovePhase1',
-        'canApprovePhase2',
-        'canApprovePhase3',
-        'canApprovePhase4',
-        'canAppeal',
-        'canApprove',
-        'canInsertData',
-        'canComment',
-        'isSlikAccess'
+        // 'canApprovePhase1',
+        // 'canApprovePhase2',
+        // 'canApprovePhase3',
+        // 'canApprovePhase4',
+        // 'canAppeal',
+        // 'canApprove',
+        // 'canInsertData',
+        // 'canComment',
+        // 'isSecret'
     ];
     public function positions()
     {

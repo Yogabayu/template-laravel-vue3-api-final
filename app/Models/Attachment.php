@@ -11,6 +11,7 @@ class Attachment extends Model
         'name',
         'path',
         'note',
+        'isSecret',
     ];
 
     public function file()

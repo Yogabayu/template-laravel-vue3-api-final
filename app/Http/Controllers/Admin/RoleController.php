@@ -42,28 +42,28 @@ class RoleController extends Controller
                 'isPhase2Access' => 'required',
                 'isPhase3Access' => 'required',
                 'isPhase4Access' => 'required',
-                'isSlikAccess' => 'required',
-                'canApprovePhase1' => 'required',
-                'canApprovePhase2' => 'required',
-                'canApprovePhase3' => 'required',
-                'canApprovePhase4' => 'required',
-                'canAppeal' => 'required',
-                'canInsertData' => 'required',
-                'canComment' => 'required',
+                // 'isSecret' => 'required',
+                // 'canApprovePhase1' => 'required',
+                // 'canApprovePhase2' => 'required',
+                // 'canApprovePhase3' => 'required',
+                // 'canApprovePhase4' => 'required',
+                // 'canAppeal' => 'required',
+                // 'canInsertData' => 'required',
+                // 'canComment' => 'required',
             ], [
                 'name.required' => 'Nama wajib diisi',
                 'isPhase1Access.required' => 'Phase 1 Access Wajib diisi',
                 'isPhase2Access.required' => 'Phase 2 Access Wajib diisi',
                 'isPhase3Access.required' => 'Phase 3 Access Wajib diisi',
                 'isPhase4Access.required' => 'Phase 4 Access Wajib diisi',
-                'isSlikAccess.required' => 'Slik Access Wajib diisi',
-                'canApprovePhase1.required' => 'Approve Phase 1 Access Wajib diisi',
-                'canApprovePhase2.required' => 'Approve Phase 1 Access Wajib diisi',
-                'canApprovePhase3.required' => 'Approve Phase 1 Access Wajib diisi',
-                'canApprovePhase4.required' => 'Approve Phase 1 Access Wajib diisi',
-                'canAppeal.required' => 'Akses Banding Wajib diisi',
-                'canInsertData.required' => 'Akses Tambah Data Wajib diisi',
-                'canComment.required' => 'Akses Komentar Wajib diisi',
+                // 'isSecret.required' => 'Slik Access Wajib diisi',
+                // 'canApprovePhase1.required' => 'Approve Phase 1 Access Wajib diisi',
+                // 'canApprovePhase2.required' => 'Approve Phase 1 Access Wajib diisi',
+                // 'canApprovePhase3.required' => 'Approve Phase 1 Access Wajib diisi',
+                // 'canApprovePhase4.required' => 'Approve Phase 1 Access Wajib diisi',
+                // 'canAppeal.required' => 'Akses Banding Wajib diisi',
+                // 'canInsertData.required' => 'Akses Tambah Data Wajib diisi',
+                // 'canComment.required' => 'Akses Komentar Wajib diisi',
             ]);
 
             // Jika validasi berhasil, simpan data
@@ -74,15 +74,15 @@ class RoleController extends Controller
             $role->isPhase2Access = $request->isPhase2Access;
             $role->isPhase3Access = $request->isPhase3Access;
             $role->isPhase4Access = $request->isPhase4Access;
-            $role->isSlikAccess = $request->isSlikAccess;
-            $role->canApprovePhase1 = $request->canApprovePhase1;
-            $role->canApprovePhase2 = $request->canApprovePhase2;
-            $role->canApprovePhase3 = $request->canApprovePhase3;
-            $role->canApprovePhase4 = $request->canApprovePhase4;
-            $role->canAppeal =  $request->canAppeal;
-            $role->canApprove =  $request->canApprove;
-            $role->canInsertData =  $request->canInsertData;
-            $role->canComment =  $request->canComment;
+            // $role->isSecret = $request->isSecret;
+            // $role->canApprovePhase1 = $request->canApprovePhase1;
+            // $role->canApprovePhase2 = $request->canApprovePhase2;
+            // $role->canApprovePhase3 = $request->canApprovePhase3;
+            // $role->canApprovePhase4 = $request->canApprovePhase4;
+            // $role->canAppeal =  $request->canAppeal;
+            // $role->canApprove =  $request->canApprove;
+            // $role->canInsertData =  $request->canInsertData;
+            // $role->canComment =  $request->canComment;
             $role->save();
 
             return ResponseHelper::successRes('Berhasil input data role', $role);
@@ -119,28 +119,28 @@ class RoleController extends Controller
                 'isPhase2Access' => 'required',
                 'isPhase3Access' => 'required',
                 'isPhase4Access' => 'required',
-                'isSlikAccess' => 'required',
-                'canApprovePhase1' => 'required',
-                'canApprovePhase2' => 'required',
-                'canApprovePhase3' => 'required',
-                'canApprovePhase4' => 'required',
-                'canAppeal' => 'required',
-                'canInsertData' => 'required',
-                'canComment' => 'required',
+                // 'isSecret' => 'required',
+                // 'canApprovePhase1' => 'required',
+                // 'canApprovePhase2' => 'required',
+                // 'canApprovePhase3' => 'required',
+                // 'canApprovePhase4' => 'required',
+                // 'canAppeal' => 'required',
+                // 'canInsertData' => 'required',
+                // 'canComment' => 'required',
             ], [
                 'name.required' => 'Nama wajib diisi',
                 'isPhase1Access.required' => 'Phase 1 Access Wajib diisi',
                 'isPhase2Access.required' => 'Phase 2 Access Wajib diisi',
                 'isPhase3Access.required' => 'Phase 3 Access Wajib diisi',
                 'isPhase4Access.required' => 'Phase 4 Access Wajib diisi',
-                'isSlikAccess.required' => 'Slik Access Wajib diisi',
-                'canApprovePhase1.required' => 'Approve Phase 1 Access Wajib diisi',
-                'canApprovePhase2.required' => 'Approve Phase 1 Access Wajib diisi',
-                'canApprovePhase3.required' => 'Approve Phase 1 Access Wajib diisi',
-                'canApprovePhase4.required' => 'Approve Phase 1 Access Wajib diisi',
-                'canAppeal.required' => 'Akses Banding Wajib diisi',
-                'canInsertData.required' => 'Akses Tambah Data Wajib diisi',
-                'canComment.required' => 'Akses Komentar Wajib diisi',
+                // 'isSecret.required' => 'Slik Access Wajib diisi',
+                // 'canApprovePhase1.required' => 'Approve Phase 1 Access Wajib diisi',
+                // 'canApprovePhase2.required' => 'Approve Phase 1 Access Wajib diisi',
+                // 'canApprovePhase3.required' => 'Approve Phase 1 Access Wajib diisi',
+                // 'canApprovePhase4.required' => 'Approve Phase 1 Access Wajib diisi',
+                // 'canAppeal.required' => 'Akses Banding Wajib diisi',
+                // 'canInsertData.required' => 'Akses Tambah Data Wajib diisi',
+                // 'canComment.required' => 'Akses Komentar Wajib diisi',
             ]);
 
             $role = Role::where('id', $id)->first();
@@ -149,15 +149,15 @@ class RoleController extends Controller
             $role->isPhase2Access = $request->isPhase2Access;
             $role->isPhase3Access = $request->isPhase3Access;
             $role->isPhase4Access = $request->isPhase4Access;
-            $role->isSlikAccess = $request->isSlikAccess;
-            $role->canApprovePhase1 = $request->canApprovePhase1;
-            $role->canApprovePhase2 = $request->canApprovePhase2;
-            $role->canApprovePhase3 = $request->canApprovePhase3;
-            $role->canApprovePhase4 = $request->canApprovePhase4;
-            $role->canAppeal =  $request->canAppeal;
-            $role->canApprove =  $request->canApprove;
-            $role->canInsertData =  $request->canInsertData;
-            $role->canComment =  $request->canComment;
+            // $role->isSecret = $request->isSecret;
+            // $role->canApprovePhase1 = $request->canApprovePhase1;
+            // $role->canApprovePhase2 = $request->canApprovePhase2;
+            // $role->canApprovePhase3 = $request->canApprovePhase3;
+            // $role->canApprovePhase4 = $request->canApprovePhase4;
+            // $role->canAppeal =  $request->canAppeal;
+            // $role->canApprove =  $request->canApprove;
+            // $role->canInsertData =  $request->canInsertData;
+            // $role->canComment =  $request->canComment;
             $role->save();
 
             return ResponseHelper::successRes('Berhasil update data role', $role);

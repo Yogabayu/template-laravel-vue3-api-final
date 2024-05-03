@@ -95,19 +95,19 @@
                   ></v-select>
                 </VCol>
 
-                <VCol md="12" cols="12">
+                <!-- <VCol md="12" cols="12">
                   <v-select
                     label="Akses SLIK?"
                     :items="[
                       { value: 1, title: 'Ya' },
                       { value: 0, title: 'Tidak' },
                     ]"
-                    v-model="dataForm.isSlikAccess"
+                    v-model="dataForm.isSecret"
                     prepend-icon="mdi-help-rhombus"
                   ></v-select>
-                </VCol>
+                </VCol> -->
 
-                <VCol md="12" cols="12">
+                <!-- <VCol md="12" cols="12">
                   <v-select
                     label="Approve Phase 1?"
                     :items="[
@@ -153,9 +153,9 @@
                     v-model="dataForm.canApprovePhase4"
                     prepend-icon="mdi-help-rhombus"
                   ></v-select>
-                </VCol>
+                </VCol> -->
 
-                <VCol md="12" cols="12">
+                <!-- <VCol md="12" cols="12">
                   <v-select
                     label="Ajukan Banding?"
                     :items="[
@@ -177,9 +177,9 @@
                     v-model="dataForm.canApprove"
                     prepend-icon="mdi-help-rhombus"
                   ></v-select>
-                </VCol>
+                </VCol> -->
 
-                <VCol md="12" cols="12">
+                <!-- <VCol md="12" cols="12">
                   <v-select
                     label="Akses Insert Data?"
                     :items="[
@@ -189,9 +189,9 @@
                     v-model="dataForm.canInsertData"
                     prepend-icon="mdi-help-rhombus"
                   ></v-select>
-                </VCol>
+                </VCol> -->
 
-                <VCol md="12" cols="12">
+                <!-- <VCol md="12" cols="12">
                   <v-select
                     label="Akses Comment?"
                     :items="[
@@ -201,7 +201,7 @@
                     v-model="dataForm.canComment"
                     prepend-icon="mdi-help-rhombus"
                   ></v-select>
-                </VCol>
+                </VCol> -->
 
                 <VCol cols="12" class="d-flex flex-wrap gap-4">
                   <VBtn type="submit">Simpan</VBtn>
@@ -285,19 +285,19 @@
                   ></v-select>
                 </VCol>
 
-                <VCol md="12" cols="12">
+                <!-- <VCol md="12" cols="12">
                   <v-select
                     label="Akses SLIK?"
                     :items="[
                       { value: 1, title: 'Ya' },
                       { value: 0, title: 'Tidak' },
                     ]"
-                    v-model="dataForm.isSlikAccess"
+                    v-model="dataForm.isSecret"
                     prepend-icon="mdi-help-rhombus"
                   ></v-select>
-                </VCol>
+                </VCol> -->
 
-                <VCol md="12" cols="12">
+                <!-- <VCol md="12" cols="12">
                   <v-select
                     label="Approve Phase 1?"
                     :items="[
@@ -343,9 +343,9 @@
                     v-model="dataForm.canApprovePhase4"
                     prepend-icon="mdi-help-rhombus"
                   ></v-select>
-                </VCol>
+                </VCol> -->
 
-                <VCol md="12" cols="12">
+                <!-- <VCol md="12" cols="12">
                   <v-select
                     label="Ajukan Banding?"
                     :items="[
@@ -367,9 +367,9 @@
                     v-model="dataForm.canApprove"
                     prepend-icon="mdi-help-rhombus"
                   ></v-select>
-                </VCol>
+                </VCol> -->
 
-                <VCol md="12" cols="12">
+                <!-- <VCol md="12" cols="12">
                   <v-select
                     label="Akses Insert Data?"
                     :items="[
@@ -379,9 +379,9 @@
                     v-model="dataForm.canInsertData"
                     prepend-icon="mdi-help-rhombus"
                   ></v-select>
-                </VCol>
+                </VCol> -->
 
-                <VCol md="12" cols="12">
+                <!-- <VCol md="12" cols="12">
                   <v-select
                     label="Akses Comment?"
                     :items="[
@@ -391,7 +391,7 @@
                     v-model="dataForm.canComment"
                     prepend-icon="mdi-help-rhombus"
                   ></v-select>
-                </VCol>
+                </VCol> -->
 
                 <VCol cols="12" class="d-flex flex-wrap gap-4">
                   <VBtn type="submit">Simpan</VBtn>
@@ -434,8 +434,8 @@
         <template #item-isPhase4Access="item">
           <p>{{ item.isPhase4Access == 1 ? "&#x2713;" : "x" }}</p>
         </template>
-        <template #item-isSlikAccess="item">
-          <p>{{ item.isSlikAccess == 1 ? "&#x2713;" : "x" }}</p>
+        <!-- <template #item-isSecret="item">
+          <p>{{ item.isSecret == 1 ? "&#x2713;" : "x" }}</p>
         </template>
         <template #item-canApprovePhase1="item">
           <p>{{ item.canApprovePhase1 == 1 ? "&#x2713;" : "x" }}</p>
@@ -460,7 +460,7 @@
         </template>
         <template #item-canComment="item">
           <p>{{ item.canComment == 1 ? "&#x2713;" : "x" }}</p>
-        </template>
+        </template> -->
         <template #item-operation="item">
           <div class="operation-wrapper">
             <button>
@@ -501,15 +501,15 @@ export default {
         isPhase2Access: 0,
         isPhase3Access: 0,
         isPhase4Access: 0,
-        isSlikAccess: 0,
-        canApprovePhase1: 1,
-        canApprovePhase2: 0,
-        canApprovePhase3: 0,
-        canApprovePhase4: 0,
-        canAppeal: 0,
-        canApprove: 0,
-        canInsertData: 0,
-        canComment: 0,
+        // isSecret: 0,
+        // canApprovePhase1: 1,
+        // canApprovePhase2: 0,
+        // canApprovePhase3: 0,
+        // canApprovePhase4: 0,
+        // canAppeal: 0,
+        // canApprove: 0,
+        // canInsertData: 0,
+        // canComment: 0,
       },
       items: [],
       headers: [
@@ -518,15 +518,15 @@ export default {
         { text: "Akses Phase 2", value: "isPhase2Access", sortable: true },
         { text: "Akses Phase 3", value: "isPhase3Access", sortable: true },
         { text: "Akses Phase 4", value: "isPhase4Access", sortable: true },
-        { text: "Akses Slik", value: "isSlikAccess", sortable: true },
-        { text: "Approve Phase 1", value: "canApprovePhase1", sortable: true },
-        { text: "Approve Phase 2", value: "canApprovePhase2", sortable: true },
-        { text: "Approve Phase 3", value: "canApprovePhase3", sortable: true },
-        { text: "Approve Phase 4", value: "canApprovePhase4", sortable: true },
-        { text: "Banding", value: "canAppeal", sortable: true },
-        { text: "Approve", value: "canApprove", sortable: true },
-        { text: "Tambah Data", value: "canInsertData", sortable: true },
-        { text: "Tambah Komentar", value: "canComment", sortable: true },
+        // { text: "Akses Slik", value: "isSecret", sortable: true },
+        // { text: "Approve Phase 1", value: "canApprovePhase1", sortable: true },
+        // { text: "Approve Phase 2", value: "canApprovePhase2", sortable: true },
+        // { text: "Approve Phase 3", value: "canApprovePhase3", sortable: true },
+        // { text: "Approve Phase 4", value: "canApprovePhase4", sortable: true },
+        // { text: "Banding", value: "canAppeal", sortable: true },
+        // { text: "Approve", value: "canApprove", sortable: true },
+        // { text: "Tambah Data", value: "canInsertData", sortable: true },
+        // { text: "Tambah Komentar", value: "canComment", sortable: true },
         { text: "Operation", value: "operation" },
       ],
       searchValue: "",
@@ -562,15 +562,15 @@ export default {
         formData.append("isPhase2Access", this.dataForm.isPhase2Access);
         formData.append("isPhase3Access", this.dataForm.isPhase3Access);
         formData.append("isPhase4Access", this.dataForm.isPhase4Access);
-        formData.append("isSlikAccess", this.dataForm.isSlikAccess);
-        formData.append("canApprovePhase1", this.dataForm.canApprovePhase1);
-        formData.append("canApprovePhase2", this.dataForm.canApprovePhase2);
-        formData.append("canApprovePhase3", this.dataForm.canApprovePhase3);
-        formData.append("canApprovePhase4", this.dataForm.canApprovePhase4);
-        formData.append("canAppeal", this.dataForm.canAppeal);
-        formData.append("canApprove", this.dataForm.canApprove);
-        formData.append("canInsertData", this.dataForm.canInsertData);
-        formData.append("canComment", this.dataForm.canComment);
+        // formData.append("isSecret", this.dataForm.isSecret);
+        // formData.append("canApprovePhase1", this.dataForm.canApprovePhase1);
+        // formData.append("canApprovePhase2", this.dataForm.canApprovePhase2);
+        // formData.append("canApprovePhase3", this.dataForm.canApprovePhase3);
+        // formData.append("canApprovePhase4", this.dataForm.canApprovePhase4);
+        // formData.append("canAppeal", this.dataForm.canAppeal);
+        // formData.append("canApprove", this.dataForm.canApprove);
+        // formData.append("canInsertData", this.dataForm.canInsertData);
+        // formData.append("canComment", this.dataForm.canComment);
         formData.append("_method", "PUT");
 
         const response = await mainURL.post(
@@ -605,15 +605,15 @@ export default {
         formData.append("isPhase2Access", this.dataForm.isPhase2Access);
         formData.append("isPhase3Access", this.dataForm.isPhase3Access);
         formData.append("isPhase4Access", this.dataForm.isPhase4Access);
-        formData.append("isSlikAccess", this.dataForm.isSlikAccess);
-        formData.append("canApprovePhase1", this.dataForm.canApprovePhase1);
-        formData.append("canApprovePhase2", this.dataForm.canApprovePhase2);
-        formData.append("canApprovePhase3", this.dataForm.canApprovePhase3);
-        formData.append("canApprovePhase4", this.dataForm.canApprovePhase4);
-        formData.append("canAppeal", this.dataForm.canAppeal);
-        formData.append("canApprove", this.dataForm.canApprove);
-        formData.append("canInsertData", this.dataForm.canInsertData);
-        formData.append("canComment", this.dataForm.canComment);
+        // formData.append("isSecret", this.dataForm.isSecret);
+        // formData.append("canApprovePhase1", this.dataForm.canApprovePhase1);
+        // formData.append("canApprovePhase2", this.dataForm.canApprovePhase2);
+        // formData.append("canApprovePhase3", this.dataForm.canApprovePhase3);
+        // formData.append("canApprovePhase4", this.dataForm.canApprovePhase4);
+        // formData.append("canAppeal", this.dataForm.canAppeal);
+        // formData.append("canApprove", this.dataForm.canApprove);
+        // formData.append("canInsertData", this.dataForm.canInsertData);
+        // formData.append("canComment", this.dataForm.canComment);
         formData.append("_method", "POST");
 
         const response = await mainURL.post("/role", formData);
@@ -645,15 +645,15 @@ export default {
         isPhase2Access: 0,
         isPhase3Access: 0,
         isPhase4Access: 0,
-        isSlikAccess: 0,
-        canApprovePhase1: 1,
-        canApprovePhase2: 0,
-        canApprovePhase3: 0,
-        canApprovePhase4: 0,
-        canAppeal: 0,
-        canApprove: 0,
-        canInsertData: 0,
-        canComment: 0,
+        // isSecret: 0,
+        // canApprovePhase1: 1,
+        // canApprovePhase2: 0,
+        // canApprovePhase3: 0,
+        // canApprovePhase4: 0,
+        // canAppeal: 0,
+        // canApprove: 0,
+        // canInsertData: 0,
+        // canComment: 0,
       };
     },
     openModal(type: number, item = null) {
@@ -667,15 +667,15 @@ export default {
           this.dataForm.isPhase2Access = item.isPhase2Access;
           this.dataForm.isPhase3Access = item.isPhase3Access;
           this.dataForm.isPhase4Access = item.isPhase4Access;
-          this.dataForm.isSlikAccess = item.isSlikAccess;
-          this.dataForm.canApprovePhase1 = item.canApprovePhase1;
-          this.dataForm.canApprovePhase2 = item.canApprovePhase2;
-          this.dataForm.canApprovePhase3 = item.canApprovePhase3;
-          this.dataForm.canApprovePhase4 = item.canApprovePhase4;
-          this.dataForm.canAppeal = item.canAppeal;
-          this.dataForm.canAppeal = item.canApprove;
-          this.dataForm.canInsertData = item.canInsertData;
-          this.dataForm.canComment = item.canComment;
+          // this.dataForm.isSecret = item.isSecret;
+          // this.dataForm.canApprovePhase1 = item.canApprovePhase1;
+          // this.dataForm.canApprovePhase2 = item.canApprovePhase2;
+          // this.dataForm.canApprovePhase3 = item.canApprovePhase3;
+          // this.dataForm.canApprovePhase4 = item.canApprovePhase4;
+          // this.dataForm.canAppeal = item.canAppeal;
+          // this.dataForm.canAppeal = item.canApprove;
+          // this.dataForm.canInsertData = item.canInsertData;
+          // this.dataForm.canComment = item.canComment;
           this.edit = true;
         }
       }

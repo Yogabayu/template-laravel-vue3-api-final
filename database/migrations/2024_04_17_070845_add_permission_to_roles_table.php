@@ -16,14 +16,14 @@ return new class extends Migration
             $table->boolean('isPhase2Access')->default(false);
             $table->boolean('isPhase3Access')->default(false);
             $table->boolean('isPhase4Access')->default(false);
-            $table->boolean('canApprovePhase1')->default(true);
-            $table->boolean('canApprovePhase2')->default(false);
-            $table->boolean('canApprovePhase3')->default(false);
-            $table->boolean('canApprovePhase4')->default(false);
-            $table->boolean('canAppeal')->default(false);
-            $table->boolean('canApprove')->default(false);
-            $table->boolean('canInsertData')->default(false);
-            $table->boolean('canComment')->default(false);
+            // $table->boolean('canApprovePhase1')->default(true);
+            // $table->boolean('canApprovePhase2')->default(false);
+            // $table->boolean('canApprovePhase3')->default(false);
+            // $table->boolean('canApprovePhase4')->default(false);
+            // $table->boolean('canAppeal')->default(false);
+            // $table->boolean('canApprove')->default(false);
+            // $table->boolean('canInsertData')->default(false);
+            // $table->boolean('canComment')->default(false);
         });
     }
 

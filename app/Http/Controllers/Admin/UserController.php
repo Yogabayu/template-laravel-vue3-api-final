@@ -137,6 +137,26 @@ class UserController extends Controller
     {
         try {
             $user = User::findOrFail($id);
+
+            // Hapus semua file yang dimiliki oleh pengguna
+            $user->files()->delete();
+
+            // Hapus semua persetujuan yang dimiliki oleh pengguna
+            $user->approvals()->delete();
+
+            // Hapus semua catatan yang dimiliki oleh pengguna
+            $user->notes()->delete();
+
+            // Hapus semua banding yang dimiliki oleh pengguna
+            $user->appeals()->delete();
+
+            // Hapus semua aktivitas file yang dilakukan oleh pengguna
+            $user->fileActivities()->delete();
+
+            // Hapus semua aktivitas pengguna yang dilakukan oleh pengguna
+            $user->userActivities()->delete();
+
+            // Hapus pengguna setelah semua entitas terkait dihapus
             $user->delete();
 
             return ResponseHelper::successRes('Berhasi menghapus data', $user);
@@ -151,7 +171,7 @@ class UserController extends Controller
             if ($request->type == '2') {
                 $user = User::findOrFail($request->id);
 
-                $user->notify(new TelegramNotification('Akun anda tidak terkoneksi dengan sistem'));
+                $user->notify(new TelegramNotification('Akun anda tidak terkoneksi dengan sistem', null, null));
 
                 $user->telegram_username = null;
                 $user->telegram_chat_id = null;
@@ -184,7 +204,7 @@ class UserController extends Controller
                             $user->telegram_chat_id = $chatId;
                             $user->save();
 
-                            $user->notify(new TelegramNotification('Berhasil mengkoneksikan ke sistem'));
+                            $user->notify(new TelegramNotification('Berhasil mengkoneksikan ke sistem', null, null));
                             return ResponseHelper::successRes('Selamat, Berhasil Terkoneksi Dengan sistem', $chatId);
                         }
                     }

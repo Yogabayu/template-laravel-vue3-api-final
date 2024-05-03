@@ -673,22 +673,20 @@ export default defineComponent({
       }
     },
     async getPositions() {
-      try {
+    try {
         const response = await mainURL.get("/position");
-        if (response.status === 200) {
-          this.positions = response.data.data.map(
-            (item: { id: any; name: any }) => ({
-              value: item.id,
-              title: item.name,
-            })
-          );
+        if (response.status === 200) {            
+            this.positions = response.data.data.map((item) => ({
+                value: item.id,
+                title: `${item.name} - ${item.offices.map(office => office.name).join(', ')}`,
+            }));
         } else {
-          this.$showToast("error", "Sorry", "error get data office");
+            this.$showToast("error", "Sorry", "error get data office");
         }
-      } catch (error) {
+    } catch (error) {
         this.$showToast("error", "Sorry", "error get data office");
-      }
-    },
+    }
+},
   },
   mounted() {
     this.getAllUsers();

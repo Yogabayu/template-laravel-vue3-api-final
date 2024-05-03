@@ -1,11 +1,5 @@
 <template>
-  <v-overlay
-    :absolute="true"
-    v-model="overlay"
-    contained
-    persistent
-    class="align-center justify-center"
-  >
+  <v-overlay :absolute="true" v-model="overlay" contained persistent class="align-center justify-center">
     <v-col>
       <v-progress-circular color="primary" size="32" indeterminate>
       </v-progress-circular>
@@ -21,16 +15,11 @@
           Back
         </span>
         <VCardTitle class="text-2xl font-weight-bold">
-          Konfigurasi Notifikasi
+          Konfigurasi Fase Kredit
         </VCardTitle>
       </VCardItem>
       <div class="d-flex justify-space-between mb-6">
-        <v-btn
-          color="primary"
-          size="small"
-          class="my-3 mx-3"
-          @click="openModal(1)"
-        >
+        <v-btn color="primary" size="small" class="my-3 mx-3" @click="openModal(1)">
           Tambah Data
         </v-btn>
       </div>
@@ -53,24 +42,26 @@
           <template #item-maxPlafon="item">
             <p>{{ formatInput(item.maxPlafon) }}</p>
           </template>
+          <template #item-canAppeal="item">
+            <p>{{ item.canAppeal == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-canApprove="item">
+            <p>{{ item.canApprove == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-notification="item">
+            <p>{{ item.notification == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-canInsertData="item">
+            <p>{{ item.canInsertData == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
           <template #item-operation="item">
             <div class="operation-wrapper">
               <button>
-                <VIcon
-                  size="20"
-                  icon="bx-edit"
-                  color="blue"
-                  @click="openModal(2, item)"
-                />
+                <VIcon size="20" icon="bx-edit" color="blue" @click="openModal(2, item)" />
               </button>
               &nbsp;
               <button>
-                <VIcon
-                  size="20"
-                  icon="bx-trash"
-                  color="red"
-                  @click="deleteNotifConf(item)"
-                />
+                <VIcon size="20" icon="bx-trash" color="red" @click="deleteNotifConf(item)" />
               </button>
             </div>
           </template>
@@ -95,24 +86,29 @@
           <template #item-maxPlafon="item">
             <p>{{ formatInput(item.maxPlafon) }}</p>
           </template>
-          <template #item-operation="item"
-            ><div class="operation-wrapper">
+          <template #item-canAppeal="item">
+            <p>{{ item.canAppeal == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-canApprove="item">
+            <p>{{ item.canApprove == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-notification="item">
+            <p>{{ item.notification == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-isSecret="item">
+            <p>{{ item.isSecret == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-canInsertData="item">
+            <p>{{ item.canInsertData == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-operation="item">
+            <div class="operation-wrapper">
               <button>
-                <VIcon
-                  size="20"
-                  icon="bx-edit"
-                  color="blue"
-                  @click="openModal(2, item)"
-                />
+                <VIcon size="20" icon="bx-edit" color="blue" @click="openModal(2, item)" />
               </button>
               &nbsp;
               <button>
-                <VIcon
-                  size="20"
-                  icon="bx-trash"
-                  color="red"
-                  @click="deleteNotifConf(item)"
-                />
+                <VIcon size="20" icon="bx-trash" color="red" @click="deleteNotifConf(item)" />
               </button>
             </div>
           </template>
@@ -137,24 +133,26 @@
           <template #item-maxPlafon="item">
             <p>{{ formatInput(item.maxPlafon) }}</p>
           </template>
+          <template #item-canAppeal="item">
+            <p>{{ item.canAppeal == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-canApprove="item">
+            <p>{{ item.canApprove == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-notification="item">
+            <p>{{ item.notification == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-canInsertData="item">
+            <p>{{ item.canInsertData == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
           <template #item-operation="item">
             <div class="operation-wrapper">
               <button>
-                <VIcon
-                  size="20"
-                  icon="bx-edit"
-                  color="blue"
-                  @click="openModal(2, item)"
-                />
+                <VIcon size="20" icon="bx-edit" color="blue" @click="openModal(2, item)" />
               </button>
               &nbsp;
               <button>
-                <VIcon
-                  size="20"
-                  icon="bx-trash"
-                  color="red"
-                  @click="deleteNotifConf(item)"
-                />
+                <VIcon size="20" icon="bx-trash" color="red" @click="deleteNotifConf(item)" />
               </button>
             </div>
           </template>
@@ -179,24 +177,26 @@
           <template #item-maxPlafon="item">
             <p>{{ formatInput(item.maxPlafon) }}</p>
           </template>
+          <template #item-canAppeal="item">
+            <p>{{ item.canAppeal == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-canApprove="item">
+            <p>{{ item.canApprove == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-notification="item">
+            <p>{{ item.notification == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-canInsertData="item">
+            <p>{{ item.canInsertData == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
           <template #item-operation="item">
             <div class="operation-wrapper">
               <button>
-                <VIcon
-                  size="20"
-                  icon="bx-edit"
-                  color="blue"
-                  @click="openModal(2, item)"
-                />
+                <VIcon size="20" icon="bx-edit" color="blue" @click="openModal(2, item)" />
               </button>
               &nbsp;
               <button>
-                <VIcon
-                  size="20"
-                  icon="bx-trash"
-                  color="red"
-                  @click="deleteNotifConf(item)"
-                />
+                <VIcon size="20" icon="bx-trash" color="red" @click="deleteNotifConf(item)" />
               </button>
             </div>
           </template>
@@ -210,69 +210,65 @@
             <VForm @submit.prevent="insertData">
               <VRow>
                 <VCol cols="12" md="12">
-                  <v-autocomplete
-                    v-model="dataFormIn.office_id"
-                    :items="offices"
-                    hint="Pilih Kantor"
-                    label="Kantor"
-                    clearable
-                    persistent-hint
-                    disabled
-                    prepend-icon="mdi-divide"
-                  ></v-autocomplete>
+                  <v-autocomplete v-model="dataFormIn.office_id" :items="offices" hint="Pilih Kantor" label="Kantor"
+                    clearable persistent-hint disabled prepend-icon="mdi-divide"></v-autocomplete>
                 </VCol>
                 <VCol cols="12" md="12">
-                  <v-autocomplete
-                    v-model="dataFormIn.position_id"
-                    :items="positions"
-                    hint="Pilih Jabatan"
-                    label="Jabatan"
-                    clearable
-                    persistent-hint
-                    prepend-icon="mdi-divide"
-                  ></v-autocomplete>
+                  <v-autocomplete v-model="dataFormIn.position_id" :items="positions" hint="Pilih Jabatan"
+                    label="Jabatan" clearable autofocus persistent-hint prepend-icon="mdi-divide"></v-autocomplete>
                 </VCol>
                 <VCol md="12" cols="12">
-                  <v-select
-                    label="Pilih Phase"
-                    :items="[
-                      { value: 1, title: 'Phase 1' },
-                      { value: 2, title: 'Phase 2' },
-                      { value: 3, title: 'Phase 3' },
-                      { value: 4, title: 'Phase 4' },
-                    ]"
-                    v-model="dataFormIn.phase"
-                    prepend-icon="mdi-help-rhombus"
-                  ></v-select>
+                  <v-select label="Pilih Phase" :items="[
+                    { value: 1, title: 'Phase 1' },
+                    { value: 2, title: 'Phase 2' },
+                    { value: 3, title: 'Phase 3' },
+                    { value: 4, title: 'Phase 4' },
+                  ]" v-model="dataFormIn.phase" prepend-icon="mdi-help-rhombus"></v-select>
                 </VCol>
                 <VCol md="6" cols="12">
-                  <VTextField
-                    label="Minimal Plafon"
-                    v-model="dataFormIn.minPlafon"
-                    type="text"
-                    @input="formatInputIn"
-                    autofocus
-                    prepend-icon="mdi-help-rhombus"
-                  />
+                  <VTextField label="Minimal Plafon" v-model="dataFormIn.minPlafon" type="text" @input="formatInputIn"
+                     prepend-icon="mdi-help-rhombus" />
                 </VCol>
                 <VCol md="6" cols="12">
-                  <VTextField
-                    label="Maximal Plafon"
-                    v-model="dataFormIn.maxPlafon"
-                    type="text"
-                    @input="formatInputIn"
-                    autofocus
-                    prepend-icon="mdi-help-rhombus"
-                  />
+                  <VTextField label="Maximal Plafon" v-model="dataFormIn.maxPlafon" type="text" @input="formatInputIn"
+                    autofocus prepend-icon="mdi-help-rhombus" />
                 </VCol>
+                <VCol md="12" cols="12">
+                  <v-select label="Banding?" :items="[
+                    { value: 1, title: 'Ya' },
+                    { value: 0, title: 'Tidak' },
+                  ]" v-model="dataFormIn.canAppeal" prepend-icon="mdi-help-rhombus"></v-select>
+                </VCol>
+                <VCol md="12" cols="12">
+                  <v-select label="Approve?" :items="[
+                    { value: 1, title: 'Ya' },
+                    { value: 0, title: 'Tidak' },
+                  ]" v-model="dataFormIn.canApprove" prepend-icon="mdi-help-rhombus"></v-select>
+                </VCol>
+                <VCol md="12" cols="12">
+                  <v-select label="Notifikasi?" :items="[
+                    { value: 1, title: 'Ya' },
+                    { value: 0, title: 'Tidak' },
+                  ]" v-model="dataFormIn.notification" prepend-icon="mdi-help-rhombus"></v-select>
+                </VCol>
+                <VCol md="12" cols="12">
+                  <v-select label="Tambah Data?" :items="[
+                    { value: 1, title: 'Ya' },
+                    { value: 0, title: 'Tidak' },
+                  ]" v-model="dataFormIn.canInsertData" prepend-icon="mdi-help-rhombus"></v-select>
+                </VCol>
+                <!-- //khusus slik -->
+                <VCol md="12" cols="12" v-if="dataFormIn.phase == 2">
+                  <v-select label="Akses SLIK?" :items="[
+                    { value: 1, title: 'Ya' },
+                    { value: 0, title: 'Tidak' },
+                  ]" v-model="dataFormIn.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
+                </VCol>
+
                 <VCol cols="12" class="d-flex flex-wrap gap-4">
                   <VBtn type="submit">Simpan</VBtn>
 
-                  <button
-                    type="button"
-                    class="btn btn-blue"
-                    @click="closeModal(1)"
-                  >
+                  <button type="button" class="btn btn-blue" @click="closeModal(1)">
                     Batal
                   </button>
                 </VCol>
@@ -288,69 +284,64 @@
             <VForm @submit.prevent="updateData">
               <VRow>
                 <VCol cols="12" md="12">
-                  <v-autocomplete
-                    v-model="dataFormIn.office_id"
-                    :items="offices"
-                    hint="Pilih Kantor"
-                    label="Kantor"
-                    clearable
-                    persistent-hint
-                    disabled
-                    prepend-icon="mdi-divide"
-                  ></v-autocomplete>
+                  <v-autocomplete v-model="dataFormIn.office_id" :items="offices" hint="Pilih Kantor" label="Kantor"
+                    clearable persistent-hint disabled prepend-icon="mdi-divide"></v-autocomplete>
                 </VCol>
                 <VCol cols="12" md="12">
-                  <v-autocomplete
-                    v-model="dataFormIn.position_id"
-                    :items="positions"
-                    hint="Pilih Jabatan"
-                    label="Jabatan"
-                    clearable
-                    persistent-hint
-                    prepend-icon="mdi-divide"
-                  ></v-autocomplete>
+                  <v-autocomplete v-model="dataFormIn.position_id" :items="positions" hint="Pilih Jabatan"
+                    label="Jabatan" clearable persistent-hint prepend-icon="mdi-divide"></v-autocomplete>
                 </VCol>
                 <VCol md="12" cols="12">
-                  <v-select
-                    label="Pilih Phase"
-                    :items="[
-                      { value: 1, title: 'Phase 1' },
-                      { value: 2, title: 'Phase 2' },
-                      { value: 3, title: 'Phase 3' },
-                      { value: 4, title: 'Phase 4' },
-                    ]"
-                    v-model="dataFormIn.phase"
-                    prepend-icon="mdi-help-rhombus"
-                  ></v-select>
+                  <v-select label="Pilih Phase" :items="[
+                    { value: 1, title: 'Phase 1' },
+                    { value: 2, title: 'Phase 2' },
+                    { value: 3, title: 'Phase 3' },
+                    { value: 4, title: 'Phase 4' },
+                  ]" v-model="dataFormIn.phase" prepend-icon="mdi-help-rhombus"></v-select>
                 </VCol>
                 <VCol md="6" cols="12">
-                  <VTextField
-                    label="Minimal Plafon"
-                    v-model="dataFormIn.minPlafon"
-                    type="text"
-                    @input="formatInputIn"
-                    autofocus
-                    prepend-icon="mdi-help-rhombus"
-                  />
+                  <VTextField label="Minimal Plafon" v-model="dataFormIn.minPlafon" type="text" @input="formatInputIn"
+                    autofocus prepend-icon="mdi-help-rhombus" />
                 </VCol>
                 <VCol md="6" cols="12">
-                  <VTextField
-                    label="Maximal Plafon"
-                    v-model="dataFormIn.maxPlafon"
-                    type="text"
-                    @input="formatInputIn"
-                    autofocus
-                    prepend-icon="mdi-help-rhombus"
-                  />
+                  <VTextField label="Maximal Plafon" v-model="dataFormIn.maxPlafon" type="text" @input="formatInputIn"
+                    autofocus prepend-icon="mdi-help-rhombus" />
+                </VCol>
+                <VCol md="12" cols="12">
+                  <v-select label="Banding?" :items="[
+                    { value: 1, title: 'Ya' },
+                    { value: 0, title: 'Tidak' },
+                  ]" v-model="dataFormIn.canAppeal" prepend-icon="mdi-help-rhombus"></v-select>
+                </VCol>
+                <VCol md="12" cols="12">
+                  <v-select label="Approve?" :items="[
+                    { value: 1, title: 'Ya' },
+                    { value: 0, title: 'Tidak' },
+                  ]" v-model="dataFormIn.canApprove" prepend-icon="mdi-help-rhombus"></v-select>
+                </VCol>
+                <VCol md="12" cols="12">
+                  <v-select label="Notifikasi?" :items="[
+                    { value: 1, title: 'Ya' },
+                    { value: 0, title: 'Tidak' },
+                  ]" v-model="dataFormIn.notification" prepend-icon="mdi-help-rhombus"></v-select>
+                </VCol>
+                <VCol md="12" cols="12">
+                  <v-select label="Tambah Data?" :items="[
+                    { value: 1, title: 'Ya' },
+                    { value: 0, title: 'Tidak' },
+                  ]" v-model="dataFormIn.canInsertData" prepend-icon="mdi-help-rhombus"></v-select>
+                </VCol>
+                <!-- //khusus slik -->
+                <VCol md="12" cols="12" v-if="dataFormIn.phase == 2">
+                  <v-select label="Akses SLIK?" :items="[
+                    { value: 1, title: 'Ya' },
+                    { value: 0, title: 'Tidak' },
+                  ]" v-model="dataFormIn.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
                 </VCol>
                 <VCol cols="12" class="d-flex flex-wrap gap-4">
                   <VBtn type="submit">Simpan</VBtn>
 
-                  <button
-                    type="button"
-                    class="btn btn-blue"
-                    @click="closeModal(2)"
-                  >
+                  <button type="button" class="btn btn-blue" @click="closeModal(2)">
                     Batal
                   </button>
                 </VCol>
@@ -378,6 +369,11 @@ export default {
         phase: null,
         minPlafon: null,
         maxPlafon: null,
+        canAppeal: null,
+        canApprove: null,
+        notification: null,
+        canInsertData: null,
+        isSecret: 0,
       },
       officeId: this.$route.params.officeId,
       insert: false,
@@ -392,41 +388,54 @@ export default {
       //phase1
       phase1Items: [],
       phase1Headers: [
-        { text: "Kantor", value: "office.name", sortable: true },
         { text: "Jabatan", value: "position.name", sortable: true },
         { text: "Phase", value: "phase", sortable: true },
         { text: "Min. Plafon", value: "minPlafon", sortable: true },
         { text: "Max. Plafon", value: "maxPlafon", sortable: true },
+        { text: "Banding?", value: "canAppeal", sortable: true },
+        { text: "Approve?", value: "canApprove", sortable: true },
+        { text: "Notifikasi?", value: "notification", sortable: true },
+        { text: "Tambah Data?", value: "canInsertData", sortable: true },
         { text: "Operation", value: "operation" },
       ],
       //phase2
       phase2Items: [],
       phase2Headers: [
-        { text: "Kantor", value: "office.name", sortable: true },
         { text: "Jabatan", value: "position.name", sortable: true },
         { text: "Phase", value: "phase", sortable: true },
         { text: "Min. Plafon", value: "minPlafon", sortable: true },
         { text: "Max. Plafon", value: "maxPlafon", sortable: true },
+        { text: "Banding?", value: "canAppeal", sortable: true },
+        { text: "Approve?", value: "canApprove", sortable: true },
+        { text: "Notifikasi?", value: "notification", sortable: true },
+        { text: "Akses SLIK?", value: "isSecret", sortable: true },
+        { text: "Tambah Data?", value: "canInsertData", sortable: true },
         { text: "Operation", value: "operation" },
       ],
       //phase3
       phase3Items: [],
       phase3Headers: [
-        { text: "Kantor", value: "office.name", sortable: true },
         { text: "Jabatan", value: "position.name", sortable: true },
         { text: "Phase", value: "phase", sortable: true },
         { text: "Min. Plafon", value: "minPlafon", sortable: true },
         { text: "Max. Plafon", value: "maxPlafon", sortable: true },
+        { text: "Banding?", value: "canAppeal", sortable: true },
+        { text: "Approve?", value: "canApprove", sortable: true },
+        { text: "Notifikasi", value: "notification", sortable: true },
+        { text: "Tambah Data?", value: "canInsertData", sortable: true },
         { text: "Operation", value: "operation" },
       ],
       //phase4
       phase4Items: [],
       phase4Headers: [
-        { text: "Kantor", value: "office.name", sortable: true },
         { text: "Jabatan", value: "position.name", sortable: true },
         { text: "Phase", value: "phase", sortable: true },
         { text: "Min. Plafon", value: "minPlafon", sortable: true },
         { text: "Max. Plafon", value: "maxPlafon", sortable: true },
+        { text: "Banding?", value: "canAppeal", sortable: true },
+        { text: "Approve?", value: "canApprove", sortable: true },
+        { text: "Notifikasi", value: "notification", sortable: true },
+        { text: "Tambah Data?", value: "canInsertData", sortable: true },
         { text: "Operation", value: "operation" },
       ],
     };
@@ -474,6 +483,15 @@ export default {
         formData.append("office_id", this.dataFormIn.office_id);
         formData.append("position_id", this.dataFormIn.position_id);
         formData.append("phase", this.dataFormIn.phase);
+        formData.append("canAppeal", this.dataFormIn.canAppeal);
+        formData.append("canApprove", this.dataFormIn.canApprove);
+        formData.append("notification", this.dataFormIn.notification);
+        formData.append("canInsertData", this.dataFormIn.canInsertData);
+        if (this.dataFormIn.phase == 2) {
+          formData.append("isSecret", this.dataFormIn.isSecret);
+        } else {
+          formData.append("isSecret", '0');
+        }
         formData.append(
           "minPlafon",
           this.dataFormIn.minPlafon.replace(/\D/g, "")
@@ -506,6 +524,15 @@ export default {
         formData.append("office_id", this.dataFormIn.office_id);
         formData.append("position_id", this.dataFormIn.position_id);
         formData.append("phase", this.dataFormIn.phase);
+        formData.append("canAppeal", this.dataFormIn.canAppeal);
+        formData.append("canApprove", this.dataFormIn.canApprove);
+        formData.append("notification", this.dataFormIn.notification);
+        formData.append("canInsertData", this.dataFormIn.canInsertData);
+        if (this.dataFormIn.phase == 2) {
+          formData.append("isSecret", this.dataFormIn.isSecret);
+        } else {
+          formData.append("isSecret", '0');
+        }
         formData.append(
           "minPlafon",
           this.dataFormIn.minPlafon.replace(/\D/g, "")
@@ -551,6 +578,9 @@ export default {
         phase: null,
         minPlafon: null,
         maxPlafon: null,
+        canAppeal: null,
+        canApprove: null,
+        notification: null,
       };
     },
     openModal(type: number, item = null) {
@@ -569,6 +599,11 @@ export default {
           this.dataFormIn.phase = item.phase;
           this.dataFormIn.minPlafon = item.minPlafon;
           this.dataFormIn.maxPlafon = item.maxPlafon;
+          this.dataFormIn.canAppeal = item.canAppeal;
+          this.dataFormIn.canApprove = item.canApprove;
+          this.dataFormIn.notification = item.notification;
+          this.dataFormIn.isSecret = item.isSecret;
+          this.dataFormIn.canInsertData = item.canInsertData;
           this.edit = true;
         }
       }
@@ -631,12 +666,12 @@ export default {
       try {
         const response = await mainURL.get("/position");
         if (response.status === 200) {
-          this.positions = response.data.data.map(
-            (item: { id: any; name: any; code: any }) => ({
-              value: item.id,
-              title: item.name,
-            })
-          );
+          this.positions = response.data.data.map((item) => ({
+            value: item.id,
+            title: `${item.name} - ${item.offices
+              .map((office) => office.name)
+              .join(", ")}`,
+          }));
         } else {
           this.$showToast("error", "Sorry", "error get data positions");
         }

@@ -67,16 +67,25 @@ class NotificationConfigController extends Controller
                 'phase' => 'required',
                 'minPlafon' => 'required',
                 'maxPlafon' => 'required',
+                'canAppeal' => 'required',
+                'canApprove' => 'required',
+                'notification' => 'required',
+                'canInsertData' => 'required',
+                'isSecret' => 'required',
+            ], [
+                'required' => ':attribute harus diisi',
             ]);
 
             // Check if a record with the same phase, position_id, and office_id already exists
             $existingNotif = NotificationConfiguration::where('phase', $request->phase)
                 ->where('position_id', $request->position_id)
                 ->where('office_id', $request->office_id)
+                ->where('minPlafon', $request->minPlafon)
+                ->where('maxPlafon', $request->maxPlafon)
                 ->first();
 
             if ($existingNotif) {
-                return ResponseHelper::errorRes('Data notifikasi dengan fase, jabatan, dan jabatan yang sama sudah ada');
+                return ResponseHelper::errorRes('Data notifikasi yang sama sudah ada');
             }
 
             $notif = NotificationConfiguration::create($request->all());
@@ -114,12 +123,21 @@ class NotificationConfigController extends Controller
                 'phase' => 'required',
                 'minPlafon' => 'required',
                 'maxPlafon' => 'required',
+                'canAppeal' => 'required',
+                'canApprove' => 'required',
+                'notification' => 'required',
+                'canInsertData' => 'required',
+                'isSecret' => 'required',
+            ], [
+                'required' => ':attribute harus diisi',
             ]);
 
             // Check if a record with the same phase, position_id, and office_id already exists
             $existingNotif = NotificationConfiguration::where('phase', $request->phase)
                 ->where('position_id', $request->position_id)
                 ->where('office_id', $request->office_id)
+                ->where('minPlafon', $request->minPlafon)
+                ->where('maxPlafon', $request->maxPlafon)
                 ->where('id', '!=', $id)  // Exclude the current record from the check
                 ->first();
 

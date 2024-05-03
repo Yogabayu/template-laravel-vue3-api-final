@@ -56,6 +56,12 @@ class AuthController extends Controller
             if ($user && Auth::attempt(['email' => $user->email, 'password' => request('password')])) {
 
                 $user = User::with('position', 'position.role')->find(Auth::user()->id);
+                if ($user->isActive == 0) {
+                    return  response()->json([
+                        'success' => false,
+                        'message' => 'Akun tidak aktif. | ',
+                    ]);
+                }
                 $user_token['token'] = $user->createToken('appToken')->accessToken;
 
                 return response()->json([

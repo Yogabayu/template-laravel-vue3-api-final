@@ -101,12 +101,12 @@ class PositionController extends Controller
             $position = Position::findOrfail($id);
             $position->name = $request->name;
             $position->role_id = $request->role_id;
-            $position->save();
 
             if ($request->has('offices')) {
                 $position->offices()->detach();
                 $position->offices()->sync($request->offices);
             }
+            $position->save();
 
             return ResponseHelper::successRes('Berhasil update data jabatan', $position);
         } catch (\Exception $e) {
@@ -121,8 +121,25 @@ class PositionController extends Controller
     {
         try {
             $position = Position::findOrFail($id);
+
+            // Periksa apakah ada pengguna terkait dengan posisi ini
+            if ($position->users()->exists()) {
+                // Jika ada, kirim pesan error
+                return ResponseHelper::errorRes('Ada pengguna yang terkait dengan posisi ini');
+            }
+
+            // Kemudian detach office terkait
             $position->offices()->detach();
+
+            // Hapus notifikasi konfigurasi terkait
+            $position->notificationConfigurations()->delete();
+
+            // Hapus fase durasi terkait
+            $position->phasedurations()->delete();
+
+            // Akhirnya, hapus posisi
             $position->delete();
+
             return ResponseHelper::successRes('Berhasil hapus data jabatan', $position);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());

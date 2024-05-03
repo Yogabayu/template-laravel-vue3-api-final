@@ -17,7 +17,7 @@ return new class extends Migration
             $table->uuid('position_id');
             $table->enum('phase', ['1', '2', '3', '4']);
             $table->string('minPlafon')->comment('minimum plafon pinjaman')->nullable();
-            $table->string('maxPlafon')->comment('maximum plafon pinjaman')->nullable();
+            $table->string('maxPlafon')->default('10000000000')->comment('maximum plafon pinjaman')->nullable();
             $table->timestamps();
 
             $table->foreign('office_id')->references('id')->on('offices');

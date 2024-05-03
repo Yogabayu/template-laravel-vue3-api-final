@@ -3,7 +3,7 @@
     <VCard class="auth-card pa-4 pt-5">
       <VCardItem class="align-left">
         <VCardTitle class="text-2xl font-weight-bold">
-          Konfigurasi Notifikasi
+          Konfigurasi Fase Kredit
         </VCardTitle>
       </VCardItem>
       <div class="d-flex justify-space-between mb-6">
@@ -157,7 +157,7 @@ export default {
       headers: [
         { text: "Nama Kantor", value: "name", sortable: true },
         {
-          text: "Total Pengaturan Notifikasi",
+          text: "Total Pengaturan",
           value: "notification_configurations_count",
           sortable: true,
         },

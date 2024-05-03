@@ -12,6 +12,11 @@ class NotificationConfiguration extends Model
         'phase',
         'minPlafon',
         'maxPlafon',
+        'canAppeal',
+        'canApprove',
+        'notification',
+        'canInsertData',
+        'isSecret',
     ];
 
     public function position()

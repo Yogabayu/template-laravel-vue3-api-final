@@ -86,7 +86,7 @@ const upgradeBanner = computed(() => {
       />
       <VerticalNavLink
         :item="{
-          title: 'Notifikasi',
+          title: 'Kofigurasi Fase Kredit',
           icon: 'bx-bell',
           to: '/notifconf',
         }"

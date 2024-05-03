@@ -18,6 +18,8 @@ class File extends Model
         'creditScoring',
         'isApproved',
         'isAppealed',
+        'type_bussiness',
+        'desc_bussiness',
         // 'file1',
         // 'file2',
         // 'file3',

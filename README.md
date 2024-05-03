@@ -8,6 +8,8 @@ tambah TELEGRAM_BOT_TOKEN="xxxxxx"
 php artisan migrate:fresh
 php artisan passport:install
 php artisan db:seed
+
+jangan lupa ubah TelegramNotification (pakai url)
 ```
 
 # vue

@@ -116,9 +116,9 @@
                   v-model="dataForm.plafon"
                   type="text"
                   @input="formatInputPlafon"
-                  autofocus
                 />
               </VCol>
+              
               <VCol md="12" cols="12">
                 <span style="color: red">*</span
                 ><span class="subtitle-1 text-center">KTP Pemohon : </span>
@@ -218,6 +218,28 @@
               </VCol>
 
               <v-divider :thickness="5"></v-divider>
+
+              <VCol md="12" cols="12">
+                <span style="color: red">*</span
+                ><span class="subtitle-1 text-center">Jenis Usaha: </span>
+
+                <VTextField
+                  class="my-3"
+                  v-model="dataForm.type_bussiness"
+                  :rules="[rules.required]"
+                />
+              </VCol>
+              <VCol md="12" cols="12">
+                <span style="color: red">*</span
+                ><span class="subtitle-1 text-center">Deskripsi Usaha: </span>
+
+                <VTextField
+                  class="my-3"
+                  v-model="dataForm.desc_bussiness"
+                  :rules="[rules.required]"
+                />
+              </VCol>
+
               <VCol
                 ><span style="color: red">*</span
                 ><span class="subtitle-1 text-center"
@@ -246,7 +268,7 @@
               </VCol>
 
               <!-- bpkb -->
-              <VCol cols="12" md="12">
+              <!-- <VCol cols="12" md="12">
                 <v-checkbox
                   v-model="dataForm.hasFile8"
                   label="Jenis Jaminan BPKB ?"
@@ -264,10 +286,10 @@
                   :rules="[rules.required]"
                   @change="(event) => handleFileChange(event, 'file8')"
                 ></v-file-input>
-              </VCol>
+              </VCol> -->
 
               <!-- mesin produksi -->
-              <VCol cols="12" md="12">
+              <!-- <VCol cols="12" md="12">
                 <v-checkbox
                   v-model="dataForm.hasFile9"
                   label="Jenis Jaminan Mesin Produksi ?"
@@ -287,7 +309,7 @@
                   :rules="[rules.required]"
                   @change="(event) => handleFileChange(event, 'file9')"
                 ></v-file-input>
-              </VCol>
+              </VCol> -->
 
               <VCol cols="12" class="d-flex flex-wrap gap-4">
                 <VBtn
@@ -301,7 +323,7 @@
                     (dataForm.hasFile9 && dataForm.file9 == null) ||
                     (dataForm.file7 == null &&
                       dataForm.file8 == null &&
-                      dataForm.file9 == null)
+                      dataForm.file9 == null) || (dataForm.type_bussiness == null && dataForm.desc_bussiness == null)
                   "
                 >
                   Simpan
@@ -365,6 +387,8 @@ export default {
         id: null,
         name: "",
         plafon: null,
+        type_bussiness: null,
+        desc_bussiness: null,
         file1: null, //ktp pemohon
         hasFile2: false,
         file2: null, //ktp pasangan
@@ -546,6 +570,8 @@ export default {
         const formData = new FormData();
         formData.append("name", this.dataForm.name);
         formData.append("plafon", this.dataForm.plafon.replace(/\D/g, ""));
+        formData.append("type_bussiness", this.dataForm.type_bussiness);
+        formData.append("desc_bussiness", this.dataForm.desc_bussiness);
 
         // Append files to formData
         for (let i = 1; i <= 10; i++) {
@@ -592,6 +618,18 @@ export default {
 
 
         formData.append("_method", "POST");
+
+        // formData.forEach((value, key) => {
+        //   if (Array.isArray(value)) {
+        //     console.log(key + ":");
+        //     value.forEach((item) => {
+        //       console.log(item);
+        //     });
+        //   } else {
+        //     console.log(key + ": " + value);
+        //   }
+        // });
+
         const config = {
           onUploadProgress: (progressEvent) => {
             try {

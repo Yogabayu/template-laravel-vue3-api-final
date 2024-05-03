@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('roles', function (Blueprint $table) {
-            $table->boolean('isSlikAccess')->default(false);
+        Schema::table('attachments', function (Blueprint $table) {
+            $table->boolean('isSecret')->default(false);
         });
     }
 
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('roles', function (Blueprint $table) {
+        Schema::table('attachments', function (Blueprint $table) {
             //
         });
     }

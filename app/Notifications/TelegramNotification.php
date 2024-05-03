@@ -20,7 +20,7 @@ class TelegramNotification extends Notification
     /**
      * Create a new notification instance.
      */
-    public function __construct(string $message, File $file, $attachment)
+    public function __construct(string $message, ?File $file, $attachment)
     {
         $this->message    = $message;
         $this->file       = $file;
@@ -46,10 +46,11 @@ class TelegramNotification extends Notification
             ->to($notifiable->telegram_chat_id)
             ->content($this->message);
 
-        foreach ($this->attachments as $attachment) {
-            // $urlAttachmentPath = url('file/' . $this->file->id . '/' . $attachment->path);
-            $urlAttachmentPath = 'https://yogabayuap.com/file/' . $this->file->id . '/' . $attachment->path;
-            $telegramMessage->button($attachment->name, $urlAttachmentPath);
+        if (!empty($this->file) && !empty($this->attachments)) {
+            foreach ($this->attachments as $attachment) {
+                $urlAttachmentPath = 'https://yogabayuap.com/file/' . $this->file->id . '/' . $attachment->path;
+                $telegramMessage->button($attachment->name, $urlAttachmentPath);
+            }
         }
         return $telegramMessage;
     }
