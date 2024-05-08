@@ -42,7 +42,8 @@
         </div>
       </div>
 
-      <v-dialog v-model="insert" width="auto">
+      <v-dialog v-model="insert" width="auto" persistent 
+          transition="dialog-top-transition">
         <v-card>
           <template v-slot:title> Tambah Data </template>
           <template v-slot:text>
@@ -122,7 +123,8 @@
         </v-card>
       </v-dialog>
 
-      <v-dialog v-model="edit" width="auto">
+      <v-dialog v-model="edit" width="auto" persistent 
+          transition="dialog-top-transition">
         <v-card>
           <template v-slot:title> Update Data </template>
           <template v-slot:text>
@@ -201,7 +203,8 @@
         </v-card>
       </v-dialog>
 
-      <v-dialog v-model="isTelegram" width="auto">
+      <v-dialog v-model="isTelegram" width="auto" persistent 
+          transition="dialog-top-transition">
         <v-card>
           <template v-slot:title> Connect ke Telegram </template>
           <template v-slot:text>
@@ -316,7 +319,8 @@
                 +{{ item.positions.length - 5 }} lainnya
               </VChip>
 
-              <v-dialog v-model="isShowDetailOffice" width="auto">
+              <v-dialog v-model="isShowDetailOffice" width="auto" persistent 
+          transition="dialog-top-transition">
                 <v-card>
                   <v-card-title>
                     <span class="text-h5">Daftar Kantor</span>

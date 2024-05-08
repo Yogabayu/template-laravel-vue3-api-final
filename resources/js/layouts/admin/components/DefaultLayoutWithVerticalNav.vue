@@ -86,11 +86,25 @@ const upgradeBanner = computed(() => {
       />
       <VerticalNavLink
         :item="{
-          title: 'Kofigurasi Fase Kredit',
+          title: 'Konfigurasi Fase Kredit',
           icon: 'bx-bell',
           to: '/notifconf',
         }"
       />
+
+      <VerticalNavSectionTitle
+        :item="{
+          heading: 'Data Kredit',
+        }"
+      />
+      <VerticalNavLink
+        :item="{
+          title: 'Data Master',
+          icon: 'bx-file-blank',
+          to: '/data-master',
+        }"
+      />
+
       <!-- <VerticalNavLink
         :item="{
           title: 'User',

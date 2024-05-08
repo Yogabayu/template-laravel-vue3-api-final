@@ -16,8 +16,7 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-
-        $positionIds = DB::table('positions')->pluck('id');
+        $positionIds = DB::table('positions')->pluck('id')->first();
         $users = [
             [
                 'nik' => '12345678',
@@ -25,7 +24,7 @@ class UserSeeder extends Seeder
                 'email' => 'admin@gmail.com',
                 'password' => Hash::make('12345678'),
                 'isActive' => 1,
-                'position_id' => $positionIds->random(),
+                'position_id' => $positionIds,
             ],
         ];
 

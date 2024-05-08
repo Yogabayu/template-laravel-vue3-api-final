@@ -46,7 +46,6 @@ class PositionController extends Controller
                 'offices.required' => 'Office wajib diisi',
                 'role_id.required' => 'Role wajib diisi',
             ]);
-
             $position = new Position();
             $position->id = Str::uuid();
             $position->name = $request->name;

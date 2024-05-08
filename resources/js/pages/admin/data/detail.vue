@@ -233,12 +233,8 @@
       </v-card-text>
     </v-card>
 
-    <v-dialog
-      v-model="insertAttch"
-      width="auto"
-      persistent
-      transition="dialog-top-transition"
-    >
+    <v-dialog v-model="insertAttch" width="auto" persistent 
+          transition="dialog-top-transition">
       <v-card>
         <template v-slot:title> Tambah Data </template>
 
@@ -308,12 +304,8 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog
-      v-model="updateAttch"
-      width="auto"
-      persistent
-      transition="dialog-top-transition"
-    >
+    <v-dialog v-model="updateAttch" width="auto" persistent 
+          transition="dialog-top-transition">
       <v-card>
         <template v-slot:title> Edit Data </template>
 
@@ -378,12 +370,8 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog
-      v-model="isUpdateGeneralInfo"
-      width="auto"
-      persistent
-      transition="dialog-top-transition"
-    >
+    <v-dialog v-model="isUpdateGeneralInfo" width="auto" persistent 
+          transition="dialog-top-transition">
       <v-card>
         <template v-slot:title> Edit Informasi Umum </template>
 
@@ -456,12 +444,8 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog
-      v-model="isUpdateNote"
-      width="auto"
-      persistent
-      transition="dialog-top-transition"
-    >
+    <v-dialog v-model="isUpdateNote" width="auto" persistent 
+          transition="dialog-top-transition">
       <v-card>
         <template v-slot:title> Update Note </template>
         <template v-slot:text>
@@ -488,7 +472,8 @@
       </v-card>
     </v-dialog>
 
-    <!-- <v-dialog v-model="isModalPhase" width="auto">
+    <v-dialog v-model="isModalPhase" width="auto" persistent 
+          transition="dialog-top-transition">
       <v-card>
         <template v-slot:title> Catatan </template>
         <template v-slot:text>
@@ -497,66 +482,7 @@
           </v-card>
         </template>
       </v-card>
-    </v-dialog> -->
-
-    <v-dialog
-      v-model="isDataPhase3"
-      width="auto"
-      persistent
-      transition="dialog-top-transition"
-    >
-      <v-card>
-        <template v-slot:title> Hasil Survey </template>
-        <template v-slot:text>
-          <VForm @submit.prevent="updatePhase3">
-            <v-row>
-              <VCol md="12" cols="12">
-                <span style="color: red">*</span
-                ><span class="subtitle-1 text-center">Hasil Survei: </span>
-                <v-textarea
-                  bg-color="grey-lighten-2"
-                  color="cyan"
-                  v-model="dataPhase3.surveyResult"
-                  rows="3"
-                ></v-textarea>
-              </VCol>
-              <VCol cols="12" class="d-flex flex-wrap gap-4">
-                <v-btn type="submit">Update</v-btn>
-
-                <button
-                  type="button"
-                  class="btn btn-blue"
-                  @click="closeModal(5)"
-                >
-                  Batal
-                </button>
-              </VCol>
-            </v-row>
-          </VForm>
-        </template>
-      </v-card>
     </v-dialog>
-
-    <v-dialog
-      v-model="isShowTimers"
-      width="auto"
-      transition="dialog-top-transition"
-    >
-      <v-card>
-        <template v-slot:title> Data Waktu </template>
-        <template v-slot:text>
-          <EasyDataTable
-              :headers="timerHeaders"
-              :items="dataFile.phase_times"
-            >
-            <template #item-timeDiff="item"
-                >{{ calculateTimeDiff(item.startTime, item.endTime) }}</template
-              >
-          </EasyDataTable>
-        </template>
-      </v-card>
-    </v-dialog>
-
   </div>
 </template>
 
@@ -574,7 +500,6 @@ export default {
       userAccess: null,
       fileId: this.$route.params.fileId,
       isShowPhase4: false,
-      isShowTimers: false,
 
       isUpdateGeneralInfo: false,
       generalInfo: {
@@ -601,17 +526,8 @@ export default {
         attachments: [],
         notes: [],
         approvals: [],
-        phase_times:[],
       },
       filePath: this.$filePath,
-      
-      //=>timers header
-      timerHeaders: [
-        { text: "Phase", value: "phase", sortable: true },
-        { text: "Waktu Mulai", value: "startTime", sortable: true },
-        { text: "Waktu Selesai", value: "endTime", sortable: true },
-        { text: "Rentang Waktu", value: "timeDiff", sortable: true },
-      ],
 
       //=>note
       isUpdateNote: false,
@@ -652,12 +568,6 @@ export default {
       //=>pagination note
       currentPage: 1,
       itemsPerPage: 10,
-
-      //=>khusus attachment
-      isDataPhase3: false,
-      dataPhase3: {
-        surveyResult: "",
-      },
     };
   },
   computed: {
@@ -668,18 +578,6 @@ export default {
     },
   },
   methods: {
-    calculateTimeDiff(startTime:any, endTime:any) {
-      let start = new Date(startTime);
-      let end = endTime ? new Date(endTime) : new Date();
-      let diffInMs = end.valueOf() - start.valueOf();
-      let diffInMinutes = Math.floor(diffInMs / 1000 / 60);
-      
-      // Menghitung jumlah jam dan menit
-      let hours = Math.floor(diffInMinutes / 60);
-      let minutes = diffInMinutes % 60;
-
-      return `${hours} jam ${minutes} menit`;
-    },
     formatFileId(fileId: any) {
       if (Array.isArray(fileId)) {
         // Convert array of strings to a single string, or choose one string from the array
@@ -687,34 +585,6 @@ export default {
       }
       // If fileId is already a string, return it as is
       return fileId;
-    },
-
-    //=>phase3
-    async updatePhase3() {
-      try {
-        const formData = new FormData();
-        formData.append("surveyResult", this.dataPhase3.surveyResult);
-        formData.append("_method", "PUT");
-
-        const response = await mainURL.post(
-          `/user/survey-credit/${this.fileId}`,
-          formData
-        );
-        if (response.status === 200) {
-          this.overlay = false;
-          this.getDetailFile(this.fileId);
-          this.isDataPhase3 = false;
-          this.$showToast("success", "Success", response.data.message);
-        } else {
-          this.overlay = false;
-          this.getDetailFile(this.fileId);
-          this.isDataPhase3 = false;
-          this.$showToast("error", "Sorry", response.data.message);
-        }
-      } catch (error) {
-        this.getDetailFile(this.fileId);
-        this.$showToast("error", "Sorry", error.response.data.message);
-      }
     },
 
     //=>pagination
@@ -814,7 +684,6 @@ export default {
         if (response.status === 200) {
           this.dataFile = response.data.data.file;
           this.userAccess = response.data.data.userAccess;
-
           this.isShowPhase4 =
             parseInt(this.dataFile.plafon) < 25000000 ? false : true;
           this.generalInfo.id = this.dataFile.id;
@@ -859,11 +728,6 @@ export default {
         this.isUpdateNote = true;
       } else if (type == 4) {
         this.isUpdateGeneralInfo = true;
-      } else if (type == 5) {
-        this.dataPhase3.surveyResult = this.dataFile.surveyResult;
-        this.isDataPhase3 = true;
-      } else if (type == 6){
-        this.isShowTimers = true;
       }
     },
     closeModal(type: number) {
@@ -877,9 +741,6 @@ export default {
         this.updateNote = false;
       } else if (type == 4) {
         this.isUpdateGeneralInfo = false;
-      } else if (type == 5) {
-        this.dataPhase3.surveyResult = "";
-        this.isDataPhase3 = false;
       }
     },
 
@@ -1029,7 +890,7 @@ export default {
         }
       });
     },
-    modalNote() {
+    modalNote(){
       this.isModalPhase = !this.isModalPhase;
       console.log(this.isModalPhase);
     },

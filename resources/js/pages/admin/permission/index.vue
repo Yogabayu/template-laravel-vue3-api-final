@@ -30,7 +30,8 @@
         </div>
       </div>
 
-      <v-dialog v-model="insert" width="auto">
+      <v-dialog v-model="insert" width="auto" persistent 
+          transition="dialog-top-transition">
         <v-card>
           <template v-slot:title> Tambah Data </template>
           <template v-slot:text>
@@ -220,7 +221,8 @@
         </v-card>
       </v-dialog>
 
-      <v-dialog v-model="edit" width="auto">
+      <v-dialog v-model="edit" width="auto" persistent 
+          transition="dialog-top-transition">
         <v-card>
           <template v-slot:title> Update Data Role </template>
           <template v-slot:text>

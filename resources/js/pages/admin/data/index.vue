@@ -38,7 +38,6 @@
                 color="primary"
                 size="small"
                 class="my-3 mx-3"
-                v-if="userAccess && userAccess.canInsertData"
                 @click="openModal(1)"
               >
                 Tambah Data
@@ -90,7 +89,6 @@
                   </button>
                   &nbsp;
                   <button
-                    v-if="userData && item.user_id == userData.id"
                     @click="deleteFile(item)"
                   >
                     <VIcon size="20" icon="bx-trash" color="red" />
@@ -103,12 +101,8 @@
       </v-window>
     </v-card-text>
 
-    <v-dialog
-      v-model="insert"
-      width="auto"
-      persistent
-      transition="dialog-top-transition"
-    >
+    <v-dialog v-model="insert" width="auto" persistent 
+          transition="dialog-top-transition">
       <v-card>
         <template v-slot:title> Tambah Data </template>
 
@@ -371,17 +365,6 @@
         </template>
       </v-card>
     </v-dialog>
-
-    <!-- <v-dialog
-      v-model="isStatusPhase"
-      width="auto"
-      persistent
-      transition="dialog-top-transition"
-    >
-      <v-card>
-        <template v-slot:title> Ubah Status </template>
-      </v-card>
-    </v-dialog> -->
   </v-card>
 </template>
 
@@ -402,7 +385,6 @@ export default {
       },
       items: [],
       originalItems: [],
-      userAccess: null,
       headers: [
         { text: "Nama", value: "name", sortable: true },
         { text: "Plafon", value: "plafon", sortable: true },
@@ -439,8 +421,6 @@ export default {
         hasFile10: false,
         file10: null, // foto kunjungan
       },
-      isStatusPhase: false,
-      statusPhase: 0,
     };
   },
   watch: {
@@ -451,9 +431,9 @@ export default {
         this.filterDataStatus(2);
       } else if (newVal == 3) {
         this.filterDataStatus(3);
-        // } else if (newVal == 4) {
-        //   this.filterDataStatus(4);
-        // } else {
+      // } else if (newVal == 4) {
+      //   this.filterDataStatus(4);
+      // } else {
       } else {
         this.items = [...this.originalItems];
       }
@@ -470,7 +450,7 @@ export default {
         );
         if (!confirmDelete) return;
 
-        const response = await mainURL.delete(`/user/credit/${item.id}`);
+        const response = await mainURL.delete(`/credit/${item.id}`);
 
         if (response.status === 200) {
           this.getAllFiles();
@@ -570,9 +550,9 @@ export default {
       value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ","); // Add comma as thousand separator
       return value;
     },
-    filterDataStatus(phase: any) {
+    filterDataStatus(phase: any) {      
       this.items = this.originalItems.filter(
-        (item: { isApproved: any }) => item.isApproved == phase
+        (item: { isApproved: any, }) => item.isApproved == phase
       );
     },
     getUserData() {
@@ -583,11 +563,10 @@ export default {
     },
     async getAllFiles() {
       try {
-        const response = await mainURL.get("/user/credit");
+        const response = await mainURL.get("/credit");
 
         if (response.status === 200) {
-          this.items = response.data.data.files;
-          this.userAccess = response.data.data.userAccess;
+          this.items = response.data.data;
           this.originalItems = [...this.items];
         } else {
           this.$showToast("error", "Sorry", response.data.data.message);
@@ -656,6 +635,17 @@ export default {
 
         formData.append("_method", "POST");
 
+        // formData.forEach((value, key) => {
+        //   if (Array.isArray(value)) {
+        //     console.log(key + ":");
+        //     value.forEach((item) => {
+        //       console.log(item);
+        //     });
+        //   } else {
+        //     console.log(key + ": " + value);
+        //   }
+        // });
+
         const config = {
           onUploadProgress: (progressEvent) => {
             try {
@@ -671,7 +661,7 @@ export default {
           },
         };
 
-        const response = await mainURL.post("/user/credit", formData, config);
+        const response = await mainURL.post("/credit", formData, config);
         if (response.status === 200) {
           this.overlay = false;
           this.closeModal(1);

@@ -11,11 +11,13 @@ use App\Models\Attachment;
 use App\Models\File;
 use App\Models\Note;
 use App\Models\NotificationConfiguration;
+use App\Models\PhaseTime;
 use App\Models\Position;
 use App\Models\PositionToOffice;
 use App\Models\Role;
 use App\Models\User;
 use App\Notifications\TelegramNotification;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +27,39 @@ use Illuminate\Support\Str;
 // URUNG: need to configure salah input data file 
 class FileController extends Controller
 {
+    //=> change file status
+    public function changeStatus($id)
+    {
+        try {
+            //code...
+        } catch (\Exception $e) {
+            return ResponseHelper::errorRes($e->getMessage());
+        }
+    }
+
+    //=>survei result phase 3
+    public function editSurveiResult(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'surveyResult' => 'required',
+            ], [
+                'required' => ':attribute harus diisi',
+            ]);
+
+            $file = File::findOrFail($id);
+
+            if ($request->has('surveyResult')) {
+                $file->surveyResult = $request->surveyResult;
+            }
+            $file->save();
+
+            return ResponseHelper::successRes('File updated successfully', $file);
+        } catch (\Exception $e) {
+            return ResponseHelper::errorRes($e->getMessage());
+        }
+    }
+
     //=>note
     public function deleteNote($id)
     {
@@ -212,50 +247,85 @@ class FileController extends Controller
                 if ($cekAllApprove->where('approved', 0)->count() > 0) {
                     return ResponseHelper::errorRes('Maaf, ada Jabatan / User yang masih belum memberikan approve');
                 }
+                if ($file->plafon > 25000000) {
+                    $filephase = $file->phase + 1;
+                    $file->phase = $file->phase + 1;
 
-                $filephase = $file->phase + 1;
-                $file->phase = $file->phase + 1;
+                    $userUploaded = User::where('id', $file->user_id)->first();
+                    $userPosition = Position::where('id', $userUploaded->position_id)->first();
+                    $userOffices = PositionToOffice::where('position_id', $userPosition->id)->get();
+                    $notifPositions = [];
 
-                $userUploaded = User::where('id', $file->user_id)->first();
-                $userPosition = Position::where('id', $userUploaded->position_id)->first();
-                $userOffices = PositionToOffice::where('position_id', $userPosition->id)->get();
-                $notifPositions = [];
+                    //add user to approval
+                    foreach ($userOffices as $userOffice) {
+                        $notificationConfigurations = DB::table('notification_configurations')
+                            ->where('office_id', $userOffice->office_id)
+                            // ->where('minPlafon', '<=', $file->plafon)
+                            // ->where('maxPlafon', '>=', $file->plafon)
+                            ->where('phase', $filephase)
+                            ->where('canApprove', 1)
+                            ->get();
 
-                //add user to approval
-                foreach ($userOffices as $userOffice) {
-                    $notificationConfigurations = DB::table('notification_configurations')
-                        ->where('office_id', $userOffice->office_id)
-                        // ->where('minPlafon', '<=', $file->plafon)
-                        // ->where('maxPlafon', '>=', $file->plafon)
-                        ->where('phase', $filephase)
-                        ->where('canApprove', 1)
-                        ->get();
-
-                    $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
-                }
-                $notifUser = [];
-                foreach ($notifPositions as $notifPosition) {
-                    $users = DB::table('users')
-                        ->where('position_id', $notifPosition->position_id)
-                        ->where('isActive', 1)
-                        ->get();
-                    $notifUser = array_merge($notifUser, $users->toArray());
-                }
-                foreach ($notifPositions as $pos) {
-                    foreach ($notifUser as $user) {
-                        if ($pos->position_id == $user->position_id) {
-                            Approval::firstOrCreate(
-                                ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
-                                ['approved' => 0]
-                            );
+                        $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
+                    }
+                    $notifUser = [];
+                    foreach ($notifPositions as $notifPosition) {
+                        $users = DB::table('users')
+                            ->where('position_id', $notifPosition->position_id)
+                            ->where('isActive', 1)
+                            ->get();
+                        $notifUser = array_merge($notifUser, $users->toArray());
+                    }
+                    foreach ($notifPositions as $pos) {
+                        foreach ($notifUser as $user) {
+                            if ($pos->position_id == $user->position_id) {
+                                Approval::firstOrCreate(
+                                    ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
+                                    ['approved' => 0]
+                                );
+                            }
                         }
                     }
+
+                    $matchFound = false;
+
+                    foreach ($notifPositions as $pos) {
+                        foreach ($notifUser as $user) {
+                            if ($pos->position_id == $user->position_id) {
+                                Approval::firstOrCreate(
+                                    ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
+                                    ['approved' => 0]
+                                );
+                                $matchFound = true;
+                            }
+                        }
+                    }
+
+                    if (!$matchFound) {
+                        return ResponseHelper::errorRes('Error, user yang memiliki akses approve tidak ditemukan, mohon tambahkan User yang dapat memberi aproval di tahap selanjutnya');
+                    }
+
+                    $phaseTime = PhaseTime::where('file_id', $file->id)->where('phase', $file->phase - 1)->first();
+                    //add count time
+                    if (Carbon::now()->greaterThanOrEqualTo($phaseTime->startTime)) {
+                        $phaseTime->endTime = Carbon::now();
+                        $phaseTime->save();
+
+
+                        PhaseTime::firstOrCreate(['file_id' => $file->id, 'phase' => $file->phase, 'startTime' => Carbon::now()]);
+                    }
+
+                    $file->save();
+                    TelegramHelper::AddUpdatePhase($file->id, "User mengubah Phase menjadi " . ($filephase), $file->user_id);
+
+                    return ResponseHelper::successRes('File telah disetujui successfully', $file);
+                } else {
+                    $file->isApproved = 1;
+                    $file->save();
+                    TelegramHelper::AddUpdatePhase($file->id, "File telah disetujui", $file->user_id);
+
+                    return ResponseHelper::successRes('Phase updated successfully', $file);
                 }
-
-                $file->save();
-                TelegramHelper::AddUpdatePhase($file->id, "User mengubah Phase menjadi " . ($filephase), $file->user_id);
-
-                return ResponseHelper::successRes('Phase updated successfully', $file);
             } else {
                 $filephase = $file->phase - 1;
                 $file->phase = $file->phase - 1;
@@ -332,6 +402,32 @@ class FileController extends Controller
             // Dapatkan semua kantor yang terkait dengan posisi
             $offices = $position->offices;
 
+            // dd($offices);
+            //get list access for user
+            $notifPositions = [];
+            foreach ($offices as $office) {
+                $notificationConfigurations = DB::table('notification_configurations')
+                    ->where('office_id', $office->id)
+                    ->where('phase', 1)
+                    ->get();
+
+                $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
+            }
+            $userPosNow = User::where('id', Auth::user()->id)->first();
+            $userAccess = [];
+
+            foreach ($notifPositions as $notifPosition) {
+                if ($notifPosition->position_id == $userPosNow->position_id) {
+                    $userAccess = [
+                        'canAppeal' => $notifPosition->canAppeal,
+                        'canApprove' => $notifPosition->canApprove,
+                        'canInsertData' => $notifPosition->canInsertData,
+                        'isSecret' => $notifPosition->isSecret,
+                    ];
+                    break;
+                }
+            }
+
             // Inisialisasi array untuk menampung semua file yang terkait
             $files = [];
 
@@ -356,7 +452,7 @@ class FileController extends Controller
             }
             ActivityHelper::userActivity(Auth::user()->id, 'Mengakses halaman File Credit');
 
-            return ResponseHelper::successRes('Berhasi menampilkan datas', $files);
+            return ResponseHelper::successRes('Berhasi menampilkan datas', ['files' => $files, 'userAccess' => $userAccess]);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -433,8 +529,8 @@ class FileController extends Controller
             foreach ($userOffices as $userOffice) {
                 $notificationConfigurations = DB::table('notification_configurations')
                     ->where('office_id', $userOffice->office_id)
-                    ->where('minPlafon', '<=', $file->plafon)
-                    ->where('maxPlafon', '>=', $file->plafon)
+                    ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
+                    ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
                     ->where('phase', $file->phase)
                     ->where('canApprove', 1)
                     ->get();
@@ -462,6 +558,9 @@ class FileController extends Controller
             }
 
             TelegramHelper::AddFile($file->id);
+
+            //add count time
+            PhaseTime::firstOrCreate(['file_id' => $file->id, 'phase' => $file->phase, 'startTime' => Carbon::now()]);
 
             ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Menambahkan file');
             ActivityHelper::userActivity(Auth::user()->id, 'Menambahkan file');
@@ -508,7 +607,20 @@ class FileController extends Controller
     public function detailFile($id)
     {
         try {
-            $file = File::with('user', 'notes', 'notes.user', 'notes.user.position', 'fileActivities', 'attachments', 'approvals', 'approvals.user')->findOrFail($id);
+            $file = File::with([
+                'user',
+                'notes' => function ($query) {
+                    $query->latest();
+                },
+                'notes.user',
+                'notes.user.position',
+                'fileActivities',
+                'attachments',
+                'approvals',
+                'approvals.user',
+                'phaseTimes',
+            ])->findOrFail($id);
+
 
             // //add user to approval
             $userUploaded = User::where('id', $file->user_id)->first();
@@ -520,8 +632,8 @@ class FileController extends Controller
             foreach ($userOffices as $userOffice) {
                 $notificationConfigurations = DB::table('notification_configurations')
                     ->where('office_id', $userOffice->office_id)
-                    ->where('minPlafon', '<=', $file->plafon)
-                    ->where('maxPlafon', '>=', $file->plafon)
+                    ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
+                    ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
                     ->where('phase', $file->phase)
                     ->get();
 
@@ -538,7 +650,7 @@ class FileController extends Controller
                         'canInsertData' => $notifPosition->canInsertData,
                         'isSecret' => $notifPosition->isSecret,
                     ];
-                    break; // Hentikan loop setelah menemukan posisi yang cocok
+                    break;
                 }
             }
 

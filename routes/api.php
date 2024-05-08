@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\FileController as AdminFileController;
 use App\Http\Controllers\Admin\NotificationConfigController;
 use App\Http\Controllers\Admin\OfficeController;
 use App\Http\Controllers\Admin\PositionController;
@@ -61,6 +62,26 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
         Route::delete('notifconf/{id}', [NotificationConfigController::class, 'destroy']);
         Route::post('detailnotifconf', [NotificationConfigController::class, 'detailOfficeConfig']);
 
+        //credit
+        Route::get('credit', [AdminFileController::class, 'index']);
+        Route::get('credit/{id}', [AdminFileController::class, 'detailFile']);
+        Route::post('credit', [AdminFileController::class, 'store']);
+        Route::delete('credit/{id}', [AdminFileController::class, 'destroy']);
+        Route::post('change-phase-approve', [AdminFileController::class, 'changePhase']);
+        Route::get('change-phase-approve/{id}', [AdminFileController::class, 'changeApproved']);
+        Route::put('edit-general-info/{id}', [AdminFileController::class, 'editGeneralInfo']);
+
+        //=>note
+        Route::post('note', [AdminFileController::class, 'addNote']);
+        Route::put('note/{id}', [AdminFileController::class, 'editNote']);
+        Route::delete('note/{id}', [AdminFileController::class, 'deleteNote']);
+
+        //=>attchment
+        Route::post('add-attach', [AdminFileController::class, 'addAttchment']);
+        Route::put('edit-attach/{id}', [AdminFileController::class, 'editAttachment']);
+        Route::delete('delete-attach/{id}', [AdminFileController::class, 'deleteAttachment']);
+
+
         //////// Route User \\\\\\\\\
         Route::group(['prefix' => 'user'], function () {
             //profile
@@ -76,6 +97,7 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
             Route::post('change-phase-approve', [FileController::class, 'changePhase']);
             Route::get('change-phase-approve/{id}', [FileController::class, 'changeApproved']);
             Route::put('edit-general-info/{id}', [FileController::class, 'editGeneralInfo']);
+            Route::put('survey-credit/{id}', [FileController::class, 'editSurveiResult']);
 
             //=>note
             Route::post('note', [FileController::class, 'addNote']);

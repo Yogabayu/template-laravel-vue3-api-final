@@ -7,14 +7,15 @@
         </VCardTitle>
       </VCardItem>
       <div class="d-flex justify-space-between mb-6">
-        <v-btn
+        <!-- <v-btn
           color="primary"
           size="small"
           class="my-3 mx-3"
           @click="openModal(1)"
         >
           Tambah Data
-        </v-btn>
+        </v-btn> -->
+        <v-spacer></v-spacer>
 
         <div class="d-flex align-center pe-2 w-25">
           <v-text-field
@@ -29,7 +30,8 @@
           ></v-text-field>
         </div>
       </div>
-      <v-dialog v-model="insert" width="auto">
+      <v-dialog v-model="insert" width="auto" persistent 
+          transition="dialog-top-transition">
         <v-card>
           <template v-slot:title> Tambah Data </template>
           <template v-slot:text>

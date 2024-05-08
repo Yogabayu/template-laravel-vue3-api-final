@@ -138,19 +138,19 @@ const router = createRouter({
         },
       ],
     },    
-    // {
-    //   path: "/account-profile",
-    //   component: () => import("../layouts/admin/default.vue"),
-    //   children: [
-    //     {
-    //       path: "",
-    //       component: () => import("../pages/admin/profile/index.vue"),
-    //       beforeEnter: (to, from, next) => {
-    //         checkLogin(next);
-    //       },
-    //     },
-    //   ],
-    // },
+    {
+      path: "/data-master",
+      component: () => import("../layouts/admin/default.vue"),
+      children: [
+        {
+          path: "",
+          component: () => import("../pages/admin/data/index.vue"),
+          beforeEnter: (to, from, next) => {
+            checkAdminLogin(next);
+          },
+        },
+      ],
+    },  
     
 
     // //user

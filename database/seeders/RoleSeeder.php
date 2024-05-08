@@ -16,7 +16,7 @@ class RoleSeeder extends Seeder
     {
         $roles = [
             ['id' => Str::uuid(), 'name' => 'administrator'],
-            // ['id' => Str::uuid(), 'name' => 'ao'],
+            ['id' => Str::uuid(), 'name' => 'Account Officer'],
             // ['id' => Str::uuid(), 'name' => 'ca'],
             // ['id' => Str::uuid(), 'name' => 'dirut'],
         ];

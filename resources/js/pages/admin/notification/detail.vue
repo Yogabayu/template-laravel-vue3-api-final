@@ -139,6 +139,9 @@
           <template #item-canApprove="item">
             <p>{{ item.canApprove == 1 ? "&#x2713;" : "x" }}</p>
           </template>
+          <template #item-isSecret="item">
+            <p>{{ item.isSecret == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
           <template #item-notification="item">
             <p>{{ item.notification == 1 ? "&#x2713;" : "x" }}</p>
           </template>
@@ -186,6 +189,9 @@
           <template #item-notification="item">
             <p>{{ item.notification == 1 ? "&#x2713;" : "x" }}</p>
           </template>
+          <template #item-isSecret="item">
+            <p>{{ item.isSecret == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
           <template #item-canInsertData="item">
             <p>{{ item.canInsertData == 1 ? "&#x2713;" : "x" }}</p>
           </template>
@@ -203,7 +209,8 @@
         </EasyDataTable>
       </v-card>
 
-      <v-dialog v-model="insert" width="auto">
+      <v-dialog v-model="insert" width="auto" persistent 
+          transition="dialog-top-transition">
         <v-card>
           <template v-slot:title> Tambah Data </template>
           <template v-slot:text>
@@ -258,7 +265,7 @@
                   ]" v-model="dataFormIn.canInsertData" prepend-icon="mdi-help-rhombus"></v-select>
                 </VCol>
                 <!-- //khusus slik -->
-                <VCol md="12" cols="12" v-if="dataFormIn.phase == 2">
+                <VCol md="12" cols="12" v-if="dataFormIn.phase >= 2">
                   <v-select label="Akses SLIK?" :items="[
                     { value: 1, title: 'Ya' },
                     { value: 0, title: 'Tidak' },
@@ -277,7 +284,8 @@
           </template>
         </v-card>
       </v-dialog>
-      <v-dialog v-model="edit" width="auto">
+      <v-dialog v-model="edit" width="auto" persistent 
+          transition="dialog-top-transition">
         <v-card>
           <template v-slot:title> Update Data </template>
           <template v-slot:text>
@@ -332,7 +340,7 @@
                   ]" v-model="dataFormIn.canInsertData" prepend-icon="mdi-help-rhombus"></v-select>
                 </VCol>
                 <!-- //khusus slik -->
-                <VCol md="12" cols="12" v-if="dataFormIn.phase == 2">
+                <VCol md="12" cols="12" v-if="dataFormIn.phase >= 2">
                   <v-select label="Akses SLIK?" :items="[
                     { value: 1, title: 'Ya' },
                     { value: 0, title: 'Tidak' },
@@ -369,10 +377,10 @@ export default {
         phase: null,
         minPlafon: null,
         maxPlafon: null,
-        canAppeal: null,
-        canApprove: null,
-        notification: null,
-        canInsertData: null,
+        canAppeal: 0,
+        canApprove: 0,
+        notification: 0,
+        canInsertData: 0,
         isSecret: 0,
       },
       officeId: this.$route.params.officeId,
@@ -422,6 +430,7 @@ export default {
         { text: "Banding?", value: "canAppeal", sortable: true },
         { text: "Approve?", value: "canApprove", sortable: true },
         { text: "Notifikasi", value: "notification", sortable: true },
+        { text: "Akses SLIK?", value: "isSecret", sortable: true },
         { text: "Tambah Data?", value: "canInsertData", sortable: true },
         { text: "Operation", value: "operation" },
       ],
@@ -435,6 +444,7 @@ export default {
         { text: "Banding?", value: "canAppeal", sortable: true },
         { text: "Approve?", value: "canApprove", sortable: true },
         { text: "Notifikasi", value: "notification", sortable: true },
+        { text: "Akses SLIK?", value: "isSecret", sortable: true },
         { text: "Tambah Data?", value: "canInsertData", sortable: true },
         { text: "Operation", value: "operation" },
       ],
@@ -487,7 +497,7 @@ export default {
         formData.append("canApprove", this.dataFormIn.canApprove);
         formData.append("notification", this.dataFormIn.notification);
         formData.append("canInsertData", this.dataFormIn.canInsertData);
-        if (this.dataFormIn.phase == 2) {
+        if (this.dataFormIn.phase >= 2) {
           formData.append("isSecret", this.dataFormIn.isSecret);
         } else {
           formData.append("isSecret", '0');
@@ -501,7 +511,7 @@ export default {
           this.dataFormIn.maxPlafon.replace(/\D/g, "")
         );
         formData.append("_method", "POST");
-
+        
         const response = await mainURL.post("/notifconf", formData);
         if (response.status === 200) {
           this.closeModal(1);
@@ -528,7 +538,7 @@ export default {
         formData.append("canApprove", this.dataFormIn.canApprove);
         formData.append("notification", this.dataFormIn.notification);
         formData.append("canInsertData", this.dataFormIn.canInsertData);
-        if (this.dataFormIn.phase == 2) {
+        if (this.dataFormIn.phase >= 2) {
           formData.append("isSecret", this.dataFormIn.isSecret);
         } else {
           formData.append("isSecret", '0');

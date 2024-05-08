@@ -104,7 +104,9 @@ class TelegramHelper
             $message = "📣 *Ada Data Credit Baru*\n\n"
                 . "*AO*: " . $ao->name . "\n"
                 . "*Pemohon Kredit*: " . $file->name . "\n"
-                . "*Plafon*: Rp. " . number_format($file->plafon, 0, ',', '.') . "\n"
+                . "*Plafon*: " . number_format($file->plafon, 0, ',', '.') . "\n"
+                . "*Jenis Usaha*: " . $file->type_bussiness . "\n"
+                . "*Deskripsi Usaha*: " . $file->desc_bussiness . "\n"
                 . "\nSilakan cek detailnya di Website ECAR.\n";
 
             $user->notify(new TelegramNotification($message, $file, $attachments));
