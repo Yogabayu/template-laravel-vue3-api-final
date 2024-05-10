@@ -396,7 +396,7 @@ class FileController extends Controller
     public function index()
     {
         try {
-            $userNow = User::with('posoition')->where('id', Auth::user()->id)->first();
+            $userNow = User::with('position')->where('id', Auth::user()->id)->first();
 
             if ($userNow->position->name == 'Account Officer' || $userNow->position->name == 'AO' || $userNow->position->name == 'ao' || $userNow->position->name == 'accountd officer' || $userNow->position->name == 'Account Officer Exceutive') {
 
