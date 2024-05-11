@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Helpers\ActivityHelper;
+use App\Helpers\EmailHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\TelegramHelper;
 use App\Models\File;
@@ -490,7 +491,6 @@ class FileController extends Controller
                     }
                 }
             }
-
             TelegramHelper::AddFile($file->id);
 
             ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Menambahkan file');

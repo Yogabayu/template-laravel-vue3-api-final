@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Helpers\ActivityHelper;
+use App\Helpers\EmailHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\TelegramHelper;
 use App\Http\Controllers\Controller;
@@ -599,6 +600,7 @@ class FileController extends Controller
                 }
             }
 
+            EmailHelper::AddUpdate($file->id);
             TelegramHelper::AddFile($file->id);
 
             //add count time

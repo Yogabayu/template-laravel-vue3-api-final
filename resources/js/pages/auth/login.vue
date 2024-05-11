@@ -99,7 +99,7 @@ export default {
 
         if (response.status === 200) {
           this.saveUserDataAndToken(response.data);
-          if (response.data.user.position.role.name=="administrator") {
+          if (response.data.user.position.name=="administrator") {
             await this.$router.push("/dashboard");
           } else {
             await this.$router.push("/user-dashboard");     

@@ -226,7 +226,7 @@ function checkLogin(next) {
 function checkAdminLogin(next) {
   const userToken = localStorage.getItem("userToken");
   const userData = JSON.parse(localStorage.getItem("userData"));
-  if (userToken && userData && userData.position.role.name=="administrator") {
+  if (userToken && userData && userData.position.name=="administrator") {
     next();
   } else {
     localStorage.removeItem("userToken");
