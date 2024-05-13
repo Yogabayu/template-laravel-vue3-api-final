@@ -1,11 +1,5 @@
 <template>
-   <v-overlay
-    :absolute="true"
-    v-model="overlay"
-    contained
-    persistent
-    class="align-center justify-center"
-  >
+  <v-overlay :absolute="true" v-model="overlay" contained persistent class="align-center justify-center">
     <v-col>
       <v-progress-circular color="primary" size="32" indeterminate>
       </v-progress-circular>
@@ -23,33 +17,19 @@
       <!-- 👉 Form -->
 
       <div class="profile-container">
-        <img
-          class="profile-image"
-          :src="displayPhoto"
-          alt="User Profile Photo"
-        />
+        <img class="profile-image" :src="displayPhoto" alt="User Profile Photo" />
       </div>
 
       <VForm class="mt-6" @submit.prevent="updateUserProfile">
         <VRow>
           <!-- 👉 First Name -->
           <VCol md="6" cols="12">
-            <VTextField
-              placeholder="John"
-              label="Nama"
-              v-model="dataForm.name"
-              autofocus
-            />
+            <VTextField placeholder="John" label="Nama" v-model="dataForm.name" autofocus />
           </VCol>
 
           <!-- 👉 Email -->
           <VCol cols="12" md="6">
-            <VTextField
-              label="E-mail"
-              placeholder="johndoe@gmail.com"
-              type="email"
-              v-model="dataForm.email"
-            />
+            <VTextField label="E-mail" placeholder="johndoe@gmail.com" type="email" v-model="dataForm.email" />
           </VCol>
 
           <!-- 👉 NIK -->
@@ -59,14 +39,10 @@
 
           <!-- 👉 Address -->
           <VCol cols="12" md="6">
-            <VTextField
-              v-model="dataForm.password"
-              label="Password"
-              placeholder="············"
+            <VTextField v-model="dataForm.password" label="Password" placeholder="············"
               :type="isPasswordVisible ? 'text' : 'password'"
               :append-inner-icon="isPasswordVisible ? 'bx-hide' : 'bx-show'"
-              @click:append-inner="isPasswordVisible = !isPasswordVisible"
-            />
+              @click:append-inner="isPasswordVisible = !isPasswordVisible" />
           </VCol>
 
           <!-- 👉 Form Actions -->
@@ -86,22 +62,13 @@
           Connect Telegram
         </VCardTitle>
       </VCardItem>
-      <v-alert
-        density="compact"
-        title="Langkah-langkah untuk Menghubungkan Akun Telegram Anda:"
-        type="warning"
-      >
+      <v-alert density="compact" title="Langkah-langkah untuk Menghubungkan Akun Telegram Anda:" type="warning">
         <ol>
           <li>1. Pastikan Anda telah masuk ke akun Telegram Anda.</li>
           <li>2. Isi bagian Username pada pengaturan profil Telegram Anda.</li>
           <li>
             3. Chat Bot Telegram :
-            <a
-              href="https://t.me/bprarthaya_bot"
-              target="_blank"
-              rel="noopener noreferrer"
-              >@bprarthaya_bot</a
-            >
+            <a href="https://t.me/bprarthaya_bot" target="_blank" rel="noopener noreferrer">@bprarthaya_bot</a>
           </li>
           <li>4. Klik /start</li>
           <li>
@@ -114,12 +81,8 @@
       <VForm class="mt-6" @submit.prevent="connectTelegram">
         <VRow>
           <VCol md="6" cols="12">
-            <VTextField
-              placeholder="Username Telegram"
-              label="Username"
-              v-model="dataForm.telegram_username"
-              autofocus
-            />
+            <VTextField placeholder="Username Telegram" label="Username" v-model="dataForm.telegram_username"
+              autofocus />
           </VCol>
 
           <!-- 👉 Form Actions -->
@@ -147,7 +110,7 @@ export default {
         nik: null,
         telegram_username: "",
         telegram_chat_id: null,
-        type:1,
+        type: 1,
       },
       displayPhoto:
         "https://bankarthaya.com/wp-content/uploads/2023/07/arthayann.png",
@@ -159,39 +122,27 @@ export default {
     async connectTelegram(type) {
       try {
         this.overlay = true;
-        
+
         if (type == 2) {
           this.dataForm.type = 2;
-          const formData = new FormData();
-          formData.append("username", this.dataForm.telegram_username);
-          formData.append("type", this.dataForm.type);
-          formData.append("_method", "POST");
+        }
 
-          const response = await mainURL.post("/user/update-user-telegram", formData);
-          if (response.status === 200) {
-            this.overlay = false;
-            this.getUserProfile();
-            this.$showToast("success", "Success", response.data.message);
-          } else {
-            this.getUserProfile();
-            this.$showToast("error", "Sorry", response.data.message);
-          }
+        const formData = new FormData();
+        formData.append("username", this.dataForm.telegram_username);
+        formData.append("type", this.dataForm.type);
+        formData.append("_method", "POST");
+
+        const response = await mainURL.post("/user/update-user-telegram", formData);
+        if (response.status === 200) {
+          this.overlay = false;
+          this.getUserProfile();
+          this.$showToast("success", "Success", response.data.message);
+
+          window.location.reload();
         } else {
-          const formData = new FormData();
-          formData.append("username", this.dataForm.telegram_username);
-          formData.append("type", this.dataForm.type);
-          formData.append("_method", "POST");
-
-          const response = await mainURL.post("/user/update-user-telegram", formData);
-          if (response.status === 200) {
-            this.overlay = false;
-            this.getUserProfile();
-            this.$showToast("success", "Success", response.data.message);
-          } else {
-            this.overlay = false;
-            this.getUserProfile();
-            this.$showToast("error", "Sorry", response.data.message);
-          }
+          this.overlay = false;
+          this.getUserProfile();
+          this.$showToast("error", "Sorry", response.data.message);
         }
       } catch (error) {
         this.overlay = false;
