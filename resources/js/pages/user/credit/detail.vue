@@ -612,7 +612,7 @@ export default {
       overlay: false,
       isMobile: false,
       userData: null,
-      userAccess: null,
+      userAccess: {},
       fileId: this.$route.params.fileId,
       isShowPhase4: false,
       isShowTimers: false,
@@ -872,6 +872,9 @@ export default {
         if (response.status === 200) {
           this.dataFile = response.data.data.file;
           this.userAccess = response.data.data.userAccess;
+          console.log(this.dataFile.phase);
+          
+          this.dataFile.phase = parseInt(this.dataFile.phase);
 
           this.isShowPhase4 =
             parseInt(this.dataFile.plafon) < 25000000 ? false : true;
