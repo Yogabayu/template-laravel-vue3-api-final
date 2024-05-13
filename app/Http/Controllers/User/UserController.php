@@ -84,12 +84,12 @@ class UserController extends Controller
                     'timeout' => 0,
                 ])
                 ->get();
-            dd($updates);
             if ($updates['ok']) {
                 $update = $updates['result'];
                 foreach ($update as $updt) {
                     if (isset($updt['message']['chat']['username'])) {
                         if ($updt['message']['chat']['username'] == $request->username) {
+                            dd('masuk');
                             $chatId = $updt['message']['chat']['id'];
                             $user->telegram_username = $request->username;
                             $user->telegram_chat_id = $chatId;
