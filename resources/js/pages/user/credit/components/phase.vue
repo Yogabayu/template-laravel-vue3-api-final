@@ -1,10 +1,10 @@
 <template>
   <v-card color="backgroundCard">
     <v-card-title class="text-2xl font-weight-bold d-flex justify-center">
-      Detail
-      <v-chip color="success" v-if="dataFile.isApproved == 1">Approved</v-chip>
-      <v-chip color="warning" v-if="dataFile.isApproved == 2">Pending</v-chip>
-      <v-chip color="error" v-if="dataFile.isApproved == 3">Rejected</v-chip>
+      Detail 
+      <v-chip color="success" v-if="parseInt(dataFile.isApproved) == 1">Approved</v-chip>
+      <v-chip color="warning" v-if="parseInt(dataFile.isApproved) == 2">Pending</v-chip>
+      <v-chip color="error" v-if="parseInt(dataFile.isApproved) == 3">Rejected</v-chip>
     </v-card-title>
     <v-card-text>
       <v-card class="mb-5">
@@ -450,17 +450,17 @@
     </v-card-text>
 
     <!-- prev/next btn -->
-    <v-card-actions v-if="userAccess && userAccess.canApprove">
+    <v-card-actions v-if="userAccess && parseInt(userAccess.canApprove)">
       <v-col
         class="d-flex justify-space-beetwen"
-        v-if="dataFile.plafon > 25000000"
+        v-if="dataFile && parseInt(dataFile.plafon) > 25000000"
       >
         <v-btn
           color="info"
           text="Prev"
           variant="tonal"
           @click="step(fileId, '-')"
-          v-if="dataFile && dataFile.phase > 1"
+          v-if="dataFile && parseInt(dataFile.phase) > 1"
         ></v-btn>
 
         <v-spacer></v-spacer>
@@ -469,7 +469,7 @@
           text="Next"
           variant="tonal"
           @click="step(fileId, 'next')"
-          v-if="dataFile && dataFile.phase < 4"
+          v-if="dataFile && parseInt(dataFile.phase) < 4"
         ></v-btn>
       </v-col>
       <v-col class="d-flex justify-space-beetwen" v-else>
@@ -478,15 +478,15 @@
           text="Prev"
           variant="tonal"
           @click="step(fileId, '-')"
-          v-if="dataFile && dataFile.phase > 1"
+          v-if="dataFile && parseInt(dataFile.phase) > 1"
         ></v-btn>
         <v-spacer></v-spacer>
         <v-btn
           color="info"
-          text="Finish"
+          text="Next"
           variant="tonal"
           @click="step(fileId, 'next')"
-          v-if="dataFile && dataFile.phase < 4"
+          v-if="dataFile && parseInt(dataFile.phase) < 4"
         ></v-btn>
       </v-col>
     </v-card-actions>

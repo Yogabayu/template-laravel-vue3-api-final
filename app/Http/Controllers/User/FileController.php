@@ -541,6 +541,7 @@ class FileController extends Controller
             $file->plafon = $request->plafon;
             $file->type_bussiness = $request->type_bussiness;
             $file->desc_bussiness = $request->desc_bussiness;
+            $file->isApproved = 2;
             $file->phase = 1;
             $file->save();
 
