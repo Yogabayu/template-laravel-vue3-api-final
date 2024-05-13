@@ -89,8 +89,8 @@ class UserController extends Controller
                 foreach ($update as $updt) {
                     if (isset($updt['message']['chat']['username'])) {
                         if ($updt['message']['chat']['username'] == $request->username) {
-                            dd('masuk');
                             $chatId = $updt['message']['chat']['id'];
+                            dd($chatId);
                             $user->telegram_username = $request->username;
                             $user->telegram_chat_id = $chatId;
                             $user->save();
