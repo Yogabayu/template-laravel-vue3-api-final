@@ -84,6 +84,7 @@ class UserController extends Controller
                     'timeout' => 0,
                 ])
                 ->get();
+            dd($updates);
             if ($updates['ok']) {
                 $update = $updates['result'];
                 foreach ($update as $updt) {
