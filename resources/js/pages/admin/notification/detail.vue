@@ -42,9 +42,9 @@
           <template #item-maxPlafon="item">
             <p>{{ formatInput(item.maxPlafon) }}</p>
           </template>
-          <template #item-canAppeal="item">
+          <!-- <template #item-canAppeal="item">
             <p>{{ item.canAppeal == 1 ? "&#x2713;" : "x" }}</p>
-          </template>
+          </template> -->
           <template #item-canApprove="item">
             <p>{{ item.canApprove == 1 ? "&#x2713;" : "x" }}</p>
           </template>
@@ -86,9 +86,9 @@
           <template #item-maxPlafon="item">
             <p>{{ formatInput(item.maxPlafon) }}</p>
           </template>
-          <template #item-canAppeal="item">
+          <!-- <template #item-canAppeal="item">
             <p>{{ item.canAppeal == 1 ? "&#x2713;" : "x" }}</p>
-          </template>
+          </template> -->
           <template #item-canApprove="item">
             <p>{{ item.canApprove == 1 ? "&#x2713;" : "x" }}</p>
           </template>
@@ -133,9 +133,9 @@
           <template #item-maxPlafon="item">
             <p>{{ formatInput(item.maxPlafon) }}</p>
           </template>
-          <template #item-canAppeal="item">
+          <!-- <template #item-canAppeal="item">
             <p>{{ item.canAppeal == 1 ? "&#x2713;" : "x" }}</p>
-          </template>
+          </template> -->
           <template #item-canApprove="item">
             <p>{{ item.canApprove == 1 ? "&#x2713;" : "x" }}</p>
           </template>
@@ -180,9 +180,9 @@
           <template #item-maxPlafon="item">
             <p>{{ formatInput(item.maxPlafon) }}</p>
           </template>
-          <template #item-canAppeal="item">
+          <!-- <template #item-canAppeal="item">
             <p>{{ item.canAppeal == 1 ? "&#x2713;" : "x" }}</p>
-          </template>
+          </template> -->
           <template #item-canApprove="item">
             <p>{{ item.canApprove == 1 ? "&#x2713;" : "x" }}</p>
           </template>
@@ -240,12 +240,12 @@
                   <VTextField label="Maximal Plafon" v-model="dataFormIn.maxPlafon" type="text" @input="formatInputIn"
                     autofocus prepend-icon="mdi-help-rhombus" />
                 </VCol>
-                <VCol md="12" cols="12">
+                <!-- <VCol md="12" cols="12">
                   <v-select label="Banding?" :items="[
                     { value: 1, title: 'Ya' },
                     { value: 0, title: 'Tidak' },
                   ]" v-model="dataFormIn.canAppeal" prepend-icon="mdi-help-rhombus"></v-select>
-                </VCol>
+                </VCol> -->
                 <VCol md="12" cols="12">
                   <v-select label="Approve?" :items="[
                     { value: 1, title: 'Ya' },
@@ -315,12 +315,12 @@
                   <VTextField label="Maximal Plafon" v-model="dataFormIn.maxPlafon" type="text" @input="formatInputIn"
                     autofocus prepend-icon="mdi-help-rhombus" />
                 </VCol>
-                <VCol md="12" cols="12">
+                <!-- <VCol md="12" cols="12">
                   <v-select label="Banding?" :items="[
                     { value: 1, title: 'Ya' },
                     { value: 0, title: 'Tidak' },
                   ]" v-model="dataFormIn.canAppeal" prepend-icon="mdi-help-rhombus"></v-select>
-                </VCol>
+                </VCol> -->
                 <VCol md="12" cols="12">
                   <v-select label="Approve?" :items="[
                     { value: 1, title: 'Ya' },
@@ -377,7 +377,7 @@ export default {
         phase: null,
         minPlafon: null,
         maxPlafon: null,
-        canAppeal: 0,
+        //canAppeal: 0,
         canApprove: 0,
         notification: 0,
         canInsertData: 0,
@@ -400,7 +400,7 @@ export default {
         { text: "Phase", value: "phase", sortable: true },
         { text: "Min. Plafon", value: "minPlafon", sortable: true },
         { text: "Max. Plafon", value: "maxPlafon", sortable: true },
-        { text: "Banding?", value: "canAppeal", sortable: true },
+        //{ text: "Banding?", value: "canAppeal", sortable: true },
         { text: "Approve?", value: "canApprove", sortable: true },
         { text: "Notifikasi?", value: "notification", sortable: true },
         { text: "Tambah Data?", value: "canInsertData", sortable: true },
@@ -413,7 +413,7 @@ export default {
         { text: "Phase", value: "phase", sortable: true },
         { text: "Min. Plafon", value: "minPlafon", sortable: true },
         { text: "Max. Plafon", value: "maxPlafon", sortable: true },
-        { text: "Banding?", value: "canAppeal", sortable: true },
+        //{ text: "Banding?", value: "canAppeal", sortable: true },
         { text: "Approve?", value: "canApprove", sortable: true },
         { text: "Notifikasi?", value: "notification", sortable: true },
         { text: "Akses SLIK?", value: "isSecret", sortable: true },
@@ -427,7 +427,7 @@ export default {
         { text: "Phase", value: "phase", sortable: true },
         { text: "Min. Plafon", value: "minPlafon", sortable: true },
         { text: "Max. Plafon", value: "maxPlafon", sortable: true },
-        { text: "Banding?", value: "canAppeal", sortable: true },
+        //{ text: "Banding?", value: "canAppeal", sortable: true },
         { text: "Approve?", value: "canApprove", sortable: true },
         { text: "Notifikasi", value: "notification", sortable: true },
         { text: "Akses SLIK?", value: "isSecret", sortable: true },
@@ -441,7 +441,7 @@ export default {
         { text: "Phase", value: "phase", sortable: true },
         { text: "Min. Plafon", value: "minPlafon", sortable: true },
         { text: "Max. Plafon", value: "maxPlafon", sortable: true },
-        { text: "Banding?", value: "canAppeal", sortable: true },
+        //{ text: "Banding?", value: "canAppeal", sortable: true },
         { text: "Approve?", value: "canApprove", sortable: true },
         { text: "Notifikasi", value: "notification", sortable: true },
         { text: "Akses SLIK?", value: "isSecret", sortable: true },
@@ -493,7 +493,7 @@ export default {
         formData.append("office_id", this.dataFormIn.office_id);
         formData.append("position_id", this.dataFormIn.position_id);
         formData.append("phase", this.dataFormIn.phase);
-        formData.append("canAppeal", this.dataFormIn.canAppeal);
+        // formData.append("canAppeal", this.dataFormIn.canAppeal);
         formData.append("canApprove", this.dataFormIn.canApprove);
         formData.append("notification", this.dataFormIn.notification);
         formData.append("canInsertData", this.dataFormIn.canInsertData);
@@ -534,7 +534,7 @@ export default {
         formData.append("office_id", this.dataFormIn.office_id);
         formData.append("position_id", this.dataFormIn.position_id);
         formData.append("phase", this.dataFormIn.phase);
-        formData.append("canAppeal", this.dataFormIn.canAppeal);
+        // formData.append("canAppeal", this.dataFormIn.canAppeal);
         formData.append("canApprove", this.dataFormIn.canApprove);
         formData.append("notification", this.dataFormIn.notification);
         formData.append("canInsertData", this.dataFormIn.canInsertData);
@@ -588,7 +588,7 @@ export default {
         phase: null,
         minPlafon: null,
         maxPlafon: null,
-        canAppeal: null,
+        // canAppeal: null,
         canApprove: null,
         notification: null,
       };
@@ -609,7 +609,7 @@ export default {
           this.dataFormIn.phase = item.phase;
           this.dataFormIn.minPlafon = item.minPlafon;
           this.dataFormIn.maxPlafon = item.maxPlafon;
-          this.dataFormIn.canAppeal = item.canAppeal;
+          // this.dataFormIn.canAppeal = item.canAppeal;
           this.dataFormIn.canApprove = item.canApprove;
           this.dataFormIn.notification = item.notification;
           this.dataFormIn.isSecret = item.isSecret;

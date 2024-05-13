@@ -276,6 +276,51 @@
       </v-card>
     </v-card-text>
 
+    <v-card-text v-if="dataFile.phase > 2">
+      <v-card class="mb-5">
+        <v-card-title>
+          <v-row class="d-flex justify-space-between">
+            <v-col cols="12" sm="6" md="8">
+              <span>Survey Lapangan ℹ️</span>
+            </v-col>
+            <v-col
+              cols="12"
+              sm="6"
+              md="4"
+              class="text-sm-right text-md-right"
+              v-if="userAccess && userAccess.canInsertData"
+            >
+              <span>
+                <v-btn
+                  color="primary"
+                  size="small"
+                  class="my-3 mx-3"
+                  @click="openModal(5)"
+                >
+                  Edit Data
+                </v-btn>
+              </span>
+            </v-col>
+          </v-row>
+        </v-card-title>
+        <v-card-text>
+          <v-list density="compact">
+            <v-list-item>
+              <template v-slot:prepend>
+                <v-icon icon="mdi-note-text-outline"></v-icon>
+              </template>
+              <v-list-item-title> Hasil Survei</v-list-item-title>
+              <v-list-item-title>
+                <strong>
+                  {{ dataFile.surveyResult }}
+                </strong></v-list-item-title
+              >
+            </v-list-item>
+          </v-list>
+        </v-card-text>
+      </v-card>
+    </v-card-text>
+
     <!-- Approval -->
     <v-card-text>
       <v-card>
@@ -294,6 +339,22 @@
                 {{ app.user.name }}
               </v-chip>
             </template>
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-card-text>
+
+    <!-- others -->
+    <v-card-text>
+      <v-card>
+        <v-card-title> Lain - lain 🔹 </v-card-title>
+        <v-card-text>
+          <div>
+            <v-chip-group>
+              <v-chip color="success" @click="openModal(6)"> Data Durasi Waktu </v-chip>
+              <v-chip color="success" @click="openModal(7)"> Data Riwayat File</v-chip>
+              <v-chip color="success" @click="openModal(8)"> Data Riwayat Persetujuan</v-chip>
+            </v-chip-group>
           </div>
         </v-card-text>
       </v-card>
@@ -389,8 +450,11 @@
     </v-card-text>
 
     <!-- prev/next btn -->
-    <v-card-actions v-if="userAccess && userAccess.canApprove">
-      <v-col class="d-flex justify-space-beetwen" v-if="dataFile.plafon > 25000000">
+    <v-card-actions >
+      <v-col
+        class="d-flex justify-space-beetwen"
+        v-if="dataFile.plafon > 25000000"
+      >
         <v-btn
           color="info"
           text="Prev"
@@ -398,6 +462,7 @@
           @click="step(fileId, '-')"
           v-if="dataFile && dataFile.phase > 1"
         ></v-btn>
+
         <v-spacer></v-spacer>
         <v-btn
           color="info"

@@ -441,7 +441,7 @@ export default {
   },
   methods: {
     toDetail(item: any) {
-      this.$router.push(`/u-credit/${item.id}`);
+      this.$router.push(`/a-credit/${item.id}`);
     },
     async deleteFile(item: { id: any }) {
       try {

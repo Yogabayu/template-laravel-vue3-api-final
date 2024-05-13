@@ -352,6 +352,8 @@
           <div>
             <v-chip-group>
               <v-chip color="success" @click="openModal(6)"> Data Durasi Waktu </v-chip>
+              <v-chip color="success" @click="openModal(7)"> Data Riwayat File</v-chip>
+              <v-chip color="success" @click="openModal(8)"> Data Riwayat Persetujuan</v-chip>
             </v-chip-group>
           </div>
         </v-card-text>

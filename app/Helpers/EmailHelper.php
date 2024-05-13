@@ -8,6 +8,7 @@ use App\Models\File;
 use App\Models\Position;
 use App\Models\PositionToOffice;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -28,8 +29,8 @@ class EmailHelper
             $notificationConfigurations = DB::table('notification_configurations')
                 ->where('office_id', $userOffice->office_id)
                 ->where('phase', $file->phase)
-                ->where('minPlafon', '<=', $file->plafon)
-                ->where('maxPlafon', '>=', $file->plafon)
+                ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
+                ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
                 ->where('phase', $file->phase)
                 ->where('canApprove', 1)
                 ->get();
@@ -56,6 +57,8 @@ class EmailHelper
             $message = "<h1>📣 Ada Update Baru</h1><br>"
                 . "<p><strong>AO:</strong>" . str_pad($ao->name, 25) . "</p>"
                 . "<p><strong>Pemohon Kredit:</strong>" . str_pad($file->name, 18) . "</p><br>"
+                . "<p><strong>Phase :</strong>" . str_pad($file->phase, 18) . "</p><br>"
+                . "<p><strong>Pengguna Yang Memperbarui :</strong>" . str_pad(Auth::user()->name, 18) . "</p><br>"
                 . "<p><strong>Plafon:</strong> Rp. " . number_format($file->plafon, 0, ',', '.') . "</p>"
                 . "<p>Silakan cek detailnya di <a href='your_website_url'>Website ECAR</a>.</p>";
 

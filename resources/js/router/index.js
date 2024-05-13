@@ -151,6 +151,19 @@ const router = createRouter({
         },
       ],
     },  
+    {
+      path: "/a-credit/:fileId",
+      component: () => import("../layouts/admin/default.vue"),
+      children: [
+        {
+          path: "",
+          component: () => import("../pages/admin/data/detail.vue"),
+          beforeEnter: (to, from, next) => {
+            checkLogin(next);
+          },
+        },
+      ],
+    },
     
 
     // //user

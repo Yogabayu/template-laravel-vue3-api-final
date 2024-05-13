@@ -545,18 +545,59 @@
       <v-card>
         <template v-slot:title> Data Waktu </template>
         <template v-slot:text>
-          <EasyDataTable
-              :headers="timerHeaders"
-              :items="dataFile.phase_times"
-            >
-            <template #item-timeDiff="item"
-                >{{ calculateTimeDiff(item.startTime, item.endTime) }}</template
-              >
+          <EasyDataTable :headers="timerHeaders" :items="dataFile.phase_times">
+            <template #item-timeDiff="item">{{
+              calculateTimeDiff(item.startTime, item.endTime)
+            }}</template>
           </EasyDataTable>
         </template>
       </v-card>
     </v-dialog>
 
+    <v-dialog
+      v-model="isShowHistory"
+      width="auto"
+      transition="dialog-top-transition"
+    >
+      <v-card>
+        <template v-slot:title> Data Riwayat </template>
+        <template v-slot:text>
+          <EasyDataTable
+            show-index
+            :headers="historyHeaders"
+            :items="dataFile.file_activities"
+          >
+            <template #item-created_at="item">
+              {{ formatDate(item.created_at) }}
+            </template>
+          </EasyDataTable>
+        </template>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog
+      v-model="isShowApprovals"
+      width="auto"
+      transition="dialog-top-transition"
+    >
+      <v-card>
+        <template v-slot:title> Riwayat Persetujuan </template>
+        <template v-slot:text>
+          <EasyDataTable
+            :headers="approvalHeaders"
+            :items="dataFile.approvals"
+          >
+            <template #item-approved="item">
+              <v-chip color="success" v-if="item.approved == 1"> Disetujui </v-chip>
+              <v-chip color="error" v-else> Belum disetujui </v-chip>
+            </template>
+            <template #item-created_at="item">
+              {{ formatDate(item.created_at) }}
+            </template>
+          </EasyDataTable>
+        </template>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -575,6 +616,8 @@ export default {
       fileId: this.$route.params.fileId,
       isShowPhase4: false,
       isShowTimers: false,
+      isShowHistory: false,
+      isShowApprovals: false,
 
       isUpdateGeneralInfo: false,
       generalInfo: {
@@ -601,16 +644,31 @@ export default {
         attachments: [],
         notes: [],
         approvals: [],
-        phase_times:[],
+        phase_times: [],
+        file_activities: [],
       },
       filePath: this.$filePath,
-      
+
       //=>timers header
       timerHeaders: [
         { text: "Phase", value: "phase", sortable: true },
         { text: "Waktu Mulai", value: "startTime", sortable: true },
         { text: "Waktu Selesai", value: "endTime", sortable: true },
         { text: "Rentang Waktu", value: "timeDiff", sortable: true },
+      ],
+
+      //=history
+      historyHeaders: [
+        { text: "User", value: "user.name", sortable: true },
+        { text: "Aktivitas", value: "activity", sortable: true },
+        { text: "Tanggal", value: "created_at", sortable: true },
+      ],
+      //=approval
+      approvalHeaders: [
+        { text: "Phase", value: "phase", sortable: true },
+        { text: "Nama", value: "user.name", sortable: true },
+        { text: "Status", value: "approved", sortable: true },
+        { text: "Tanggal", value: "created_at", sortable: true },
       ],
 
       //=>note
@@ -668,12 +726,12 @@ export default {
     },
   },
   methods: {
-    calculateTimeDiff(startTime:any, endTime:any) {
+    calculateTimeDiff(startTime: any, endTime: any) {
       let start = new Date(startTime);
       let end = endTime ? new Date(endTime) : new Date();
       let diffInMs = end.valueOf() - start.valueOf();
       let diffInMinutes = Math.floor(diffInMs / 1000 / 60);
-      
+
       // Menghitung jumlah jam dan menit
       let hours = Math.floor(diffInMinutes / 60);
       let minutes = diffInMinutes % 60;
@@ -729,7 +787,7 @@ export default {
     },
     formatDate(dateString: any) {
       const date = new Date(dateString);
-      return date.toLocaleDateString("id-ID");
+      return date.toLocaleString("id-ID");
     },
     resetNote() {
       this.dataNote = {
@@ -862,8 +920,12 @@ export default {
       } else if (type == 5) {
         this.dataPhase3.surveyResult = this.dataFile.surveyResult;
         this.isDataPhase3 = true;
-      } else if (type == 6){
+      } else if (type == 6) {
         this.isShowTimers = true;
+      } else if (type == 7) {
+        this.isShowHistory = true;
+      }else if (type == 8) {
+        this.isShowApprovals = true;
       }
     },
     closeModal(type: number) {

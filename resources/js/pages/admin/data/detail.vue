@@ -233,8 +233,12 @@
       </v-card-text>
     </v-card>
 
-    <v-dialog v-model="insertAttch" width="auto" persistent 
-          transition="dialog-top-transition">
+    <v-dialog
+      v-model="insertAttch"
+      width="auto"
+      persistent
+      transition="dialog-top-transition"
+    >
       <v-card>
         <template v-slot:title> Tambah Data </template>
 
@@ -304,8 +308,12 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="updateAttch" width="auto" persistent 
-          transition="dialog-top-transition">
+    <v-dialog
+      v-model="updateAttch"
+      width="auto"
+      persistent
+      transition="dialog-top-transition"
+    >
       <v-card>
         <template v-slot:title> Edit Data </template>
 
@@ -370,8 +378,12 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="isUpdateGeneralInfo" width="auto" persistent 
-          transition="dialog-top-transition">
+    <v-dialog
+      v-model="isUpdateGeneralInfo"
+      width="auto"
+      persistent
+      transition="dialog-top-transition"
+    >
       <v-card>
         <template v-slot:title> Edit Informasi Umum </template>
 
@@ -444,8 +456,12 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="isUpdateNote" width="auto" persistent 
-          transition="dialog-top-transition">
+    <v-dialog
+      v-model="isUpdateNote"
+      width="auto"
+      persistent
+      transition="dialog-top-transition"
+    >
       <v-card>
         <template v-slot:title> Update Note </template>
         <template v-slot:text>
@@ -472,14 +488,113 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="isModalPhase" width="auto" persistent 
-          transition="dialog-top-transition">
+    <!-- <v-dialog v-model="isModalPhase" width="auto">
       <v-card>
         <template v-slot:title> Catatan </template>
         <template v-slot:text>
           <v-card>
             <template v-slot:title> Phase 1 </template>
           </v-card>
+        </template>
+      </v-card>
+    </v-dialog> -->
+
+    <v-dialog
+      v-model="isDataPhase3"
+      width="auto"
+      persistent
+      transition="dialog-top-transition"
+    >
+      <v-card>
+        <template v-slot:title> Hasil Survey </template>
+        <template v-slot:text>
+          <VForm @submit.prevent="updatePhase3">
+            <v-row>
+              <VCol md="12" cols="12">
+                <span style="color: red">*</span
+                ><span class="subtitle-1 text-center">Hasil Survei: </span>
+                <v-textarea
+                  bg-color="grey-lighten-2"
+                  color="cyan"
+                  v-model="dataPhase3.surveyResult"
+                  rows="3"
+                ></v-textarea>
+              </VCol>
+              <VCol cols="12" class="d-flex flex-wrap gap-4">
+                <v-btn type="submit">Update</v-btn>
+
+                <button
+                  type="button"
+                  class="btn btn-blue"
+                  @click="closeModal(5)"
+                >
+                  Batal
+                </button>
+              </VCol>
+            </v-row>
+          </VForm>
+        </template>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog
+      v-model="isShowTimers"
+      width="auto"
+      transition="dialog-top-transition"
+    >
+      <v-card>
+        <template v-slot:title> Data Waktu </template>
+        <template v-slot:text>
+          <EasyDataTable :headers="timerHeaders" :items="dataFile.phase_times">
+            <template #item-timeDiff="item">{{
+              calculateTimeDiff(item.startTime, item.endTime)
+            }}</template>
+          </EasyDataTable>
+        </template>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog
+      v-model="isShowHistory"
+      width="auto"
+      transition="dialog-top-transition"
+    >
+      <v-card>
+        <template v-slot:title> Data Riwayat </template>
+        <template v-slot:text>
+          <EasyDataTable
+            show-index
+            :headers="historyHeaders"
+            :items="dataFile.file_activities"
+          >
+            <template #item-created_at="item">
+              {{ formatDate(item.created_at) }}
+            </template>
+          </EasyDataTable>
+        </template>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog
+      v-model="isShowApprovals"
+      width="auto"
+      transition="dialog-top-transition"
+    >
+      <v-card>
+        <template v-slot:title> Riwayat Persetujuan </template>
+        <template v-slot:text>
+          <EasyDataTable
+            :headers="approvalHeaders"
+            :items="dataFile.approvals"
+          >
+            <template #item-approved="item">
+              <v-chip color="success" v-if="item.approved == 1"> Disetujui </v-chip>
+              <v-chip color="error" v-else> Belum disetujui </v-chip>
+            </template>
+            <template #item-created_at="item">
+              {{ formatDate(item.created_at) }}
+            </template>
+          </EasyDataTable>
         </template>
       </v-card>
     </v-dialog>
@@ -500,6 +615,9 @@ export default {
       userAccess: null,
       fileId: this.$route.params.fileId,
       isShowPhase4: false,
+      isShowTimers: false,
+      isShowHistory: false,
+      isShowApprovals: false,
 
       isUpdateGeneralInfo: false,
       generalInfo: {
@@ -526,8 +644,32 @@ export default {
         attachments: [],
         notes: [],
         approvals: [],
+        phase_times: [],
+        file_activities: [],
       },
       filePath: this.$filePath,
+
+      //=>timers header
+      timerHeaders: [
+        { text: "Phase", value: "phase", sortable: true },
+        { text: "Waktu Mulai", value: "startTime", sortable: true },
+        { text: "Waktu Selesai", value: "endTime", sortable: true },
+        { text: "Rentang Waktu", value: "timeDiff", sortable: true },
+      ],
+
+      //=history
+      historyHeaders: [
+        { text: "User", value: "user.name", sortable: true },
+        { text: "Aktivitas", value: "activity", sortable: true },
+        { text: "Tanggal", value: "created_at", sortable: true },
+      ],
+      //=approval
+      approvalHeaders: [
+        { text: "Phase", value: "phase", sortable: true },
+        { text: "Nama", value: "user.name", sortable: true },
+        { text: "Status", value: "approved", sortable: true },
+        { text: "Tanggal", value: "created_at", sortable: true },
+      ],
 
       //=>note
       isUpdateNote: false,
@@ -568,6 +710,12 @@ export default {
       //=>pagination note
       currentPage: 1,
       itemsPerPage: 10,
+
+      //=>khusus attachment
+      isDataPhase3: false,
+      dataPhase3: {
+        surveyResult: "",
+      },
     };
   },
   computed: {
@@ -578,6 +726,18 @@ export default {
     },
   },
   methods: {
+    calculateTimeDiff(startTime: any, endTime: any) {
+      let start = new Date(startTime);
+      let end = endTime ? new Date(endTime) : new Date();
+      let diffInMs = end.valueOf() - start.valueOf();
+      let diffInMinutes = Math.floor(diffInMs / 1000 / 60);
+
+      // Menghitung jumlah jam dan menit
+      let hours = Math.floor(diffInMinutes / 60);
+      let minutes = diffInMinutes % 60;
+
+      return `${hours} jam ${minutes} menit`;
+    },
     formatFileId(fileId: any) {
       if (Array.isArray(fileId)) {
         // Convert array of strings to a single string, or choose one string from the array
@@ -585,6 +745,34 @@ export default {
       }
       // If fileId is already a string, return it as is
       return fileId;
+    },
+
+    //=>phase3
+    async updatePhase3() {
+      try {
+        const formData = new FormData();
+        formData.append("surveyResult", this.dataPhase3.surveyResult);
+        formData.append("_method", "PUT");
+
+        const response = await mainURL.post(
+          `/survey-credit/${this.fileId}`,
+          formData
+        );
+        if (response.status === 200) {
+          this.overlay = false;
+          this.getDetailFile(this.fileId);
+          this.isDataPhase3 = false;
+          this.$showToast("success", "Success", response.data.message);
+        } else {
+          this.overlay = false;
+          this.getDetailFile(this.fileId);
+          this.isDataPhase3 = false;
+          this.$showToast("error", "Sorry", response.data.message);
+        }
+      } catch (error) {
+        this.getDetailFile(this.fileId);
+        this.$showToast("error", "Sorry", error.response.data.message);
+      }
     },
 
     //=>pagination
@@ -599,7 +787,7 @@ export default {
     },
     formatDate(dateString: any) {
       const date = new Date(dateString);
-      return date.toLocaleDateString("id-ID");
+      return date.toLocaleString("id-ID");
     },
     resetNote() {
       this.dataNote = {
@@ -633,7 +821,7 @@ export default {
           formData.append("_method", "POST");
 
           const response = await mainURL.post(
-            "/user/change-phase-approve",
+            "/change-phase-approve",
             formData
           );
           if (response.status === 200) {
@@ -656,7 +844,7 @@ export default {
           formData.append("type", type);
           formData.append("_method", "POST");
           const response = await mainURL.post(
-            "/user/change-phase-approve",
+            "/change-phase-approve",
             formData
           );
           if (response.status === 200) {
@@ -679,11 +867,12 @@ export default {
     async getDetailFile(id: any) {
       try {
         this.overlay = true;
-        const response = await mainURL.get(`/user/credit/${id}`);
+        const response = await mainURL.get(`/credit/${id}`);
 
         if (response.status === 200) {
           this.dataFile = response.data.data.file;
           this.userAccess = response.data.data.userAccess;
+
           this.isShowPhase4 =
             parseInt(this.dataFile.plafon) < 25000000 ? false : true;
           this.generalInfo.id = this.dataFile.id;
@@ -728,6 +917,15 @@ export default {
         this.isUpdateNote = true;
       } else if (type == 4) {
         this.isUpdateGeneralInfo = true;
+      } else if (type == 5) {
+        this.dataPhase3.surveyResult = this.dataFile.surveyResult;
+        this.isDataPhase3 = true;
+      } else if (type == 6) {
+        this.isShowTimers = true;
+      } else if (type == 7) {
+        this.isShowHistory = true;
+      }else if (type == 8) {
+        this.isShowApprovals = true;
       }
     },
     closeModal(type: number) {
@@ -741,6 +939,9 @@ export default {
         this.updateNote = false;
       } else if (type == 4) {
         this.isUpdateGeneralInfo = false;
+      } else if (type == 5) {
+        this.dataPhase3.surveyResult = "";
+        this.isDataPhase3 = false;
       }
     },
 
@@ -756,7 +957,7 @@ export default {
         formData.append("_method", "PUT");
 
         const response = await mainURL.post(
-          `/user/edit-general-info/${this.generalInfo.id}`,
+          `/edit-general-info/${this.generalInfo.id}`,
           formData
         );
         if (response.status === 200) {
@@ -794,7 +995,7 @@ export default {
         formData.append("note", this.dataNote.note);
         formData.append("_method", "POST");
 
-        const response = await mainURL.post("/user/note", formData);
+        const response = await mainURL.post("/note", formData);
         if (response.status === 200) {
           this.resetNote();
           this.overlay = false;
@@ -822,7 +1023,7 @@ export default {
         formData.append("_method", "PUT");
 
         const response = await mainURL.post(
-          `/user/note/${this.updateDataNote.id}`,
+          `/note/${this.updateDataNote.id}`,
           formData
         );
         if (response.status === 200) {
@@ -851,7 +1052,7 @@ export default {
         );
         if (!confirmDelete) return;
 
-        const response = await mainURL.delete(`/user/note/${id}`);
+        const response = await mainURL.delete(`/note/${id}`);
 
         if (response.status === 200) {
           this.overlay = false;
@@ -890,7 +1091,7 @@ export default {
         }
       });
     },
-    modalNote(){
+    modalNote() {
       this.isModalPhase = !this.isModalPhase;
       console.log(this.isModalPhase);
     },
@@ -899,7 +1100,7 @@ export default {
     async changeApproval(id: any) {
       try {
         this.overlay = true;
-        const response = await mainURL.get(`/user/change-phase-approve/${id}`);
+        const response = await mainURL.get(`/change-phase-approve/${id}`);
 
         if (response.status === 200) {
           this.overlay = false;
@@ -974,7 +1175,7 @@ export default {
         };
 
         const response = await mainURL.post(
-          "/user/add-attach",
+          "/add-attach",
           formData,
           config
         );
@@ -1027,7 +1228,7 @@ export default {
         };
 
         const response = await mainURL.post(
-          `/user/edit-attach/${this.attachFile.id}`,
+          `/edit-attach/${this.attachFile.id}`,
           formData,
           config
         );
@@ -1058,7 +1259,7 @@ export default {
         );
         if (!confirmDelete) return;
 
-        const response = await mainURL.delete(`/user/delete-attach/${id}`);
+        const response = await mainURL.delete(`/delete-attach/${id}`);
 
         if (response.status === 200) {
           this.overlay = false;

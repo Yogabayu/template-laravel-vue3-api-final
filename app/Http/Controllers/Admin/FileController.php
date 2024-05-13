@@ -464,8 +464,8 @@ class FileController extends Controller
             foreach ($userOffices as $userOffice) {
                 $notificationConfigurations = DB::table('notification_configurations')
                     ->where('office_id', $userOffice->office_id)
-                    ->where('minPlafon', '<=', $file->plafon)
-                    ->where('maxPlafon', '>=', $file->plafon)
+                    ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
+                    ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
                     ->where('phase', $file->phase)
                     ->where('canApprove', 1)
                     ->get();
@@ -545,10 +545,14 @@ class FileController extends Controller
                 },
                 'notes.user',
                 'notes.user.position',
-                'fileActivities',
+                'fileActivities' => function ($query) {
+                    $query->latest();
+                },
+                'fileActivities.user',
                 'attachments',
                 'approvals',
-                'approvals.user'
+                'approvals.user',
+                'phaseTimes',
             ])->findOrFail($id);
 
 
@@ -562,8 +566,8 @@ class FileController extends Controller
             foreach ($userOffices as $userOffice) {
                 $notificationConfigurations = DB::table('notification_configurations')
                     ->where('office_id', $userOffice->office_id)
-                    ->where('minPlafon', '<=', $file->plafon)
-                    ->where('maxPlafon', '>=', $file->plafon)
+                    ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
+                    ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
                     ->where('phase', $file->phase)
                     ->get();
 
@@ -587,7 +591,7 @@ class FileController extends Controller
             ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Mengakses detail file');
 
             // Convert notes to a collection and sort by date in descending order
-            $file->notes = collect($file->notes)->sortByDesc('created_at')->values()->all();
+            // $file->notes = collect($file->notes)->sortByDesc('created_at')->values()->all();
 
             // return ResponseHelper::successRes('Berhasil menampilkan data', $file);
             return ResponseHelper::successRes('Berhasil menampilkan data', ['file' => $file, 'userAccess' => $userAccess]);

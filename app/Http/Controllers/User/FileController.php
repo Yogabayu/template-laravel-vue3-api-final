@@ -316,18 +316,28 @@ class FileController extends Controller
                         PhaseTime::firstOrCreate(['file_id' => $file->id, 'phase' => $file->phase, 'startTime' => Carbon::now()]);
                     }
 
-                    $file->save();
+
+                    // EmailHelper::AddUpdate($file->id);
                     TelegramHelper::AddUpdatePhase($file->id, "User mengubah Phase menjadi " . ($filephase), $file->user_id);
 
+                    $file->save();
                     return ResponseHelper::successRes('File telah disetujui successfully', $file);
                 } else {
                     $file->isApproved = 1;
                     $file->save();
+
+                    EmailHelper::AddUpdate($file->id);
                     TelegramHelper::AddUpdatePhase($file->id, "File telah disetujui", $file->user_id);
 
                     return ResponseHelper::successRes('Phase updated successfully', $file);
                 }
             } else {
+                $dataPhase = PhaseTime::where('file_id', $file->id)->where('phase', $file->phase)->first();
+
+                if ($dataPhase) {
+                    $dataPhase->delete();
+                }
+
                 $filephase = $file->phase - 1;
                 $file->phase = $file->phase - 1;
 
@@ -348,6 +358,7 @@ class FileController extends Controller
 
                     $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
                 }
+
                 $notifUser = [];
                 foreach ($notifPositions as $notifPosition) {
                     $users = DB::table('users')
@@ -368,6 +379,7 @@ class FileController extends Controller
                 }
 
                 $file->save();
+                EmailHelper::AddUpdate($file->id);
                 TelegramHelper::AddUpdatePhase($file->id, "User mengubah Phase menjadi " . ($filephase), $file->user_id);
 
                 return ResponseHelper::successRes('Phase updated successfully', $file);
@@ -658,7 +670,10 @@ class FileController extends Controller
                 },
                 'notes.user',
                 'notes.user.position',
-                'fileActivities',
+                'fileActivities' => function ($query) {
+                    $query->latest();
+                },
+                'fileActivities.user',
                 'attachments',
                 'approvals',
                 'approvals.user',
@@ -701,7 +716,7 @@ class FileController extends Controller
             ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Mengakses detail file');
 
             // Convert notes to a collection and sort by date in descending order
-            $file->notes = collect($file->notes)->sortByDesc('created_at')->values()->all();
+            // $file->notes = collect($file->notes)->sortByDesc('created_at')->values()->all();
 
             // return ResponseHelper::successRes('Berhasil menampilkan data', $file);
             return ResponseHelper::successRes('Berhasil menampilkan data', ['file' => $file, 'userAccess' => $userAccess]);

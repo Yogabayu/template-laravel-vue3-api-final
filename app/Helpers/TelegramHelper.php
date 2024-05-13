@@ -28,8 +28,8 @@ class TelegramHelper
             $notificationConfigurations = DB::table('notification_configurations')
                 ->where('office_id', $userOffice->office_id)
                 ->where('phase', $file->phase)
-                ->where('minPlafon', '<=', $file->plafon)
-                ->where('maxPlafon', '>=', $file->plafon)
+                ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
+                ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
                 ->where('phase', $file->phase)
                 ->where('canApprove', 1)
                 ->get();
@@ -77,8 +77,8 @@ class TelegramHelper
             $notificationConfigurations = DB::table('notification_configurations')
                 ->where('office_id', $userOffice->office_id)
                 ->where('phase', $file->phase)
-                ->where('minPlafon', '<=', $file->plafon)
-                ->where('maxPlafon', '>=', $file->plafon)
+                ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
+                ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
                 ->where('phase', $file->phase)
                 ->where('canApprove', 1)
                 ->get();
@@ -126,8 +126,8 @@ class TelegramHelper
             $notificationConfigurations = DB::table('notification_configurations')
                 ->where('office_id', $userOffice->office_id)
                 ->where('phase', $file->phase)
-                ->where('minPlafon', '<=', $file->plafon)
-                ->where('maxPlafon', '>=', $file->plafon)
+                ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
+                ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
                 ->where('phase', $file->phase)
                 ->get();
 
@@ -143,6 +143,7 @@ class TelegramHelper
                 ->get();
             $notifUser = array_merge($notifUser, $users->toArray());
         }
+
         foreach ($notifUser as $notif) {
             $ao = User::find($file->user_id);
             $user = User::find($notif->id);
