@@ -92,6 +92,7 @@ class UserController extends Controller
                             $chatId = $updt['message']['chat']['id'];
                             $user->telegram_username = $request->username;
                             $user->telegram_chat_id = $chatId;
+                            dd($user);
                             $user->save();
 
                             $user->notify(new TelegramNotification('Berhasil mengkoneksikan ke sistem', null, null));
