@@ -48,7 +48,7 @@ class TelegramNotification extends Notification
 
         if (!empty($this->file) && !empty($this->attachments)) {
             foreach ($this->attachments as $attachment) {
-                $urlAttachmentPath = 'https://yogabayuap.com/file/' . $this->file->id . '/' . $attachment->path;
+                $urlAttachmentPath = 'https://ecar.bankarthaya.com/file/' . $this->file->id . '/' . $attachment->path;
                 $telegramMessage->button($attachment->name, $urlAttachmentPath);
             }
         }
