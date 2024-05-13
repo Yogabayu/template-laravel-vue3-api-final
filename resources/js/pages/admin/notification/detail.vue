@@ -610,10 +610,10 @@ export default {
           this.dataFormIn.minPlafon = item.minPlafon;
           this.dataFormIn.maxPlafon = item.maxPlafon;
           // this.dataFormIn.canAppeal = item.canAppeal;
-          this.dataFormIn.canApprove = item.canApprove;
-          this.dataFormIn.notification = item.notification;
-          this.dataFormIn.isSecret = item.isSecret;
-          this.dataFormIn.canInsertData = item.canInsertData;
+          this.dataFormIn.canApprove = parseInt(item.canApprove);
+          this.dataFormIn.notification = parseInt(item.notification);
+          this.dataFormIn.isSecret = parseInt(item.isSecret);
+          this.dataFormIn.canInsertData = parseInt(item.canInsertData);
           this.edit = true;
         }
       }

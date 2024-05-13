@@ -68,7 +68,7 @@ const showToast = (icon, title, text) => {
 app.config.globalProperties.$showToast = showToast
 
 /** localhost */
-app.config.globalProperties.$filePath = 'http://localhost:8000/file/';
+// app.config.globalProperties.$filePath = 'http://localhost:8000/file/';
 /** development */
 /** production */
 app.config.globalProperties.$filePath = 'https://ecar.bankarthaya.com/file/';

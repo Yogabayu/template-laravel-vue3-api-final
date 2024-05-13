@@ -401,7 +401,7 @@
                   <button
                     type="button"
                     class="btn btn-blue"
-                    @click="closeModal(1)"
+                    @click="closeModal(2)"
                   >
                     Batal
                   </button>
@@ -665,10 +665,10 @@ export default {
         if (item) {
           this.dataForm.id = item.id;
           this.dataForm.name = item.name;
-          this.dataForm.isPhase1Access = item.isPhase1Access;
-          this.dataForm.isPhase2Access = item.isPhase2Access;
-          this.dataForm.isPhase3Access = item.isPhase3Access;
-          this.dataForm.isPhase4Access = item.isPhase4Access;
+          this.dataForm.isPhase1Access = parseInt(item.isPhase1Access);
+          this.dataForm.isPhase2Access = parseInt(item.isPhase2Access);
+          this.dataForm.isPhase3Access = parseInt(item.isPhase3Access);
+          this.dataForm.isPhase4Access = parseInt(item.isPhase4Access);
           // this.dataForm.isSecret = item.isSecret;
           // this.dataForm.canApprovePhase1 = item.canApprovePhase1;
           // this.dataForm.canApprovePhase2 = item.canApprovePhase2;
