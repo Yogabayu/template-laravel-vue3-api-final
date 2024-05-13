@@ -91,7 +91,7 @@ class UserController extends Controller
                         if ($updt['message']['chat']['username'] == $request->username) {
                             $chatId = $updt['message']['chat']['id'];
                             $user->telegram_username = $request->username;
-                            $user->telegram_chat_id = $chatId;
+                            $user->telegram_chat_id = strval($chatId);
                             $user->save();
                             dd($user);
 
