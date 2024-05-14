@@ -458,7 +458,7 @@
       >
         <v-btn
           color="info"
-          text="Prev"
+          text="Kembali ke Tahap Sebelumnya"
           variant="tonal"
           @click="step(fileId, '-')"
           v-if="dataFile && parseInt(dataFile.phase) > 1"
@@ -467,7 +467,7 @@
         <v-spacer></v-spacer>
         <v-btn
           color="info"
-          text="Next"
+          text="Lanjut ke Tahap Selanjutnya"
           variant="tonal"
           @click="step(fileId, 'next')"
           v-if="dataFile && parseInt(dataFile.phase) < 5"
@@ -476,7 +476,7 @@
       <v-col class="d-flex justify-space-beetwen" v-else>
         <v-btn
           color="info"
-          text="Prev"
+          text="Kembali ke Tahap Sebelumnya"
           variant="tonal"
           @click="step(fileId, '-')"
           v-if="dataFile && parseInt(dataFile.phase) > 1"
@@ -484,7 +484,7 @@
         <v-spacer></v-spacer>
         <v-btn
           color="info"
-          text="Next"
+          text="Lanjut ke Tahap Selanjutnya"
           variant="tonal"
           @click="step(fileId, 'next')"
           v-if="dataFile && parseInt(dataFile.phase) < 4"
