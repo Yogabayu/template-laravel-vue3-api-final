@@ -1072,7 +1072,9 @@ class FileController extends Controller
                         'canAppeal' => $notifPosition->canAppeal,
                         'canApprove' => $notifPosition->canApprove,
                         'canInsertData' => $notifPosition->canInsertData,
-                        'isSecret' => $notifPosition->isSecret,
+                        // 'isSecret' => $notifPosition->isSecret,
+                        'isSecret' => 1,
+
                     ];
                     break;
                 }
