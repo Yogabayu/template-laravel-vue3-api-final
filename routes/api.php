@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\PositionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\User\DashboardController;
 use App\Http\Controllers\User\FileController;
 use App\Http\Controllers\User\UserController as UserUserController;
 use Illuminate\Support\Facades\Route;
@@ -84,6 +85,10 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
 
         //////// Route User \\\\\\\\\
         Route::group(['prefix' => 'user'], function () {
+
+            //dashboard
+            Route::get('dashboard', [DashboardController::class, 'index']);
+
             //profile
             Route::get('user-profile', [UserUserController::class, 'getProfile']);
             Route::post('update-user-profile', [UserUserController::class, 'updateProfile']);
@@ -98,6 +103,7 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
             Route::get('change-phase-approve/{id}', [FileController::class, 'changeApproved']);
             Route::put('edit-general-info/{id}', [FileController::class, 'editGeneralInfo']);
             Route::put('survey-credit/{id}', [FileController::class, 'editSurveiResult']);
+            Route::post('change-status', [FileController::class, 'changeStatus']);
 
             //=>note
             Route::post('note', [FileController::class, 'addNote']);

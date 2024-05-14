@@ -3,10 +3,39 @@
     <VCol cols="12" md="12">
       <AnalyticsCongratulations />
     </VCol>
+    <v-container>
+      <v-row>
+        <VCol cols="4" md="6">
+          <CardStatisticsVertical v-bind="{
+            title: 'Kredit Disetujui',
+            image: docs,
+            stats: `${tApproved}`,
+            link: '/u-search',
+          }" />
+        </VCol>
+        <VCol cols="4" md="6">
+          <CardStatisticsVertical v-bind="{
+            title: 'Kredit Pending',
+            image: docs,
+            stats: `${tPending}`,
+            link: '/u-search',
+          }" />
+        </VCol>
+        <VCol cols="4" md="6">
+          <CardStatisticsVertical v-bind="{
+            title: 'Kredit Ditolak',
+            image: docs,
+            stats: `${tRejected}`,
+            link: '/u-search',
+          }" />
+        </VCol>
+      </v-row>
+    </v-container>
   </VRow>
 </template>
 
 <script>
+import mainURL from "@/axios";
 import AnalyticsCongratulations from "@/views/dashboard/AnalyticsCongratulations.vue";
 
 // Images
@@ -37,14 +66,12 @@ export default {
       openFile: openFile,
       fileSave: fileSave,
       fileFavorite: fileFavorite,
-      tFile: null,
-      tRead: null,
-      tFav: null,
-      fileRandom: null,
-      fileFav: null,
+      tApproved: 0,
+      tPending: 0,
+      tRejected: 0,
       newestFile: {},
-      
-      userData:{},
+
+      userData: {},
     };
   },
   methods: {
@@ -62,30 +89,54 @@ export default {
         this.userData = JSON.parse(savedUserData);
       }
     },
-    // async getTotalFileAvailable() {
-    //   try {
-    //     const response = await mainURL.get("/user/total-file");
+    async getRekapCredit() {
+      try {
+        const response = await mainURL.get("/user/dashboard");
 
-    //     if (response.status === 200) {
-    //       this.tFile = response.data.data;
-    //     } else {
-    //       const errorMessage =
-    //         response && response.data && response.data.message
-    //           ? response.data.message
-    //           : "Gagal. Silakan coba lagi.";
-    //       this.$showToast("error", "Sorry", errorMessage);
-    //     }
-    //   } catch (error) {
-    //     const errorMessage =
-    //       error.response && error.response.data && error.response.data.message
-    //         ? error.response.data.message
-    //         : "Gagal login. Silakan coba lagi.";
-    //     this.$showToast("error", "Sorry", errorMessage);
-    //   }
-    // },
+        if (response.status === 200) {
+          const files = response.data.data.files;
+          const isApprovedCounts = {
+            isApproved1: 0,
+            isApproved2: 0,
+            isApproved3: 0
+          };
+
+          files.forEach(file => {
+            switch (file.isApproved) {
+              case 1:
+                isApprovedCounts.isApproved1++;
+                break;
+              case 2:
+                isApprovedCounts.isApproved2++;
+                break;
+              case 3:
+                isApprovedCounts.isApproved3++;
+                break;
+            }
+          });
+
+          this.tApproved = isApprovedCounts.isApproved1;
+          this.tPending = isApprovedCounts.isApproved2;
+          this.tRejected = isApprovedCounts.isApproved3;
+        } else {
+          const errorMessage =
+            response && response.data && response.data.message
+              ? response.data.message
+              : "Gagal. Silakan coba lagi.";
+          this.$showToast("error", "Sorry", errorMessage);
+        }
+      } catch (error) {
+        const errorMessage =
+          error.response && error.response.data && error.response.data.message
+            ? error.response.data.message
+            : "Gagal . Silakan coba lagi.";
+        this.$showToast("error", "Sorry", errorMessage);
+      }
+    },
   },
   mounted() {
     this.getUserData();
+    this.getRekapCredit();
   },
 };
 </script>

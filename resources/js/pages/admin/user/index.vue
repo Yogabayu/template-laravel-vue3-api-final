@@ -98,7 +98,7 @@
 
                 <VCol cols="12" md="12">
                   <v-autocomplete
-                    label="Jabatan"
+                    label="Jabatan - Cakupan Kantor"
                     :items="positions"
                     v-model="dataForm.position_id"
                     :rules="[rules.required]"
@@ -178,7 +178,7 @@
 
                 <VCol cols="12" md="12">
                   <v-autocomplete
-                    label="Jabatan"
+                    label="Jabatan - Cakupan Kantor"
                     :items="positions"
                     v-model="dataForm.position_id"
                     :rules="[rules.required]"

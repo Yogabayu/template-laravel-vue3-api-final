@@ -44,23 +44,10 @@
                 <p>loading data .....</p>
               </template>
               <template #item-plafon="item">Rp. {{ formatInput(item.plafon) }},-</template>
-              <!-- <template #item-phase="item">Phase {{ item.phase }}</template> -->
               <template #item-isApproved="item">
-                <!-- {{
-                  item.plafon >= "25000000"
-                    ? item.isApproved
-                      ? "Approved"
-                      : "Pending"
-                    : item.phase > 3 || item.isApproved
-                    ? "Approved"
-                    : "Pending"
-                }} -->
-                {{
-                  (parseInt(item.plafon) >= 25000000 && item.isApproved) ||
-                    (item.phase > 3 && item.isApproved)
-                    ? "Approved"
-                : "Pending"
-                }}
+                <span v-if="parseInt(item.isApproved) == 1"> Approved</span>
+                <span v-if="parseInt(item.isApproved) == 2"> Pending</span>
+                <span v-if="parseInt(item.isApproved) == 3"> Rejected</span>
               </template>
               <template #item-operation="item">
                 <div class="operation-wrapper">

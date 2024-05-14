@@ -19,24 +19,61 @@ use App\Models\Role;
 use App\Models\User;
 use App\Notifications\TelegramNotification;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File as FacadesFile;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 // URUNG: need to configure salah input data file 
 class FileController extends Controller
 {
     //=> change file status
-    public function changeStatus($id)
+    public function changeStatus(Request $request)
     {
         try {
-            //code...
+            $request->validate([
+                'id' => 'required',
+                'status' => 'required',
+                'reasonRejected' => 'required_if:status,3',
+            ], [
+                'id.required' => 'ID harus diisi',
+                'status.required' => 'Status harus diisi',
+                'reasonRejected.required_if' => 'Alasan penolakan harus diisi ketika status adalah ditolak',
+            ]);
+
+            $file = File::findOrFail($request->id);
+
+            // Check if the previous status was 3 and the new status is not 3
+            if ($file->isApproved == 3 && $request->status != 3) {
+                $file->reasonRejected = null;
+            }
+
+            $file->isApproved = $request->status;
+
+            if ($request->status == 3) {
+                $file->reasonRejected = $request->reasonRejected;
+            }
+
+            $file->save();
+
+            TelegramHelper::changeStatus($file->id, $request->status, $file->user_id);
+
+            return ResponseHelper::successRes('File updated successfully', $file);
+        } catch (ModelNotFoundException $e) {
+            return ResponseHelper::errorRes('File not found');
+        } catch (ValidationException $e) {
+            return ResponseHelper::errorRes($e->errors());
         } catch (\Exception $e) {
-            return ResponseHelper::errorRes($e->getMessage());
+            // Log the exception
+            // Log::error('Error changing file status', ['error' => $e->getMessage()]);
+            return ResponseHelper::errorRes('An error occurred while updating the file | ' . $e->getMessage());
         }
     }
+
 
     //=>survei result phase 3
     public function editSurveiResult(Request $request, $id)

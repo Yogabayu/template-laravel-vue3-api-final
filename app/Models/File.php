@@ -20,7 +20,7 @@ class File extends Model
         'isAppealed',
         'type_bussiness',
         'desc_bussiness',
-        // 'file1',
+        'reasonRejected',
         // 'file2',
         // 'file3',
         // 'file4',

@@ -21,7 +21,7 @@
 
     <v-card>
       <VCardTitle class="text-2xl font-weight-bold d-flex justify-left">
-        Credit {{ dataFile.phase }}
+        Credit
       </VCardTitle>
       <v-card-text>
         <v-stepper :model-value="stepperModel" :mobile="isMobile">
@@ -347,7 +347,7 @@
           <EasyDataTable :headers="timerHeaders" :items="dataFile.phase_times">
             <template #item-timeDiff="item">{{
               calculateTimeDiff(item.startTime, item.endTime)
-              }}</template>
+            }}</template>
           </EasyDataTable>
         </template>
       </v-card>
@@ -382,6 +382,39 @@
         </template>
       </v-card>
     </v-dialog>
+
+    <v-dialog v-model="isChangeStatusCredit" width="auto" transition="dialog-top-transition">
+      <v-card>
+        <template v-slot:title> Ubah Status File </template>
+        <template v-slot:text>
+          <v-form @submit.prevent="updateStatusCredit">
+            <v-row>
+              <VCol md="12" cols="12">
+                <v-select label="Ubah Status File" :items="[
+                  { value: 1, title: 'Approved' },
+                  { value: 2, title: 'Pending' },
+                  { value: 3, title: 'Rejected' },
+                ]" v-model="changeStatus.status"></v-select>
+              </VCol>
+              <VCol md="12" cols="12" v-if="changeStatus.status == 3">
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Alasan: </span>
+                <v-textarea bg-color="grey-lighten-2" color="cyan" v-model="changeStatus.reasonRejected"
+                  rows="2"></v-textarea>
+              </VCol>
+              <VCol cols="12" class="d-flex flex-wrap gap-4">
+                <VBtn type="submit">
+                  Simpan
+                </VBtn>
+
+                <button type="button" class="btn btn-blue" @click="closeModal(9)">
+                  Batal
+                </button>
+              </VCol>
+            </v-row>
+          </v-form>
+        </template>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -403,6 +436,15 @@ export default {
       isShowTimers: false,
       isShowHistory: false,
       isShowApprovals: false,
+      isChangeStatusCredit: false,
+
+      //=>paksa langsung ganti status kredit
+      changeStatus: {
+        id: null,
+        status: null,
+        reasonRejected: null,
+      },
+
       stepperModel: 0,
 
       isUpdateGeneralInfo: false,
@@ -432,6 +474,7 @@ export default {
         approvals: [],
         phase_times: [],
         file_activities: [],
+        reasonRejected: "",
       },
       filePath: this.$filePath,
 
@@ -512,6 +555,45 @@ export default {
     },
   },
   methods: {
+    async updateStatusCredit() {
+      try {
+        this.overlay = true;
+        const formData = new FormData();
+        formData.append("id", this.fileId);
+        formData.append("status", this.changeStatus.status);
+
+        if (this.changeStatus.status == '3') {
+          if (this.changeStatus.reasonRejected == null) {
+            this.overlay = false;
+            this.closeModal(9);
+            this.$showToast("error", "Sorry", "Alasan Penolakan wajib diisi");
+            return; // Tambahkan return di sini untuk menghentikan eksekusi
+          }
+          formData.append("reasonRejected", this.changeStatus.reasonRejected);
+        }
+
+        const response = await mainURL.post(`/user/change-status`, formData);
+
+        if (response.status === 200) {
+          this.overlay = false;
+          this.getDetailFile(this.fileId);
+          this.isDataPhase3 = false;
+          this.closeModal(9);
+          this.$showToast("success", "Success", response.data.message);
+        } else {
+          this.overlay = false;
+          this.getDetailFile(this.fileId);
+          this.isDataPhase3 = false;
+          this.closeModal(9);
+          this.$showToast("error", "Sorry", response.data.message);
+        }
+      } catch (error) {
+        this.closeModal(9);
+        this.$showToast("error", "Sorry", error.response.data.message);
+      }
+    },
+
+
     calculateTimeDiff(startTime: any, endTime: any) {
       let start = new Date(startTime);
       let end = endTime ? new Date(endTime) : new Date();
@@ -536,6 +618,7 @@ export default {
     //=>phase3
     async updatePhase3() {
       try {
+        this.overlay = true;
         const formData = new FormData();
         formData.append("surveyResult", this.dataPhase3.surveyResult);
         formData.append("_method", "PUT");
@@ -658,7 +741,7 @@ export default {
         if (response.status === 200) {
           this.dataFile = response.data.data.file;
           this.userAccess = response.data.data.userAccess;
-          
+
 
           this.dataFile.phase = parseInt(this.dataFile.phase);
           this.isShowPhase4 =
@@ -732,6 +815,8 @@ export default {
         this.isShowHistory = true;
       } else if (type == 8) {
         this.isShowApprovals = true;
+      } else if (type == 9) {
+        this.isChangeStatusCredit = true;
       }
     },
     closeModal(type: number) {
@@ -748,6 +833,11 @@ export default {
       } else if (type == 5) {
         this.dataPhase3.surveyResult = "";
         this.isDataPhase3 = false;
+      } else if (type == 9) {
+        this.isChangeStatusCredit = false;
+        this.changeStatus.id = null;
+        this.changeStatus.status = null;
+        this.changeStatus.reasonRejected = null;
       }
     },
 
