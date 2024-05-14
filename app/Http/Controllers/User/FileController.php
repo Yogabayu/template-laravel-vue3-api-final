@@ -1039,7 +1039,23 @@ class FileController extends Controller
     public function detailFile($id)
     {
         try {
-            $file = File::findOrFail($id);
+            $file = File::with([
+                'user',
+                'notes' => function ($query) {
+                    $query->latest();
+                },
+                'notes.user',
+                'notes.user.position',
+                'fileActivities' => function ($query) {
+                    $query->latest();
+                },
+                'fileActivities.user',
+                'attachments',
+                'approvals',
+                'approvals.user',
+                'phaseTimes',
+            ])->findOrFail($id);
+
             // //add user to approval
             $userUploaded = User::where('id', $file->user_id)->first();
             $userPosition = Position::where('id', $userUploaded->position_id)->first();
@@ -1086,61 +1102,43 @@ class FileController extends Controller
                         'canInsertData' => $notifPosition->canInsertData,
                         'isSecret' => $notifPosition->isSecret,
                         // 'isSecret' => 1,
-
                     ];
                     break;
                 }
             }
 
-            //add new approval if exist
-            $approvalPositions = [];
+            // //add new approval if exist
+            // $approvalPositions = [];
 
-            //add user to approval
-            foreach ($userOffices as $userOffice) {
-                $notificationConfigurations = DB::table('notification_configurations')
-                    ->where('office_id', $userOffice->office_id)
-                    ->where('phase', $file->phase)
-                    ->where('canApprove', 1)
-                    ->get();
+            // //add user to approval
+            // foreach ($userOffices as $userOffice) {
+            //     $notificationConfigurations = DB::table('notification_configurations')
+            //         ->where('office_id', $userOffice->office_id)
+            //         ->where('phase', $file->phase)
+            //         ->where('canApprove', 1)
+            //         ->get();
 
-                $approvalPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
-            }
+            //     $approvalPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
+            // }
 
-            $notifApprovalUser = [];
-            foreach ($approvalPositions as $notifPosition) {
-                $users = DB::table('users')
-                    ->where('position_id', $notifPosition->position_id)
-                    ->where('isActive', 1)
-                    ->get();
-                $notifApprovalUser = array_merge($notifApprovalUser, $users->toArray());
-            }
-            foreach ($approvalPositions as $pos) {
-                foreach ($notifApprovalUser as $user) {
-                    if ($pos->position_id == $user->position_id) {
-                        Approval::firstOrCreate(
-                            ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
-                            ['approved' => 0]
-                        );
-                    }
-                }
-            }
-
-            $file = File::with([
-                'user',
-                'notes' => function ($query) {
-                    $query->latest();
-                },
-                'notes.user',
-                'notes.user.position',
-                'fileActivities' => function ($query) {
-                    $query->latest();
-                },
-                'fileActivities.user',
-                'attachments',
-                'approvals',
-                'approvals.user',
-                'phaseTimes',
-            ])->findOrFail($id);
+            // $notifApprovalUser = [];
+            // foreach ($approvalPositions as $notifPosition) {
+            //     $users = DB::table('users')
+            //         ->where('position_id', $notifPosition->position_id)
+            //         ->where('isActive', 1)
+            //         ->get();
+            //     $notifApprovalUser = array_merge($notifApprovalUser, $users->toArray());
+            // }
+            // foreach ($approvalPositions as $pos) {
+            //     foreach ($notifApprovalUser as $user) {
+            //         if ($pos->position_id == $user->position_id) {
+            //             Approval::firstOrCreate(
+            //                 ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
+            //                 ['approved' => 0]
+            //             );
+            //         }
+            //     }
+            // }
 
             ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Mengakses detail file');
 
