@@ -972,7 +972,7 @@ class FileController extends Controller
                     ->get();
                 $notifUser = array_merge($notifUser, $users->toArray());
             }
-            dd($notifUser);
+            // dd($notifUser);
             foreach ($notifPositions as $pos) {
                 foreach ($notifUser as $user) {
                     if (($pos->position_id == $user->position_id) && $user->id == $file->user_id) {
