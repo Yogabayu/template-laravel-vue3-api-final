@@ -818,7 +818,7 @@ class FileController extends Controller
         try {
             $userNow = User::with('position')->where('id', Auth::user()->id)->first();
 
-            if ($userNow->position->name == 'Account Officer' || $userNow->position->name == 'AO' || $userNow->position->name == 'ao' || $userNow->position->name == 'accountd officer' || $userNow->position->name == 'Account Officer Exceutive') {
+            if ($userNow->position->name == 'Account Officer' || $userNow->position->name == 'AO' || $userNow->position->name == 'ao' || $userNow->position->name == 'account officer' || $userNow->position->name == 'Account Officer Exceutive') {
 
                 $positionId = Auth::user()->position_id;
                 $position = Position::with('offices')->where('id', $positionId)->first();

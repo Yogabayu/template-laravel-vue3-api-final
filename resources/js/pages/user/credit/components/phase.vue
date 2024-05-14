@@ -1,11 +1,26 @@
 <!-- URUNG  :   production tampilan masih salah -->
 <template>
   <v-card color="backgroundCard">
-    <v-card-title class="text-2xl font-weight-bold d-flex justify-center">
+    <v-card-title class="text-2xl font-weight-bold d-flex justify-center"  v-if="!['Account Officer', 'AO', 'ao', 'account officer', 'Account Officer Exceutive'].includes(userData.position.name)">
       Detail 
-      <v-chip color="success" v-if="parseInt(dataFile.isApproved) == 1 && parseInt(dataFile.phase) != 1" @click="openModal(9)">Approved</v-chip>
-      <v-chip color="warning" v-if="parseInt(dataFile.isApproved) == 2 && parseInt(dataFile.phase) != 1" @click="openModal(9)">Pending</v-chip>
-      <v-chip color="error" v-if="parseInt(dataFile.isApproved) == 3 && parseInt(dataFile.phase) != 1" @click="openModal(9)">Rejected</v-chip>
+      <v-chip color="success"
+        v-if="parseInt(dataFile.isApproved) == 1"
+        @click="openModal(9)">Approved</v-chip>
+      <v-chip color="warning"
+        v-if="parseInt(dataFile.isApproved) == 2"
+        @click="openModal(9)">Pending</v-chip>
+      <v-chip color="error"
+        v-if="parseInt(dataFile.isApproved) == 3"
+        @click="openModal(9)">Rejected</v-chip>
+    </v-card-title>
+    <v-card-title class="text-2xl font-weight-bold d-flex justify-center"  v-else>
+      Detail 
+      <v-chip color="success"
+        v-if="parseInt(dataFile.isApproved) == 1">Approved</v-chip>
+      <v-chip color="warning"
+        v-if="parseInt(dataFile.isApproved) == 2">Pending</v-chip>
+      <v-chip color="error"
+        v-if="parseInt(dataFile.isApproved) == 3">Rejected</v-chip>
     </v-card-title>
 
     <v-card-text v-if="dataFile.reasonRejected != null">
@@ -13,7 +28,7 @@
         <v-card-title> Alasan Ditolak 🔹 </v-card-title>
         <v-card-text>
           <div>
-            <span>{{ dataFile && dataFile.reasonRejected  }}</span>
+            <span>{{ dataFile && dataFile.reasonRejected }}</span>
           </div>
         </v-card-text>
       </v-card>
@@ -25,20 +40,10 @@
             <v-col cols="12" sm="6" md="8">
               <span>Informasi Umum ℹ️</span>
             </v-col>
-            <v-col
-              cols="12"
-              sm="6"
-              md="4"
-              class="text-sm-right text-md-right"
-              v-if="userAccess && userAccess.canInsertData"
-            >
+            <v-col cols="12" sm="6" md="4" class="text-sm-right text-md-right"
+              v-if="userAccess && userAccess.canInsertData">
               <span>
-                <v-btn
-                  color="primary"
-                  size="small"
-                  class="my-3 mx-3"
-                  @click="openModal(4)"
-                >
+                <v-btn color="primary" size="small" class="my-3 mx-3" @click="openModal(4)">
                   Edit Data
                 </v-btn>
               </span>
@@ -55,8 +60,7 @@
               <v-list-item-title>
                 <strong>
                   {{ dataFile.name }}
-                </strong></v-list-item-title
-              >
+                </strong></v-list-item-title>
             </v-list-item>
             <v-list density="compact">
               <v-list-item>
@@ -67,8 +71,7 @@
                 <v-list-item-title>
                   <strong>
                     Rp {{ formatInput(dataFile.plafon) }}
-                  </strong></v-list-item-title
-                >
+                  </strong></v-list-item-title>
               </v-list-item>
             </v-list>
             <v-list density="compact">
@@ -80,8 +83,7 @@
                 <v-list-item-title>
                   <strong>
                     {{ dataFile.type_bussiness }}
-                  </strong></v-list-item-title
-                >
+                  </strong></v-list-item-title>
               </v-list-item>
             </v-list>
             <v-list density="compact">
@@ -93,8 +95,7 @@
                 <v-list-item-title>
                   <strong>
                     {{ dataFile.desc_bussiness }}
-                  </strong></v-list-item-title
-                >
+                  </strong></v-list-item-title>
               </v-list-item>
             </v-list>
           </v-list>
@@ -107,20 +108,10 @@
             <v-col cols="12" sm="6" md="8">
               <span>Dokumen Pendukung 📄</span>
             </v-col>
-            <v-col
-              cols="12"
-              sm="6"
-              md="4"
-              class="text-sm-right text-md-right"
-              v-if="userAccess && userAccess.canInsertData"
-            >
+            <v-col cols="12" sm="6" md="4" class="text-sm-right text-md-right"
+              v-if="userAccess && userAccess.canInsertData">
               <span>
-                <v-btn
-                  color="primary"
-                  size="small"
-                  class="my-3 mx-3"
-                  @click="openModal(1)"
-                >
+                <v-btn color="primary" size="small" class="my-3 mx-3" @click="openModal(1)">
                   Tambah Data Lain
                 </v-btn>
               </span>
@@ -129,10 +120,7 @@
         </v-card-title>
         <v-card-text>
           <div v-for="(attachment, index) in dataFile.attachments" :key="index">
-            <v-list
-              density="compact"
-              v-if="attachment.path != null && !parseInt(attachment.isSecret)"
-            >
+            <v-list density="compact" v-if="attachment.path != null && !parseInt(attachment.isSecret)">
               <v-list-item>
                 <template v-slot:prepend>
                   <v-icon icon="mdi-file"></v-icon>
@@ -143,60 +131,36 @@
                     <div class="d-flex justify-space-between">
                       <v-tooltip location="top" text="Lihat File">
                         <template v-slot:activator="{ props }">
-                          <a
-                            v-bind="props"
-                            :href="
-                              filePath +
-                              '/' +
-                              dataFile.id +
-                              '/' +
-                              attachment.path
-                            "
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
+                          <a v-bind="props" :href="filePath +
+                            '/' +
+                            dataFile.id +
+                            '/' +
+                            attachment.path
+                            " target="_blank" rel="noopener noreferrer">
                             <button>
-                              <VIcon
-                                size="20"
-                                icon="bx-link-external"
-                                color="blue"
-                              />
+                              <VIcon size="20" icon="bx-link-external" color="blue" />
                             </button>
                           </a>
                         </template>
                       </v-tooltip>
 
-                      <v-tooltip
-                        location="top"
-                        text="Edit File"
-                        v-if="
-                          userData.id == dataFile.user_id ||
-                          (userAccess && parseInt(userAccess.canInsertData))
-                        "
-                      >
+                      <v-tooltip location="top" text="Edit File" v-if="
+                        userData.id == dataFile.user_id ||
+                        (userAccess && parseInt(userAccess.canInsertData))
+                      ">
                         <template v-slot:activator="{ props }">
-                          <button
-                            v-bind="props"
-                            @click="openModal(2, attachment)"
-                          >
+                          <button v-bind="props" @click="openModal(2, attachment)">
                             <VIcon size="20" icon="bx-edit" color="blue" />
                           </button>
                         </template>
                       </v-tooltip>
 
-                      <v-tooltip
-                        location="top"
-                        text="Hapus File"
-                        v-if="
-                          userData.id == dataFile.user_id ||
-                          (userAccess && parseInt(userAccess.canInsertData))
-                        "
-                      >
+                      <v-tooltip location="top" text="Hapus File" v-if="
+                        userData.id == dataFile.user_id ||
+                        (userAccess && parseInt(userAccess.canInsertData))
+                      ">
                         <template v-slot:activator="{ props }">
-                          <button
-                            v-bind="props"
-                            @click="deleteAttachment(attachment.id)"
-                          >
+                          <button v-bind="props" @click="deleteAttachment(attachment.id)">
                             <VIcon size="20" icon="bx-trash" color="red" />
                           </button>
                         </template>
@@ -206,74 +170,48 @@
                 </template>
               </v-list-item>
             </v-list>
-            
+
             <v-list density="compact" v-else>
               <v-list-item>
                 <template v-slot:prepend>
                   <v-icon icon="mdi-file"></v-icon>
                 </template>
                 <v-list-item-title> {{ attachment.name }} </v-list-item-title>
-                <template
-                  v-slot:append
-                >
+                <template v-slot:append>
                   <div class="operation-wrapper">
                     <div class="d-flex justify-space-between">
                       <v-tooltip location="top" text="Lihat File">
                         <template v-slot:activator="{ props }">
-                          <a
-                            v-bind="props"
-                            :href="
-                              filePath +
-                              '/' +
-                              dataFile.id +
-                              '/' +
-                              attachment.path
-                            "
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
+                          <a v-bind="props" :href="filePath +
+                            '/' +
+                            dataFile.id +
+                            '/' +
+                            attachment.path
+                            " target="_blank" rel="noopener noreferrer">
                             <button>
-                              <VIcon
-                                size="20"
-                                icon="bx-link-external"
-                                color="blue"
-                              />
+                              <VIcon size="20" icon="bx-link-external" color="blue" />
                             </button>
                           </a>
                         </template>
                       </v-tooltip>
 
-                      <v-tooltip
-                        location="top"
-                        text="Edit File"
-                        v-if="
-                          userData.id == dataFile.user_id ||
-                          (userAccess && parseInt(userAccess.canInsertData))
-                        "
-                      >
+                      <v-tooltip location="top" text="Edit File" v-if="
+                        userData.id == dataFile.user_id ||
+                        (userAccess && parseInt(userAccess.canInsertData))
+                      ">
                         <template v-slot:activator="{ props }">
-                          <button
-                            v-bind="props"
-                            @click="openModal(2, attachment)"
-                          >
+                          <button v-bind="props" @click="openModal(2, attachment)">
                             <VIcon size="20" icon="bx-edit" color="blue" />
                           </button>
                         </template>
                       </v-tooltip>
 
-                      <v-tooltip
-                        location="top"
-                        text="Hapus File"
-                        v-if="
-                          userData.id == dataFile.user_id ||
-                          (userAccess && parseInt(userAccess.canInsertData)) 
-                        "
-                      >
+                      <v-tooltip location="top" text="Hapus File" v-if="
+                        userData.id == dataFile.user_id ||
+                        (userAccess && parseInt(userAccess.canInsertData))
+                      ">
                         <template v-slot:activator="{ props }">
-                          <button
-                            v-bind="props"
-                            @click="deleteAttachment(attachment.id)"
-                          >
+                          <button v-bind="props" @click="deleteAttachment(attachment.id)">
                             <VIcon size="20" icon="bx-trash" color="red" />
                           </button>
                         </template>
@@ -295,20 +233,10 @@
             <v-col cols="12" sm="6" md="8">
               <span>Survey Lapangan ℹ️</span>
             </v-col>
-            <v-col
-              cols="12"
-              sm="6"
-              md="4"
-              class="text-sm-right text-md-right"
-              v-if="userAccess && userAccess.canInsertData"
-            >
+            <v-col cols="12" sm="6" md="4" class="text-sm-right text-md-right"
+              v-if="userAccess && userAccess.canInsertData">
               <span>
-                <v-btn
-                  color="primary"
-                  size="small"
-                  class="my-3 mx-3"
-                  @click="openModal(5)"
-                >
+                <v-btn color="primary" size="small" class="my-3 mx-3" @click="openModal(5)">
                   Edit Data
                 </v-btn>
               </span>
@@ -325,8 +253,7 @@
               <v-list-item-title>
                 <strong>
                   {{ dataFile.surveyResult }}
-                </strong></v-list-item-title
-              >
+                </strong></v-list-item-title>
             </v-list-item>
           </v-list>
         </v-card-text>
@@ -338,16 +265,10 @@
       <v-card>
         <v-card-title> Status Verifikasi ✅ </v-card-title>
         <v-card-text>
-          <div
-            v-if="dataFile && dataFile.approvals && dataFile.approvals.length"
-          >
+          <div v-if="dataFile && dataFile.approvals && dataFile.approvals.length">
             <template v-for="(app, index) in dataFile.approvals" :key="index">
-              <v-chip
-                v-if="dataFile.phase == app.phase"
-                :color="app.approved == 1 ? 'success' : 'error'"
-                class="mr-2"
-                @click="changeApproval(app.id)"
-              >
+              <v-chip v-if="dataFile.phase == app.phase" :color="app.approved == 1 ? 'success' : 'error'" class="mr-2"
+                @click="changeApproval(app.id)">
                 {{ app.user.name }}
               </v-chip>
             </template>
@@ -388,12 +309,8 @@
           <v-form @submit.prevent="insertNote">
             <v-row align="center" justify="center">
               <v-col cols="12" sm="8" md="10">
-                <v-textarea
-                  outlined
-                  rows="2"
-                  placeholder="Tambahkan catatan disini"
-                  v-model="dataNote.note"
-                ></v-textarea>
+                <v-textarea outlined rows="2" placeholder="Tambahkan catatan disini"
+                  v-model="dataNote.note"></v-textarea>
               </v-col>
               <v-col cols="12" sm="4" md="2">
                 <v-btn color="primary" icon type="submit">
@@ -406,31 +323,21 @@
 
         <v-card-text>
           <div>
-            <div
-              v-for="(comment, index) in paginatedNotes"
-              :key="index"
-              class="user-comment"
-            >
+            <div v-for="(comment, index) in paginatedNotes" :key="index" class="user-comment">
               <div class="comment-content">
                 <p>{{ comment.note }}</p>
                 <v-row class="justify-space-between mx-2 mb-2">
                   <small>
                     <strong>
                       {{ comment.user.name }} - {{ comment.user.position.name }}
-                    </strong></small
-                  >
+                    </strong></small>
                   <small>{{ formatDate(comment.created_at) }}</small>
                 </v-row>
               </div>
 
-              <v-menu
-                transition="scale-transition"
-                v-if="userData.id == comment.user_id"
-              >
+              <v-menu transition="scale-transition" v-if="userData.id == comment.user_id">
                 <template v-slot:activator="{ props }">
-                  <v-icon v-bind="props" class="ellipsis-icon"
-                    >mdi-dots-vertical</v-icon
-                  >
+                  <v-icon v-bind="props" class="ellipsis-icon">mdi-dots-vertical</v-icon>
                 </template>
 
                 <v-list>
@@ -451,11 +358,8 @@
                 </v-list>
               </v-menu>
             </div>
-            <v-pagination
-              v-model="currentPage"
-              :length="Math.ceil(dataFile.notes.length / itemsPerPage)"
-              @input="onPageChange"
-            ></v-pagination>
+            <v-pagination v-model="currentPage" :length="Math.ceil(dataFile.notes.length / itemsPerPage)"
+              @input="onPageChange"></v-pagination>
           </div>
         </v-card-text>
       </v-card>
@@ -463,43 +367,20 @@
 
     <!-- prev/next btn -->
     <v-card-actions v-if="userAccess && parseInt(userAccess.canApprove)">
-      <v-col
-        class="d-flex justify-space-beetwen"
-        v-if="dataFile && parseInt(dataFile.plafon) > 25000000"
-      >
-        <v-btn
-          color="info"
-          text="Prev Phase"
-          variant="tonal"
-          @click="step(fileId, '-')"
-          v-if="dataFile && parseInt(dataFile.phase) > 1"
-        ></v-btn>
+      <v-col class="d-flex justify-space-beetwen" v-if="dataFile && parseInt(dataFile.plafon) > 25000000">
+        <v-btn color="info" text="Prev Phase" variant="tonal" @click="step(fileId, '-')"
+          v-if="dataFile && parseInt(dataFile.phase) > 1"></v-btn>
 
         <v-spacer></v-spacer>
-        <v-btn
-          color="info"
-          text="Next Phase"
-          variant="tonal"
-          @click="step(fileId, 'next')"
-          v-if="dataFile && parseInt(dataFile.phase) < 5"
-        ></v-btn>
+        <v-btn color="info" text="Next Phase" variant="tonal" @click="step(fileId, 'next')"
+          v-if="dataFile && parseInt(dataFile.phase) < 5"></v-btn>
       </v-col>
       <v-col class="d-flex justify-space-beetwen" v-else>
-        <v-btn
-          color="info"
-          text="Prev Phase"
-          variant="tonal"
-          @click="step(fileId, '-')"
-          v-if="dataFile && parseInt(dataFile.phase) > 1"
-        ></v-btn>
+        <v-btn color="info" text="Prev Phase" variant="tonal" @click="step(fileId, '-')"
+          v-if="dataFile && parseInt(dataFile.phase) > 1"></v-btn>
         <v-spacer></v-spacer>
-        <v-btn
-          color="info"
-          text="Next Phase"
-          variant="tonal"
-          @click="step(fileId, 'next')"
-          v-if="dataFile && parseInt(dataFile.phase) < 4"
-        ></v-btn>
+        <v-btn color="info" text="Next Phase" variant="tonal" @click="step(fileId, 'next')"
+          v-if="dataFile && parseInt(dataFile.phase) < 4"></v-btn>
       </v-col>
     </v-card-actions>
   </v-card>

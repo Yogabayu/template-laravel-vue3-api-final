@@ -788,7 +788,7 @@ export default {
     getUserData() {
       const savedUserData = localStorage.getItem("userData");
       if (savedUserData) {
-        this.userData = JSON.parse(savedUserData);
+        this.userData = JSON.parse(savedUserData);        
       }
     },
     openModal(type: number, item = null) {
