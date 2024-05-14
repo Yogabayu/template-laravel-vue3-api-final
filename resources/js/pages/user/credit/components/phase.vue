@@ -160,7 +160,7 @@
                         text="Edit File"
                         v-if="
                           userData.id == dataFile.user_id ||
-                          (userAccess && userAccess.canInsertData)
+                          (userAccess && parseInt(userAccess.canInsertData))
                         "
                       >
                         <template v-slot:activator="{ props }">
@@ -178,7 +178,7 @@
                         text="Hapus File"
                         v-if="
                           userData.id == dataFile.user_id ||
-                          (userAccess && userAccess.canInsertData)
+                          (userAccess && parseInt(userAccess.canInsertData))
                         "
                       >
                         <template v-slot:activator="{ props }">
@@ -203,7 +203,7 @@
                 <v-list-item-title> {{ attachment.name }} </v-list-item-title>
                 <template
                   v-slot:append
-                  v-if="userAccess && userAccess.isSecret"
+                  v-if="userAccess && parseInt(userAccess.isSecret)"
                 >
                   <div class="operation-wrapper">
                     <div class="d-flex justify-space-between">

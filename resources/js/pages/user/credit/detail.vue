@@ -658,6 +658,7 @@ export default {
         if (response.status === 200) {
           this.dataFile = response.data.data.file;
           this.userAccess = response.data.data.userAccess;
+          
 
           this.dataFile.phase = parseInt(this.dataFile.phase);
           this.isShowPhase4 =

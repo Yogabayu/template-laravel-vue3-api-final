@@ -1043,15 +1043,26 @@ class FileController extends Controller
 
             //add user to approval
             foreach ($userOffices as $userOffice) {
-                $notificationConfigurations = DB::table('notification_configurations')
-                    ->where('office_id', $userOffice->office_id)
-                    ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
-                    ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
-                    ->where('phase', $file->phase)
-                    ->get();
+                if ($file->phase == 5) {
+                    $notificationConfigurations = DB::table('notification_configurations')
+                        ->where('office_id', $userOffice->office_id)
+                        ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
+                        ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
+                        ->get();
 
-                $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
+                    $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
+                } else {
+                    $notificationConfigurations = DB::table('notification_configurations')
+                        ->where('office_id', $userOffice->office_id)
+                        ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
+                        ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
+                        ->where('phase', $file->phase)
+                        ->get();
+
+                    $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
+                }
             }
+
             $userPosNow = User::where('id', Auth::user()->id)->first();
             $userAccess = [];
 
