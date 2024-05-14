@@ -323,7 +323,7 @@
     </v-card-text>
 
     <!-- Approval -->
-    <v-card-text>
+    <v-card-text v-if="dataFile && parseInt(dataFile.phase) < 5">
       <v-card>
         <v-card-title> Status Verifikasi ✅ </v-card-title>
         <v-card-text>
@@ -470,7 +470,7 @@
           text="Next"
           variant="tonal"
           @click="step(fileId, 'next')"
-          v-if="dataFile && parseInt(dataFile.phase) < 4"
+          v-if="dataFile && parseInt(dataFile.phase) < 5"
         ></v-btn>
       </v-col>
       <v-col class="d-flex justify-space-beetwen" v-else>

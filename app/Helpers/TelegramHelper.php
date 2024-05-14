@@ -30,8 +30,7 @@ class TelegramHelper
                 ->where('phase', $file->phase)
                 ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
                 ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
-                ->where('phase', $file->phase)
-                ->where('canApprove', 1)
+                ->where('notification', 1)
                 ->get();
 
             $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
@@ -79,8 +78,7 @@ class TelegramHelper
                 ->where('phase', $file->phase)
                 ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
                 ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
-                ->where('phase', $file->phase)
-                ->where('canApprove', 1)
+                ->where('notification', 1)
                 ->get();
 
             $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
@@ -128,7 +126,6 @@ class TelegramHelper
                 ->where('phase', $file->phase)
                 ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
                 ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
-                ->where('phase', $file->phase)
                 ->get();
 
             $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
@@ -156,6 +153,121 @@ class TelegramHelper
                 . str_pad("*Phase*", 18) . ": " . $file->phase . "\n"
                 . str_pad("*Pengguna Yang Memperbarui*", 18) . ": " . ($sender->name ?? '-') . "\n"
                 . ($note ?? '-') . "\n\n"
+                . str_pad("*Plafon*", 25) . ": Rp. " . number_format($file->plafon, 0, ',', '.') . "\n"
+                . "\nSilakan cek detailnya di Website ECAR.\n";
+
+
+            $user->notify(new TelegramNotification($message, $file, $attachments));
+        }
+    }
+
+    public static function AgreementPhase4($fileId, $note, $senderId)
+    {
+        $file = File::where('id', $fileId)->first();
+        $sender = User::where('id', $senderId)->first();
+
+        $userUploaded = User::where('id', $file->user_id)->first();
+        $userPosition = Position::where('id', $userUploaded->position_id)->first();
+        $userOffices = PositionToOffice::where('position_id', $userPosition->id)->get();
+        $notifPositions = [];
+
+        foreach ($userOffices as $userOffice) {
+            $notificationConfigurations = DB::table('notification_configurations')
+                ->where('office_id', $userOffice->office_id)
+                ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
+                ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
+                ->get();
+
+            $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
+        }
+
+        $uniqueNotifPositions = [];
+        $positionIds = [];
+
+        foreach ($notifPositions as $notifPosition) {
+            if (!in_array($notifPosition->position_id, $positionIds)) {
+                $uniqueNotifPositions[] = $notifPosition;
+                $positionIds[] = $notifPosition->position_id;
+            }
+        }
+
+        $notifUser = [];
+        foreach ($uniqueNotifPositions as $notifPosition) {
+            $users = DB::table('users')
+                ->where('position_id', $notifPosition->position_id)
+                ->where('isActive', 1)
+                ->where('telegram_chat_id', '!=', null)
+                ->get();
+            $notifUser = array_merge($notifUser, $users->toArray());
+        }
+
+        foreach ($notifUser as $notif) {
+            $ao = User::find($file->user_id);
+            $user = User::find($notif->id);
+            $attachments = Attachment::where('file_id', $file->id)->where('isSecret', '!=', 1)->get();
+
+            // Membuat pesan yang lebih tertata
+            $message = "📣 *Ada Update Baru*\n\n"
+                . str_pad("*AO*", 25) . ": " . $ao->name . "\n"
+                . str_pad("*Pemohon Kredit*", 18) . ": " . $file->name . "\n\n"
+                . str_pad("*Status*", 18) . ": " . "Disetujui" . "\n"
+                . str_pad("*Plafon*", 25) . ": Rp. " . number_format($file->plafon, 0, ',', '.') . "\n"
+                . "\nSilakan cek detailnya di Website ECAR.\n";
+
+
+            $user->notify(new TelegramNotification($message, $file, $attachments));
+        }
+    }
+    public static function AgreementPhase3($fileId, $note, $senderId)
+    {
+        $file = File::where('id', $fileId)->first();
+        $sender = User::where('id', $senderId)->first();
+
+        $userUploaded = User::where('id', $file->user_id)->first();
+        $userPosition = Position::where('id', $userUploaded->position_id)->first();
+        $userOffices = PositionToOffice::where('position_id', $userPosition->id)->get();
+        $notifPositions = [];
+
+        foreach ($userOffices as $userOffice) {
+            $notificationConfigurations = DB::table('notification_configurations')
+                ->where('office_id', $userOffice->office_id)
+                ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
+                ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
+                ->get();
+
+            $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
+        }
+
+        $uniqueNotifPositions = [];
+        $positionIds = [];
+
+        foreach ($notifPositions as $notifPosition) {
+            if (!in_array($notifPosition->position_id, $positionIds)) {
+                $uniqueNotifPositions[] = $notifPosition;
+                $positionIds[] = $notifPosition->position_id;
+            }
+        }
+
+        $notifUser = [];
+        foreach ($uniqueNotifPositions as $notifPosition) {
+            $users = DB::table('users')
+                ->where('position_id', $notifPosition->position_id)
+                ->where('isActive', 1)
+                ->where('telegram_chat_id', '!=', null)
+                ->get();
+            $notifUser = array_merge($notifUser, $users->toArray());
+        }
+
+        foreach ($notifUser as $notif) {
+            $ao = User::find($file->user_id);
+            $user = User::find($notif->id);
+            $attachments = Attachment::where('file_id', $file->id)->where('isSecret', '!=', 1)->get();
+
+            // Membuat pesan yang lebih tertata
+            $message = "📣 *Ada Update Baru*\n\n"
+                . str_pad("*AO*", 25) . ": " . $ao->name . "\n"
+                . str_pad("*Pemohon Kredit*", 18) . ": " . $file->name . "\n\n"
+                . str_pad("*Status Kredit*", 18) . ": " . "Disetujui" . "\n"
                 . str_pad("*Plafon*", 25) . ": Rp. " . number_format($file->plafon, 0, ',', '.') . "\n"
                 . "\nSilakan cek detailnya di Website ECAR.\n";
 

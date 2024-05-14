@@ -248,303 +248,459 @@ class FileController extends Controller
                 if ($cekAllApprove->where('approved', 0)->count() > 0) {
                     return ResponseHelper::errorRes('Maaf, ada Jabatan / User yang masih belum memberikan approve');
                 }
-                if ($file->plafon > 25000000 && $file->phase < 3) {
-                    $filephase = $file->phase + 1;
-                    $file->phase = $file->phase + 1;
+                $filephase = $file->phase + 1;
 
-                    $userUploaded = User::where('id', $file->user_id)->first();
-                    $userPosition = Position::where('id', $userUploaded->position_id)->first();
-                    $userOffices = PositionToOffice::where('position_id', $userPosition->id)->get();
-                    $notifPositions = [];
+                if ($file->plafon > 25000000) {
+                    if ($file->phase == 4) {
+                        $file->phase = 5;
+                        $file->isApproved = 1;
+                        $file->save();
+                        $phaseTime = PhaseTime::where('file_id', $file->id)->where('phase', $filephase - 1)->first();
+                        //add count time
+                        if (Carbon::now()->greaterThanOrEqualTo($phaseTime->startTime)) {
+                            $phaseTime->endTime = Carbon::now();
+                            $phaseTime->save();
+                        }
 
-                    //add user to approval
-                    foreach ($userOffices as $userOffice) {
-                        $notificationConfigurations = DB::table('notification_configurations')
-                            ->where('office_id', $userOffice->office_id)
-                            // ->where('minPlafon', '<=', $file->plafon)
-                            // ->where('maxPlafon', '>=', $file->plafon)
-                            ->where('phase', $filephase)
-                            ->where('canApprove', 1)
-                            ->get();
+                        EmailHelper::AddUpdate($file->id);
+                        TelegramHelper::AgreementPhase4($file->id, "File Status Telah diubah menjadi disetujui" . ($filephase), $file->user_id);
 
-                        $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
-                    }
-                    $notifUser = [];
-                    foreach ($notifPositions as $notifPosition) {
-                        $users = DB::table('users')
-                            ->where('position_id', $notifPosition->position_id)
-                            ->where('isActive', 1)
-                            ->get();
-                        $notifUser = array_merge($notifUser, $users->toArray());
-                    }
-                    foreach ($notifPositions as $pos) {
-                        foreach ($notifUser as $user) {
-                            if ($pos->position_id == $user->position_id) {
-                                Approval::firstOrCreate(
-                                    ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
-                                    ['approved' => 0]
-                                );
+                        return ResponseHelper::successRes('File Status Telah diubah menjadi disetujui', $file);
+                    } else if ($file->phase < 4) {
+                        $userUploaded = User::where('id', $file->user_id)->first();
+                        $userPosition = Position::where('id', $userUploaded->position_id)->first();
+                        $userOffices = PositionToOffice::where('position_id', $userPosition->id)->get();
+                        $notifPositions = [];
+
+                        //add user to approval
+                        foreach ($userOffices as $userOffice) {
+                            $notificationConfigurations = DB::table('notification_configurations')
+                                ->where('office_id', $userOffice->office_id)
+                                // ->where('minPlafon', '<=', $file->plafon)
+                                // ->where('maxPlafon', '>=', $file->plafon)
+                                ->where('phase', $filephase)
+                                ->where('canApprove', 1)
+                                ->get();
+
+                            $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
+                        }
+                        $notifUser = [];
+                        foreach ($notifPositions as $notifPosition) {
+                            $users = DB::table('users')
+                                ->where('position_id', $notifPosition->position_id)
+                                ->where('isActive', 1)
+                                ->get();
+                            $notifUser = array_merge($notifUser, $users->toArray());
+                        }
+                        $matchFound = false;
+
+                        foreach ($notifPositions as $pos) {
+                            foreach ($notifUser as $user) {
+                                if ($pos->position_id == $user->position_id) {
+                                    Approval::firstOrCreate(
+                                        ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
+                                        ['approved' => 0]
+                                    );
+                                    $matchFound = true;
+                                }
                             }
                         }
+
+                        if (!$matchFound) {
+                            return ResponseHelper::errorRes('Error, user yang memiliki akses approve tidak ditemukan, mohon tambahkan User yang dapat memberi aproval di tahap selanjutnya');
+                        }
+
+                        $phaseTime = PhaseTime::where('file_id', $file->id)->where('phase', $filephase - 1)->first();
+                        //add count time
+                        if (Carbon::now()->greaterThanOrEqualTo($phaseTime->startTime)) {
+                            $phaseTime->endTime = Carbon::now();
+                            $phaseTime->save();
+
+
+                            PhaseTime::firstOrCreate(['file_id' => $file->id, 'phase' => $filephase, 'startTime' => Carbon::now()]);
+                        }
+
+                        EmailHelper::AddUpdate($file->id);
+                        TelegramHelper::AddUpdatePhase($file->id, "User mengubah Phase menjadi " . ($filephase), $file->user_id);
+
+                        $file->phase = $filephase;
+                        $file->save();
+                        return ResponseHelper::successRes('Berhasil Melakukan Perubahan Tahapan Kredit', $file);
                     }
+                } else if ($file->plafon < 25000000) {
+                    if ($file->phase == 3) {
+                        $file->phase = 5;
+                        $file->isApproved = 1;
+                        $file->save();
 
-                    $matchFound = false;
+                        $phaseTime = PhaseTime::where('file_id', $file->id)->where('phase', $filephase - 1)->first();
+                        //add count time
+                        if (Carbon::now()->greaterThanOrEqualTo($phaseTime->startTime)) {
+                            $phaseTime->endTime = Carbon::now();
+                            $phaseTime->save();
+                        }
 
-                    foreach ($notifPositions as $pos) {
-                        foreach ($notifUser as $user) {
-                            if ($pos->position_id == $user->position_id) {
-                                Approval::firstOrCreate(
-                                    ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
-                                    ['approved' => 0]
-                                );
-                                $matchFound = true;
+                        EmailHelper::AddUpdate($file->id);
+                        TelegramHelper::AgreementPhase3($file->id, "File Status Telah diubah menjadi disetujui" . ($filephase), $file->user_id);
+                    } else if ($file->phase < 3) {
+                        $userUploaded = User::where('id', $file->user_id)->first();
+                        $userPosition = Position::where('id', $userUploaded->position_id)->first();
+                        $userOffices = PositionToOffice::where('position_id', $userPosition->id)->get();
+                        $notifPositions = [];
+
+                        //add user to approval
+                        foreach ($userOffices as $userOffice) {
+                            $notificationConfigurations = DB::table('notification_configurations')
+                                ->where('office_id', $userOffice->office_id)
+                                // ->where('minPlafon', '<=', $file->plafon)
+                                // ->where('maxPlafon', '>=', $file->plafon)
+                                ->where('phase', $filephase)
+                                ->where('canApprove', 1)
+                                ->get();
+
+                            $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
+                        }
+                        $notifUser = [];
+                        foreach ($notifPositions as $notifPosition) {
+                            $users = DB::table('users')
+                                ->where('position_id', $notifPosition->position_id)
+                                ->where('isActive', 1)
+                                ->get();
+                            $notifUser = array_merge($notifUser, $users->toArray());
+                        }
+                        $matchFound = false;
+
+                        foreach ($notifPositions as $pos) {
+                            foreach ($notifUser as $user) {
+                                if ($pos->position_id == $user->position_id) {
+                                    Approval::firstOrCreate(
+                                        ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
+                                        ['approved' => 0]
+                                    );
+                                    $matchFound = true;
+                                }
                             }
                         }
-                    }
 
-                    if (!$matchFound) {
-                        return ResponseHelper::errorRes('Error, user yang memiliki akses approve tidak ditemukan, mohon tambahkan User yang dapat memberi aproval di tahap selanjutnya');
-                    }
-
-                    $phaseTime = PhaseTime::where('file_id', $file->id)->where('phase', $file->phase - 1)->first();
-                    //add count time
-                    if (Carbon::now()->greaterThanOrEqualTo($phaseTime->startTime)) {
-                        $phaseTime->endTime = Carbon::now();
-                        $phaseTime->save();
-
-
-                        PhaseTime::firstOrCreate(['file_id' => $file->id, 'phase' => $file->phase, 'startTime' => Carbon::now()]);
-                    }
-                    EmailHelper::AddUpdate($file->id);
-                    TelegramHelper::AddUpdatePhase($file->id, "User mengubah Phase menjadi " . ($filephase), $file->user_id);
-
-                    $file->save();
-                    return ResponseHelper::successRes('File telah disetujui successfully', $file);
-                } else if ($file->plafon > 25000000 && $file->phase == 3) {
-                    $filephase = $file->phase + 1;
-                    $file->phase = $file->phase + 1;
-
-                    $userUploaded = User::where('id', $file->user_id)->first();
-                    $userPosition = Position::where('id', $userUploaded->position_id)->first();
-                    $userOffices = PositionToOffice::where('position_id', $userPosition->id)->get();
-                    $notifPositions = [];
-
-                    //add user to approval
-                    foreach ($userOffices as $userOffice) {
-                        $notificationConfigurations = DB::table('notification_configurations')
-                            ->where('office_id', $userOffice->office_id)
-                            // ->where('minPlafon', '<=', $file->plafon)
-                            // ->where('maxPlafon', '>=', $file->plafon)
-                            ->where('phase', $filephase)
-                            ->where('canApprove', 1)
-                            ->get();
-
-                        $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
-                    }
-                    $notifUser = [];
-                    foreach ($notifPositions as $notifPosition) {
-                        $users = DB::table('users')
-                            ->where('position_id', $notifPosition->position_id)
-                            ->where('isActive', 1)
-                            ->get();
-                        $notifUser = array_merge($notifUser, $users->toArray());
-                    }
-                    foreach ($notifPositions as $pos) {
-                        foreach ($notifUser as $user) {
-                            if ($pos->position_id == $user->position_id) {
-                                Approval::firstOrCreate(
-                                    ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
-                                    ['approved' => 0]
-                                );
-                            }
+                        if (!$matchFound) {
+                            return ResponseHelper::errorRes('Error, user yang memiliki akses approve tidak ditemukan, mohon tambahkan User yang dapat memberi aproval di tahap selanjutnya');
                         }
-                    }
 
-                    $matchFound = false;
+                        $phaseTime = PhaseTime::where('file_id', $file->id)->where('phase', $filephase - 1)->first();
+                        //add count time
+                        if (Carbon::now()->greaterThanOrEqualTo($phaseTime->startTime)) {
+                            $phaseTime->endTime = Carbon::now();
+                            $phaseTime->save();
 
-                    foreach ($notifPositions as $pos) {
-                        foreach ($notifUser as $user) {
-                            if ($pos->position_id == $user->position_id) {
-                                Approval::firstOrCreate(
-                                    ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
-                                    ['approved' => 0]
-                                );
-                                $matchFound = true;
-                            }
+
+                            PhaseTime::firstOrCreate(['file_id' => $file->id, 'phase' => $filephase, 'startTime' => Carbon::now()]);
                         }
+
+                        EmailHelper::AddUpdate($file->id);
+                        TelegramHelper::AddUpdatePhase($file->id, "User mengubah Phase menjadi " . ($filephase), $file->user_id);
+
+                        $file->phase = $filephase;
+                        $file->save();
+                        return ResponseHelper::successRes('Berhasil Melakukan Perubahan Tahapan Kredit', $file);
                     }
-
-                    if (!$matchFound) {
-                        return ResponseHelper::errorRes('Error, user yang memiliki akses approve tidak ditemukan, mohon tambahkan User yang dapat memberi aproval di tahap selanjutnya');
-                    }
-
-                    $phaseTime = PhaseTime::where('file_id', $file->id)->where('phase', $file->phase - 1)->first();
-                    //add count time
-                    if (Carbon::now()->greaterThanOrEqualTo($phaseTime->startTime)) {
-                        $phaseTime->endTime = Carbon::now();
-                        $phaseTime->save();
-
-
-                        PhaseTime::firstOrCreate(['file_id' => $file->id, 'phase' => $file->phase, 'startTime' => Carbon::now()]);
-                    }
-
-                    $file->isApproved = 1;
-                    EmailHelper::AddUpdate($file->id);
-                    TelegramHelper::AddUpdatePhase($file->id, "User mengubah Phase menjadi " . ($filephase), $file->user_id);
-
-                    $file->save();
-                    return ResponseHelper::successRes('File telah disetujui successfully', $file);
-                } else if ($file->plafon < 25000000 && $file->phase < 2) {
-                    $filephase = $file->phase + 1;
-                    $file->phase = $file->phase + 1;
-
-                    $userUploaded = User::where('id', $file->user_id)->first();
-                    $userPosition = Position::where('id', $userUploaded->position_id)->first();
-                    $userOffices = PositionToOffice::where('position_id', $userPosition->id)->get();
-                    $notifPositions = [];
-
-                    //add user to approval
-                    foreach ($userOffices as $userOffice) {
-                        $notificationConfigurations = DB::table('notification_configurations')
-                            ->where('office_id', $userOffice->office_id)
-                            // ->where('minPlafon', '<=', $file->plafon)
-                            // ->where('maxPlafon', '>=', $file->plafon)
-                            ->where('phase', $filephase)
-                            ->where('canApprove', 1)
-                            ->get();
-
-                        $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
-                    }
-                    $notifUser = [];
-                    foreach ($notifPositions as $notifPosition) {
-                        $users = DB::table('users')
-                            ->where('position_id', $notifPosition->position_id)
-                            ->where('isActive', 1)
-                            ->get();
-                        $notifUser = array_merge($notifUser, $users->toArray());
-                    }
-                    foreach ($notifPositions as $pos) {
-                        foreach ($notifUser as $user) {
-                            if ($pos->position_id == $user->position_id) {
-                                Approval::firstOrCreate(
-                                    ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
-                                    ['approved' => 0]
-                                );
-                            }
-                        }
-                    }
-
-                    $matchFound = false;
-
-                    foreach ($notifPositions as $pos) {
-                        foreach ($notifUser as $user) {
-                            if ($pos->position_id == $user->position_id) {
-                                Approval::firstOrCreate(
-                                    ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
-                                    ['approved' => 0]
-                                );
-                                $matchFound = true;
-                            }
-                        }
-                    }
-
-                    if (!$matchFound) {
-                        return ResponseHelper::errorRes('Error, user yang memiliki akses approve tidak ditemukan, mohon tambahkan User yang dapat memberi aproval di tahap selanjutnya');
-                    }
-
-                    $phaseTime = PhaseTime::where('file_id', $file->id)->where('phase', $file->phase - 1)->first();
-                    //add count time
-                    if (Carbon::now()->greaterThanOrEqualTo($phaseTime->startTime)) {
-                        $phaseTime->endTime = Carbon::now();
-                        $phaseTime->save();
-
-
-                        PhaseTime::firstOrCreate(['file_id' => $file->id, 'phase' => $file->phase, 'startTime' => Carbon::now()]);
-                    }
-
-
-                    EmailHelper::AddUpdate($file->id);
-                    TelegramHelper::AddUpdatePhase($file->id, "User mengubah Phase menjadi " . ($filephase), $file->user_id);
-
-                    $file->save();
-                    return ResponseHelper::successRes('File telah disetujui successfully', $file);
-                } else if ($file->plafon < 25000000 && $file->phase == 2) {
-                    $filephase = $file->phase + 1;
-                    $file->phase = $file->phase + 1;
-
-                    $userUploaded = User::where('id', $file->user_id)->first();
-                    $userPosition = Position::where('id', $userUploaded->position_id)->first();
-                    $userOffices = PositionToOffice::where('position_id', $userPosition->id)->get();
-                    $notifPositions = [];
-
-                    //add user to approval
-                    foreach ($userOffices as $userOffice) {
-                        $notificationConfigurations = DB::table('notification_configurations')
-                            ->where('office_id', $userOffice->office_id)
-                            // ->where('minPlafon', '<=', $file->plafon)
-                            // ->where('maxPlafon', '>=', $file->plafon)
-                            ->where('phase', $filephase)
-                            ->where('canApprove', 1)
-                            ->get();
-
-                        $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
-                    }
-                    $notifUser = [];
-                    foreach ($notifPositions as $notifPosition) {
-                        $users = DB::table('users')
-                            ->where('position_id', $notifPosition->position_id)
-                            ->where('isActive', 1)
-                            ->get();
-                        $notifUser = array_merge($notifUser, $users->toArray());
-                    }
-                    foreach ($notifPositions as $pos) {
-                        foreach ($notifUser as $user) {
-                            if ($pos->position_id == $user->position_id) {
-                                Approval::firstOrCreate(
-                                    ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
-                                    ['approved' => 0]
-                                );
-                            }
-                        }
-                    }
-
-                    $matchFound = false;
-
-                    foreach ($notifPositions as $pos) {
-                        foreach ($notifUser as $user) {
-                            if ($pos->position_id == $user->position_id) {
-                                Approval::firstOrCreate(
-                                    ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
-                                    ['approved' => 0]
-                                );
-                                $matchFound = true;
-                            }
-                        }
-                    }
-
-                    if (!$matchFound) {
-                        return ResponseHelper::errorRes('Error, user yang memiliki akses approve tidak ditemukan, mohon tambahkan User yang dapat memberi aproval di tahap selanjutnya');
-                    }
-
-                    $phaseTime = PhaseTime::where('file_id', $file->id)->where('phase', $file->phase - 1)->first();
-                    //add count time
-                    if (Carbon::now()->greaterThanOrEqualTo($phaseTime->startTime)) {
-                        $phaseTime->endTime = Carbon::now();
-                        $phaseTime->save();
-
-
-                        PhaseTime::firstOrCreate(['file_id' => $file->id, 'phase' => $file->phase, 'startTime' => Carbon::now()]);
-                    }
-
-                    $file->isApproved = 1;
-                    EmailHelper::AddUpdate($file->id);
-                    TelegramHelper::AddUpdatePhase($file->id, "User mengubah Phase menjadi " . ($filephase), $file->user_id);
-
-                    $file->save();
-                    return ResponseHelper::successRes('File telah disetujui successfully', $file);
-                } else {
-                    return ResponseHelper::errorRes('Maaf, Sistem perpindahan phase error. hubungi administrator atau coba lagi nanti');
                 }
+
+                // $filephase = $file->phase + 1;
+                // $file->phase = $file->phase + 1;
+                // if ($file->plafon > 25000000 && $file->phase <= 3) {
+
+
+                //     $userUploaded = User::where('id', $file->user_id)->first();
+                //     $userPosition = Position::where('id', $userUploaded->position_id)->first();
+                //     $userOffices = PositionToOffice::where('position_id', $userPosition->id)->get();
+                //     $notifPositions = [];
+
+                //     //add user to approval
+                //     foreach ($userOffices as $userOffice) {
+                //         $notificationConfigurations = DB::table('notification_configurations')
+                //             ->where('office_id', $userOffice->office_id)
+                //             // ->where('minPlafon', '<=', $file->plafon)
+                //             // ->where('maxPlafon', '>=', $file->plafon)
+                //             ->where('phase', $filephase)
+                //             ->where('canApprove', 1)
+                //             ->get();
+
+                //         $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
+                //     }
+                //     $notifUser = [];
+                //     foreach ($notifPositions as $notifPosition) {
+                //         $users = DB::table('users')
+                //             ->where('position_id', $notifPosition->position_id)
+                //             ->where('isActive', 1)
+                //             ->get();
+                //         $notifUser = array_merge($notifUser, $users->toArray());
+                //     }
+                //     foreach ($notifPositions as $pos) {
+                //         foreach ($notifUser as $user) {
+                //             if ($pos->position_id == $user->position_id) {
+                //                 Approval::firstOrCreate(
+                //                     ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
+                //                     ['approved' => 0]
+                //                 );
+                //             }
+                //         }
+                //     }
+
+                //     $matchFound = false;
+
+                //     foreach ($notifPositions as $pos) {
+                //         foreach ($notifUser as $user) {
+                //             if ($pos->position_id == $user->position_id) {
+                //                 Approval::firstOrCreate(
+                //                     ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
+                //                     ['approved' => 0]
+                //                 );
+                //                 $matchFound = true;
+                //             }
+                //         }
+                //     }
+
+                //     if (!$matchFound) {
+                //         return ResponseHelper::errorRes('Error, user yang memiliki akses approve tidak ditemukan, mohon tambahkan User yang dapat memberi aproval di tahap selanjutnya');
+                //     }
+
+                //     $phaseTime = PhaseTime::where('file_id', $file->id)->where('phase', $file->phase - 1)->first();
+                //     //add count time
+                //     if (Carbon::now()->greaterThanOrEqualTo($phaseTime->startTime)) {
+                //         $phaseTime->endTime = Carbon::now();
+                //         $phaseTime->save();
+
+
+                //         PhaseTime::firstOrCreate(['file_id' => $file->id, 'phase' => $file->phase, 'startTime' => Carbon::now()]);
+                //     }
+                //     EmailHelper::AddUpdate($file->id);
+                //     TelegramHelper::AddUpdatePhase($file->id, "User mengubah Phase menjadi " . ($filephase), $file->user_id);
+
+                //     $file->save();
+                //     return ResponseHelper::successRes('File telah disetujui successfully', $file);
+                // } else if ($file->plafon > 25000000 && $file->phase) {
+                //     $filephase = $file->phase + 1;
+                //     $file->phase = $file->phase + 1;
+
+                //     $userUploaded = User::where('id', $file->user_id)->first();
+                //     $userPosition = Position::where('id', $userUploaded->position_id)->first();
+                //     $userOffices = PositionToOffice::where('position_id', $userPosition->id)->get();
+                //     $notifPositions = [];
+
+                //     //add user to approval
+                //     foreach ($userOffices as $userOffice) {
+                //         $notificationConfigurations = DB::table('notification_configurations')
+                //             ->where('office_id', $userOffice->office_id)
+                //             // ->where('minPlafon', '<=', $file->plafon)
+                //             // ->where('maxPlafon', '>=', $file->plafon)
+                //             ->where('phase', $filephase)
+                //             ->where('canApprove', 1)
+                //             ->get();
+
+                //         $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
+                //     }
+                //     $notifUser = [];
+                //     foreach ($notifPositions as $notifPosition) {
+                //         $users = DB::table('users')
+                //             ->where('position_id', $notifPosition->position_id)
+                //             ->where('isActive', 1)
+                //             ->get();
+                //         $notifUser = array_merge($notifUser, $users->toArray());
+                //     }
+                //     foreach ($notifPositions as $pos) {
+                //         foreach ($notifUser as $user) {
+                //             if ($pos->position_id == $user->position_id) {
+                //                 Approval::firstOrCreate(
+                //                     ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
+                //                     ['approved' => 0]
+                //                 );
+                //             }
+                //         }
+                //     }
+
+                //     $matchFound = false;
+
+                //     foreach ($notifPositions as $pos) {
+                //         foreach ($notifUser as $user) {
+                //             if ($pos->position_id == $user->position_id) {
+                //                 Approval::firstOrCreate(
+                //                     ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
+                //                     ['approved' => 0]
+                //                 );
+                //                 $matchFound = true;
+                //             }
+                //         }
+                //     }
+
+                //     if (!$matchFound) {
+                //         return ResponseHelper::errorRes('Error, user yang memiliki akses approve tidak ditemukan, mohon tambahkan User yang dapat memberi aproval di tahap selanjutnya');
+                //     }
+
+                //     $phaseTime = PhaseTime::where('file_id', $file->id)->where('phase', $file->phase - 1)->first();
+                //     //add count time
+                //     if (Carbon::now()->greaterThanOrEqualTo($phaseTime->startTime)) {
+                //         $phaseTime->endTime = Carbon::now();
+                //         $phaseTime->save();
+
+
+                //         PhaseTime::firstOrCreate(['file_id' => $file->id, 'phase' => $file->phase, 'startTime' => Carbon::now()]);
+                //     }
+
+                //     EmailHelper::AddUpdate($file->id);
+                //     TelegramHelper::AddUpdatePhase($file->id, "User mengubah Phase menjadi " . ($filephase), $file->user_id);
+
+                //     $file->save();
+                //     return ResponseHelper::successRes('File telah disetujui successfully', $file);
+                // } else if ($file->plafon < 25000000 && $file->phase < 2) {
+                //     $filephase = $file->phase + 1;
+                //     $file->phase = $file->phase + 1;
+
+                //     $userUploaded = User::where('id', $file->user_id)->first();
+                //     $userPosition = Position::where('id', $userUploaded->position_id)->first();
+                //     $userOffices = PositionToOffice::where('position_id', $userPosition->id)->get();
+                //     $notifPositions = [];
+
+                //     //add user to approval
+                //     foreach ($userOffices as $userOffice) {
+                //         $notificationConfigurations = DB::table('notification_configurations')
+                //             ->where('office_id', $userOffice->office_id)
+                //             // ->where('minPlafon', '<=', $file->plafon)
+                //             // ->where('maxPlafon', '>=', $file->plafon)
+                //             ->where('phase', $filephase)
+                //             ->where('canApprove', 1)
+                //             ->get();
+
+                //         $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
+                //     }
+                //     $notifUser = [];
+                //     foreach ($notifPositions as $notifPosition) {
+                //         $users = DB::table('users')
+                //             ->where('position_id', $notifPosition->position_id)
+                //             ->where('isActive', 1)
+                //             ->get();
+                //         $notifUser = array_merge($notifUser, $users->toArray());
+                //     }
+                //     foreach ($notifPositions as $pos) {
+                //         foreach ($notifUser as $user) {
+                //             if ($pos->position_id == $user->position_id) {
+                //                 Approval::firstOrCreate(
+                //                     ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
+                //                     ['approved' => 0]
+                //                 );
+                //             }
+                //         }
+                //     }
+
+                //     $matchFound = false;
+
+                //     foreach ($notifPositions as $pos) {
+                //         foreach ($notifUser as $user) {
+                //             if ($pos->position_id == $user->position_id) {
+                //                 Approval::firstOrCreate(
+                //                     ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
+                //                     ['approved' => 0]
+                //                 );
+                //                 $matchFound = true;
+                //             }
+                //         }
+                //     }
+
+                //     if (!$matchFound) {
+                //         return ResponseHelper::errorRes('Error, user yang memiliki akses approve tidak ditemukan, mohon tambahkan User yang dapat memberi aproval di tahap selanjutnya');
+                //     }
+
+                //     $phaseTime = PhaseTime::where('file_id', $file->id)->where('phase', $file->phase - 1)->first();
+                //     //add count time
+                //     if (Carbon::now()->greaterThanOrEqualTo($phaseTime->startTime)) {
+                //         $phaseTime->endTime = Carbon::now();
+                //         $phaseTime->save();
+
+
+                //         PhaseTime::firstOrCreate(['file_id' => $file->id, 'phase' => $file->phase, 'startTime' => Carbon::now()]);
+                //     }
+
+
+                //     EmailHelper::AddUpdate($file->id);
+                //     TelegramHelper::AddUpdatePhase($file->id, "User mengubah Phase menjadi " . ($filephase), $file->user_id);
+
+                //     $file->save();
+                //     return ResponseHelper::successRes('File telah disetujui successfully', $file);
+                // } else if ($file->plafon < 25000000 && $file->phase == 2) {
+                //     $filephase = $file->phase + 1;
+                //     $file->phase = $file->phase + 1;
+
+                //     $userUploaded = User::where('id', $file->user_id)->first();
+                //     $userPosition = Position::where('id', $userUploaded->position_id)->first();
+                //     $userOffices = PositionToOffice::where('position_id', $userPosition->id)->get();
+                //     $notifPositions = [];
+
+                //     //add user to approval
+                //     foreach ($userOffices as $userOffice) {
+                //         $notificationConfigurations = DB::table('notification_configurations')
+                //             ->where('office_id', $userOffice->office_id)
+                //             // ->where('minPlafon', '<=', $file->plafon)
+                //             // ->where('maxPlafon', '>=', $file->plafon)
+                //             ->where('phase', $filephase)
+                //             ->where('canApprove', 1)
+                //             ->get();
+
+                //         $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
+                //     }
+                //     $notifUser = [];
+                //     foreach ($notifPositions as $notifPosition) {
+                //         $users = DB::table('users')
+                //             ->where('position_id', $notifPosition->position_id)
+                //             ->where('isActive', 1)
+                //             ->get();
+                //         $notifUser = array_merge($notifUser, $users->toArray());
+                //     }
+                //     foreach ($notifPositions as $pos) {
+                //         foreach ($notifUser as $user) {
+                //             if ($pos->position_id == $user->position_id) {
+                //                 Approval::firstOrCreate(
+                //                     ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
+                //                     ['approved' => 0]
+                //                 );
+                //             }
+                //         }
+                //     }
+
+                //     $matchFound = false;
+
+                //     foreach ($notifPositions as $pos) {
+                //         foreach ($notifUser as $user) {
+                //             if ($pos->position_id == $user->position_id) {
+                //                 Approval::firstOrCreate(
+                //                     ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
+                //                     ['approved' => 0]
+                //                 );
+                //                 $matchFound = true;
+                //             }
+                //         }
+                //     }
+
+                //     if (!$matchFound) {
+                //         return ResponseHelper::errorRes('Error, user yang memiliki akses approve tidak ditemukan, mohon tambahkan User yang dapat memberi aproval di tahap selanjutnya');
+                //     }
+
+                //     $phaseTime = PhaseTime::where('file_id', $file->id)->where('phase', $file->phase - 1)->first();
+                //     //add count time
+                //     if (Carbon::now()->greaterThanOrEqualTo($phaseTime->startTime)) {
+                //         $phaseTime->endTime = Carbon::now();
+                //         $phaseTime->save();
+
+
+                //         PhaseTime::firstOrCreate(['file_id' => $file->id, 'phase' => $file->phase, 'startTime' => Carbon::now()]);
+                //     }
+
+                //     EmailHelper::AddUpdate($file->id);
+                //     TelegramHelper::AddUpdatePhase($file->id, "User mengubah Phase menjadi " . ($filephase), $file->user_id);
+
+                //     $file->save();
+                //     return ResponseHelper::successRes('File telah disetujui successfully', $file);
+                // } else {
+                //     return ResponseHelper::errorRes('Maaf, Sistem perpindahan phase error. hubungi administrator atau coba lagi nanti');
+                // }
             } else {
                 $dataPhase = PhaseTime::where('file_id', $file->id)->where('phase', $file->phase)->first();
 
@@ -818,7 +974,7 @@ class FileController extends Controller
             }
             foreach ($notifPositions as $pos) {
                 foreach ($notifUser as $user) {
-                    if ($pos->position_id == $user->position_id) {
+                    if ($pos->position_id == $user->position_id && $user->id == $file->user_id) {
                         Approval::firstOrCreate(
                             ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
                             ['approved' => 0]
@@ -878,24 +1034,7 @@ class FileController extends Controller
     public function detailFile($id)
     {
         try {
-            $file = File::with([
-                'user',
-                'notes' => function ($query) {
-                    $query->latest();
-                },
-                'notes.user',
-                'notes.user.position',
-                'fileActivities' => function ($query) {
-                    $query->latest();
-                },
-                'fileActivities.user',
-                'attachments',
-                'approvals',
-                'approvals.user',
-                'phaseTimes',
-            ])->findOrFail($id);
-
-
+            $file = File::findOrFail($id);
             // //add user to approval
             $userUploaded = User::where('id', $file->user_id)->first();
             $userPosition = Position::where('id', $userUploaded->position_id)->first();
@@ -927,6 +1066,56 @@ class FileController extends Controller
                     break;
                 }
             }
+
+            //add new approval if exist
+            $approvalPositions = [];
+
+            //add user to approval
+            foreach ($userOffices as $userOffice) {
+                $notificationConfigurations = DB::table('notification_configurations')
+                    ->where('office_id', $userOffice->office_id)
+                    ->where('phase', $file->phase)
+                    ->where('canApprove', 1)
+                    ->get();
+
+                $approvalPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
+            }
+
+            $notifApprovalUser = [];
+            foreach ($approvalPositions as $notifPosition) {
+                $users = DB::table('users')
+                    ->where('position_id', $notifPosition->position_id)
+                    ->where('isActive', 1)
+                    ->get();
+                $notifApprovalUser = array_merge($notifApprovalUser, $users->toArray());
+            }
+            foreach ($approvalPositions as $pos) {
+                foreach ($notifApprovalUser as $user) {
+                    if ($pos->position_id == $user->position_id) {
+                        Approval::firstOrCreate(
+                            ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
+                            ['approved' => 0]
+                        );
+                    }
+                }
+            }
+
+            $file = File::with([
+                'user',
+                'notes' => function ($query) {
+                    $query->latest();
+                },
+                'notes.user',
+                'notes.user.position',
+                'fileActivities' => function ($query) {
+                    $query->latest();
+                },
+                'fileActivities.user',
+                'attachments',
+                'approvals',
+                'approvals.user',
+                'phaseTimes',
+            ])->findOrFail($id);
 
             ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Mengakses detail file');
 

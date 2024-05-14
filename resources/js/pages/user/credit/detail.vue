@@ -15,230 +15,151 @@
       </v-col>
     </v-overlay> -->
     <v-overlay :model-value="overlay" class="align-center justify-center">
-      <v-progress-circular
-        color="blue-lighten-3"
-        indeterminate
-        :size="41"
-        :width="5"
-      ></v-progress-circular>
+      <v-progress-circular color="blue-lighten-3" indeterminate :size="41" :width="5"></v-progress-circular>
       Loading...
     </v-overlay>
 
     <v-card>
       <VCardTitle class="text-2xl font-weight-bold d-flex justify-left">
-        Credit
+        Credit {{ dataFile.phase }}
       </VCardTitle>
       <v-card-text>
-        <v-stepper :model-value="dataFile.phase - 1" :mobile="isMobile">
-          <v-stepper-header>
-            <v-stepper-item
-              title="Phase 1"
-              value="1"
-              :complete="dataFile.phase > 1"
-            >
+        <v-stepper :model-value="stepperModel" :mobile="isMobile">
+          <v-stepper-header v-if="parseInt(dataFile.plafon) > 25000000">
+            <v-stepper-item title="Phase 1" value="1" :complete="dataFile.phase > 1">
             </v-stepper-item>
 
             <v-divider></v-divider>
 
-            <v-stepper-item
-              title="Phase 2"
-              value="2"
-              :complete="dataFile.phase > 2"
-            ></v-stepper-item>
+            <v-stepper-item title="Phase 2" value="2" :complete="dataFile.phase > 2"></v-stepper-item>
 
             <v-divider></v-divider>
 
-            <v-stepper-item
-              title="Phase 3"
-              value="3"
-              :complete="dataFile.phase > 3"
-            ></v-stepper-item>
+            <v-stepper-item title="Phase 3" value="3" :complete="dataFile.phase > 3"></v-stepper-item>
 
             <v-divider v-if="isShowPhase4"></v-divider>
 
-            <v-stepper-item
-              title="Phase 4"
-              value="4"
-              :complete="dataFile.phase > 4"
-              v-if="isShowPhase4"
-            ></v-stepper-item>
+            <v-stepper-item title="Phase 4" value="4" :complete="dataFile.phase > 4"
+              v-if="isShowPhase4"></v-stepper-item>
+
+            <!-- khusus approved -->
+            <v-divider v-if="isShowPhase5"></v-divider>
+
+            <v-stepper-item title="Approved" value="5" v-if="isShowPhase5"></v-stepper-item>
+          </v-stepper-header>
+          <v-stepper-header v-else>
+            <v-stepper-item title="Phase 1" value="1" :complete="dataFile.phase > 1">
+            </v-stepper-item>
+
+            <v-divider></v-divider>
+
+            <v-stepper-item title="Phase 2" value="2" :complete="dataFile.phase > 2"></v-stepper-item>
+
+            <v-divider></v-divider>
+
+            <v-stepper-item title="Phase 3" value="3" :complete="dataFile.phase > 3"></v-stepper-item>
+
+            <!-- khusus approved -->
+            <v-divider v-if="isShowPhase5"></v-divider>
+
+            <v-stepper-item title="Approved" value="5" v-if="isShowPhase5"></v-stepper-item>
           </v-stepper-header>
 
           <v-stepper-window>
             <!-- step 1 -->
-            <v-stepper-window-item
-              value="1"
-              v-if="userData && userData.position.role.isPhase1Access == 1"
-            >
-              <phase
-                :dataFile="dataFile"
-                :userData="userData"
-                :insert-note="insertNote"
-                :change-approval="changeApproval"
-                :format-date="formatDate"
-                :open-modal="openModal"
-                :delete-attachment="deleteAttachment"
-                :delete-note="deleteNote"
-                :get-detail-file="getDetailFile"
-                :step="step"
-                :file-id="formatFileId(fileId)"
-                :user-access="userAccess"
-                :reset-note="resetNote"
-                :data-note="dataNote"
-                :update-data-note="updateDataNote"
-                :note-phase1="notePhase1"
-                :note-phase2="notePhase2"
-                :note-phase3="notePhase3"
-                :note-phase4="notePhase4"
-                :modal-note="modalNote"
-              />
+            <v-stepper-window-item value="1" v-if="userData && userData.position.role.isPhase1Access == 1">
+              <phase :dataFile="dataFile" :userData="userData" :insert-note="insertNote"
+                :change-approval="changeApproval" :format-date="formatDate" :open-modal="openModal"
+                :delete-attachment="deleteAttachment" :delete-note="deleteNote" :get-detail-file="getDetailFile"
+                :step="step" :file-id="formatFileId(fileId)" :user-access="userAccess" :reset-note="resetNote"
+                :data-note="dataNote" :update-data-note="updateDataNote" :note-phase1="notePhase1"
+                :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote" />
             </v-stepper-window-item>
             <v-stepper-window-item value="1" v-else>
-              <div
-                style="
+              <div style="
                   color: red;
                   font-size: 20px;
                   text-align: center;
                   padding: 10px;
-                "
-              >
+                ">
                 Anda Dilarang melihat Phase ini
               </div>
             </v-stepper-window-item>
 
             <!-- step 2 -->
-            <v-stepper-window-item
-              value="2"
-              v-if="userData && userData.position.role.isPhase2Access == 1"
-            >
-              <phase
-                :dataFile="dataFile"
-                :userData="userData"
-                :insert-note="insertNote"
-                :change-approval="changeApproval"
-                :format-date="formatDate"
-                :open-modal="openModal"
-                :delete-attachment="deleteAttachment"
-                :delete-note="deleteNote"
-                :get-detail-file="getDetailFile"
-                :step="step"
-                :file-id="formatFileId(fileId)"
-                :user-access="userAccess"
-                :reset-note="resetNote"
-                :data-note="dataNote"
-                :update-data-note="updateDataNote"
-                :note-phase1="notePhase1"
-                :note-phase2="notePhase2"
-                :note-phase3="notePhase3"
-                :note-phase4="notePhase4"
-                :modal-note="modalNote"
-              />
+            <v-stepper-window-item value="2" v-if="userData && userData.position.role.isPhase2Access == 1">
+              <phase :dataFile="dataFile" :userData="userData" :insert-note="insertNote"
+                :change-approval="changeApproval" :format-date="formatDate" :open-modal="openModal"
+                :delete-attachment="deleteAttachment" :delete-note="deleteNote" :get-detail-file="getDetailFile"
+                :step="step" :file-id="formatFileId(fileId)" :user-access="userAccess" :reset-note="resetNote"
+                :data-note="dataNote" :update-data-note="updateDataNote" :note-phase1="notePhase1"
+                :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote" />
             </v-stepper-window-item>
             <v-stepper-window-item value="2" v-else>
-              <div
-                style="
+              <div style="
                   color: red;
                   font-size: 20px;
                   text-align: center;
                   padding: 10px;
-                "
-              >
+                ">
                 Anda Dilarang melihat Phase ini
               </div>
             </v-stepper-window-item>
 
             <!-- step 3 -->
-            <v-stepper-window-item
-              value="3"
-              v-if="userData && userData.position.role.isPhase3Access == 1"
-            >
-              <phase
-                :dataFile="dataFile"
-                :userData="userData"
-                :insert-note="insertNote"
-                :change-approval="changeApproval"
-                :format-date="formatDate"
-                :open-modal="openModal"
-                :delete-attachment="deleteAttachment"
-                :delete-note="deleteNote"
-                :get-detail-file="getDetailFile"
-                :step="step"
-                :file-id="formatFileId(fileId)"
-                :user-access="userAccess"
-                :reset-note="resetNote"
-                :data-note="dataNote"
-                :update-data-note="updateDataNote"
-                :note-phase1="notePhase1"
-                :note-phase2="notePhase2"
-                :note-phase3="notePhase3"
-                :note-phase4="notePhase4"
-                :modal-note="modalNote"
-              />
+            <v-stepper-window-item value="3" v-if="userData && userData.position.role.isPhase3Access == 1">
+              <phase :dataFile="dataFile" :userData="userData" :insert-note="insertNote"
+                :change-approval="changeApproval" :format-date="formatDate" :open-modal="openModal"
+                :delete-attachment="deleteAttachment" :delete-note="deleteNote" :get-detail-file="getDetailFile"
+                :step="step" :file-id="formatFileId(fileId)" :user-access="userAccess" :reset-note="resetNote"
+                :data-note="dataNote" :update-data-note="updateDataNote" :note-phase1="notePhase1"
+                :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote" />
             </v-stepper-window-item>
             <v-stepper-window-item value="3" v-else>
-              <div
-                style="
+              <div style="
                   color: red;
                   font-size: 20px;
                   text-align: center;
                   padding: 10px;
-                "
-              >
+                ">
                 Anda Dilarang melihat Phase ini
               </div>
             </v-stepper-window-item>
 
             <!-- step 4 -->
-            <v-stepper-window-item
-              value="4"
-              v-if="userData && userData.position.role.isPhase4Access == 1"
-            >
-              <phase
-                :dataFile="dataFile"
-                :userData="userData"
-                :insert-note="insertNote"
-                :change-approval="changeApproval"
-                :format-date="formatDate"
-                :open-modal="openModal"
-                :delete-attachment="deleteAttachment"
-                :delete-note="deleteNote"
-                :get-detail-file="getDetailFile"
-                :step="step"
-                :file-id="formatFileId(fileId)"
-                :user-access="userAccess"
-                :reset-note="resetNote"
-                :data-note="dataNote"
-                :update-data-note="updateDataNote"
-                :note-phase1="notePhase1"
-                :note-phase2="notePhase2"
-                :note-phase3="notePhase3"
-                :note-phase4="notePhase4"
-                :modal-note="modalNote"
-              />
+            <v-stepper-window-item value="4" v-if="userData && userData.position.role.isPhase4Access == 1">
+              <phase :dataFile="dataFile" :userData="userData" :insert-note="insertNote"
+                :change-approval="changeApproval" :format-date="formatDate" :open-modal="openModal"
+                :delete-attachment="deleteAttachment" :delete-note="deleteNote" :get-detail-file="getDetailFile"
+                :step="step" :file-id="formatFileId(fileId)" :user-access="userAccess" :reset-note="resetNote"
+                :data-note="dataNote" :update-data-note="updateDataNote" :note-phase1="notePhase1"
+                :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote" />
             </v-stepper-window-item>
             <v-stepper-window-item value="4" v-else>
-              <div
-                style="
+              <div style="
                   color: red;
                   font-size: 20px;
                   text-align: center;
                   padding: 10px;
-                "
-              >
+                ">
                 Anda Dilarang melihat Phase ini
               </div>
+            </v-stepper-window-item>
+
+            <v-stepper-window-item value="5">
+              <phase :dataFile="dataFile" :userData="userData" :insert-note="insertNote"
+                :change-approval="changeApproval" :format-date="formatDate" :open-modal="openModal"
+                :delete-attachment="deleteAttachment" :delete-note="deleteNote" :get-detail-file="getDetailFile"
+                :step="step" :file-id="formatFileId(fileId)" :user-access="userAccess" :reset-note="resetNote"
+                :data-note="dataNote" :update-data-note="updateDataNote" :note-phase1="notePhase1"
+                :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote" />
             </v-stepper-window-item>
           </v-stepper-window>
         </v-stepper>
       </v-card-text>
     </v-card>
 
-    <v-dialog
-      v-model="insertAttch"
-      width="auto"
-      persistent
-      transition="dialog-top-transition"
-    >
+    <v-dialog v-model="insertAttch" width="auto" persistent transition="dialog-top-transition">
       <v-card>
         <template v-slot:title> Tambah Data </template>
 
@@ -246,51 +167,28 @@
           <v-form @submit.prevent="insertAttachment">
             <v-row>
               <VCol md="12" cols="12">
-                <span style="color: red">*</span
-                ><span class="subtitle-1 text-center">Keterangan File: </span>
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Keterangan File: </span>
 
-                <VTextField
-                  class="my-3"
-                  v-model="attachFile.name"
-                  autofocus
-                  :rules="[rules.required]"
-                />
+                <VTextField class="my-3" v-model="attachFile.name" autofocus :rules="[rules.required]" />
               </VCol>
               <VCol md="12" cols="12">
                 <span style="color: red">*</span>
                 <span class="subtitle-1 text-center"> Upload File: </span>
 
-                <v-file-input
-                  class="my-3"
-                  accept="image/jpeg,image/png"
-                  placeholder="Pick an image"
-                  :rules="[rules.required]"
-                  @change="(event) => handleFileChange(event)"
-                ></v-file-input>
+                <v-file-input class="my-3" accept="image/jpeg,image/png" placeholder="Pick an image"
+                  :rules="[rules.required]" @change="(event) => handleFileChange(event)"></v-file-input>
               </VCol>
               <VCol md="12" cols="12" v-if="dataFile.phase == 2">
-                <v-select
-                  label="Apakah Termasuk File Rahasia ? (SLIK, dll)"
-                  :items="[
-                    { value: 1, title: 'Ya' },
-                    { value: 0, title: 'Tidak' },
-                  ]"
-                  v-model="attachFile.isSecret"
-                  prepend-icon="mdi-help-rhombus"
-                ></v-select>
+                <v-select label="Apakah Termasuk File Rahasia ? (SLIK, dll)" :items="[
+                  { value: 1, title: 'Ya' },
+                  { value: 0, title: 'Tidak' },
+                ]" v-model="attachFile.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
               </VCol>
               <VCol cols="12" class="d-flex flex-wrap gap-4">
-                <VBtn
-                  type="submit"
-                  :disabled="(attachFile.name && attachFile.path) == null"
-                >
+                <VBtn type="submit" :disabled="(attachFile.name && attachFile.path) == null">
                   Simpan
                 </VBtn>
-                <button
-                  type="button"
-                  class="btn btn-blue"
-                  @click="closeModal(1)"
-                >
+                <button type="button" class="btn btn-blue" @click="closeModal(1)">
                   Batal
                 </button>
               </VCol>
@@ -299,21 +197,12 @@
         </template>
 
         <template v-slot:actions>
-          <v-progress-linear
-            v-model="uploadProgress"
-            color="amber"
-            height="25"
-          ></v-progress-linear>
+          <v-progress-linear v-model="uploadProgress" color="amber" height="25"></v-progress-linear>
         </template>
       </v-card>
     </v-dialog>
 
-    <v-dialog
-      v-model="updateAttch"
-      width="auto"
-      persistent
-      transition="dialog-top-transition"
-    >
+    <v-dialog v-model="updateAttch" width="auto" persistent transition="dialog-top-transition">
       <v-card>
         <template v-slot:title> Edit Data </template>
 
@@ -324,43 +213,24 @@
                 <span style="color: red">*</span>
                 <span class="subtitle-1 text-center">Keterangan File: </span>
 
-                <VTextField
-                  class="my-3"
-                  v-model="attachFile.name"
-                  autofocus
-                  :rules="[rules.required]"
-                />
+                <VTextField class="my-3" v-model="attachFile.name" autofocus :rules="[rules.required]" />
               </VCol>
               <VCol md="12" cols="12">
                 <span style="color: red">*</span>
                 <span class="subtitle-1 text-center"> Upload File: </span>
 
-                <v-file-input
-                  class="my-3"
-                  accept="image/jpeg,image/png"
-                  placeholder="Pick an image"
-                  :rules="[rules.required]"
-                  @change="(event) => handleFileChange(event)"
-                ></v-file-input>
+                <v-file-input class="my-3" accept="image/jpeg,image/png" placeholder="Pick an image"
+                  :rules="[rules.required]" @change="(event) => handleFileChange(event)"></v-file-input>
               </VCol>
               <VCol md="12" cols="12" v-if="dataFile.phase == 2">
-                <v-select
-                  label="Apakah Termasuk File Rahasia ? (SLIK, dll)"
-                  :items="[
-                    { value: 1, title: 'Ya' },
-                    { value: 0, title: 'Tidak' },
-                  ]"
-                  v-model="attachFile.isSecret"
-                  prepend-icon="mdi-help-rhombus"
-                ></v-select>
+                <v-select label="Apakah Termasuk File Rahasia ? (SLIK, dll)" :items="[
+                  { value: 1, title: 'Ya' },
+                  { value: 0, title: 'Tidak' },
+                ]" v-model="attachFile.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
               </VCol>
               <VCol cols="12" class="d-flex flex-wrap gap-4">
                 <VBtn type="submit"> Update </VBtn>
-                <button
-                  type="button"
-                  class="btn btn-blue"
-                  @click="closeModal(2)"
-                >
+                <button type="button" class="btn btn-blue" @click="closeModal(2)">
                   Batal
                 </button>
               </VCol>
@@ -369,21 +239,12 @@
         </template>
 
         <template v-slot:actions>
-          <v-progress-linear
-            v-model="uploadProgress"
-            color="amber"
-            height="25"
-          ></v-progress-linear>
+          <v-progress-linear v-model="uploadProgress" color="amber" height="25"></v-progress-linear>
         </template>
       </v-card>
     </v-dialog>
 
-    <v-dialog
-      v-model="isUpdateGeneralInfo"
-      width="auto"
-      persistent
-      transition="dialog-top-transition"
-    >
+    <v-dialog v-model="isUpdateGeneralInfo" width="auto" persistent transition="dialog-top-transition">
       <v-card>
         <template v-slot:title> Edit Informasi Umum </template>
 
@@ -391,54 +252,28 @@
           <v-form @submit.prevent="updateGeneralInfo">
             <v-row>
               <VCol md="12" cols="12">
-                <span style="color: red">*</span
-                ><span class="subtitle-1 text-center">Nama Pemohon: </span>
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Nama Pemohon: </span>
 
-                <VTextField
-                  class="my-3"
-                  v-model="generalInfo.name"
-                  autofocus
-                  :rules="[rules.required]"
-                />
+                <VTextField class="my-3" v-model="generalInfo.name" autofocus :rules="[rules.required]" />
               </VCol>
               <VCol md="12" cols="12">
-                <span style="color: red">*</span
-                ><span class="subtitle-1 text-center">Jumlah Plafon: </span>
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Jumlah Plafon: </span>
 
-                <VTextField
-                  class="my-3"
-                  v-model="generalInfo.plafon"
-                  type="text"
-                  @input="formatInputPlafon"
-                />
+                <VTextField class="my-3" v-model="generalInfo.plafon" type="text" @input="formatInputPlafon" />
               </VCol>
               <VCol md="12" cols="12">
-                <span style="color: red">*</span
-                ><span class="subtitle-1 text-center">Jenis Usaha: </span>
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Jenis Usaha: </span>
 
-                <VTextField
-                  class="my-3"
-                  v-model="generalInfo.type_bussiness"
-                  :rules="[rules.required]"
-                />
+                <VTextField class="my-3" v-model="generalInfo.type_bussiness" :rules="[rules.required]" />
               </VCol>
               <VCol md="12" cols="12">
-                <span style="color: red">*</span
-                ><span class="subtitle-1 text-center">Deskripsi Usaha: </span>
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Deskripsi Usaha: </span>
 
-                <VTextField
-                  class="my-3"
-                  v-model="generalInfo.desc_bussiness"
-                  :rules="[rules.required]"
-                />
+                <VTextField class="my-3" v-model="generalInfo.desc_bussiness" :rules="[rules.required]" />
               </VCol>
               <VCol cols="12" class="d-flex flex-wrap gap-4">
                 <VBtn type="submit"> Update </VBtn>
-                <button
-                  type="button"
-                  class="btn btn-blue"
-                  @click="closeModal(4)"
-                >
+                <button type="button" class="btn btn-blue" @click="closeModal(4)">
                   Batal
                 </button>
               </VCol>
@@ -447,40 +282,22 @@
         </template>
 
         <template v-slot:actions>
-          <v-progress-linear
-            v-model="uploadProgress"
-            color="amber"
-            height="25"
-          ></v-progress-linear>
+          <v-progress-linear v-model="uploadProgress" color="amber" height="25"></v-progress-linear>
         </template>
       </v-card>
     </v-dialog>
 
-    <v-dialog
-      v-model="isUpdateNote"
-      width="auto"
-      persistent
-      transition="dialog-top-transition"
-    >
+    <v-dialog v-model="isUpdateNote" width="auto" persistent transition="dialog-top-transition">
       <v-card>
         <template v-slot:title> Update Note </template>
         <template v-slot:text>
           <VForm @submit.prevent="updateNote">
             <v-row align="center" justify="center">
               <VCol md="10" cols="10">
-                <v-textarea
-                  bg-color="grey-lighten-2"
-                  color="cyan"
-                  v-model="updateDataNote.note"
-                  rows="2"
-                ></v-textarea>
+                <v-textarea bg-color="grey-lighten-2" color="cyan" v-model="updateDataNote.note" rows="2"></v-textarea>
               </VCol>
               <VCol md="2" cols="2">
-                <v-btn
-                  density="compact"
-                  icon="mdi-note-plus"
-                  type="submit"
-                ></v-btn>
+                <v-btn density="compact" icon="mdi-note-plus" type="submit"></v-btn>
               </VCol>
             </v-row>
           </VForm>
@@ -499,35 +316,21 @@
       </v-card>
     </v-dialog> -->
 
-    <v-dialog
-      v-model="isDataPhase3"
-      width="auto"
-      persistent
-      transition="dialog-top-transition"
-    >
+    <v-dialog v-model="isDataPhase3" width="auto" persistent transition="dialog-top-transition">
       <v-card>
         <template v-slot:title> Hasil Survey </template>
         <template v-slot:text>
           <VForm @submit.prevent="updatePhase3">
             <v-row>
               <VCol md="12" cols="12">
-                <span style="color: red">*</span
-                ><span class="subtitle-1 text-center">Hasil Survei: </span>
-                <v-textarea
-                  bg-color="grey-lighten-2"
-                  color="cyan"
-                  v-model="dataPhase3.surveyResult"
-                  rows="3"
-                ></v-textarea>
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Hasil Survei: </span>
+                <v-textarea bg-color="grey-lighten-2" color="cyan" v-model="dataPhase3.surveyResult"
+                  rows="3"></v-textarea>
               </VCol>
               <VCol cols="12" class="d-flex flex-wrap gap-4">
                 <v-btn type="submit">Update</v-btn>
 
-                <button
-                  type="button"
-                  class="btn btn-blue"
-                  @click="closeModal(5)"
-                >
+                <button type="button" class="btn btn-blue" @click="closeModal(5)">
                   Batal
                 </button>
               </VCol>
@@ -537,36 +340,24 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog
-      v-model="isShowTimers"
-      width="auto"
-      transition="dialog-top-transition"
-    >
+    <v-dialog v-model="isShowTimers" width="auto" transition="dialog-top-transition">
       <v-card>
         <template v-slot:title> Data Waktu </template>
         <template v-slot:text>
           <EasyDataTable :headers="timerHeaders" :items="dataFile.phase_times">
             <template #item-timeDiff="item">{{
               calculateTimeDiff(item.startTime, item.endTime)
-            }}</template>
+              }}</template>
           </EasyDataTable>
         </template>
       </v-card>
     </v-dialog>
 
-    <v-dialog
-      v-model="isShowHistory"
-      width="auto"
-      transition="dialog-top-transition"
-    >
+    <v-dialog v-model="isShowHistory" width="auto" transition="dialog-top-transition">
       <v-card>
         <template v-slot:title> Data Riwayat </template>
         <template v-slot:text>
-          <EasyDataTable
-            show-index
-            :headers="historyHeaders"
-            :items="dataFile.file_activities"
-          >
+          <EasyDataTable show-index :headers="historyHeaders" :items="dataFile.file_activities">
             <template #item-created_at="item">
               {{ formatDate(item.created_at) }}
             </template>
@@ -575,18 +366,11 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog
-      v-model="isShowApprovals"
-      width="auto"
-      transition="dialog-top-transition"
-    >
+    <v-dialog v-model="isShowApprovals" width="auto" transition="dialog-top-transition">
       <v-card>
         <template v-slot:title> Riwayat Persetujuan </template>
         <template v-slot:text>
-          <EasyDataTable
-            :headers="approvalHeaders"
-            :items="dataFile.approvals"
-          >
+          <EasyDataTable :headers="approvalHeaders" :items="dataFile.approvals">
             <template #item-approved="item">
               <v-chip color="success" v-if="item.approved == 1"> Disetujui </v-chip>
               <v-chip color="error" v-else> Belum disetujui </v-chip>
@@ -615,9 +399,11 @@ export default {
       userAccess: {},
       fileId: this.$route.params.fileId,
       isShowPhase4: false,
+      isShowPhase5: false,
       isShowTimers: false,
       isShowHistory: false,
       isShowApprovals: false,
+      stepperModel: 0,
 
       isUpdateGeneralInfo: false,
       generalInfo: {
@@ -872,12 +658,28 @@ export default {
         if (response.status === 200) {
           this.dataFile = response.data.data.file;
           this.userAccess = response.data.data.userAccess;
-          console.log(this.dataFile.phase);
-          
-          this.dataFile.phase = parseInt(this.dataFile.phase);
 
+          this.dataFile.phase = parseInt(this.dataFile.phase);
           this.isShowPhase4 =
             parseInt(this.dataFile.plafon) < 25000000 ? false : true;
+
+          if (this.dataFile.phase == 5) {
+            this.isShowPhase5 = true;
+          }
+
+          if (parseInt(this.dataFile.plafon) > 25000000) {
+            if (parseInt(this.dataFile.phase) == 5) {
+              this.stepperModel = parseInt(this.dataFile.phase) - 1;
+            } else {
+              this.stepperModel = parseInt(this.dataFile.phase) - 1;
+            }
+          } else {
+            if (parseInt(this.dataFile.phase) == 5) {
+              this.stepperModel = parseInt(this.dataFile.phase) - 2;
+            } else {
+              this.stepperModel = parseInt(this.dataFile.phase) - 1;
+            }
+          }
           this.generalInfo.id = this.dataFile.id;
           this.generalInfo.name = this.dataFile.name;
           this.generalInfo.type_bussiness = this.dataFile.type_bussiness;
@@ -927,7 +729,7 @@ export default {
         this.isShowTimers = true;
       } else if (type == 7) {
         this.isShowHistory = true;
-      }else if (type == 8) {
+      } else if (type == 8) {
         this.isShowApprovals = true;
       }
     },
