@@ -28,7 +28,7 @@
         <template v-for="phase in phases">
           <v-window-item :value="phase.value">
             <v-row class="d-flex justify-end pa-3">
-              <v-btn color="primary" size="small" class="my-3 mx-3" v-if="userAccess && userAccess.canInsertData"
+              <v-btn color="primary" size="small" class="my-3 mx-3" v-if="userAccess && parseInt(userAccess.canInsertData)"
                 @click="openModal(1)">
                 Tambah Data
               </v-btn>
