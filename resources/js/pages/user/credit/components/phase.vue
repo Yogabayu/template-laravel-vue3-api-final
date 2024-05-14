@@ -120,7 +120,7 @@
           <div v-for="(attachment, index) in dataFile.attachments" :key="index">
             <v-list
               density="compact"
-              v-if="attachment.path != null && !attachment.isSecret"
+              v-if="attachment.path != null && !parseInt(attachment.isSecret)"
             >
               <v-list-item>
                 <template v-slot:prepend>

@@ -700,7 +700,7 @@ export default {
         name: null,
         path: null,
         note: null,
-        isSecret: false,
+        isSecret: 0,
       },
       notePhase1: [],
       notePhase2: [],
