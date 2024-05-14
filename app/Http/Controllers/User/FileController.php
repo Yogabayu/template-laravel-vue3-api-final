@@ -972,9 +972,10 @@ class FileController extends Controller
                     ->get();
                 $notifUser = array_merge($notifUser, $users->toArray());
             }
+            dd($notifUser);
             foreach ($notifPositions as $pos) {
                 foreach ($notifUser as $user) {
-                    if ($pos->position_id == $user->position_id && $user->id == $file->user_id) {
+                    if (($pos->position_id == $user->position_id) && $user->id == $file->user_id) {
                         Approval::firstOrCreate(
                             ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
                             ['approved' => 0]
