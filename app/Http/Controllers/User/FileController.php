@@ -946,43 +946,47 @@ class FileController extends Controller
             }
 
             // //add user to approval
-            $userUploaded = User::where('id', $file->user_id)->first();
-            $userPosition = Position::where('id', $userUploaded->position_id)->first();
-            $userOffices = PositionToOffice::where('position_id', $userPosition->id)->get();
-            $notifPositions = [];
+            Approval::firstOrCreate(
+                ['file_id' => $file->id, 'user_id' => $file->user_id, 'phase' => $file->phase],
+                ['approved' => 0]
+            );
+            // $userUploaded = User::where('id', $file->user_id)->first();
+            // $userPosition = Position::where('id', $userUploaded->position_id)->first();
+            // $userOffices = PositionToOffice::where('position_id', $userPosition->id)->get();
+            // $notifPositions = [];
 
-            //add user to approval
-            foreach ($userOffices as $userOffice) {
-                $notificationConfigurations = DB::table('notification_configurations')
-                    ->where('office_id', $userOffice->office_id)
-                    ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
-                    ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
-                    ->where('phase', $file->phase)
-                    ->where('canApprove', 1)
-                    ->get();
+            // //add user to approval
+            // foreach ($userOffices as $userOffice) {
+            //     $notificationConfigurations = DB::table('notification_configurations')
+            //         ->where('office_id', $userOffice->office_id)
+            //         ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
+            //         ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
+            //         ->where('phase', $file->phase)
+            //         ->where('canApprove', 1)
+            //         ->get();
 
-                $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
-            }
+            //     $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
+            // }
 
-            $notifUser = [];
-            foreach ($notifPositions as $notifPosition) {
-                $users = DB::table('users')
-                    ->where('position_id', $notifPosition->position_id)
-                    ->where('isActive', 1)
-                    ->get();
-                $notifUser = array_merge($notifUser, $users->toArray());
-            }
-            // dd($notifUser);
-            foreach ($notifPositions as $pos) {
-                foreach ($notifUser as $user) {
-                    if (($pos->position_id == $user->position_id) && $user->id == $file->user_id) {
-                        Approval::firstOrCreate(
-                            ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
-                            ['approved' => 0]
-                        );
-                    }
-                }
-            }
+            // $notifUser = [];
+            // foreach ($notifPositions as $notifPosition) {
+            //     $users = DB::table('users')
+            //         ->where('position_id', $notifPosition->position_id)
+            //         ->where('isActive', 1)
+            //         ->get();
+            //     $notifUser = array_merge($notifUser, $users->toArray());
+            // }
+            // // dd($notifUser);
+            // foreach ($notifPositions as $pos) {
+            //     foreach ($notifUser as $user) {
+            //         if (($pos->position_id == $user->position_id) && $user->id == $file->user_id) {
+            //             Approval::firstOrCreate(
+            //                 ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
+            //                 ['approved' => 0]
+            //             );
+            //         }
+            //     }
+            // }
 
             EmailHelper::AddUpdate($file->id);
             TelegramHelper::AddFile($file->id);
