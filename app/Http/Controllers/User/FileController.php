@@ -1047,8 +1047,15 @@ class FileController extends Controller
                     $notificationConfigurations = DB::table('notification_configurations')
                         ->where('office_id', $userOffice->office_id)
                         ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
-                        ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
-                        ->get();
+                        ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon]);
+
+                    if ($file->phase == 5) {
+                        $notificationConfigurations = $notificationConfigurations->where('phase', $file->phase - 1);
+                    } else {
+                        $notificationConfigurations = $notificationConfigurations->where('phase', $file->phase - 2);
+                    };
+
+                    $notificationConfigurations = $notificationConfigurations->get();
 
                     $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
                 } else {
@@ -1072,8 +1079,8 @@ class FileController extends Controller
                         'canAppeal' => $notifPosition->canAppeal,
                         'canApprove' => $notifPosition->canApprove,
                         'canInsertData' => $notifPosition->canInsertData,
-                        // 'isSecret' => $notifPosition->isSecret,
-                        'isSecret' => 1,
+                        'isSecret' => $notifPosition->isSecret,
+                        // 'isSecret' => 1,
 
                     ];
                     break;
