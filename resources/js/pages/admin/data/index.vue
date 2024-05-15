@@ -442,7 +442,7 @@ export default {
         const response = await mainURL.get("/credit");
 
         if (response.status === 200) {
-          this.items = response.data.data;
+          this.items = response.data.data.files;
           this.originalItems = [...this.items];
         } else {
           this.$showToast("error", "Sorry", response.data.data.message);

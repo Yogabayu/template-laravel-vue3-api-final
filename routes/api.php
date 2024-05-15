@@ -71,6 +71,8 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
         Route::post('change-phase-approve', [AdminFileController::class, 'changePhase']);
         Route::get('change-phase-approve/{id}', [AdminFileController::class, 'changeApproved']);
         Route::put('edit-general-info/{id}', [AdminFileController::class, 'editGeneralInfo']);
+        Route::put('survey-credit/{id}', [FileController::class, 'editSurveiResult']);
+        Route::post('change-status', [FileController::class, 'changeStatus']);
 
         //=>note
         Route::post('note', [AdminFileController::class, 'addNote']);
