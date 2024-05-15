@@ -315,7 +315,7 @@ class FileController extends Controller
 
                         EmailHelper::AddUpdate($file->id);
 
-                        ActivityHelper::fileActivity($request->file_id, Auth::user()->id, 'Merubah Status Kredit Menjadi Disetujui');
+                        ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Merubah Status Kredit Menjadi Disetujui');
 
                         ActivityHelper::userActivity(Auth::user()->id, 'Merubah Status Kredit Menjadi Disetujui: ' . $file->name);
                         TelegramHelper::AgreementPhase4($file->id, "Kredit Status Telah diubah menjadi disetujui" . ($filephase), $file->user_id);
@@ -415,8 +415,6 @@ class FileController extends Controller
                         foreach ($userOffices as $userOffice) {
                             $notificationConfigurations = DB::table('notification_configurations')
                                 ->where('office_id', $userOffice->office_id)
-                                // ->where('minPlafon', '<=', $file->plafon)
-                                // ->where('maxPlafon', '>=', $file->plafon)
                                 ->where('phase', $filephase)
                                 ->where('canApprove', 1)
                                 ->get();
@@ -461,7 +459,7 @@ class FileController extends Controller
 
                         EmailHelper::AddUpdate($file->id);
 
-                        ActivityHelper::fileActivity($request->file_id, Auth::user()->id, 'Merubah Phase Kredit ');
+                        ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Merubah Phase Kredit ');
                         ActivityHelper::userActivity(Auth::user()->id, 'Merubah Phase Kredit: ' . $file->name);
                         TelegramHelper::AddUpdatePhase($file->id, "User mengubah Phase menjadi " . ($filephase), $file->user_id);
 
