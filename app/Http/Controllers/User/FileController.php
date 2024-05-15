@@ -1217,7 +1217,7 @@ class FileController extends Controller
                 return ResponseHelper::errorRes('Approval not found');
             }
             if ($approv->user_id != Auth::user()->id) {
-                return ResponseHelper::errorRes('Posisi Anda berbeda');
+                return ResponseHelper::errorRes('Nama Anda berbeda');
             }
             $approv->approved = !$approv->approved;
             $approv->save();
