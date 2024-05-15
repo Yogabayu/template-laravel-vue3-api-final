@@ -35,7 +35,7 @@ export default {
           Toast.fire({
             icon: 'success',
             title: 'Yeay',
-            text: 'Berhasil logout'
+            text: 'Berhasill logout'
           });
 
           // Mengarahkan pengguna kembali ke halaman login

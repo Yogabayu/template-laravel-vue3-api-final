@@ -139,7 +139,7 @@ class FileController extends Controller
             ActivityHelper::userActivity(Auth::user()->id, 'Menambahkan note di file ' . $file->name);
             TelegramHelper::AddUpdate($note->file_id, 'Menambahkan Note : ' . $note->note, Auth::user()->id);
 
-            return ResponseHelper::successRes('Berhasil menambahkan note', $note);
+            return ResponseHelper::successRes('Berhasill menambahkan note', $note);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -170,7 +170,7 @@ class FileController extends Controller
             ActivityHelper::userActivity(Auth::user()->id, 'Edit note di file ' . $file->name);
             TelegramHelper::AddUpdate($note->file_id, 'Mengedit Note : ' . $note->note, Auth::user()->id);
 
-            return ResponseHelper::successRes('Berhasil Mengedit note', $note);
+            return ResponseHelper::successRes('Berhasill Mengedit note', $note);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -210,7 +210,7 @@ class FileController extends Controller
 
             TelegramHelper::AddUpdate($request->file_id, 'Menambahkan Lampiran : ' . $request->name, Auth::user()->id);
 
-            return ResponseHelper::successRes('Berhasi menambahkan attachment', $attch);
+            return ResponseHelper::successRes('Berhasil menambahkan attachment', $attch);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -362,7 +362,7 @@ class FileController extends Controller
 
                         $file->phase = $filephase;
                         $file->save();
-                        return ResponseHelper::successRes('Berhasil Melakukan Perubahan Tahapan Kredit', $file);
+                        return ResponseHelper::successRes('Berhasill Melakukan Perubahan Tahapan Kredit', $file);
                     }
                 } else if ($file->plafon < 25000000) {
                     if ($file->phase == 3) {
@@ -438,7 +438,7 @@ class FileController extends Controller
 
                         $file->phase = $filephase;
                         $file->save();
-                        return ResponseHelper::successRes('Berhasil Melakukan Perubahan Tahapan Kredit', $file);
+                        return ResponseHelper::successRes('Berhasill Melakukan Perubahan Tahapan Kredit', $file);
                     }
                 }
 
@@ -855,7 +855,7 @@ class FileController extends Controller
 
                 ActivityHelper::userActivity(Auth::user()->id, 'Mengakses halaman File Credit');
 
-                return ResponseHelper::successRes('Berhasi menampilkan datas', ['files' => $files, 'userAccess' => $userAccess]);
+                return ResponseHelper::successRes('Berhasil menampilkan datas', ['files' => $files, 'userAccess' => $userAccess]);
             } else {
                 $positionId = Auth::user()->position_id;
                 $position = Position::with('offices')->where('id', $positionId)->first();
@@ -913,7 +913,7 @@ class FileController extends Controller
                 }
                 ActivityHelper::userActivity(Auth::user()->id, 'Mengakses halaman File Credit');
 
-                return ResponseHelper::successRes('Berhasi menampilkan datas', ['files' => $files, 'userAccess' => $userAccess]);
+                return ResponseHelper::successRes('Berhasil menampilkan datas', ['files' => $files, 'userAccess' => $userAccess]);
             }
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
@@ -1034,7 +1034,7 @@ class FileController extends Controller
             ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Menambahkan file');
             ActivityHelper::userActivity(Auth::user()->id, 'Menambahkan file');
 
-            return ResponseHelper::successRes('Berhasi menambahkan data', $file);
+            return ResponseHelper::successRes('Berhasil menambahkan data', $file);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -1182,8 +1182,8 @@ class FileController extends Controller
             // Convert notes to a collection and sort by date in descending order
             // $file->notes = collect($file->notes)->sortByDesc('created_at')->values()->all();
 
-            // return ResponseHelper::successRes('Berhasil menampilkan data', $file);
-            return ResponseHelper::successRes('Berhasil menampilkan data', ['file' => $file, 'userAccess' => $userAccess]);
+            // return ResponseHelper::successRes('Berhasill menampilkan data', $file);
+            return ResponseHelper::successRes('Berhasill menampilkan data', ['file' => $file, 'userAccess' => $userAccess]);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -1205,7 +1205,7 @@ class FileController extends Controller
 
             TelegramHelper::AddUpdatePhase($approv->file_id, "User merubah Status menjadi " . ($approv->approved ? "Disetujui" : "Ditolak"), $approv->user_id);
 
-            return ResponseHelper::successRes('Berhasil mengubah status', $approv);
+            return ResponseHelper::successRes('Berhasill mengubah status', $approv);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }

@@ -105,7 +105,7 @@ export default {
             await this.$router.push("/user-dashboard");     
           }
 
-          this.$showToast("success", "Yeay", "Selamat anda berhasil login, mengarahkan ke dashboard.....");
+          this.$showToast("success", "Yeay", "Selamat anda Berhasill login, mengarahkan ke dashboard.....");
         } else {
           const errorMessage =
             response && response.data && response.data.message

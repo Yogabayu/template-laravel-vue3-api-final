@@ -20,7 +20,7 @@ class UserController extends Controller
         try {
             $user = User::with('position', 'position.offices')->get();
 
-            return ResponseHelper::successRes('Berhasi mendapatkan data', $user);
+            return ResponseHelper::successRes('Berhasil mendapatkan data', $user);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -62,7 +62,7 @@ class UserController extends Controller
                 'position_id' => $request->position_id,
             ]);
 
-            return ResponseHelper::successRes('Berhasi menambahkan data', $user);
+            return ResponseHelper::successRes('Berhasil menambahkan data', $user);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -74,7 +74,7 @@ class UserController extends Controller
             $user = User::findOrFail($id);
             $user->isActive = $user->isActive ? 0 : 1;
             $user->save();
-            return ResponseHelper::successRes('Berhasi mengubah status user', $user);
+            return ResponseHelper::successRes('Berhasil mengubah status user', $user);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -124,7 +124,7 @@ class UserController extends Controller
             $user->position_id = $request->position_id;
             $user->save();
 
-            return ResponseHelper::successRes('Berhasil memperbarui data', $user);
+            return ResponseHelper::successRes('Berhasill memperbarui data', $user);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -159,7 +159,7 @@ class UserController extends Controller
             // Hapus pengguna setelah semua entitas terkait dihapus
             $user->delete();
 
-            return ResponseHelper::successRes('Berhasi menghapus data', $user);
+            return ResponseHelper::successRes('Berhasil menghapus data', $user);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -204,8 +204,8 @@ class UserController extends Controller
                             $user->telegram_chat_id = $chatId;
                             $user->save();
 
-                            $user->notify(new TelegramNotification('Berhasil mengkoneksikan ke sistem', null, null));
-                            return ResponseHelper::successRes('Selamat, Berhasil Terkoneksi Dengan sistem', $chatId);
+                            $user->notify(new TelegramNotification('Berhasill mengkoneksikan ke sistem', null, null));
+                            return ResponseHelper::successRes('Selamat, Berhasill Terkoneksi Dengan sistem', $chatId);
                         }
                     }
                 }

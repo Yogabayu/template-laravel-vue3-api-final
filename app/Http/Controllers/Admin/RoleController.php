@@ -16,7 +16,7 @@ class RoleController extends Controller
     public function index()
     {
         try {
-            return ResponseHelper::successRes('Berhasil mendapatkan data role', Role::all());
+            return ResponseHelper::successRes('Berhasill mendapatkan data role', Role::all());
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -66,7 +66,7 @@ class RoleController extends Controller
                 // 'canComment.required' => 'Akses Komentar Wajib diisi',
             ]);
 
-            // Jika validasi berhasil, simpan data
+            // Jika validasi Berhasill, simpan data
             $role = new Role();
             $role->id = Str::uuid();
             $role->name = $request->name; // Mengambil nilai 'name' dari dataForm
@@ -85,7 +85,7 @@ class RoleController extends Controller
             // $role->canComment =  $request->canComment;
             $role->save();
 
-            return ResponseHelper::successRes('Berhasil input data role', $role);
+            return ResponseHelper::successRes('Berhasill input data role', $role);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -160,7 +160,7 @@ class RoleController extends Controller
             // $role->canComment =  $request->canComment;
             $role->save();
 
-            return ResponseHelper::successRes('Berhasil update data role', $role);
+            return ResponseHelper::successRes('Berhasill update data role', $role);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -173,7 +173,7 @@ class RoleController extends Controller
     {
         try {
             $role = Role::findOrFail($id)->delete();
-            return ResponseHelper::successRes('Berhasil hapus data role', $role);
+            return ResponseHelper::successRes('Berhasill hapus data role', $role);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }

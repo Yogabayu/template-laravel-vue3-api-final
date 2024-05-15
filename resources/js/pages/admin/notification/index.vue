@@ -1,6 +1,20 @@
 <template>
+  <v-overlay
+    :absolute="true"
+    v-model="overlay"
+    contained
+    persistent
+    class="align-center justify-center"
+  >
+    <v-col>
+      <v-progress-circular color="primary" size="32" indeterminate>
+      </v-progress-circular>
+      <br />
+      <span class="font-weight-bold text-lg">Loading....</span>
+    </v-col>
+  </v-overlay>
   <div>
-    <VCard class="auth-card pa-4 pt-5">
+    <VCard class="auth-card pa-4 pt-5 my-2">
       <VCardItem class="align-left">
         <VCardTitle class="text-2xl font-weight-bold">
           Konfigurasi Fase Kredit
@@ -18,88 +32,44 @@
         <v-spacer></v-spacer>
 
         <div class="d-flex align-center pe-2 w-25">
-          <v-text-field
-            prepend-inner-icon="mdi-magnify"
-            density="compact"
-            label="Search"
-            single-line
-            flat
-            hide-details
-            variant="solo-filled"
-            v-model="searchValue"
-          ></v-text-field>
+          <v-text-field prepend-inner-icon="mdi-magnify" density="compact" label="Search" single-line flat hide-details
+            variant="solo-filled" v-model="searchValue"></v-text-field>
         </div>
       </div>
-      <v-dialog v-model="insert" width="auto" persistent 
-          transition="dialog-top-transition">
+      <v-dialog v-model="insert" width="auto" persistent transition="dialog-top-transition">
         <v-card>
           <template v-slot:title> Tambah Data </template>
           <template v-slot:text>
             <VForm @submit.prevent="insertData">
               <VRow>
                 <VCol cols="12" md="12">
-                  <v-autocomplete
-                    v-model="dataForm.office_id"
-                    :items="offices"
-                    hint="Pilih Kantor"
-                    label="Kantor"
-                    clearable
-                    persistent-hint
-                    prepend-icon="mdi-divide"
-                  ></v-autocomplete>
+                  <v-autocomplete v-model="dataForm.office_id" :items="offices" hint="Pilih Kantor" label="Kantor"
+                    clearable persistent-hint prepend-icon="mdi-divide"></v-autocomplete>
                 </VCol>
                 <VCol cols="12" md="12">
-                  <v-autocomplete
-                    v-model="dataForm.position_id"
-                    :items="positions"
-                    hint="Pilih Jabatan"
-                    label="Jabatan"
-                    clearable
-                    persistent-hint
-                    prepend-icon="mdi-divide"
-                  ></v-autocomplete>
+                  <v-autocomplete v-model="dataForm.position_id" :items="positions" hint="Pilih Jabatan" label="Jabatan"
+                    clearable persistent-hint prepend-icon="mdi-divide"></v-autocomplete>
                 </VCol>
                 <VCol md="12" cols="12">
-                  <v-select
-                    label="Pilih Phase"
-                    :items="[
-                      { value: 1, title: 'Phase 1' },
-                      { value: 2, title: 'Phase 2' },
-                      { value: 3, title: 'Phase 3' },
-                      { value: 4, title: 'Phase 4' },
-                    ]"
-                    v-model="dataForm.phase"
-                    prepend-icon="mdi-help-rhombus"
-                  ></v-select>
+                  <v-select label="Pilih Phase" :items="[
+                    { value: 1, title: 'Phase 1' },
+                    { value: 2, title: 'Phase 2' },
+                    { value: 3, title: 'Phase 3' },
+                    { value: 4, title: 'Phase 4' },
+                  ]" v-model="dataForm.phase" prepend-icon="mdi-help-rhombus"></v-select>
                 </VCol>
                 <VCol md="6" cols="12">
-                  <VTextField
-                    label="Minimal Plafon"
-                    v-model="dataForm.minPlafon"
-                    type="text"
-                    @input="formatInput"
-                    autofocus
-                    prepend-icon="mdi-help-rhombus"
-                  />
+                  <VTextField label="Minimal Plafon" v-model="dataForm.minPlafon" type="text" @input="formatInput"
+                    autofocus prepend-icon="mdi-help-rhombus" />
                 </VCol>
                 <VCol md="6" cols="12">
-                  <VTextField
-                    label="Maximal Plafon"
-                    v-model="dataForm.maxPlafon"
-                    type="text"
-                    @input="formatInput"
-                    autofocus
-                    prepend-icon="mdi-help-rhombus"
-                  />
+                  <VTextField label="Maximal Plafon" v-model="dataForm.maxPlafon" type="text" @input="formatInput"
+                    autofocus prepend-icon="mdi-help-rhombus" />
                 </VCol>
                 <VCol cols="12" class="d-flex flex-wrap gap-4">
                   <VBtn type="submit">Simpan</VBtn>
 
-                  <button
-                    type="button"
-                    class="btn btn-blue"
-                    @click="closeModal(1)"
-                  >
+                  <button type="button" class="btn btn-blue" @click="closeModal(1)">
                     Batal
                   </button>
                 </VCol>
@@ -108,13 +78,7 @@
           </template>
         </v-card>
       </v-dialog>
-      
-      <EasyDataTable
-        show-index
-        :headers="headers"
-        :items="items"
-        :search-value="searchValue"
-      >
+      <EasyDataTable show-index :headers="headers" :items="items" :search-value="searchValue">
         <template #empty-message>
           <p>Data Kantor Kosong</p>
         </template>
@@ -124,12 +88,7 @@
         <template #item-operation="item">
           <div class="operation-wrapper">
             <button>
-              <VIcon
-                size="20"
-                icon="bx-file-find"
-                color="blue"
-                @click="toDetail(item)"
-              />
+              <VIcon size="20" icon="bx-file-find" color="blue" @click="toDetail(item)" />
             </button>
           </div>
         </template>
@@ -137,6 +96,8 @@
     </VCard>
   </div>
 </template>
+
+
 <script lang="ts">
 import mainURL from "@/axios";
 export default {
@@ -168,6 +129,7 @@ export default {
       searchValue: "",
       insert: false,
       edit: false,
+      overlay:false
     };
   },
   methods: {
@@ -180,7 +142,7 @@ export default {
       value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ","); // Add comma as thousand separator
       event.target.value = value;
     },
-    
+
     async insertData() {
       try {
         for (let key in this.dataForm) {

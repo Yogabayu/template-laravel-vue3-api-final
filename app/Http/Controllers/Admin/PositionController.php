@@ -18,7 +18,7 @@ class PositionController extends Controller
     {
         try {
             $positions = Position::withCount('users')->with('offices', 'role')->get();
-            return ResponseHelper::successRes('Berhasil mendapatkan data jabatan', $positions);
+            return ResponseHelper::successRes('Berhasill mendapatkan data jabatan', $positions);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -60,7 +60,7 @@ class PositionController extends Controller
                 $officeMapping->save();
             }
 
-            return ResponseHelper::successRes('Berhasil input data jabatan', $position);
+            return ResponseHelper::successRes('Berhasill input data jabatan', $position);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -107,7 +107,7 @@ class PositionController extends Controller
             }
             $position->save();
 
-            return ResponseHelper::successRes('Berhasil update data jabatan', $position);
+            return ResponseHelper::successRes('Berhasill update data jabatan', $position);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -139,7 +139,7 @@ class PositionController extends Controller
             // Akhirnya, hapus posisi
             $position->delete();
 
-            return ResponseHelper::successRes('Berhasil hapus data jabatan', $position);
+            return ResponseHelper::successRes('Berhasill hapus data jabatan', $position);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }

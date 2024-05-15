@@ -25,51 +25,65 @@
       </div>
 
       <!-- phase1 -->
-      <v-card class="my-2">
+      <v-card class="mx-2 my-5">
         <VCardItem class="align-left">
           <VCardTitle class="text-2xl font-weight-bold"> Phase 1 </VCardTitle>
         </VCardItem>
-        <EasyDataTable show-index :headers="phase1Headers" :items="phase1Items">
-          <template #empty-message>
-            <p>Data Kosong</p>
-          </template>
-          <template #loading>
-            <p>loading data .....</p>
-          </template>
-          <template #item-minPlafon="item">
-            <p>{{ formatInput(item.minPlafon) }}</p>
-          </template>
-          <template #item-maxPlafon="item">
-            <p>{{ formatInput(item.maxPlafon) }}</p>
-          </template>
-          <!-- <template #item-canAppeal="item">
+          <EasyDataTable show-index :headers="phase1Headers" :items="phase1Items">
+            <template #empty-message>
+              <p>Data Kosong</p>
+            </template>
+            <template #loading>
+              <p>loading data .....</p>
+            </template>
+            <template #item-minPlafon="item">
+              <p>{{ formatInput(item.minPlafon) }}</p>
+            </template>
+            <template #item-maxPlafon="item">
+              <p>{{ formatInput(item.maxPlafon) }}</p>
+            </template>
+            <!-- <template #item-canAppeal="item">
             <p>{{ item.canAppeal == 1 ? "&#x2713;" : "x" }}</p>
           </template> -->
-          <template #item-canApprove="item">
-            <p>{{ item.canApprove == 1 ? "&#x2713;" : "x" }}</p>
-          </template>
-          <template #item-notification="item">
-            <p>{{ item.notification == 1 ? "&#x2713;" : "x" }}</p>
-          </template>
-          <template #item-canInsertData="item">
-            <p>{{ item.canInsertData == 1 ? "&#x2713;" : "x" }}</p>
-          </template>
-          <template #item-operation="item">
-            <div class="operation-wrapper">
-              <button>
-                <VIcon size="20" icon="bx-edit" color="blue" @click="openModal(2, item)" />
-              </button>
-              &nbsp;
-              <button>
-                <VIcon size="20" icon="bx-trash" color="red" @click="deleteNotifConf(item)" />
-              </button>
-            </div>
-          </template>
-        </EasyDataTable>
+            <template #item-canApprove="item">
+              <p>{{ item.canApprove == 1 ? "&#x2713;" : "x" }}</p>
+            </template>
+            <template #item-notification="item">
+              <p>{{ item.notification == 1 ? "&#x2713;" : "x" }}</p>
+            </template>
+            <template #item-canInsertData="item">
+              <p>{{ item.canInsertData == 1 ? "&#x2713;" : "x" }}</p>
+            </template>
+            <template #item-operation="item">
+              <div class="operation-wrapper flex space-x-4">
+                <v-tooltip location="top" text="Edit">
+                  <template v-slot:activator="{ props }">
+                    <button v-bind="props" @click="openModal(2, item)">
+                      <VIcon size="20" icon="bx-edit" color="info" />
+                    </button>
+                  </template>
+                </v-tooltip>
+                <v-tooltip location="top" text="Copy">
+                  <template v-slot:activator="{ props }">
+                    <button v-bind="props" @click="openModal(3, item)">
+                      <VIcon size="20" icon="bx-copy" color="warning" />
+                    </button>
+                  </template>
+                </v-tooltip>
+                <v-tooltip location="top" text="Delete">
+                  <template v-slot:activator="{ props }">
+                    <button v-bind="props" @click="deleteNotifConf(item)">
+                      <VIcon size="20" icon="bx-trash" color="danger" />
+                    </button>
+                  </template>
+                </v-tooltip>
+              </div>
+            </template>
+          </EasyDataTable>
       </v-card>
 
       <!-- phase2 -->
-      <v-card class="my-2">
+      <v-card class="mx-2 my-5">
         <VCardItem class="align-left">
           <VCardTitle class="text-2xl font-weight-bold"> Phase 2 </VCardTitle>
         </VCardItem>
@@ -86,9 +100,6 @@
           <template #item-maxPlafon="item">
             <p>{{ formatInput(item.maxPlafon) }}</p>
           </template>
-          <!-- <template #item-canAppeal="item">
-            <p>{{ item.canAppeal == 1 ? "&#x2713;" : "x" }}</p>
-          </template> -->
           <template #item-canApprove="item">
             <p>{{ item.canApprove == 1 ? "&#x2713;" : "x" }}</p>
           </template>
@@ -102,21 +113,35 @@
             <p>{{ item.canInsertData == 1 ? "&#x2713;" : "x" }}</p>
           </template>
           <template #item-operation="item">
-            <div class="operation-wrapper">
-              <button>
-                <VIcon size="20" icon="bx-edit" color="blue" @click="openModal(2, item)" />
-              </button>
-              &nbsp;
-              <button>
-                <VIcon size="20" icon="bx-trash" color="red" @click="deleteNotifConf(item)" />
-              </button>
+            <div class="operation-wrapper flex space-x-4">
+              <v-tooltip location="top" text="Edit">
+                <template v-slot:activator="{ props }">
+                  <button v-bind="props" @click="openModal(2, item)">
+                    <VIcon size="20" icon="bx-edit" color="info" />
+                  </button>
+                </template>
+              </v-tooltip>
+              <v-tooltip location="top" text="Copy">
+                <template v-slot:activator="{ props }">
+                  <button v-bind="props" @click="openModal(3, item)">
+                    <VIcon size="20" icon="bx-copy" color="warning" />
+                  </button>
+                </template>
+              </v-tooltip>
+              <v-tooltip location="top" text="Delete">
+                <template v-slot:activator="{ props }">
+                  <button v-bind="props" @click="deleteNotifConf(item)">
+                    <VIcon size="20" icon="bx-trash" color="danger" />
+                  </button>
+                </template>
+              </v-tooltip>
             </div>
           </template>
         </EasyDataTable>
       </v-card>
 
       <!-- phase3 -->
-      <v-card class="my-2">
+      <v-card class="mx-2 my-2">
         <VCardItem class="align-left">
           <VCardTitle class="text-2xl font-weight-bold"> Phase 3 </VCardTitle>
         </VCardItem>
@@ -149,21 +174,35 @@
             <p>{{ item.canInsertData == 1 ? "&#x2713;" : "x" }}</p>
           </template>
           <template #item-operation="item">
-            <div class="operation-wrapper">
-              <button>
-                <VIcon size="20" icon="bx-edit" color="blue" @click="openModal(2, item)" />
-              </button>
-              &nbsp;
-              <button>
-                <VIcon size="20" icon="bx-trash" color="red" @click="deleteNotifConf(item)" />
-              </button>
+            <div class="operation-wrapper flex space-x-4">
+              <v-tooltip location="top" text="Edit">
+                <template v-slot:activator="{ props }">
+                  <button v-bind="props" @click="openModal(2, item)">
+                    <VIcon size="20" icon="bx-edit" color="info" />
+                  </button>
+                </template>
+              </v-tooltip>
+              <v-tooltip location="top" text="Copy">
+                <template v-slot:activator="{ props }">
+                  <button v-bind="props" @click="openModal(3, item)">
+                    <VIcon size="20" icon="bx-copy" color="warning" />
+                  </button>
+                </template>
+              </v-tooltip>
+              <v-tooltip location="top" text="Delete">
+                <template v-slot:activator="{ props }">
+                  <button v-bind="props" @click="deleteNotifConf(item)">
+                    <VIcon size="20" icon="bx-trash" color="danger" />
+                  </button>
+                </template>
+              </v-tooltip>
             </div>
           </template>
         </EasyDataTable>
       </v-card>
 
       <!-- phase4 -->
-      <v-card class="my-2">
+      <v-card class="mx-2 my-2">
         <VCardItem class="align-left">
           <VCardTitle class="text-2xl font-weight-bold"> Phase 4 </VCardTitle>
         </VCardItem>
@@ -196,21 +235,34 @@
             <p>{{ item.canInsertData == 1 ? "&#x2713;" : "x" }}</p>
           </template>
           <template #item-operation="item">
-            <div class="operation-wrapper">
-              <button>
-                <VIcon size="20" icon="bx-edit" color="blue" @click="openModal(2, item)" />
-              </button>
-              &nbsp;
-              <button>
-                <VIcon size="20" icon="bx-trash" color="red" @click="deleteNotifConf(item)" />
-              </button>
+            <div class="operation-wrapper flex space-x-4">
+              <v-tooltip location="top" text="Edit">
+                <template v-slot:activator="{ props }">
+                  <button v-bind="props" @click="openModal(2, item)">
+                    <VIcon size="20" icon="bx-edit" color="info" />
+                  </button>
+                </template>
+              </v-tooltip>
+              <v-tooltip location="top" text="Copy">
+                <template v-slot:activator="{ props }">
+                  <button v-bind="props" @click="openModal(3, item)">
+                    <VIcon size="20" icon="bx-copy" color="warning" />
+                  </button>
+                </template>
+              </v-tooltip>
+              <v-tooltip location="top" text="Delete">
+                <template v-slot:activator="{ props }">
+                  <button v-bind="props" @click="deleteNotifConf(item)">
+                    <VIcon size="20" icon="bx-trash" color="danger" />
+                  </button>
+                </template>
+              </v-tooltip>
             </div>
           </template>
         </EasyDataTable>
       </v-card>
 
-      <v-dialog v-model="insert" width="auto" persistent 
-          transition="dialog-top-transition">
+      <v-dialog v-model="insert" width="auto" persistent transition="dialog-top-transition">
         <v-card>
           <template v-slot:title> Tambah Data </template>
           <template v-slot:text>
@@ -222,7 +274,8 @@
                 </VCol>
                 <VCol cols="12" md="12">
                   <v-autocomplete v-model="dataFormIn.position_id" :items="positions" hint="Pilih Jabatan"
-                    label="Jabatan" clearable autofocus persistent-hint prepend-icon="mdi-divide"></v-autocomplete>
+                    label="Jabatan - Jangkauan Kantor" clearable autofocus persistent-hint
+                    prepend-icon="mdi-divide"></v-autocomplete>
                 </VCol>
                 <VCol md="12" cols="12">
                   <v-select label="Pilih Phase" :items="[
@@ -233,12 +286,13 @@
                   ]" v-model="dataFormIn.phase" prepend-icon="mdi-help-rhombus"></v-select>
                 </VCol>
                 <VCol md="6" cols="12">
-                  <VTextField label="Minimal Plafon" v-model="dataFormIn.minPlafon" type="text" @input="formatInputIn"
-                     prepend-icon="mdi-help-rhombus" />
+                  <VTextField label="Minimal Plafon" v-model="formattedMinPlafon" type="text" @input="formatInputIn"
+                    prepend-icon="mdi-help-rhombus" />
                 </VCol>
                 <VCol md="6" cols="12">
-                  <VTextField label="Maximal Plafon" v-model="dataFormIn.maxPlafon" type="text" @input="formatInputIn"
-                    autofocus prepend-icon="mdi-help-rhombus" />
+                  <VTextField label="Maximal Plafon" v-model="formattedMaxPlafon" type="text" @input="formatInputIn"
+                    hint="Masukkan 1.000.000.000 untuk maksimal, jika ingin tanpa batas" autofocus
+                    prepend-icon="mdi-help-rhombus" />
                 </VCol>
                 <!-- <VCol md="12" cols="12">
                   <v-select label="Banding?" :items="[
@@ -266,7 +320,7 @@
                 </VCol>
                 <!-- //khusus slik -->
                 <VCol md="12" cols="12" v-if="dataFormIn.phase >= 2">
-                  <v-select label="Akses SLIK?" :items="[
+                  <v-select label="Akses Data Sensitif? (SLIK, dll)" :items="[
                     { value: 1, title: 'Ya' },
                     { value: 0, title: 'Tidak' },
                   ]" v-model="dataFormIn.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
@@ -284,8 +338,7 @@
           </template>
         </v-card>
       </v-dialog>
-      <v-dialog v-model="edit" width="auto" persistent 
-          transition="dialog-top-transition">
+      <v-dialog v-model="edit" width="auto" persistent transition="dialog-top-transition">
         <v-card>
           <template v-slot:title> Update Data </template>
           <template v-slot:text>
@@ -308,12 +361,13 @@
                   ]" v-model="dataFormIn.phase" prepend-icon="mdi-help-rhombus"></v-select>
                 </VCol>
                 <VCol md="6" cols="12">
-                  <VTextField label="Minimal Plafon" v-model="dataFormIn.minPlafon" type="text" @input="formatInputIn"
-                    autofocus prepend-icon="mdi-help-rhombus" />
+                  <VTextField label="Minimal Plafon" v-model="formattedMinPlafon" type="text" @input="formatInputIn"
+                    prepend-icon="mdi-help-rhombus" />
                 </VCol>
                 <VCol md="6" cols="12">
-                  <VTextField label="Maximal Plafon" v-model="dataFormIn.maxPlafon" type="text" @input="formatInputIn"
-                    autofocus prepend-icon="mdi-help-rhombus" />
+                  <VTextField label="Maximal Plafon" v-model="formattedMaxPlafon" type="text" @input="formatInputIn"
+                    hint="Masukkan 1.000.000.000 untuk maksimal, jika ingin tanpa batas" autofocus
+                    prepend-icon="mdi-help-rhombus" />
                 </VCol>
                 <!-- <VCol md="12" cols="12">
                   <v-select label="Banding?" :items="[
@@ -341,7 +395,7 @@
                 </VCol>
                 <!-- //khusus slik -->
                 <VCol md="12" cols="12" v-if="dataFormIn.phase >= 2">
-                  <v-select label="Akses SLIK?" :items="[
+                  <v-select label="Akses Data Sensitif? (SLIK, dll)" :items="[
                     { value: 1, title: 'Ya' },
                     { value: 0, title: 'Tidak' },
                   ]" v-model="dataFormIn.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
@@ -358,12 +412,104 @@
           </template>
         </v-card>
       </v-dialog>
+      <v-dialog v-model="copy" width="auto" persistent transition="dialog-top-transition">
+        <v-card>
+          <template v-slot:title> Copy Data </template>
+          <template v-slot:text>
+            <VForm @submit.prevent="copyData">
+              <VRow>
+                <VCol cols="12" md="12">
+                  <v-autocomplete v-model="dataFormIn.office_id" :items="offices" hint="Pilih Kantor" label="Kantor"
+                    clearable persistent-hint disabled prepend-icon="mdi-divide"></v-autocomplete>
+                </VCol>
+                <VCol cols="12" md="12">
+                  <v-autocomplete v-model="dataFormIn.position_id" :items="positions" hint="Pilih Jabatan"
+                    label="Jabatan" clearable persistent-hint prepend-icon="mdi-divide"></v-autocomplete>
+                </VCol>
+                <VCol md="12" cols="12">
+                  <v-select label="Pilih Phase" :items="[
+                    { value: 1, title: 'Phase 1' },
+                    { value: 2, title: 'Phase 2' },
+                    { value: 3, title: 'Phase 3' },
+                    { value: 4, title: 'Phase 4' },
+                  ]" v-model="dataFormIn.phase" prepend-icon="mdi-help-rhombus"></v-select>
+                </VCol>
+                <VCol md="6" cols="12">
+                  <VTextField label="Minimal Plafon" v-model="formattedMinPlafon" type="text" @input="formatInputIn"
+                    prepend-icon="mdi-help-rhombus" />
+                </VCol>
+                <VCol md="6" cols="12">
+                  <VTextField label="Maximal Plafon" v-model="formattedMaxPlafon" type="text" @input="formatInputIn"
+                    hint="Masukkan 1.000.000.000 untuk maksimal, jika ingin tanpa batas" autofocus
+                    prepend-icon="mdi-help-rhombus" />
+                </VCol>
+                <!-- <VCol md="12" cols="12">
+                  <v-select label="Banding?" :items="[
+                    { value: 1, title: 'Ya' },
+                    { value: 0, title: 'Tidak' },
+                  ]" v-model="dataFormIn.canAppeal" prepend-icon="mdi-help-rhombus"></v-select>
+                </VCol> -->
+                <VCol md="12" cols="12">
+                  <v-select label="Approve?" :items="[
+                    { value: 1, title: 'Ya' },
+                    { value: 0, title: 'Tidak' },
+                  ]" v-model="dataFormIn.canApprove" prepend-icon="mdi-help-rhombus"></v-select>
+                </VCol>
+                <VCol md="12" cols="12">
+                  <v-select label="Notifikasi?" :items="[
+                    { value: 1, title: 'Ya' },
+                    { value: 0, title: 'Tidak' },
+                  ]" v-model="dataFormIn.notification" prepend-icon="mdi-help-rhombus"></v-select>
+                </VCol>
+                <VCol md="12" cols="12">
+                  <v-select label="Tambah Data?" :items="[
+                    { value: 1, title: 'Ya' },
+                    { value: 0, title: 'Tidak' },
+                  ]" v-model="dataFormIn.canInsertData" prepend-icon="mdi-help-rhombus"></v-select>
+                </VCol>
+                <!-- //khusus slik -->
+                <VCol md="12" cols="12" v-if="dataFormIn.phase >= 2">
+                  <v-select label="Akses Data Sensitif? (SLIK, dll)" :items="[
+                    { value: 1, title: 'Ya' },
+                    { value: 0, title: 'Tidak' },
+                  ]" v-model="dataFormIn.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
+                </VCol>
+                <VCol cols="12" class="d-flex flex-wrap gap-4">
+                  <VBtn type="submit">Simpan</VBtn>
+
+                  <button type="button" class="btn btn-blue" @click="closeModal(3)">
+                    Batal
+                  </button>
+                </VCol>
+              </VRow>
+            </VForm>
+          </template>
+        </v-card>
+      </v-dialog>
     </VCard>
   </div>
 </template>
 <script lang="ts">
 import mainURL from "@/axios";
 export default {
+  computed: {
+    formattedMinPlafon: {
+      get() {
+        return this.formatNumber(this.dataFormIn.minPlafon);
+      },
+      set(value) {
+        this.dataFormIn.minPlafon = value.replace(/\D/g, '');
+      }
+    },
+    formattedMaxPlafon: {
+      get() {
+        return this.formatNumber(this.dataFormIn.maxPlafon);
+      },
+      set(value) {
+        this.dataFormIn.maxPlafon = value.replace(/\D/g, '');
+      }
+    }
+  },
   data() {
     return {
       overlay: false,
@@ -375,8 +521,8 @@ export default {
         office_id: null,
         position_id: null,
         phase: null,
-        minPlafon: null,
-        maxPlafon: null,
+        minPlafon: '',
+        maxPlafon: '',
         //canAppeal: 0,
         canApprove: 0,
         notification: 0,
@@ -386,6 +532,7 @@ export default {
       officeId: this.$route.params.officeId,
       insert: false,
       edit: false,
+      copy: false,
       dataForm: {
         officeId: null,
         phase: null,
@@ -404,7 +551,7 @@ export default {
         { text: "Approve?", value: "canApprove", sortable: true },
         { text: "Notifikasi?", value: "notification", sortable: true },
         { text: "Tambah Data?", value: "canInsertData", sortable: true },
-        { text: "Operation", value: "operation" },
+        { text: "Operation", value: "operation", width: 100 },
       ],
       //phase2
       phase2Items: [],
@@ -416,9 +563,9 @@ export default {
         //{ text: "Banding?", value: "canAppeal", sortable: true },
         { text: "Approve?", value: "canApprove", sortable: true },
         { text: "Notifikasi?", value: "notification", sortable: true },
-        { text: "Akses SLIK?", value: "isSecret", sortable: true },
+        { text: "Akses Data Sensitif? (SLIK, dll)", value: "isSecret", sortable: true },
         { text: "Tambah Data?", value: "canInsertData", sortable: true },
-        { text: "Operation", value: "operation" },
+        { text: "Operation", value: "operation", width: 100 },
       ],
       //phase3
       phase3Items: [],
@@ -430,9 +577,9 @@ export default {
         //{ text: "Banding?", value: "canAppeal", sortable: true },
         { text: "Approve?", value: "canApprove", sortable: true },
         { text: "Notifikasi", value: "notification", sortable: true },
-        { text: "Akses SLIK?", value: "isSecret", sortable: true },
+        { text: "Akses Data Sensitif? (SLIK, dll)", value: "isSecret", sortable: true },
         { text: "Tambah Data?", value: "canInsertData", sortable: true },
-        { text: "Operation", value: "operation" },
+        { text: "Operation", value: "operation", width: 100 },
       ],
       //phase4
       phase4Items: [],
@@ -444,9 +591,9 @@ export default {
         //{ text: "Banding?", value: "canAppeal", sortable: true },
         { text: "Approve?", value: "canApprove", sortable: true },
         { text: "Notifikasi", value: "notification", sortable: true },
-        { text: "Akses SLIK?", value: "isSecret", sortable: true },
+        { text: "Akses Data Sensitif? (SLIK, dll)", value: "isSecret", sortable: true },
         { text: "Tambah Data?", value: "canInsertData", sortable: true },
-        { text: "Operation", value: "operation" },
+        { text: "Operation", value: "operation", width: 100 },
       ],
     };
   },
@@ -456,6 +603,10 @@ export default {
       value = value.replace(/\D/g, ""); // Remove non-digit characters
       value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ","); // Add comma as thousand separator
       event.target.value = value;
+    },
+    formatNumber(value) {
+      if (!value) return '';
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     },
     async deleteNotifConf(item: { id: any }) {
       try {
@@ -468,7 +619,7 @@ export default {
 
         if (response.status === 200) {
           this.getAll();
-          this.$showToast("success", "Berhasil", response.data.message);
+          this.$showToast("success", "Berhasill", response.data.message);
         } else {
           this.getAll();
           this.$showToast("error", "Sorry", response.data.message);
@@ -511,7 +662,7 @@ export default {
           this.dataFormIn.maxPlafon.replace(/\D/g, "")
         );
         formData.append("_method", "POST");
-        
+
         const response = await mainURL.post("/notifconf", formData);
         if (response.status === 200) {
           this.closeModal(1);
@@ -524,6 +675,56 @@ export default {
         }
       } catch (error) {
         this.closeModal(1);
+        this.getAll();
+        this.$showToast("error", "Sorry", error.response.data.message);
+      }
+    },
+    async copyData() {
+      try {
+        for (let key in this.dataForm) {
+          if (key !== "id") {
+            if (this.dataFormIn[key] === null) {
+              this.closeModal(1);
+              this.$showToast("error", "Sorry", `Properti ${key} harus diisi.`);
+            }
+          }
+        }
+
+        const formData = new FormData();
+        formData.append("office_id", this.dataFormIn.office_id);
+        formData.append("position_id", this.dataFormIn.position_id);
+        formData.append("phase", this.dataFormIn.phase);
+        // formData.append("canAppeal", this.dataFormIn.canAppeal);
+        formData.append("canApprove", this.dataFormIn.canApprove);
+        formData.append("notification", this.dataFormIn.notification);
+        formData.append("canInsertData", this.dataFormIn.canInsertData);
+        if (this.dataFormIn.phase >= 2) {
+          formData.append("isSecret", this.dataFormIn.isSecret);
+        } else {
+          formData.append("isSecret", '0');
+        }
+        formData.append(
+          "minPlafon",
+          this.dataFormIn.minPlafon.replace(/\D/g, "")
+        );
+        formData.append(
+          "maxPlafon",
+          this.dataFormIn.maxPlafon.replace(/\D/g, "")
+        );
+        formData.append("_method", "POST");
+
+        const response = await mainURL.post("/notifconf", formData);
+        if (response.status === 200) {
+          this.closeModal(3);
+          this.getAll();
+          this.$showToast("success", "Success", response.data.message);
+        } else {
+          this.closeModal(3);
+          this.getAll();
+          this.$showToast("error", "Sorry", response.data.message);
+        }
+      } catch (error) {
+        this.closeModal(3);
         this.getAll();
         this.$showToast("error", "Sorry", error.response.data.message);
       }
@@ -578,6 +779,9 @@ export default {
       } else if (type === 2) {
         this.resetForm();
         this.edit = false;
+      } else if (type === 3) {
+        this.resetForm();
+        this.copy = false;
       }
     },
     resetForm() {
@@ -615,6 +819,23 @@ export default {
           this.dataFormIn.isSecret = parseInt(item.isSecret);
           this.dataFormIn.canInsertData = parseInt(item.canInsertData);
           this.edit = true;
+        }
+      } else if (type === 3) {
+        if (item) {
+          this.getOffices();
+          this.getPositions();
+          this.dataFormIn.id = item.id;
+          this.dataFormIn.office_id = item.office_id;
+          this.dataFormIn.position_id = item.position_id;
+          this.dataFormIn.phase = item.phase;
+          this.dataFormIn.minPlafon = item.minPlafon;
+          this.dataFormIn.maxPlafon = item.maxPlafon;
+          // this.dataFormIn.canAppeal = item.canAppeal;
+          this.dataFormIn.canApprove = parseInt(item.canApprove);
+          this.dataFormIn.notification = parseInt(item.notification);
+          this.dataFormIn.isSecret = parseInt(item.isSecret);
+          this.dataFormIn.canInsertData = parseInt(item.canInsertData);
+          this.copy = true;
         }
       }
     },

@@ -98,7 +98,7 @@
 
                 <!-- <VCol md="12" cols="12">
                   <v-select
-                    label="Akses SLIK?"
+                    label="Akses Data Sensitif? (SLIK, dll)"
                     :items="[
                       { value: 1, title: 'Ya' },
                       { value: 0, title: 'Tidak' },
@@ -289,7 +289,7 @@
 
                 <!-- <VCol md="12" cols="12">
                   <v-select
-                    label="Akses SLIK?"
+                    label="Akses Data Sensitif? (SLIK, dll)"
                     :items="[
                       { value: 1, title: 'Ya' },
                       { value: 0, title: 'Tidak' },
@@ -548,7 +548,7 @@ export default {
 
         if (response.status === 200) {
           this.getAllRole();
-          this.$showToast("success", "Berhasil", response.data.message);
+          this.$showToast("success", "Berhasill", response.data.message);
         } else {
           this.$showToast("error", "Sorry", response.data.message);
         }

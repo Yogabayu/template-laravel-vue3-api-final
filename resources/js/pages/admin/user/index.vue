@@ -281,7 +281,6 @@
           </template>
         </v-card>
       </v-dialog>
-
       <EasyDataTable
         show-index
         :headers="headers"
@@ -524,7 +523,7 @@ export default defineComponent({
 
         if (response.status === 200) {
           this.getAllUsers();
-          this.$showToast("success", "Berhasil", response.data.message);
+          this.$showToast("success", "Berhasill", response.data.message);
         } else {
           this.$showToast("error", "Sorry", response.data.message);
         }
@@ -547,7 +546,7 @@ export default defineComponent({
 
         if (response.status === 200) {
           this.getAllUsers();
-          this.$showToast("success", "Berhasil", response.data.message);
+          this.$showToast("success", "Berhasill", response.data.message);
         } else {
           this.$showToast("error", "Sorry", response.data.message);
         }

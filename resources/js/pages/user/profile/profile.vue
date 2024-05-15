@@ -202,7 +202,7 @@ export default {
       localStorage.removeItem("userData");
       localStorage.removeItem("userToken");
 
-      this.$showToast("succces", "Sukses", "Berhasil Logout");
+      this.$showToast("succces", "Sukses", "Berhasill Logout");
       this.$router.push("/login");
     },
   },

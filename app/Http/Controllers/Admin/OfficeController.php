@@ -18,7 +18,7 @@ class OfficeController extends Controller
         try {
             $offices = Office::all();
 
-            return ResponseHelper::successRes('Berhasil mendapatkan data kantor', $offices);
+            return ResponseHelper::successRes('Berhasill mendapatkan data kantor', $offices);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -52,7 +52,7 @@ class OfficeController extends Controller
                 'name' => $request->name,
             ]);
 
-            return ResponseHelper::successRes('Berhasil menambahkan data kantor', $office);
+            return ResponseHelper::successRes('Berhasill menambahkan data kantor', $office);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -93,7 +93,7 @@ class OfficeController extends Controller
             $office->name = $request->name;
             $office->save();
 
-            return ResponseHelper::successRes('Berhasil update data kantor', $office);
+            return ResponseHelper::successRes('Berhasill update data kantor', $office);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -106,7 +106,7 @@ class OfficeController extends Controller
     {
         try {
             $office = Office::findOrFail($id)->delete();
-            return ResponseHelper::successRes('Berhasil hapus data kantor', $office);
+            return ResponseHelper::successRes('Berhasill hapus data kantor', $office);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }

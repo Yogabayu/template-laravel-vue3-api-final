@@ -18,7 +18,7 @@ class NotificationConfigController extends Controller
         // try {
         //     $notif = NotificationConfiguration::with('office', 'position')->get();
 
-        //     return ResponseHelper::successRes('Berhasi mendapatkan data', $notif);
+        //     return ResponseHelper::successRes('Berhasil mendapatkan data', $notif);
         // } catch (\Exception $e) {
         //     return ResponseHelper::errorRes($e->getMessage());
         // }
@@ -28,14 +28,14 @@ class NotificationConfigController extends Controller
         //         ->get()
         //         ->groupBy('phase', 'office_id');
 
-        //     return ResponseHelper::successRes('Berhasi mendapatkan data', $notif);
+        //     return ResponseHelper::successRes('Berhasil mendapatkan data', $notif);
         // } catch (\Exception $e) {
         //     return ResponseHelper::errorRes($e->getMessage());
         // }
 
         try {
             $office = Office::withCount('notificationConfigurations')->get();
-            return ResponseHelper::successRes('Berhasi mendapatkan data', $office);
+            return ResponseHelper::successRes('Berhasil mendapatkan data', $office);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -49,7 +49,7 @@ class NotificationConfigController extends Controller
                 ->with('office', 'position')
                 ->orderBy('minPlafon', 'asc')
                 ->get();
-            return ResponseHelper::successRes('Berhasi mendapatkan data', $notif);
+            return ResponseHelper::successRes('Berhasil mendapatkan data', $notif);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -90,7 +90,7 @@ class NotificationConfigController extends Controller
 
             $notif = NotificationConfiguration::create($request->all());
 
-            return ResponseHelper::successRes('Berhasi menambahkan data', $notif);
+            return ResponseHelper::successRes('Berhasil menambahkan data', $notif);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -152,7 +152,7 @@ class NotificationConfigController extends Controller
 
             $notif->update($request->all());
 
-            return ResponseHelper::successRes('Berhasil memperbarui data', $notif);
+            return ResponseHelper::successRes('Berhasill memperbarui data', $notif);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -165,7 +165,7 @@ class NotificationConfigController extends Controller
     {
         try {
             $notif = NotificationConfiguration::findOrFail($id)->delete();
-            return ResponseHelper::successRes('Berhasi menghapus data', $notif);
+            return ResponseHelper::successRes('Berhasill menghapus data', $notif);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }

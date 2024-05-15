@@ -54,7 +54,7 @@ class DashboardController extends Controller
 
                 ActivityHelper::userActivity(Auth::user()->id, 'Mengakses halaman File Credit');
 
-                return ResponseHelper::successRes('Berhasi menampilkan datas', ['files' => $files, 'userAccess' => $userAccess]);
+                return ResponseHelper::successRes('Berhasil menampilkan datas', ['files' => $files, 'userAccess' => $userAccess]);
             } else {
                 $positionId = Auth::user()->position_id;
                 $position = Position::with('offices')->where('id', $positionId)->first();
@@ -110,7 +110,7 @@ class DashboardController extends Controller
                 }
                 ActivityHelper::userActivity(Auth::user()->id, 'Mengakses halaman File Credit');
 
-                return ResponseHelper::successRes('Berhasil menampilkan datas', ['files' => $files, 'userAccess' => $userAccess]);
+                return ResponseHelper::successRes('Berhasill menampilkan datas', ['files' => $files, 'userAccess' => $userAccess]);
             }
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());

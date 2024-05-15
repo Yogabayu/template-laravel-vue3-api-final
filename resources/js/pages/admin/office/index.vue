@@ -189,7 +189,7 @@ export default {
 
         if (response.status === 200) {
           this.getAllOffices();
-          this.$showToast("success", "Berhasil", response.data.message);
+          this.$showToast("success", "Berhasill", response.data.message);
         } else {
           this.$showToast("error", "Sorry", response.data.message);
         }
@@ -281,7 +281,7 @@ export default {
 
         if (response.status === 200) {
           this.items = response.data.data;
-        //   this.$showToast("success", "Berhasil", response.data.message);
+        //   this.$showToast("success", "Berhasill", response.data.message);
         } else {
           this.$showToast("error", "Sorry", response.data.data.message);
         }

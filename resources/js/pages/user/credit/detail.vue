@@ -953,7 +953,7 @@ export default {
         if (response.status === 200) {
           this.overlay = false;
           this.getDetailFile(this.fileId);
-          this.$showToast("success", "Berhasil", response.data.message);
+          this.$showToast("success", "Berhasill", response.data.message);
         } else {
           this.overlay = false;
           this.getDetailFile(this.fileId);
@@ -1001,7 +1001,7 @@ export default {
         if (response.status === 200) {
           this.overlay = false;
           this.getDetailFile(this.fileId);
-          this.$showToast("success", "Berhasil", response.data.message);
+          this.$showToast("success", "Berhasill", response.data.message);
         } else {
           this.overlay = false;
           this.getDetailFile(this.fileId);
@@ -1160,7 +1160,7 @@ export default {
         if (response.status === 200) {
           this.overlay = false;
           this.getDetailFile(this.fileId);
-          this.$showToast("success", "Berhasil", response.data.message);
+          this.$showToast("success", "Berhasill", response.data.message);
         } else {
           this.overlay = false;
           this.getDetailFile(this.fileId);

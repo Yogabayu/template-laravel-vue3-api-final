@@ -18,7 +18,7 @@ class UserController extends Controller
         try {
             $userData = User::where('id', auth()->user()->id)->first();
 
-            return ResponseHelper::successRes('Berhasi mendapatkan data', $userData);
+            return ResponseHelper::successRes('Berhasil mendapatkan data', $userData);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -51,7 +51,7 @@ class UserController extends Controller
             }
             $user->save();
 
-            return ResponseHelper::successRes('berhasil update data user', $user);
+            return ResponseHelper::successRes('Berhasill update data user', $user);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -94,8 +94,8 @@ class UserController extends Controller
                             $user->telegram_chat_id = strval($chatId);
                             $user->save();
 
-                            $user->notify(new TelegramNotification('Berhasil mengkoneksikan ke sistem', null, null));
-                            return ResponseHelper::successRes('Selamat, Berhasil Terkoneksi Dengan sistem', $chatId);
+                            $user->notify(new TelegramNotification('Berhasill mengkoneksikan ke sistem', null, null));
+                            return ResponseHelper::successRes('Selamat, Berhasill Terkoneksi Dengan sistem', $chatId);
                         }
                     }
                 }

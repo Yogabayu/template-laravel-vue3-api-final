@@ -1,11 +1,5 @@
 <template>
-  <v-overlay
-    :absolute="true"
-    v-model="overlay"
-    contained
-    persistent
-    class="align-center justify-center"
-  >
+  <v-overlay :absolute="true" v-model="overlay" contained persistent class="align-center justify-center">
     <v-col>
       <v-progress-circular color="primary" size="32" indeterminate>
       </v-progress-circular>
@@ -34,63 +28,34 @@
         <template v-for="phase in phases">
           <v-window-item :value="phase.value">
             <v-row class="d-flex justify-end pa-3">
-              <v-btn
-                color="primary"
-                size="small"
-                class="my-3 mx-3"
-                @click="openModal(1)"
-              >
+              <v-btn color="primary" size="small" class="my-3 mx-3" @click="openModal(1)">
                 Tambah Data
               </v-btn>
               <v-spacer></v-spacer>
-              <v-text-field
-                prepend-inner-icon="mdi-magnify"
-                density="compact"
-                label="Search"
-                single-line
-                flat
-                hide-details
-                variant="solo-filled"
-                v-model="searchValue"
-              ></v-text-field>
+              <v-text-field prepend-inner-icon="mdi-magnify" density="compact" label="Search" single-line flat
+                hide-details variant="solo-filled" v-model="searchValue"></v-text-field>
             </v-row>
-            <EasyDataTable
-              show-index
-              :headers="headers"
-              :items="items"
-              :search-value="searchValue"
-            >
-              <template #empty-message><p>Data Kosong</p></template>
-              <template #loading><p>loading data .....</p></template>
-              <template #item-plafon="item"
-                >Rp. {{ formatInput(item.plafon) }},-</template
-              >
+            <EasyDataTable show-index :headers="headers" :items="items" :search-value="searchValue">
+              <template #empty-message>
+                <p>Data Kosong</p>
+              </template>
+              <template #loading>
+                <p>loading data .....</p>
+              </template>
+              <template #item-plafon="item">Rp. {{ formatInput(item.plafon) }},-</template>
               <!-- <template #item-phase="item">Phase {{ item.phase }}</template> -->
               <template #item-isApproved="item">
                 {{
-                  item.plafon >= "25000000"
-                    ? item.isApproved
-                      ? "Approved"
-                      : "Pending"
-                    : item.phase > 3 || item.isApproved
-                    ? "Approved"
-                    : "Pending"
+                  parseInt(item.isApproved) == 1 ? "Approved" : parseInt(item.isApproved) == 2 ? "Pending" : "Rejected"
                 }}
               </template>
               <template #item-operation="item">
                 <div class="operation-wrapper">
                   <button>
-                    <VIcon
-                      size="20"
-                      icon="bx-file-find"
-                      color="blue"
-                      @click="toDetail(item)"
-                    />
+                    <VIcon size="20" icon="bx-file-find" color="blue" @click="toDetail(item)" />
                   </button>
                   &nbsp;
-                  <button
-                    @click="deleteFile(item)"
-                  >
+                  <button @click="deleteFile(item)">
                     <VIcon size="20" icon="bx-trash" color="red" />
                   </button>
                 </div>
@@ -101,8 +66,7 @@
       </v-window>
     </v-card-text>
 
-    <v-dialog v-model="insert" width="auto" persistent 
-          transition="dialog-top-transition">
+    <v-dialog v-model="insert" width="auto" persistent transition="dialog-top-transition">
       <v-card>
         <template v-slot:title> Tambah Data </template>
 
@@ -110,174 +74,98 @@
           <VForm @submit.prevent="insertData">
             <VRow>
               <VCol md="12" cols="12">
-                <span style="color: red">*</span
-                ><span class="subtitle-1 text-center">Nama Pemohon: </span>
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Nama Pemohon: </span>
 
-                <VTextField
-                  class="my-3"
-                  v-model="dataForm.name"
-                  autofocus
-                  :rules="[rules.required]"
-                />
+                <VTextField class="my-3" v-model="dataForm.name" autofocus :rules="[rules.required]" />
               </VCol>
               <VCol md="12" cols="12">
-                <span style="color: red">*</span
-                ><span class="subtitle-1 text-center">Jumlah Plafon: </span>
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Jumlah Plafon: </span>
 
-                <VTextField
-                  class="my-3"
-                  v-model="dataForm.plafon"
-                  type="text"
-                  @input="formatInputPlafon"
-                />
+                <VTextField class="my-3" v-model="dataForm.plafon" type="text" @input="formatInputPlafon" />
               </VCol>
 
               <VCol md="12" cols="12">
-                <span style="color: red">*</span
-                ><span class="subtitle-1 text-center">KTP Pemohon : </span>
+                <span style="color: red">*</span><span class="subtitle-1 text-center">KTP Pemohon : </span>
 
-                <v-file-input
-                  class="my-3"
-                  accept="image/jpeg,image/png"
-                  placeholder="Pick an image"
-                  :rules="[rules.required]"
-                  @change="(event) => handleFileChange(event, 'file1')"
-                ></v-file-input>
+                <v-file-input class="my-3" accept="image/jpeg,image/png" placeholder="Pick an image"
+                  :rules="[rules.required]" @change="(event) => handleFileChange(event, 'file1')"></v-file-input>
               </VCol>
               <VCol md="12" cols="12">
-                <span style="color: red">*</span
-                ><span class="subtitle-1 text-center">Kartu Keluarga : </span>
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Kartu Keluarga : </span>
 
-                <v-file-input
-                  class="my-3"
-                  accept="image/jpeg,image/png"
-                  placeholder="Pick an image"
-                  :rules="[rules.required]"
-                  @change="(event) => handleFileChange(event, 'file4')"
-                ></v-file-input>
+                <v-file-input class="my-3" accept="image/jpeg,image/png" placeholder="Pick an image"
+                  :rules="[rules.required]" @change="(event) => handleFileChange(event, 'file4')"></v-file-input>
               </VCol>
               <VCol md="12" cols="12">
-                <span style="color: red">*</span
-                ><span class="subtitle-1 text-center">Foto Kunjungan : </span>
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Foto Kunjungan : </span>
 
-                <v-file-input
-                  class="my-3"
-                  accept="image/jpeg,image/png"
-                  placeholder="Pick an image"
-                  :rules="[rules.required]"
-                  @change="(event) => handleFileChange(event, 'file10')"
-                ></v-file-input>
+                <v-file-input class="my-3" accept="image/jpeg,image/png" placeholder="Pick an image"
+                  :rules="[rules.required]" @change="(event) => handleFileChange(event, 'file10')"></v-file-input>
               </VCol>
 
               <v-divider :thickness="5"></v-divider>
               <!-- sudah menikah -->
               <VCol cols="12" md="12">
-                <v-checkbox
-                  v-model="dataForm.hasFile2"
-                  label="Apakah pemohon sudah menikah?"
-                  @change="resetFile('file2'), resetFile('file5')"
-                ></v-checkbox>
+                <v-checkbox v-model="dataForm.hasFile2" label="Apakah pemohon sudah menikah?"
+                  @change="resetFile('file2'), resetFile('file5')"></v-checkbox>
               </VCol>
 
               <v-divider :thickness="5"></v-divider>
               <VCol md="12" cols="12" v-if="dataForm.hasFile2">
-                <span style="color: red">*</span
-                ><span class="subtitle-1 text-center"
-                  >KTP Pasangan Pemohon :
+                <span style="color: red">*</span><span class="subtitle-1 text-center">KTP Pasangan Pemohon :
                 </span>
 
-                <v-file-input
-                  class="my-3"
-                  accept="image/jpeg,image/png"
-                  placeholder="Pick an image"
-                  :rules="[rules.required]"
-                  @change="(event) => handleFileChange(event, 'file2')"
-                ></v-file-input>
+                <v-file-input class="my-3" accept="image/jpeg,image/png" placeholder="Pick an image"
+                  :rules="[rules.required]" @change="(event) => handleFileChange(event, 'file2')"></v-file-input>
               </VCol>
               <VCol md="12" cols="12" v-if="dataForm.hasFile2">
-                <span style="color: red">*</span
-                ><span class="subtitle-1 text-center">Buku Nikah : </span>
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Buku Nikah : </span>
 
-                <v-file-input
-                  class="my-3"
-                  accept="image/jpeg,image/png"
-                  placeholder="Pick an image"
-                  :rules="[rules.required]"
-                  @change="(event) => handleFileChange(event, 'file5')"
-                ></v-file-input>
+                <v-file-input class="my-3" accept="image/jpeg,image/png" placeholder="Pick an image"
+                  :rules="[rules.required]" @change="(event) => handleFileChange(event, 'file5')"></v-file-input>
               </VCol>
 
               <!-- ktp atas nama jaminan -->
               <VCol cols="12" md="12">
-                <v-checkbox
-                  v-model="dataForm.hasFile3"
-                  label="Apakah agunan bukan atas nama pemohon?"
-                  @change="resetFile('file3')"
-                ></v-checkbox>
+                <v-checkbox v-model="dataForm.hasFile3" label="Apakah agunan bukan atas nama pemohon?"
+                  @change="resetFile('file3')"></v-checkbox>
               </VCol>
               <VCol md="12" cols="12" v-if="dataForm.hasFile3">
                 <span style="color: red">*</span>
-                <span class="subtitle-1 text-center"
-                  >KTP atas nama Jaminan :
+                <span class="subtitle-1 text-center">KTP atas nama Jaminan :
                 </span>
 
-                <v-file-input
-                  class="my-3"
-                  accept="image/jpeg,image/png"
-                  placeholder="Pick an image"
-                  :rules="[rules.required]"
-                  @change="(event) => handleFileChange(event, 'file3')"
-                ></v-file-input>
+                <v-file-input class="my-3" accept="image/jpeg,image/png" placeholder="Pick an image"
+                  :rules="[rules.required]" @change="(event) => handleFileChange(event, 'file3')"></v-file-input>
               </VCol>
 
               <v-divider :thickness="5"></v-divider>
 
               <VCol md="12" cols="12">
-                <span style="color: red">*</span
-                ><span class="subtitle-1 text-center">Jenis Usaha: </span>
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Jenis Usaha: </span>
 
-                <VTextField
-                  class="my-3"
-                  v-model="dataForm.type_bussiness"
-                  :rules="[rules.required]"
-                />
+                <VTextField class="my-3" v-model="dataForm.type_bussiness" :rules="[rules.required]" />
               </VCol>
               <VCol md="12" cols="12">
-                <span style="color: red">*</span
-                ><span class="subtitle-1 text-center">Deskripsi Usaha: </span>
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Deskripsi Usaha: </span>
 
-                <VTextField
-                  class="my-3"
-                  v-model="dataForm.desc_bussiness"
-                  :rules="[rules.required]"
-                />
+                <VTextField class="my-3" v-model="dataForm.desc_bussiness" :rules="[rules.required]" />
               </VCol>
 
-              <VCol
-                ><span style="color: red">*</span
-                ><span class="subtitle-1 text-center"
-                  >Lampirkan Salah Satu Jenis Jaminan :
-                </span></VCol
-              >
+              <VCol><span style="color: red">*</span><span class="subtitle-1 text-center">Lampirkan Salah Satu Jenis
+                  Jaminan :
+                </span></VCol>
               <!-- shm -->
               <VCol cols="12" md="12">
-                <v-checkbox
-                  v-model="dataForm.hasFile7"
-                  label="Jenis Jaminan SHM ?"
-                  @change="resetFile('file7')"
-                ></v-checkbox>
+                <v-checkbox v-model="dataForm.hasFile7" label="Jenis Jaminan SHM ?"
+                  @change="resetFile('file7')"></v-checkbox>
               </VCol>
               <VCol md="12" cols="12" v-if="dataForm.hasFile7">
                 <span style="color: red">*</span>
                 <span class="subtitle-1 text-center">Jaminan SHM : </span>
 
-                <v-file-input
-                  class="my-3"
-                  accept="image/jpeg,image/png"
-                  placeholder="Pick an image"
-                  :rules="[rules.required]"
-                  @change="(event) => handleFileChange(event, 'file7')"
-                ></v-file-input>
+                <v-file-input class="my-3" accept="image/jpeg,image/png" placeholder="Pick an image"
+                  :rules="[rules.required]" @change="(event) => handleFileChange(event, 'file7')"></v-file-input>
               </VCol>
 
               <!-- bpkb -->
@@ -325,30 +213,22 @@
               </VCol> -->
 
               <VCol cols="12" class="d-flex flex-wrap gap-4">
-                <VBtn
-                  type="submit"
-                  :disabled="
-                    (dataForm.hasFile2 &&
-                      (dataForm.file2 == null || dataForm.file5 == null)) ||
-                    (dataForm.hasFile3 && dataForm.file3 == null) ||
-                    (dataForm.hasFile7 && dataForm.file7 == null) ||
-                    (dataForm.hasFile8 && dataForm.file8 == null) ||
-                    (dataForm.hasFile9 && dataForm.file9 == null) ||
-                    (dataForm.file7 == null &&
-                      dataForm.file8 == null &&
-                      dataForm.file9 == null) ||
-                    (dataForm.type_bussiness == null &&
-                      dataForm.desc_bussiness == null)
-                  "
-                >
+                <VBtn type="submit" :disabled="(dataForm.hasFile2 &&
+                    (dataForm.file2 == null || dataForm.file5 == null)) ||
+                  (dataForm.hasFile3 && dataForm.file3 == null) ||
+                  (dataForm.hasFile7 && dataForm.file7 == null) ||
+                  (dataForm.hasFile8 && dataForm.file8 == null) ||
+                  (dataForm.hasFile9 && dataForm.file9 == null) ||
+                  (dataForm.file7 == null &&
+                    dataForm.file8 == null &&
+                    dataForm.file9 == null) ||
+                  (dataForm.type_bussiness == null &&
+                    dataForm.desc_bussiness == null)
+                  ">
                   Simpan
                 </VBtn>
 
-                <button
-                  type="button"
-                  class="btn btn-blue"
-                  @click="closeModal(1)"
-                >
+                <button type="button" class="btn btn-blue" @click="closeModal(1)">
                   Batal
                 </button>
               </VCol>
@@ -357,11 +237,7 @@
         </template>
 
         <template v-slot:actions>
-          <v-progress-linear
-            v-model="uploadProgress"
-            color="amber"
-            height="25"
-          ></v-progress-linear>
+          <v-progress-linear v-model="uploadProgress" color="amber" height="25"></v-progress-linear>
         </template>
       </v-card>
     </v-dialog>
@@ -431,9 +307,9 @@ export default {
         this.filterDataStatus(2);
       } else if (newVal == 3) {
         this.filterDataStatus(3);
-      // } else if (newVal == 4) {
-      //   this.filterDataStatus(4);
-      // } else {
+        // } else if (newVal == 4) {
+        //   this.filterDataStatus(4);
+        // } else {
       } else {
         this.items = [...this.originalItems];
       }
@@ -454,7 +330,7 @@ export default {
 
         if (response.status === 200) {
           this.getAllFiles();
-          this.$showToast("success", "Berhasil", response.data.message);
+          this.$showToast("success", "Berhasill", response.data.message);
         } else {
           this.$showToast("error", "Sorry", response.data.message);
         }
@@ -550,7 +426,7 @@ export default {
       value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ","); // Add comma as thousand separator
       return value;
     },
-    filterDataStatus(phase: any) {      
+    filterDataStatus(phase: any) {
       this.items = this.originalItems.filter(
         (item: { isApproved: any, }) => item.isApproved == phase
       );
