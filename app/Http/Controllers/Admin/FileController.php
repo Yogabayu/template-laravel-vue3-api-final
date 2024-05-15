@@ -812,7 +812,7 @@ class FileController extends Controller
 
                 $file->save();
 
-                ActivityHelper::fileActivity($request->file_id, Auth::user()->id, 'Merubah Phase Kredit ');
+                ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Merubah Phase Kredit ');
                 ActivityHelper::userActivity(Auth::user()->id, 'Merubah Phase Kredit: ' . $file->name);
 
                 EmailHelper::AddUpdate($file->id);

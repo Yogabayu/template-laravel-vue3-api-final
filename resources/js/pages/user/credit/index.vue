@@ -28,8 +28,8 @@
         <template v-for="phase in phases">
           <v-window-item :value="phase.value">
             <v-row class="d-flex justify-end pa-3">
-              <v-btn color="primary" size="small" class="my-3 mx-3" v-if="userAccess && parseInt(userAccess.canInsertData)"
-                @click="openModal(1)">
+              <v-btn color="primary" size="small" class="my-3 mx-3"
+                v-if="userAccess && parseInt(userAccess.canInsertData)" @click="openModal(1)">
                 Tambah Data
               </v-btn>
               <v-spacer></v-spacer>
@@ -81,7 +81,7 @@
               <VCol md="12" cols="12">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">Jumlah Plafon: </span>
 
-                <VTextField class="my-3" v-model="dataForm.plafon" type="text" @input="formatInputPlafon" />
+                <VTextField class="my-3" v-model="formattedPlafon" type="text" @input="formatInputIn" />
               </VCol>
 
               <VCol md="12" cols="12">
@@ -155,6 +155,7 @@
               <VCol><span style="color: red">*</span><span class="subtitle-1 text-center">Lampirkan Salah Satu Jenis
                   Jaminan :
                 </span></VCol>
+                
               <!-- shm -->
               <VCol cols="12" md="12">
                 <v-checkbox v-model="dataForm.hasFile7" label="Jenis Jaminan SHM ?"
@@ -169,25 +170,17 @@
               </VCol>
 
               <!-- bpkb -->
-              <!-- <VCol cols="12" md="12">
-                <v-checkbox
-                  v-model="dataForm.hasFile8"
-                  label="Jenis Jaminan BPKB ?"
-                  @change="resetFile('file8')"
-                ></v-checkbox>
+              <VCol cols="12" md="12">
+                <v-checkbox v-model="dataForm.hasFile8" label="Jenis Jaminan BPKB ?"
+                  @change="resetFile('file8')"></v-checkbox>
               </VCol>
               <VCol md="12" cols="12" v-if="dataForm.hasFile8">
                 <span style="color: red">*</span>
                 <span class="subtitle-1 text-center">Jaminan SHM : </span>
 
-                <v-file-input
-                  class="my-3"
-                  accept="image/jpeg,image/png"
-                  placeholder="Pick an image"
-                  :rules="[rules.required]"
-                  @change="(event) => handleFileChange(event, 'file8')"
-                ></v-file-input>
-              </VCol> -->
+                <v-file-input class="my-3" accept="image/jpeg,image/png" placeholder="Pick an image"
+                  :rules="[rules.required]" @change="(event) => handleFileChange(event, 'file8')"></v-file-input>
+              </VCol>
 
               <!-- mesin produksi -->
               <!-- <VCol cols="12" md="12">
@@ -214,7 +207,7 @@
 
               <VCol cols="12" class="d-flex flex-wrap gap-4">
                 <VBtn type="submit" :disabled="(dataForm.hasFile2 &&
-                    (dataForm.file2 == null || dataForm.file5 == null)) ||
+                  (dataForm.file2 == null || dataForm.file5 == null)) ||
                   (dataForm.hasFile3 && dataForm.file3 == null) ||
                   (dataForm.hasFile7 && dataForm.file7 == null) ||
                   (dataForm.hasFile8 && dataForm.file8 == null) ||
@@ -258,6 +251,24 @@
 <script lang="ts">
 import mainURL from "@/axios";
 export default {
+  computed: {
+    formattedPlafon: {
+      get() {
+        return this.formatNumber(this.dataForm.plafon);
+      },
+      set(value) {
+        this.dataForm.plafon = value.replace(/\D/g, '');
+      }
+    },
+    formattedMaxPlafon: {
+      get() {
+        return this.formatNumber(this.dataForm.plafon);
+      },
+      set(value) {
+        this.dataForm.plafon = value.replace(/\D/g, '');
+      }
+    }
+  },
   data() {
     return {
       overlay: false,
@@ -330,11 +341,18 @@ export default {
     },
   },
   methods: {
+    formatInput(value: string) {
+      // Lakukan pemformatan nilai plafon di sini
+      value = value.replace(/\D/g, ""); // Remove non-digit characters
+      value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ","); // Add comma as thousand separator
+      return value;
+    },
     toDetail(item: any) {
       this.$router.push(`/u-credit/${item.id}`);
     },
     async deleteFile(item: { id: any }) {
       try {
+        this.overlay = true;
         const confirmDelete = window.confirm(
           "Apakah Anda yakin ingin menghapus data? Semua Data akan terhapus secara permanen."
         );
@@ -343,12 +361,17 @@ export default {
         const response = await mainURL.delete(`/user/credit/${item.id}`);
 
         if (response.status === 200) {
+          this.overlay = false;
           this.getAllFiles();
           this.$showToast("success", "Berhasill", response.data.message);
         } else {
+          this.overlay = false;
+          this.getAllFiles();
           this.$showToast("error", "Sorry", response.data.message);
         }
       } catch (error) {
+        this.overlay = false;
+        this.getAllFiles();
         this.$showToast("error", "Sorry", error.response.data.message);
       }
     },
@@ -434,11 +457,15 @@ export default {
         file10: null, // foto kunjungan
       };
     },
-    formatInput(value: string) {
-      // Lakukan pemformatan nilai plafon di sini
+    formatInputIn(event: { target: { value: any } }) {
+      let value = event.target.value;
       value = value.replace(/\D/g, ""); // Remove non-digit characters
       value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ","); // Add comma as thousand separator
-      return value;
+      event.target.value = value;
+    },
+    formatNumber(value) {
+      if (!value) return '';
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     },
     filterDataStatus(phase: any) {
       this.items = this.originalItems.filter(
