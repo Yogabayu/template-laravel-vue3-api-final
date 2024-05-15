@@ -1070,7 +1070,6 @@ class FileController extends Controller
             $file->approvals()->delete();
             $file->notes()->delete();
             $file->appeals()->delete();
-            $file->approvals()->delete();
             $file->fileActivities()->delete();
             foreach ($attachments as $attch) {
                 $dirPath = public_path('file/' . $file->id);
@@ -1082,7 +1081,6 @@ class FileController extends Controller
                 $attch->delete();
             }
 
-            ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Menghapus Data Kredit ');
             ActivityHelper::userActivity(Auth::user()->id, 'Menghapus Data Kredit: ' . $file->name);
 
             $file->delete();
