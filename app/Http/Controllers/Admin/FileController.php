@@ -303,15 +303,6 @@ class FileController extends Controller
 
                 if ($file->plafon > 25000000) {
                     if ($file->phase == 4) {
-                        $cekApproval = Approval::where('file_id', $request->id)
-                            ->where('phase', $file->phase)
-                            ->where('isApproved', 0)
-                            ->first();
-
-                        if ($cekApproval) {
-                            return ResponseHelper::errorRes('Ada User/Posisi yang belum memberikan persetujuan', $file);
-                        }
-
                         $file->phase = 5;
                         $file->isApproved = 1;
                         $file->save();
@@ -325,6 +316,7 @@ class FileController extends Controller
                         EmailHelper::AddUpdate($file->id);
 
                         ActivityHelper::fileActivity($request->file_id, Auth::user()->id, 'Merubah Status Kredit Menjadi Disetujui');
+
                         ActivityHelper::userActivity(Auth::user()->id, 'Merubah Status Kredit Menjadi Disetujui: ' . $file->name);
                         TelegramHelper::AgreementPhase4($file->id, "Kredit Status Telah diubah menjadi disetujui" . ($filephase), $file->user_id);
 
@@ -394,16 +386,6 @@ class FileController extends Controller
                     }
                 } else if ($file->plafon < 25000000) {
                     if ($file->phase == 3) {
-
-                        $cekApproval = Approval::where('file_id', $request->id)
-                            ->where('phase', $file->phase)
-                            ->where('isApproved', 0)
-                            ->first();
-
-                        if ($cekApproval) {
-                            return ResponseHelper::errorRes('Ada User/Posisi yang belum memberikan persetujuan', $file);
-                        }
-
                         $file->phase = 5;
                         $file->isApproved = 1;
                         $file->save();
@@ -414,6 +396,9 @@ class FileController extends Controller
                             $phaseTime->endTime = Carbon::now();
                             $phaseTime->save();
                         }
+
+                        ActivityHelper::userActivity(Auth::user()->id, 'Merubah Status Kredit Menjadi Disetujui: ' . $file->name);
+                        TelegramHelper::AgreementPhase4($file->id, "Kredit Status Telah diubah menjadi disetujui" . ($filephase), $file->user_id);
 
                         EmailHelper::AddUpdate($file->id);
 
@@ -475,6 +460,9 @@ class FileController extends Controller
                         }
 
                         EmailHelper::AddUpdate($file->id);
+
+                        ActivityHelper::fileActivity($request->file_id, Auth::user()->id, 'Merubah Phase Kredit ');
+                        ActivityHelper::userActivity(Auth::user()->id, 'Merubah Phase Kredit: ' . $file->name);
                         TelegramHelper::AddUpdatePhase($file->id, "User mengubah Phase menjadi " . ($filephase), $file->user_id);
 
                         $file->phase = $filephase;
@@ -798,8 +786,6 @@ class FileController extends Controller
                 foreach ($userOffices as $userOffice) {
                     $notificationConfigurations = DB::table('notification_configurations')
                         ->where('office_id', $userOffice->office_id)
-                        // ->where('minPlafon', '<=', $file->plafon)
-                        // ->where('maxPlafon', '>=', $file->plafon)
                         ->where('phase', $filephase)
                         ->where('canApprove', 1)
                         ->get();
@@ -827,6 +813,10 @@ class FileController extends Controller
                 }
 
                 $file->save();
+
+                ActivityHelper::fileActivity($request->file_id, Auth::user()->id, 'Merubah Phase Kredit ');
+                ActivityHelper::userActivity(Auth::user()->id, 'Merubah Phase Kredit: ' . $file->name);
+
                 EmailHelper::AddUpdate($file->id);
                 TelegramHelper::AddUpdatePhase($file->id, "User mengubah Phase menjadi " . ($filephase), $file->user_id);
 
@@ -846,6 +836,9 @@ class FileController extends Controller
                 FacadesFile::delete($filePath);
             }
             $attch->delete();
+
+            ActivityHelper::fileActivity($attch->file_id, Auth::user()->id, 'Merubah Phase Kredit ');
+            ActivityHelper::userActivity(Auth::user()->id, 'Merubah Phase Kredit: ' . $attch->name);
 
             TelegramHelper::AddUpdate($attch->file_id, 'Menghapus Lampiran : ' . $attchName, Auth::user()->id);
             return ResponseHelper::successRes('Attachment deleted successfully', $attch);
@@ -984,8 +977,8 @@ class FileController extends Controller
             //add count time
             PhaseTime::firstOrCreate(['file_id' => $file->id, 'phase' => $file->phase, 'startTime' => Carbon::now()]);
 
-            ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Menambahkan file');
-            ActivityHelper::userActivity(Auth::user()->id, 'Menambahkan file');
+            ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Menambahkan kredit ' . $file->name);
+            ActivityHelper::userActivity(Auth::user()->id, 'Menambahkan kredit ' . $file->name);
 
             return ResponseHelper::successRes('Berhasil menambahkan data', $file);
         } catch (\Exception $e) {
@@ -1019,6 +1012,9 @@ class FileController extends Controller
                 $attch->delete();
             }
             $file->delete();
+
+            ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Menghapus Data Kredit ');
+            ActivityHelper::userActivity(Auth::user()->id, 'Menghapus Data Kredit: ' . $file->name);
 
             return ResponseHelper::successRes('File deleted successfully', $file);
         } catch (\Exception $e) {
@@ -1082,16 +1078,20 @@ class FileController extends Controller
             }
 
             $userPosNow = User::where('id', Auth::user()->id)->first();
-            $userAccess = [];
+            $userAccess = [
+                'canAppeal' => 1,
+                'canApprove' => 1,
+                'canInsertData' => 1,
+                'isSecret' => 1,
+            ];
 
             foreach ($notifPositions as $notifPosition) {
                 if ($notifPosition->position_id == $userPosNow->position_id) {
                     $userAccess = [
-                        'canAppeal' => $notifPosition->canAppeal,
-                        'canApprove' => $notifPosition->canApprove,
-                        'canInsertData' => $notifPosition->canInsertData,
-                        'isSecret' => $notifPosition->isSecret,
-                        // 'isSecret' => 1,
+                        'canAppeal' => 1,
+                        'canApprove' => 1,
+                        'canInsertData' => 1,
+                        'isSecret' => 1,
                     ];
                     break;
                 }
@@ -1150,12 +1150,13 @@ class FileController extends Controller
             if (!$approv) {
                 return ResponseHelper::errorRes('Approval not found');
             }
-            if ($approv->user_id != Auth::user()->id) {
-                return ResponseHelper::errorRes('Posisi Anda berbeda');
-            }
             $approv->approved = !$approv->approved;
             $approv->save();
 
+            $file = File::find($approv->file_id);
+
+            ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Menghapus Data Kredit ');
+            ActivityHelper::userActivity(Auth::user()->id, 'Menghapus Data Kredit: ' . $file->name);
             TelegramHelper::AddUpdatePhase($approv->file_id, "User merubah Status menjadi " . ($approv->approved ? "Disetujui" : "Ditolak"), $approv->user_id);
 
             return ResponseHelper::successRes('Berhasill mengubah status', $approv);
