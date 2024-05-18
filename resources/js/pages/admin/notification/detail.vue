@@ -27,65 +27,71 @@
       <!-- phase1 -->
       <v-card class="mx-2 my-5">
         <VCardItem class="align-left">
-          <VCardTitle class="text-2xl font-weight-bold"> Phase 1 </VCardTitle>
+          <VCardTitle class="text-2xl font-weight-bold"> Phase 1 (Pooling Order)</VCardTitle>
         </VCardItem>
-          <EasyDataTable show-index :headers="phase1Headers" :items="phase1Items">
-            <template #empty-message>
-              <p>Data Kosong</p>
-            </template>
-            <template #loading>
-              <p>loading data .....</p>
-            </template>
-            <template #item-minPlafon="item">
-              <p>{{ formatInput(item.minPlafon) }}</p>
-            </template>
-            <template #item-maxPlafon="item">
-              <p>{{ formatInput(item.maxPlafon) }}</p>
-            </template>
-            <!-- <template #item-canAppeal="item">
+        <EasyDataTable show-index :headers="phase1Headers" :items="phase1Items">
+          <template #empty-message>
+            <p>Data Kosong</p>
+          </template>
+          <template #loading>
+            <p>loading data .....</p>
+          </template>
+          <template #item-minPlafon="item">
+            <p>{{ formatInput(item.minPlafon) }}</p>
+          </template>
+          <template #item-maxPlafon="item">
+            <p>{{ formatInput(item.maxPlafon) }}</p>
+          </template>
+          <template #item-canAppeal="item">
             <p>{{ item.canAppeal == 1 ? "&#x2713;" : "x" }}</p>
-          </template> -->
-            <template #item-canApprove="item">
-              <p>{{ item.canApprove == 1 ? "&#x2713;" : "x" }}</p>
-            </template>
-            <template #item-notification="item">
-              <p>{{ item.notification == 1 ? "&#x2713;" : "x" }}</p>
-            </template>
-            <template #item-canInsertData="item">
-              <p>{{ item.canInsertData == 1 ? "&#x2713;" : "x" }}</p>
-            </template>
-            <template #item-operation="item">
-              <div class="operation-wrapper flex space-x-4">
-                <v-tooltip location="top" text="Edit">
-                  <template v-slot:activator="{ props }">
-                    <button v-bind="props" @click="openModal(2, item)">
-                      <VIcon size="20" icon="bx-edit" color="info" />
-                    </button>
-                  </template>
-                </v-tooltip>
-                <v-tooltip location="top" text="Copy">
-                  <template v-slot:activator="{ props }">
-                    <button v-bind="props" @click="openModal(3, item)">
-                      <VIcon size="20" icon="bx-copy" color="warning" />
-                    </button>
-                  </template>
-                </v-tooltip>
-                <v-tooltip location="top" text="Delete">
-                  <template v-slot:activator="{ props }">
-                    <button v-bind="props" @click="deleteNotifConf(item)">
-                      <VIcon size="20" icon="bx-trash" color="danger" />
-                    </button>
-                  </template>
-                </v-tooltip>
-              </div>
-            </template>
-          </EasyDataTable>
+          </template>
+          <template #item-canApprove="item">
+            <p>{{ item.canApprove == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-notification="item">
+            <p>{{ item.notification == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-canInsertData="item">
+            <p>{{ item.canInsertData == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-canUpdateData="item">
+            <p>{{ item.canUpdateData == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-canDeleteData="item">
+            <p>{{ item.canDeleteData == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-operation="item">
+            <div class="operation-wrapper flex space-x-4">
+              <v-tooltip location="top" text="Edit">
+                <template v-slot:activator="{ props }">
+                  <button v-bind="props" @click="openModal(2, item)">
+                    <VIcon size="20" icon="bx-edit" color="info" />
+                  </button>
+                </template>
+              </v-tooltip>
+              <v-tooltip location="top" text="Copy">
+                <template v-slot:activator="{ props }">
+                  <button v-bind="props" @click="openModal(3, item)">
+                    <VIcon size="20" icon="bx-copy" color="warning" />
+                  </button>
+                </template>
+              </v-tooltip>
+              <v-tooltip location="top" text="Delete">
+                <template v-slot:activator="{ props }">
+                  <button v-bind="props" @click="deleteNotifConf(item)">
+                    <VIcon size="20" icon="bx-trash" color="danger" />
+                  </button>
+                </template>
+              </v-tooltip>
+            </div>
+          </template>
+        </EasyDataTable>
       </v-card>
 
       <!-- phase2 -->
       <v-card class="mx-2 my-5">
         <VCardItem class="align-left">
-          <VCardTitle class="text-2xl font-weight-bold"> Phase 2 </VCardTitle>
+          <VCardTitle class="text-2xl font-weight-bold"> Phase 2 (SLIK) </VCardTitle>
         </VCardItem>
         <EasyDataTable show-index :headers="phase2Headers" :items="phase2Items">
           <template #empty-message>
@@ -111,6 +117,15 @@
           </template>
           <template #item-canInsertData="item">
             <p>{{ item.canInsertData == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-canUpdateData="item">
+            <p>{{ item.canUpdateData == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-canDeleteData="item">
+            <p>{{ item.canDeleteData == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-canAppeal="item">
+            <p>{{ item.canAppeal == 1 ? "&#x2713;" : "x" }}</p>
           </template>
           <template #item-operation="item">
             <div class="operation-wrapper flex space-x-4">
@@ -143,7 +158,7 @@
       <!-- phase3 -->
       <v-card class="mx-2 my-2">
         <VCardItem class="align-left">
-          <VCardTitle class="text-2xl font-weight-bold"> Phase 3 </VCardTitle>
+          <VCardTitle class="text-2xl font-weight-bold"> Phase 3 (Survei) </VCardTitle>
         </VCardItem>
         <EasyDataTable show-index :headers="phase3Headers" :items="phase3Items">
           <template #empty-message>
@@ -158,9 +173,9 @@
           <template #item-maxPlafon="item">
             <p>{{ formatInput(item.maxPlafon) }}</p>
           </template>
-          <!-- <template #item-canAppeal="item">
+          <template #item-canAppeal="item">
             <p>{{ item.canAppeal == 1 ? "&#x2713;" : "x" }}</p>
-          </template> -->
+          </template>
           <template #item-canApprove="item">
             <p>{{ item.canApprove == 1 ? "&#x2713;" : "x" }}</p>
           </template>
@@ -172,6 +187,12 @@
           </template>
           <template #item-canInsertData="item">
             <p>{{ item.canInsertData == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-canUpdateData="item">
+            <p>{{ item.canUpdateData == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-canDeleteData="item">
+            <p>{{ item.canDeleteData == 1 ? "&#x2713;" : "x" }}</p>
           </template>
           <template #item-operation="item">
             <div class="operation-wrapper flex space-x-4">
@@ -204,7 +225,7 @@
       <!-- phase4 -->
       <v-card class="mx-2 my-2">
         <VCardItem class="align-left">
-          <VCardTitle class="text-2xl font-weight-bold"> Phase 4 </VCardTitle>
+          <VCardTitle class="text-2xl font-weight-bold"> Phase 4 (Komite) </VCardTitle>
         </VCardItem>
         <EasyDataTable show-index :headers="phase4Headers" :items="phase4Items">
           <template #empty-message>
@@ -219,9 +240,9 @@
           <template #item-maxPlafon="item">
             <p>{{ formatInput(item.maxPlafon) }}</p>
           </template>
-          <!-- <template #item-canAppeal="item">
+          <template #item-canAppeal="item">
             <p>{{ item.canAppeal == 1 ? "&#x2713;" : "x" }}</p>
-          </template> -->
+          </template>
           <template #item-canApprove="item">
             <p>{{ item.canApprove == 1 ? "&#x2713;" : "x" }}</p>
           </template>
@@ -233,6 +254,12 @@
           </template>
           <template #item-canInsertData="item">
             <p>{{ item.canInsertData == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-canUpdateData="item">
+            <p>{{ item.canUpdateData == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-canDeleteData="item">
+            <p>{{ item.canDeleteData == 1 ? "&#x2713;" : "x" }}</p>
           </template>
           <template #item-operation="item">
             <div class="operation-wrapper flex space-x-4">
@@ -294,12 +321,12 @@
                     hint="Masukkan 1.000.000.000 untuk maksimal, jika ingin tanpa batas" autofocus
                     prepend-icon="mdi-help-rhombus" />
                 </VCol>
-                <!-- <VCol md="12" cols="12">
-                  <v-select label="Banding?" :items="[
+                <VCol md="12" cols="12">
+                  <v-select label="Input Banding?" :items="[
                     { value: 1, title: 'Ya' },
                     { value: 0, title: 'Tidak' },
                   ]" v-model="dataFormIn.canAppeal" prepend-icon="mdi-help-rhombus"></v-select>
-                </VCol> -->
+                </VCol>
                 <VCol md="12" cols="12">
                   <v-select label="Approve?" :items="[
                     { value: 1, title: 'Ya' },
@@ -317,6 +344,18 @@
                     { value: 1, title: 'Ya' },
                     { value: 0, title: 'Tidak' },
                   ]" v-model="dataFormIn.canInsertData" prepend-icon="mdi-help-rhombus"></v-select>
+                </VCol>
+                <VCol md="12" cols="12">
+                  <v-select label="Edit Data?" :items="[
+                    { value: 1, title: 'Ya' },
+                    { value: 0, title: 'Tidak' },
+                  ]" v-model="dataFormIn.canUpdateData" prepend-icon="mdi-help-rhombus"></v-select>
+                </VCol>
+                <VCol md="12" cols="12">
+                  <v-select label="Hapus Data?" :items="[
+                    { value: 1, title: 'Ya' },
+                    { value: 0, title: 'Tidak' },
+                  ]" v-model="dataFormIn.canDeleteData" prepend-icon="mdi-help-rhombus"></v-select>
                 </VCol>
                 <!-- //khusus slik -->
                 <VCol md="12" cols="12" v-if="dataFormIn.phase >= 2">
@@ -369,12 +408,12 @@
                     hint="Masukkan 1.000.000.000 untuk maksimal, jika ingin tanpa batas" autofocus
                     prepend-icon="mdi-help-rhombus" />
                 </VCol>
-                <!-- <VCol md="12" cols="12">
-                  <v-select label="Banding?" :items="[
+                <VCol md="12" cols="12">
+                  <v-select label="Input Banding?" :items="[
                     { value: 1, title: 'Ya' },
                     { value: 0, title: 'Tidak' },
                   ]" v-model="dataFormIn.canAppeal" prepend-icon="mdi-help-rhombus"></v-select>
-                </VCol> -->
+                </VCol>
                 <VCol md="12" cols="12">
                   <v-select label="Approve?" :items="[
                     { value: 1, title: 'Ya' },
@@ -392,6 +431,18 @@
                     { value: 1, title: 'Ya' },
                     { value: 0, title: 'Tidak' },
                   ]" v-model="dataFormIn.canInsertData" prepend-icon="mdi-help-rhombus"></v-select>
+                </VCol>
+                <VCol md="12" cols="12">
+                  <v-select label="Edit Data?" :items="[
+                    { value: 1, title: 'Ya' },
+                    { value: 0, title: 'Tidak' },
+                  ]" v-model="dataFormIn.canUpdateData" prepend-icon="mdi-help-rhombus"></v-select>
+                </VCol>
+                <VCol md="12" cols="12">
+                  <v-select label="Hapus Data?" :items="[
+                    { value: 1, title: 'Ya' },
+                    { value: 0, title: 'Tidak' },
+                  ]" v-model="dataFormIn.canDeleteData" prepend-icon="mdi-help-rhombus"></v-select>
                 </VCol>
                 <!-- //khusus slik -->
                 <VCol md="12" cols="12" v-if="dataFormIn.phase >= 2">
@@ -443,12 +494,12 @@
                     hint="Masukkan 1.000.000.000 untuk maksimal, jika ingin tanpa batas" autofocus
                     prepend-icon="mdi-help-rhombus" />
                 </VCol>
-                <!-- <VCol md="12" cols="12">
-                  <v-select label="Banding?" :items="[
+                <VCol md="12" cols="12">
+                  <v-select label="Input Banding?" :items="[
                     { value: 1, title: 'Ya' },
                     { value: 0, title: 'Tidak' },
                   ]" v-model="dataFormIn.canAppeal" prepend-icon="mdi-help-rhombus"></v-select>
-                </VCol> -->
+                </VCol>
                 <VCol md="12" cols="12">
                   <v-select label="Approve?" :items="[
                     { value: 1, title: 'Ya' },
@@ -466,6 +517,18 @@
                     { value: 1, title: 'Ya' },
                     { value: 0, title: 'Tidak' },
                   ]" v-model="dataFormIn.canInsertData" prepend-icon="mdi-help-rhombus"></v-select>
+                </VCol>
+                <VCol md="12" cols="12">
+                  <v-select label="Edit Data?" :items="[
+                    { value: 1, title: 'Ya' },
+                    { value: 0, title: 'Tidak' },
+                  ]" v-model="dataFormIn.canUpdateData" prepend-icon="mdi-help-rhombus"></v-select>
+                </VCol>
+                <VCol md="12" cols="12">
+                  <v-select label="Hapus Data?" :items="[
+                    { value: 1, title: 'Ya' },
+                    { value: 0, title: 'Tidak' },
+                  ]" v-model="dataFormIn.canDeleteData" prepend-icon="mdi-help-rhombus"></v-select>
                 </VCol>
                 <!-- //khusus slik -->
                 <VCol md="12" cols="12" v-if="dataFormIn.phase >= 2">
@@ -523,10 +586,12 @@ export default {
         phase: null,
         minPlafon: '',
         maxPlafon: '',
-        //canAppeal: 0,
+        canAppeal: 0,
         canApprove: 0,
         notification: 0,
         canInsertData: 0,
+        canUpdateData: 0,
+        canDeleteData: 0,
         isSecret: 0,
       },
       officeId: this.$route.params.officeId,
@@ -544,55 +609,63 @@ export default {
       phase1Items: [],
       phase1Headers: [
         { text: "Jabatan", value: "position.name", sortable: true },
-        { text: "Phase", value: "phase", sortable: true },
+        // { text: "Phase", value: "phase", sortable: true },
         { text: "Min. Plafon", value: "minPlafon", sortable: true },
         { text: "Max. Plafon", value: "maxPlafon", sortable: true },
-        //{ text: "Banding?", value: "canAppeal", sortable: true },
+        { text: "Input Banding?", value: "canAppeal", sortable: true },
         { text: "Approve?", value: "canApprove", sortable: true },
         { text: "Notifikasi?", value: "notification", sortable: true },
         { text: "Tambah Data?", value: "canInsertData", sortable: true },
+        { text: "Edit Data?", value: "canUpdateData", sortable: true },
+        { text: "Hapus Data?", value: "canDeleteData", sortable: true },
         { text: "Operation", value: "operation", width: 100 },
       ],
       //phase2
       phase2Items: [],
       phase2Headers: [
         { text: "Jabatan", value: "position.name", sortable: true },
-        { text: "Phase", value: "phase", sortable: true },
+        // { text: "Phase", value: "phase", sortable: true },
         { text: "Min. Plafon", value: "minPlafon", sortable: true },
         { text: "Max. Plafon", value: "maxPlafon", sortable: true },
-        //{ text: "Banding?", value: "canAppeal", sortable: true },
+        { text: "Input Banding?", value: "canAppeal", sortable: true },
         { text: "Approve?", value: "canApprove", sortable: true },
         { text: "Notifikasi?", value: "notification", sortable: true },
         { text: "Akses Data Sensitif? (SLIK, dll)", value: "isSecret", sortable: true },
         { text: "Tambah Data?", value: "canInsertData", sortable: true },
+        { text: "Edit Data?", value: "canUpdateData", sortable: true },
+        { text: "Hapus Data?", value: "canDeleteData", sortable: true },
         { text: "Operation", value: "operation", width: 100 },
       ],
       //phase3
       phase3Items: [],
       phase3Headers: [
         { text: "Jabatan", value: "position.name", sortable: true },
-        { text: "Phase", value: "phase", sortable: true },
+        // { text: "Phase", value: "phase", sortable: true },
         { text: "Min. Plafon", value: "minPlafon", sortable: true },
         { text: "Max. Plafon", value: "maxPlafon", sortable: true },
-        //{ text: "Banding?", value: "canAppeal", sortable: true },
+        { text: "Input Banding?", value: "canAppeal", sortable: true },
         { text: "Approve?", value: "canApprove", sortable: true },
         { text: "Notifikasi", value: "notification", sortable: true },
         { text: "Akses Data Sensitif? (SLIK, dll)", value: "isSecret", sortable: true },
         { text: "Tambah Data?", value: "canInsertData", sortable: true },
+        { text: "Edit Data?", value: "canUpdateData", sortable: true },
+        { text: "Hapus Data?", value: "canDeleteData", sortable: true },
         { text: "Operation", value: "operation", width: 100 },
       ],
       //phase4
       phase4Items: [],
       phase4Headers: [
         { text: "Jabatan", value: "position.name", sortable: true },
-        { text: "Phase", value: "phase", sortable: true },
+        // { text: "Phase", value: "phase", sortable: true },
         { text: "Min. Plafon", value: "minPlafon", sortable: true },
         { text: "Max. Plafon", value: "maxPlafon", sortable: true },
-        //{ text: "Banding?", value: "canAppeal", sortable: true },
+        { text: "Input Banding?", value: "canAppeal", sortable: true },
         { text: "Approve?", value: "canApprove", sortable: true },
         { text: "Notifikasi", value: "notification", sortable: true },
         { text: "Akses Data Sensitif? (SLIK, dll)", value: "isSecret", sortable: true },
         { text: "Tambah Data?", value: "canInsertData", sortable: true },
+        { text: "Edit Data?", value: "canUpdateData", sortable: true },
+        { text: "Hapus Data?", value: "canDeleteData", sortable: true },
         { text: "Operation", value: "operation", width: 100 },
       ],
     };
@@ -644,10 +717,12 @@ export default {
         formData.append("office_id", this.dataFormIn.office_id);
         formData.append("position_id", this.dataFormIn.position_id);
         formData.append("phase", this.dataFormIn.phase);
-        // formData.append("canAppeal", this.dataFormIn.canAppeal);
+        formData.append("canAppeal", this.dataFormIn.canAppeal);
         formData.append("canApprove", this.dataFormIn.canApprove);
         formData.append("notification", this.dataFormIn.notification);
         formData.append("canInsertData", this.dataFormIn.canInsertData);
+        formData.append("canUpdateData", this.dataFormIn.canUpdateData);
+        formData.append("canDeleteData", this.dataFormIn.canDeleteData);
         if (this.dataFormIn.phase >= 2) {
           formData.append("isSecret", this.dataFormIn.isSecret);
         } else {
@@ -694,10 +769,12 @@ export default {
         formData.append("office_id", this.dataFormIn.office_id);
         formData.append("position_id", this.dataFormIn.position_id);
         formData.append("phase", this.dataFormIn.phase);
-        // formData.append("canAppeal", this.dataFormIn.canAppeal);
+        formData.append("canAppeal", this.dataFormIn.canAppeal);
         formData.append("canApprove", this.dataFormIn.canApprove);
         formData.append("notification", this.dataFormIn.notification);
         formData.append("canInsertData", this.dataFormIn.canInsertData);
+        formData.append("canUpdateData", this.dataFormIn.canUpdateData);
+        formData.append("canDeleteData", this.dataFormIn.canDeleteData);
         if (this.dataFormIn.phase >= 2) {
           formData.append("isSecret", this.dataFormIn.isSecret);
         } else {
@@ -735,10 +812,12 @@ export default {
         formData.append("office_id", this.dataFormIn.office_id);
         formData.append("position_id", this.dataFormIn.position_id);
         formData.append("phase", this.dataFormIn.phase);
-        // formData.append("canAppeal", this.dataFormIn.canAppeal);
+        formData.append("canAppeal", this.dataFormIn.canAppeal);
         formData.append("canApprove", this.dataFormIn.canApprove);
         formData.append("notification", this.dataFormIn.notification);
         formData.append("canInsertData", this.dataFormIn.canInsertData);
+        formData.append("canUpdateData", this.dataFormIn.canUpdateData);
+        formData.append("canDeleteData", this.dataFormIn.canDeleteData);
         if (this.dataFormIn.phase >= 2) {
           formData.append("isSecret", this.dataFormIn.isSecret);
         } else {
@@ -813,11 +892,13 @@ export default {
           this.dataFormIn.phase = item.phase;
           this.dataFormIn.minPlafon = item.minPlafon;
           this.dataFormIn.maxPlafon = item.maxPlafon;
-          // this.dataFormIn.canAppeal = item.canAppeal;
+          this.dataFormIn.canAppeal = item.canAppeal;
           this.dataFormIn.canApprove = parseInt(item.canApprove);
           this.dataFormIn.notification = parseInt(item.notification);
           this.dataFormIn.isSecret = parseInt(item.isSecret);
           this.dataFormIn.canInsertData = parseInt(item.canInsertData);
+          this.dataFormIn.canUpdateData = parseInt(item.canInsertData);
+          this.dataFormIn.canDeleteData = parseInt(item.canInsertData);
           this.edit = true;
         }
       } else if (type === 3) {
@@ -830,11 +911,13 @@ export default {
           this.dataFormIn.phase = item.phase;
           this.dataFormIn.minPlafon = item.minPlafon;
           this.dataFormIn.maxPlafon = item.maxPlafon;
-          // this.dataFormIn.canAppeal = item.canAppeal;
+          this.dataFormIn.canAppeal = item.canAppeal;
           this.dataFormIn.canApprove = parseInt(item.canApprove);
           this.dataFormIn.notification = parseInt(item.notification);
           this.dataFormIn.isSecret = parseInt(item.isSecret);
           this.dataFormIn.canInsertData = parseInt(item.canInsertData);
+          this.dataFormIn.canUpdateData = parseInt(item.canInsertData);
+          this.dataFormIn.canDeleteData = parseInt(item.canInsertData);
           this.copy = true;
         }
       }

@@ -119,17 +119,18 @@
           </v-row>
         </v-card-title>
         <v-card-text>
-          <div v-for="(attachment, index) in dataFile.attachments" :key="index">
+          <!-- <div v-for="(attachment, index) in dataFile.attachments" :key="index">
             <v-list density="compact" v-if="attachment.path != null && !parseInt(attachment.isSecret)">
               <v-list-item>
                 <template v-slot:prepend>
+                  {{ attachment.isApprove ? '✅' : '❌' }}
                   <v-icon icon="mdi-file"></v-icon>
                 </template>
-                <v-list-item-title> {{ attachment.name }} </v-list-item-title>
+                <v-list-item-title> {{ attachment.name }}  </v-list-item-title>
                 <template v-slot:append>
                   <div class="operation-wrapper">
                     <div class="d-flex justify-space-between">
-                      <v-tooltip location="top" text="Lihat File">
+                      <v-tooltip location="top" text="Lihat File" v-if="  attachment.path!='null'">
                         <template v-slot:activator="{ props }">
                           <a v-bind="props" :href="filePath +
                             '/' +
@@ -145,8 +146,7 @@
                       </v-tooltip>
 
                       <v-tooltip location="top" text="Edit File" v-if="
-                        userData.id == dataFile.user_id ||
-                        (userAccess && parseInt(userAccess.canInsertData))
+                        userAccess && parseInt(userAccess.canUpdateData)
                       ">
                         <template v-slot:activator="{ props }">
                           <button v-bind="props" @click="openModal(2, attachment)">
@@ -156,8 +156,7 @@
                       </v-tooltip>
 
                       <v-tooltip location="top" text="Hapus File" v-if="
-                        userData.id == dataFile.user_id ||
-                        (userAccess && parseInt(userAccess.canInsertData))
+                        userAccess && parseInt(userAccess.canDeleteData)
                       ">
                         <template v-slot:activator="{ props }">
                           <button v-bind="props" @click="deleteAttachment(attachment.id)">
@@ -174,13 +173,14 @@
             <v-list density="compact" v-else>
               <v-list-item>
                 <template v-slot:prepend>
+                  {{ attachment.isApprove ? '✅' : '❌' }}
                   <v-icon icon="mdi-file"></v-icon>
                 </template>
                 <v-list-item-title> {{ attachment.name }} </v-list-item-title>
                 <template v-slot:append>
                   <div class="operation-wrapper">
                     <div class="d-flex justify-space-between">
-                      <v-tooltip location="top" text="Lihat File">
+                      <v-tooltip location="top" text="Lihat File" v-if="userAccess && parseInt(userAccess.isSecret) && attachment.path!='null'">
                         <template v-slot:activator="{ props }">
                           <a v-bind="props" :href="filePath +
                             '/' +
@@ -194,10 +194,10 @@
                           </a>
                         </template>
                       </v-tooltip>
+                      
 
                       <v-tooltip location="top" text="Edit File" v-if="
-                        userData.id == dataFile.user_id ||
-                        (userAccess && parseInt(userAccess.canInsertData))
+                        userAccess && parseInt(userAccess.canUpdateData) 
                       ">
                         <template v-slot:activator="{ props }">
                           <button v-bind="props" @click="openModal(2, attachment)">
@@ -206,10 +206,7 @@
                         </template>
                       </v-tooltip>
 
-                      <v-tooltip location="top" text="Hapus File" v-if="
-                        userData.id == dataFile.user_id ||
-                        (userAccess && parseInt(userAccess.canInsertData))
-                      ">
+                      <v-tooltip location="top" text="Hapus File" v-if="userAccess && parseInt(userAccess.canDeleteData)">
                         <template v-slot:activator="{ props }">
                           <button v-bind="props" @click="deleteAttachment(attachment.id)">
                             <VIcon size="20" icon="bx-trash" color="red" />
@@ -220,8 +217,12 @@
                   </div>
                 </template>
               </v-list-item>
-            </v-list>
-          </div>
+            </v-list>            
+          </div> -->
+
+          <AttachmentCard1 :data="phase1Attachments" :fileId="dataFile.id" :filePath="filePath" :userAccess="userAccess" class="mb-5"></AttachmentCard1 >
+
+          <AttachmentCard2 v-if="parseInt(dataFile.phase) > 1" :data="phase2Attachments" :fileId="dataFile.id" :filePath="filePath" :userAccess="userAccess" :getDetailFile="getDetailFile" class="mb-5"></AttachmentCard2>
         </v-card-text>
       </v-card>
     </v-card-text>
@@ -263,13 +264,13 @@
     <!-- Approval -->
     <v-card-text v-if="dataFile && parseInt(dataFile.phase) < 5">
       <v-card>
-        <v-card-title> Status Verifikasi ✅ </v-card-title>
+        <v-card-title> Status Approval Phase ✅ </v-card-title>
         <v-card-text>
           <div v-if="dataFile && dataFile.approvals && dataFile.approvals.length">
             <template v-for="(app, index) in dataFile.approvals" :key="index">
               <v-chip v-if="dataFile.phase == app.phase" :color="app.approved == 1 ? 'success' : 'error'" class="mr-2"
                 @click="changeApproval(app.id)">
-                {{ app.user.name }}
+                {{ app.user.name }} - {{ app.user.position.name }}
               </v-chip>
             </template>
           </div>
@@ -387,9 +388,20 @@
 </template>
 
 <script>
+import { default as AttachmentCard1 } from "./attachmentCard1.vue";
+import { default as AttachmentCard2 } from "./attachmentCard2.vue";
 export default {
+  components: { AttachmentCard1, AttachmentCard2 },
   name: "Phase",
   props: {
+    phase1Attachments: {
+      type: Object,
+      required: true,
+    },
+    phase2Attachments: {
+      type: Object,
+      required: true,
+    },
     userAccess: {
       type: Object,
       required: true,

@@ -10,7 +10,7 @@
             title: 'Kredit Disetujui',
             image: docs,
             stats: `${tApproved}`,
-            link: '/u-search',
+            link: '/u-credit',
           }" />
         </VCol>
         <VCol cols="4" md="6">
@@ -18,7 +18,7 @@
             title: 'Kredit Pending',
             image: docs,
             stats: `${tPending}`,
-            link: '/u-search',
+            link: '/u-credit',
           }" />
         </VCol>
         <VCol cols="4" md="6">
@@ -26,7 +26,7 @@
             title: 'Kredit Ditolak',
             image: docs,
             stats: `${tRejected}`,
-            link: '/u-search',
+            link: '/u-credit',
           }" />
         </VCol>
       </v-row>
@@ -95,7 +95,6 @@ export default {
 
         if (response.status === 200) {
           const files = response.data.data.files;
-          console.log(files);
           const isApprovedCounts = {
             isApproved1: 0,
             isApproved2: 0,
@@ -120,7 +119,6 @@ export default {
           this.tApproved = isApprovedCounts.isApproved1;
           this.tPending = isApprovedCounts.isApproved2;
           this.tRejected = isApprovedCounts.isApproved3;
-          console.log(this.tApproved, this.tPending, this.tRejected);
         } else {
           const errorMessage =
             response && response.data && response.data.message

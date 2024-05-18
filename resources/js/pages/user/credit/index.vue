@@ -68,7 +68,7 @@
 
     <v-dialog v-model="insert" width="auto" persistent transition="dialog-top-transition">
       <v-card>
-        <template v-slot:title> Tambah Data </template>
+        <template v-slot:title> Tambah Data s</template>
 
         <template v-slot:text>
           <VForm @submit.prevent="insertData">
@@ -87,20 +87,26 @@
               <VCol md="12" cols="12">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">KTP Pemohon : </span>
 
-                <v-file-input class="my-3" accept="image/jpeg,image/png" placeholder="Pick an image"
-                  :rules="[rules.required]" @change="(event) => handleFileChange(event, 'file1')"></v-file-input>
+                <v-file-input class="my-3"
+                  accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                  placeholder="Pick an image" :rules="[rules.required]"
+                  @change="(event) => handleFileChange(event, 'file1')"></v-file-input>
               </VCol>
               <VCol md="12" cols="12">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">Kartu Keluarga : </span>
 
-                <v-file-input class="my-3" accept="image/jpeg,image/png" placeholder="Pick an image"
-                  :rules="[rules.required]" @change="(event) => handleFileChange(event, 'file4')"></v-file-input>
+                <v-file-input class="my-3"
+                  accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                  placeholder="Pick an image" :rules="[rules.required]"
+                  @change="(event) => handleFileChange(event, 'file4')"></v-file-input>
               </VCol>
               <VCol md="12" cols="12">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">Foto Kunjungan : </span>
 
-                <v-file-input class="my-3" accept="image/jpeg,image/png" placeholder="Pick an image"
-                  :rules="[rules.required]" @change="(event) => handleFileChange(event, 'file10')"></v-file-input>
+                <v-file-input class="my-3"
+                  accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                  placeholder="Pick an image" :rules="[rules.required]"
+                  @change="(event) => handleFileChange(event, 'file10')"></v-file-input>
               </VCol>
 
               <v-divider :thickness="5"></v-divider>
@@ -115,15 +121,50 @@
                 <span style="color: red">*</span><span class="subtitle-1 text-center">KTP Pasangan Pemohon :
                 </span>
 
-                <v-file-input class="my-3" accept="image/jpeg,image/png" placeholder="Pick an image"
-                  :rules="[rules.required]" @change="(event) => handleFileChange(event, 'file2')"></v-file-input>
+                <v-file-input class="my-3"
+                  accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                  placeholder="Pick an image" :rules="[rules.required]"
+                  @change="(event) => handleFileChange(event, 'file2')"></v-file-input>
               </VCol>
-              <VCol md="12" cols="12" v-if="dataForm.hasFile2">
-                <span style="color: red">*</span><span class="subtitle-1 text-center">Buku Nikah : </span>
+              <!-- <v-divider :thickness="5"></v-divider> -->
+              <VCol md="12" cols="12">
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih Salah Satu Kelengkapan :
+                </span>
+                <v-radio-group v-model="selectedOption" :mandatory="true" row>
+                  <v-radio label="Buku Nikah" value="bukuNikah"></v-radio>
+                  <v-radio label="Jenis Jaminan SHM" value="jaminanSHM"></v-radio>
+                  <v-radio label="Jenis Jaminan BPKB" value="jaminanBPKB"></v-radio>
+                </v-radio-group>
+              </VCol>
 
-                <v-file-input class="my-3" accept="image/jpeg,image/png" placeholder="Pick an image"
-                  :rules="[rules.required]" @change="(event) => handleFileChange(event, 'file5')"></v-file-input>
+              <VCol md="12" cols="12" v-if="selectedOption === 'bukuNikah'">
+                <span style="color: red">*</span>
+                <span class="subtitle-1 text-center">Buku Nikah:</span>
+                <v-file-input class="my-3"
+                  accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                  placeholder="Pick an image" :rules="[rules.required]"
+                  @change="(event) => handleFileChange(event, 'file5')"></v-file-input>
               </VCol>
+
+              <VCol md="12" cols="12" v-if="selectedOption === 'jaminanSHM'">
+                <span style="color: red">*</span>
+                <span class="subtitle-1 text-center">Jaminan SHM:</span>
+                <v-file-input class="my-3"
+                  accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                  placeholder="Pick an image" :rules="[rules.required]"
+                  @change="(event) => handleFileChange(event, 'file7')"></v-file-input>
+              </VCol>
+
+              <VCol md="12" cols="12" v-if="selectedOption === 'jaminanBPKB'">
+                <span style="color: red">*</span>
+                <span class="subtitle-1 text-center">Jaminan BPKB:</span>
+                <v-file-input class="my-3"
+                  accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                  placeholder="Pick an image" :rules="[rules.required]"
+                  @change="(event) => handleFileChange(event, 'file8')"></v-file-input>
+              </VCol>
+
+              <v-divider :thickness="5"></v-divider>
 
               <!-- ktp atas nama jaminan -->
               <VCol cols="12" md="12">
@@ -135,8 +176,10 @@
                 <span class="subtitle-1 text-center">KTP atas nama Jaminan :
                 </span>
 
-                <v-file-input class="my-3" accept="image/jpeg,image/png" placeholder="Pick an image"
-                  :rules="[rules.required]" @change="(event) => handleFileChange(event, 'file3')"></v-file-input>
+                <v-file-input class="my-3"
+                  accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                  placeholder="Pick an image" :rules="[rules.required]"
+                  @change="(event) => handleFileChange(event, 'file3')"></v-file-input>
               </VCol>
 
               <v-divider :thickness="5"></v-divider>
@@ -152,12 +195,12 @@
                 <VTextField class="my-3" v-model="dataForm.desc_bussiness" :rules="[rules.required]" />
               </VCol>
 
-              <VCol><span style="color: red">*</span><span class="subtitle-1 text-center">Lampirkan Salah Satu Jenis
+              <!-- <VCol><span style="color: red">*</span><span class="subtitle-1 text-center">Lampirkan Salah Satu Jenis
                   Jaminan :
-                </span></VCol>
-                
+                </span></VCol> -->
+
               <!-- shm -->
-              <VCol cols="12" md="12">
+              <!-- <VCol cols="12" md="12">
                 <v-checkbox v-model="dataForm.hasFile7" label="Jenis Jaminan SHM ?"
                   @change="resetFile('file7')"></v-checkbox>
               </VCol>
@@ -165,12 +208,12 @@
                 <span style="color: red">*</span>
                 <span class="subtitle-1 text-center">Jaminan SHM : </span>
 
-                <v-file-input class="my-3" accept="image/jpeg,image/png" placeholder="Pick an image"
+                <v-file-input class="my-3" accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" placeholder="Pick an image"
                   :rules="[rules.required]" @change="(event) => handleFileChange(event, 'file7')"></v-file-input>
-              </VCol>
+              </VCol> -->
 
               <!-- bpkb -->
-              <VCol cols="12" md="12">
+              <!-- <VCol cols="12" md="12">
                 <v-checkbox v-model="dataForm.hasFile8" label="Jenis Jaminan BPKB ?"
                   @change="resetFile('file8')"></v-checkbox>
               </VCol>
@@ -178,9 +221,9 @@
                 <span style="color: red">*</span>
                 <span class="subtitle-1 text-center">Jaminan SHM : </span>
 
-                <v-file-input class="my-3" accept="image/jpeg,image/png" placeholder="Pick an image"
+                <v-file-input class="my-3" accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" placeholder="Pick an image"
                   :rules="[rules.required]" @change="(event) => handleFileChange(event, 'file8')"></v-file-input>
-              </VCol>
+              </VCol> -->
 
               <!-- mesin produksi -->
               <!-- <VCol cols="12" md="12">
@@ -198,7 +241,7 @@
 
                 <v-file-input
                   class="my-3"
-                  accept="image/jpeg,image/png"
+                  accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                   placeholder="Pick an image"
                   :rules="[rules.required]"
                   @change="(event) => handleFileChange(event, 'file9')"
@@ -206,18 +249,8 @@
               </VCol> -->
 
               <VCol cols="12" class="d-flex flex-wrap gap-4">
-                <VBtn type="submit" :disabled="(dataForm.hasFile2 &&
-                  (dataForm.file2 == null || dataForm.file5 == null)) ||
-                  (dataForm.hasFile3 && dataForm.file3 == null) ||
-                  (dataForm.hasFile7 && dataForm.file7 == null) ||
-                  (dataForm.hasFile8 && dataForm.file8 == null) ||
-                  (dataForm.hasFile9 && dataForm.file9 == null) ||
-                  (dataForm.file7 == null &&
-                    dataForm.file8 == null &&
-                    dataForm.file9 == null) ||
-                  (dataForm.type_bussiness == null &&
-                    dataForm.desc_bussiness == null)
-                  ">
+                <VBtn type="submit"
+                  :disabled="(dataForm.name == null || dataForm.plafon == null || dataForm.type_bussiness == null || dataForm.desc_bussiness == null) || (dataForm.file1 == null || dataForm.file4 == null || dataForm.file10 == null) || (dataForm.file5 == null && dataForm.file7 == null && dataForm.file8 == null)">
                   Simpan
                 </VBtn>
 
@@ -271,6 +304,7 @@ export default {
   },
   data() {
     return {
+      selectedOption: '',
       overlay: false,
       insert: false,
       searchValue: "",
@@ -388,6 +422,9 @@ export default {
       const allowedTypes = [
         "image/jpeg", // for .jpeg and .jpg
         "image/png",
+        "application/pdf",
+        "application/msword", // for .doc
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document" // for .docx
       ];
       if (selectedFile && allowedTypes.includes(selectedFile.type)) {
         this.dataForm[fileKey] = selectedFile; // Menambahkan catatan file sesuai dengan file yang dipilih
@@ -414,7 +451,7 @@ export default {
         this.$showToast(
           "error",
           "Error",
-          "Hanya file JPG, JPEG, dan PNG yang diizinkan."
+          "Hanya file JPG, JPEG, PNG, dan PDF, WORD yang diizinkan."
         );
         event.target.value = null;
       }
@@ -536,22 +573,32 @@ export default {
         }
 
         // Ensure at least one of file7, file8, and file9 exists
-        if (
-          !this.dataForm.file7 &&
-          !this.dataForm.file8 &&
-          !this.dataForm.file9
-        ) {
-          // console.error("At least one of file7, file8, and file9 must exist");
-          this.overlay = false;
-          this.$showToast(
-            "success",
-            "Success",
-            "Wajib memasukkan salah satu jenis jaminan"
-          );
-          return;
-        }
+        // if (
+        //   !this.dataForm.file7 ||
+        //   !this.dataForm.file8 ||
+        //   !this.dataForm.file9
+        // ) {
+        //   // console.error("At least one of file7, file8, and file9 must exist");
+        //   this.overlay = false;
+        //   this.$showToast(
+        //     "error",
+        //     "Success",
+        //     "Wajib memasukkan salah satu jenis jaminan"
+        //   );
+        //   return;
+        // }
 
         formData.append("_method", "POST");
+        // formData.forEach((value, key) => {
+        //   if (Array.isArray(value)) {
+        //     console.log(key + ":");
+        //     value.forEach((item) => {
+        //       console.log(item);
+        //     });
+        //   } else {
+        //     console.log(key + ": " + value);
+        //   }
+        // });
 
         const config = {
           onUploadProgress: (progressEvent) => {

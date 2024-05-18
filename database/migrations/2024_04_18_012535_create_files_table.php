@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('files', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->enum('phase', ['1', '2', '3', '4', '5']);
+            $table->enum('phase', ['1', '2', '3', '4', '5', '6']);
             $table->string('name')->comment('nama pemohon')->nullable();
             $table->string('plafon')->comment('plafon pinjaman')->nullable();
             $table->longText('surveyResult')->comment('hasil survei')->nullable();

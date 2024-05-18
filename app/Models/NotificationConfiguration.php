@@ -16,6 +16,8 @@ class NotificationConfiguration extends Model
         'canApprove',
         'notification',
         'canInsertData',
+        'canUpdateData',
+        'canDeleteData',
         'isSecret',
     ];
 

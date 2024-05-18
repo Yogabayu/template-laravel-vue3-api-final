@@ -26,20 +26,20 @@
       <v-card-text>
         <v-stepper :model-value="stepperModel" :mobile="isMobile">
           <v-stepper-header v-if="parseInt(dataFile.plafon) > 25000000">
-            <v-stepper-item title="Phase 1" value="1" :complete="dataFile.phase > 1">
+            <v-stepper-item title="Phase 1 (Pooling)" value="1" :complete="dataFile.phase > 1">
             </v-stepper-item>
 
             <v-divider></v-divider>
 
-            <v-stepper-item title="Phase 2" value="2" :complete="dataFile.phase > 2"></v-stepper-item>
+            <v-stepper-item title="Phase 2 (SLIK)" value="2" :complete="dataFile.phase > 2"></v-stepper-item>
 
             <v-divider></v-divider>
 
-            <v-stepper-item title="Phase 3" value="3" :complete="dataFile.phase > 3"></v-stepper-item>
+            <v-stepper-item title="Phase 3 (Survei)" value="3" :complete="dataFile.phase > 3"></v-stepper-item>
 
             <v-divider v-if="isShowPhase4"></v-divider>
 
-            <v-stepper-item title="Phase 4" value="4" :complete="dataFile.phase > 4"
+            <v-stepper-item title="Phase 4 (Komite)" value="4" :complete="dataFile.phase > 4"
               v-if="isShowPhase4"></v-stepper-item>
 
             <!-- khusus approved -->
@@ -73,7 +73,8 @@
                 :delete-attachment="deleteAttachment" :delete-note="deleteNote" :get-detail-file="getDetailFile"
                 :step="step" :file-id="formatFileId(fileId)" :user-access="userAccess" :reset-note="resetNote"
                 :data-note="dataNote" :update-data-note="updateDataNote" :note-phase1="notePhase1"
-                :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote" />
+                :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
+                :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2" />
             </v-stepper-window-item>
             <v-stepper-window-item value="1" v-else>
               <div style="
@@ -93,7 +94,8 @@
                 :delete-attachment="deleteAttachment" :delete-note="deleteNote" :get-detail-file="getDetailFile"
                 :step="step" :file-id="formatFileId(fileId)" :user-access="userAccess" :reset-note="resetNote"
                 :data-note="dataNote" :update-data-note="updateDataNote" :note-phase1="notePhase1"
-                :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote" />
+                :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
+                :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2" />
             </v-stepper-window-item>
             <v-stepper-window-item value="2" v-else>
               <div style="
@@ -113,7 +115,8 @@
                 :delete-attachment="deleteAttachment" :delete-note="deleteNote" :get-detail-file="getDetailFile"
                 :step="step" :file-id="formatFileId(fileId)" :user-access="userAccess" :reset-note="resetNote"
                 :data-note="dataNote" :update-data-note="updateDataNote" :note-phase1="notePhase1"
-                :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote" />
+                :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
+                :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2" />
             </v-stepper-window-item>
             <v-stepper-window-item value="3" v-else>
               <div style="
@@ -133,7 +136,8 @@
                 :delete-attachment="deleteAttachment" :delete-note="deleteNote" :get-detail-file="getDetailFile"
                 :step="step" :file-id="formatFileId(fileId)" :user-access="userAccess" :reset-note="resetNote"
                 :data-note="dataNote" :update-data-note="updateDataNote" :note-phase1="notePhase1"
-                :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote" />
+                :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
+                :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2" />
             </v-stepper-window-item>
             <v-stepper-window-item value="4" v-else>
               <div style="
@@ -152,7 +156,8 @@
                 :delete-attachment="deleteAttachment" :delete-note="deleteNote" :get-detail-file="getDetailFile"
                 :step="step" :file-id="formatFileId(fileId)" :user-access="userAccess" :reset-note="resetNote"
                 :data-note="dataNote" :update-data-note="updateDataNote" :note-phase1="notePhase1"
-                :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote" />
+                :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
+                :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2" />
             </v-stepper-window-item>
           </v-stepper-window>
         </v-stepper>
@@ -175,7 +180,7 @@
                 <span style="color: red">*</span>
                 <span class="subtitle-1 text-center"> Upload File: </span>
 
-                <v-file-input class="my-3" accept="image/jpeg,image/png" placeholder="Pick an image"
+                <v-file-input class="my-3" accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" placeholder="Pick an image"
                   :rules="[rules.required]" @change="(event) => handleFileChange(event)"></v-file-input>
               </VCol>
               <VCol md="12" cols="12" v-if="dataFile.phase == 2">
@@ -219,7 +224,7 @@
                 <span style="color: red">*</span>
                 <span class="subtitle-1 text-center"> Upload File: </span>
 
-                <v-file-input class="my-3" accept="image/jpeg,image/png" placeholder="Pick an image"
+                <v-file-input class="my-3" accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" placeholder="Pick an image"
                   :rules="[rules.required]" @change="(event) => handleFileChange(event)"></v-file-input>
               </VCol>
               <VCol md="12" cols="12" v-if="dataFile.phase == 2">
@@ -347,7 +352,7 @@
           <EasyDataTable :headers="timerHeaders" :items="dataFile.phase_times">
             <template #item-timeDiff="item">{{
               calculateTimeDiff(item.startTime, item.endTime)
-            }}</template>
+              }}</template>
           </EasyDataTable>
         </template>
       </v-card>
@@ -545,6 +550,13 @@ export default {
       dataPhase3: {
         surveyResult: "",
       },
+
+      //=> data attachment phase 
+      dataAttachPhase1: [],
+      dataAttachPhase2: [],
+      dataAttachPhase3: [],
+      dataAttachPhase4: [],
+      dataAttachPhase5: [],
     };
   },
   computed: {
@@ -741,7 +753,15 @@ export default {
         if (response.status === 200) {
           this.dataFile = response.data.data.file;
           this.userAccess = response.data.data.userAccess;
+          // console.log(this.userAccess);          
 
+          //attach
+          this.dataAttachPhase1 = response.data.data.file.attachments.filter(
+            (item: { phase: number }) => item.phase == 1
+          )
+          this.dataAttachPhase2 = response.data.data.file.attachments.filter(
+            (item: { phase: number }) => item.phase == 2
+          )
 
           this.dataFile.phase = parseInt(this.dataFile.phase);
           this.isShowPhase4 =
@@ -788,7 +808,7 @@ export default {
     getUserData() {
       const savedUserData = localStorage.getItem("userData");
       if (savedUserData) {
-        this.userData = JSON.parse(savedUserData);        
+        this.userData = JSON.parse(savedUserData);
       }
     },
     openModal(type: number, item = null) {
@@ -1021,6 +1041,9 @@ export default {
       const allowedTypes = [
         "image/jpeg", // for .jpeg and .jpg
         "image/png",
+        "application/pdf",
+        "application/msword", // for .doc
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document" // for .docx
       ];
       if (selectedFile && allowedTypes.includes(selectedFile.type)) {
         this.attachFile.path = selectedFile;
@@ -1028,7 +1051,7 @@ export default {
         this.$showToast(
           "error",
           "Error",
-          "Hanya file JPG, JPEG, dan PNG yang diizinkan."
+          "Hanya file JPG, JPEG, PNG, PDF, DOC, dan DOCX yang diizinkan."
         );
         event.target.value = null;
       }

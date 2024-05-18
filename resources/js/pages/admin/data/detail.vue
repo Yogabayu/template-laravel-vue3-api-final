@@ -1021,6 +1021,9 @@ export default {
       const allowedTypes = [
         "image/jpeg", // for .jpeg and .jpg
         "image/png",
+        "application/pdf",
+        "application/msword", // for .doc
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document" // for .docx
       ];
       if (selectedFile && allowedTypes.includes(selectedFile.type)) {
         this.attachFile.path = selectedFile;

@@ -8,10 +8,14 @@ class Attachment extends Model
 {
     protected $fillable = [
         'file_id',
+        'phase',
         'name',
         'path',
         'note',
         'isSecret',
+        'isApprove',
+        'startTime',
+        'endTime',
     ];
 
     public function file()
