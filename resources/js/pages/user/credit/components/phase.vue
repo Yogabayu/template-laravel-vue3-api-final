@@ -1,26 +1,18 @@
 <!-- URUNG  :   production tampilan masih salah -->
 <template>
   <v-card color="backgroundCard">
-    <v-card-title class="text-2xl font-weight-bold d-flex justify-center"  v-if="!['Account Officer', 'AO', 'ao', 'account officer', 'Account Officer Exceutive'].includes(userData.position.name)">
-      Detail 
-      <v-chip color="success"
-        v-if="parseInt(dataFile.isApproved) == 1"
-        @click="openModal(9)">Approved</v-chip>
-      <v-chip color="warning"
-        v-if="parseInt(dataFile.isApproved) == 2"
-        @click="openModal(9)">Pending</v-chip>
-      <v-chip color="error"
-        v-if="parseInt(dataFile.isApproved) == 3"
-        @click="openModal(9)">Rejected</v-chip>
+    <v-card-title class="text-2xl font-weight-bold d-flex justify-center"
+      v-if="!['Account Officer', 'AO', 'ao', 'account officer', 'Account Officer Exceutive'].includes(userData.position.name)">
+      Detail
+      <v-chip color="success" v-if="parseInt(dataFile.isApproved) == 1" @click="openModal(9)">Approved</v-chip>
+      <v-chip color="warning" v-if="parseInt(dataFile.isApproved) == 2" @click="openModal(9)">Pending</v-chip>
+      <v-chip color="error" v-if="parseInt(dataFile.isApproved) == 3" @click="openModal(9)">Rejected</v-chip>
     </v-card-title>
-    <v-card-title class="text-2xl font-weight-bold d-flex justify-center"  v-else>
-      Detail 
-      <v-chip color="success"
-        v-if="parseInt(dataFile.isApproved) == 1">Approved</v-chip>
-      <v-chip color="warning"
-        v-if="parseInt(dataFile.isApproved) == 2">Pending</v-chip>
-      <v-chip color="error"
-        v-if="parseInt(dataFile.isApproved) == 3">Rejected</v-chip>
+    <v-card-title class="text-2xl font-weight-bold d-flex justify-center" v-else>
+      Detail
+      <v-chip color="success" v-if="parseInt(dataFile.isApproved) == 1">Approved</v-chip>
+      <v-chip color="warning" v-if="parseInt(dataFile.isApproved) == 2">Pending</v-chip>
+      <v-chip color="error" v-if="parseInt(dataFile.isApproved) == 3">Rejected</v-chip>
     </v-card-title>
 
     <v-card-text v-if="dataFile.reasonRejected != null">
@@ -220,14 +212,30 @@
             </v-list>            
           </div> -->
 
-          <AttachmentCard1 :data="phase1Attachments" :fileId="dataFile.id" :filePath="filePath" :userAccess="userAccess" class="mb-5"></AttachmentCard1 >
-
-          <AttachmentCard2 v-if="parseInt(dataFile.phase) > 1" :data="phase2Attachments" :fileId="dataFile.id" :filePath="filePath" :userAccess="userAccess" :getDetailFile="getDetailFile" class="mb-5"></AttachmentCard2>
+          <div class="mb-5">
+            <AttachmentCard1 :data="phase1Attachments" :fileId="parseInt(dataFile.id)" :filePath="filePath"
+              :userAccess="userAccess" :deleteAttachment="deleteAttachment" :openModal="openModal"></AttachmentCard1>
+          </div>
+          <div class="mb-5">
+            <AttachmentCard2 v-if="parseInt(dataFile.phase) > 1" :data="phase2Attachments"
+              :fileId="parseInt(dataFile.id)" :filePath="filePath" :userAccess="userAccess"
+              :deleteAttachment="deleteAttachment" :getDetailFile="getDetailFile"></AttachmentCard2>
+          </div>
+          <div class="mb-5">
+            <attachmentCard3 v-if="parseInt(dataFile.phase) > 2" :data="phase3Attachments"
+              :fileId="parseInt(dataFile.id)" :filePath="filePath" :userAccess="userAccess"
+              :deleteAttachment="deleteAttachment" :getDetailFile="getDetailFile"></attachmentCard3>
+          </div>
+          <div class="mb-5">
+            <attachmentOperation v-if="parseInt(dataFile.phase) > 4" :data="phase5Attachments"
+              :fileId="parseInt(dataFile.id)" :filePath="filePath" :userAccess="userAccess"
+              :deleteAttachment="deleteAttachment" :getDetailFile="getDetailFile"></attachmentOperation>
+          </div>
         </v-card-text>
       </v-card>
     </v-card-text>
 
-    <v-card-text v-if="dataFile.phase > 2">
+    <!-- <v-card-text v-if="dataFile.phase > 2">
       <v-card class="mb-5">
         <v-card-title>
           <v-row class="d-flex justify-space-between">
@@ -259,7 +267,7 @@
           </v-list>
         </v-card-text>
       </v-card>
-    </v-card-text>
+    </v-card-text> -->
 
     <!-- Approval -->
     <v-card-text v-if="dataFile && parseInt(dataFile.phase) < 5">
@@ -368,7 +376,7 @@
 
     <!-- prev/next btn -->
     <v-card-actions v-if="userAccess && parseInt(userAccess.canApprove)">
-      <v-col class="d-flex justify-space-beetwen" v-if="dataFile && parseInt(dataFile.plafon) > 25000000">
+      <v-col class="d-flex justify-space-beetwen" v-if="dataFile && parseInt(dataFile.plafon) >= 25000000">
         <v-btn color="info" text="Prev Phase" variant="tonal" @click="step(fileId, '-')"
           v-if="dataFile && parseInt(dataFile.phase) > 1"></v-btn>
 
@@ -390,8 +398,10 @@
 <script>
 import { default as AttachmentCard1 } from "./attachmentCard1.vue";
 import { default as AttachmentCard2 } from "./attachmentCard2.vue";
+import attachmentCard3, { default as AttachmentCard3 } from './attachmentCard3.vue';
+import attachmentOperation from './attachmentOperation.vue'
 export default {
-  components: { AttachmentCard1, AttachmentCard2 },
+  components: { AttachmentCard1, AttachmentCard2, AttachmentCard3, attachmentCard3, attachmentOperation },
   name: "Phase",
   props: {
     phase1Attachments: {
@@ -399,6 +409,14 @@ export default {
       required: true,
     },
     phase2Attachments: {
+      type: Object,
+      required: true,
+    },
+    phase3Attachments: {
+      type: Object,
+      required: true,
+    },
+    phase5Attachments: {
       type: Object,
       required: true,
     },

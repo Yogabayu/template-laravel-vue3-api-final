@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('phase_times', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('file_id');
-            $table->enum('phase', ['1', '2', '3', '4']);
+            $table->enum('phase', ['1', '2', '3', '4', '5', '6']);
             $table->dateTime('startTime')->nullable();
             $table->dateTime('endTime')->nullable();
             $table->timestamps();

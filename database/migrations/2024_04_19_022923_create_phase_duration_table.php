@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('phase_durations', function (Blueprint $table) {
             $table->id();
             $table->uuid('position_id');
-            $table->enum('phase', ['1', '2', '3', '4']);
+            $table->enum('phase', ['1', '2', '3', '4', '5', '6']);
             $table->integer('duration_days');
             $table->timestamps();
 

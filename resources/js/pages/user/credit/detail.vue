@@ -21,48 +21,34 @@
 
     <v-card>
       <VCardTitle class="text-2xl font-weight-bold d-flex justify-left">
-        Credit
+        Credit 
       </VCardTitle>
       <v-card-text>
         <v-stepper :model-value="stepperModel" :mobile="isMobile">
-          <v-stepper-header v-if="parseInt(dataFile.plafon) > 25000000">
-            <v-stepper-item title="Phase 1 (Pooling)" value="1" :complete="dataFile.phase > 1">
+          <v-stepper-header>
+            <v-stepper-item title="Phase 1 (Pooling)" value="1" :complete="stepperModel > 1">
             </v-stepper-item>
 
             <v-divider></v-divider>
 
-            <v-stepper-item title="Phase 2 (SLIK)" value="2" :complete="dataFile.phase > 2"></v-stepper-item>
+            <v-stepper-item title="Phase 2 (SLIK)" value="2" :complete="stepperModel > 2"></v-stepper-item>
 
             <v-divider></v-divider>
 
-            <v-stepper-item title="Phase 3 (Survei)" value="3" :complete="dataFile.phase > 3"></v-stepper-item>
+            <!-- <v-stepper-item title="Phase 3 (Survei)" value="3" :complete="stepperModel > 3"
+              v-if="parseInt(dataFile.plafon) > 25000000"></v-stepper-item>
+            <v-stepper-item title="Phase 3 (Keputusan)" value="3" :complete="stepperModel > 3" v-else></v-stepper-item> -->
+            <v-stepper-item title="Phase 3 (Keputusan)" value="3" :complete="stepperModel > 3"></v-stepper-item>
 
             <v-divider v-if="isShowPhase4"></v-divider>
 
-            <v-stepper-item title="Phase 4 (Komite)" value="4" :complete="dataFile.phase > 4"
+            <v-stepper-item title="Phase 4 (Komite)" value="4" :complete="stepperModel > 4"
               v-if="isShowPhase4"></v-stepper-item>
 
-            <!-- khusus approved -->
+            <!-- khusus operation -->
             <v-divider v-if="isShowPhase5"></v-divider>
 
-            <v-stepper-item title="Approved" value="5" v-if="isShowPhase5"></v-stepper-item>
-          </v-stepper-header>
-          <v-stepper-header v-else>
-            <v-stepper-item title="Phase 1" value="1" :complete="dataFile.phase > 1">
-            </v-stepper-item>
-
-            <v-divider></v-divider>
-
-            <v-stepper-item title="Phase 2" value="2" :complete="dataFile.phase > 2"></v-stepper-item>
-
-            <v-divider></v-divider>
-
-            <v-stepper-item title="Phase 3" value="3" :complete="dataFile.phase > 3"></v-stepper-item>
-
-            <!-- khusus approved -->
-            <v-divider v-if="isShowPhase5"></v-divider>
-
-            <v-stepper-item title="Approved" value="5" v-if="isShowPhase5"></v-stepper-item>
+            <v-stepper-item title="Operation" value="5" v-if="isShowPhase5"></v-stepper-item>
           </v-stepper-header>
 
           <v-stepper-window>
@@ -74,7 +60,8 @@
                 :step="step" :file-id="formatFileId(fileId)" :user-access="userAccess" :reset-note="resetNote"
                 :data-note="dataNote" :update-data-note="updateDataNote" :note-phase1="notePhase1"
                 :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
-                :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2" />
+                :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2"
+                :phase3Attachments="dataAttachPhase3" :phase5Attachments="dataAttachPhase5" />
             </v-stepper-window-item>
             <v-stepper-window-item value="1" v-else>
               <div style="
@@ -95,7 +82,8 @@
                 :step="step" :file-id="formatFileId(fileId)" :user-access="userAccess" :reset-note="resetNote"
                 :data-note="dataNote" :update-data-note="updateDataNote" :note-phase1="notePhase1"
                 :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
-                :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2" />
+                :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2"
+                :phase3Attachments="dataAttachPhase3" :phase5Attachments="dataAttachPhase5" />
             </v-stepper-window-item>
             <v-stepper-window-item value="2" v-else>
               <div style="
@@ -116,7 +104,8 @@
                 :step="step" :file-id="formatFileId(fileId)" :user-access="userAccess" :reset-note="resetNote"
                 :data-note="dataNote" :update-data-note="updateDataNote" :note-phase1="notePhase1"
                 :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
-                :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2" />
+                :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2"
+                :phase3Attachments="dataAttachPhase3" :phase5Attachments="dataAttachPhase5" />
             </v-stepper-window-item>
             <v-stepper-window-item value="3" v-else>
               <div style="
@@ -137,7 +126,8 @@
                 :step="step" :file-id="formatFileId(fileId)" :user-access="userAccess" :reset-note="resetNote"
                 :data-note="dataNote" :update-data-note="updateDataNote" :note-phase1="notePhase1"
                 :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
-                :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2" />
+                :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2"
+                :phase3Attachments="dataAttachPhase3" :phase5Attachments="dataAttachPhase5" />
             </v-stepper-window-item>
             <v-stepper-window-item value="4" v-else>
               <div style="
@@ -157,7 +147,8 @@
                 :step="step" :file-id="formatFileId(fileId)" :user-access="userAccess" :reset-note="resetNote"
                 :data-note="dataNote" :update-data-note="updateDataNote" :note-phase1="notePhase1"
                 :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
-                :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2" />
+                :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2"
+                :phase3Attachments="dataAttachPhase3" :phase5Attachments="dataAttachPhase5" />
             </v-stepper-window-item>
           </v-stepper-window>
         </v-stepper>
@@ -180,8 +171,10 @@
                 <span style="color: red">*</span>
                 <span class="subtitle-1 text-center"> Upload File: </span>
 
-                <v-file-input class="my-3" accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" placeholder="Pick an image"
-                  :rules="[rules.required]" @change="(event) => handleFileChange(event)"></v-file-input>
+                <v-file-input class="my-3"
+                  accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                  placeholder="Pick an image" :rules="[rules.required]"
+                  @change="(event) => handleFileChange(event)"></v-file-input>
               </VCol>
               <VCol md="12" cols="12" v-if="dataFile.phase == 2">
                 <v-select label="Apakah Termasuk File Rahasia ? (SLIK, dll)" :items="[
@@ -189,8 +182,14 @@
                   { value: 0, title: 'Tidak' },
                 ]" v-model="attachFile.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
               </VCol>
+              <VCol md="12" cols="12">
+                <v-select label="Apakah Anda Yakin file sudah benar ?" :items="[
+                  { value: 1, title: 'Ya' },
+                  { value: 0, title: 'Tidak' },
+                ]" v-model="attachFile.isApprove" prepend-icon="mdi-help-rhombus"></v-select>
+              </VCol>
               <VCol cols="12" class="d-flex flex-wrap gap-4">
-                <VBtn type="submit" :disabled="(attachFile.name && attachFile.path) == null">
+                <VBtn type="submit" :disabled="(attachFile.name && attachFile.path && attachFile.isApprove != 1) == null">
                   Simpan
                 </VBtn>
                 <button type="button" class="btn btn-blue" @click="closeModal(1)">
@@ -224,14 +223,22 @@
                 <span style="color: red">*</span>
                 <span class="subtitle-1 text-center"> Upload File: </span>
 
-                <v-file-input class="my-3" accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" placeholder="Pick an image"
-                  :rules="[rules.required]" @change="(event) => handleFileChange(event)"></v-file-input>
+                <v-file-input class="my-3"
+                  accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                  placeholder="Pick an image" :rules="[rules.required]"
+                  @change="(event) => handleFileChange(event)"></v-file-input>
               </VCol>
               <VCol md="12" cols="12" v-if="dataFile.phase == 2">
                 <v-select label="Apakah Termasuk File Rahasia ? (SLIK, dll)" :items="[
                   { value: 1, title: 'Ya' },
                   { value: 0, title: 'Tidak' },
                 ]" v-model="attachFile.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
+              </VCol>
+              <VCol md="12" cols="12">
+                <v-select label="Apakah Anda Yakin file sudah benar ?" :items="[
+                  { value: 1, title: 'Ya' },
+                  { value: 0, title: 'Tidak' },
+                ]" v-model="attachFile.isApprove" prepend-icon="mdi-help-rhombus"></v-select>
               </VCol>
               <VCol cols="12" class="d-flex flex-wrap gap-4">
                 <VBtn type="submit"> Update </VBtn>
@@ -352,7 +359,7 @@
           <EasyDataTable :headers="timerHeaders" :items="dataFile.phase_times">
             <template #item-timeDiff="item">{{
               calculateTimeDiff(item.startTime, item.endTime)
-              }}</template>
+            }}</template>
           </EasyDataTable>
         </template>
       </v-card>
@@ -462,7 +469,7 @@ export default {
       },
 
       dataFile: {
-        id: null,
+        id: this.$route.params.fileId,
         user_id: null,
         phase: 1,
         name: "",
@@ -531,10 +538,12 @@ export default {
       attachFile: {
         id: null,
         file_id: this.$route.params.fileId,
+        phase: null,
         name: null,
         path: null,
         note: null,
         isSecret: 0,
+        isApprove: 1,
       },
       notePhase1: [],
       notePhase2: [],
@@ -753,7 +762,6 @@ export default {
         if (response.status === 200) {
           this.dataFile = response.data.data.file;
           this.userAccess = response.data.data.userAccess;
-          // console.log(this.userAccess);          
 
           //attach
           this.dataAttachPhase1 = response.data.data.file.attachments.filter(
@@ -761,6 +769,12 @@ export default {
           )
           this.dataAttachPhase2 = response.data.data.file.attachments.filter(
             (item: { phase: number }) => item.phase == 2
+          )
+          this.dataAttachPhase3 = response.data.data.file.attachments.filter(
+            (item: { phase: number }) => item.phase == 3
+          )
+          this.dataAttachPhase5 = response.data.data.file.attachments.filter(
+            (item: { phase: number }) => item.phase == 5
           )
 
           this.dataFile.phase = parseInt(this.dataFile.phase);
@@ -771,11 +785,15 @@ export default {
             this.isShowPhase5 = true;
           }
 
-          if (parseInt(this.dataFile.plafon) > 25000000) {
+          if (parseInt(this.dataFile.plafon) >= 25000000) {
             if (parseInt(this.dataFile.phase) == 5) {
               this.stepperModel = parseInt(this.dataFile.phase) - 1;
             } else {
+              // console.log(this.stepperModel, parseInt(this.dataFile.phase));
+
               this.stepperModel = parseInt(this.dataFile.phase) - 1;
+              // console.log(this.stepperModel, parseInt(this.dataFile.phase));
+
             }
           } else {
             if (parseInt(this.dataFile.phase) == 5) {
@@ -818,6 +836,8 @@ export default {
         this.attachFile.id = item.id;
         this.attachFile.file_id = item.file_id;
         this.attachFile.name = item.name;
+        this.attachFile.isSecret = item.isSecret;
+        this.attachFile.isApprove = item.isApprove;
         this.updateAttch = true;
       } else if (type == 3) {
         this.updateDataNote.id = item.id;
@@ -1073,6 +1093,8 @@ export default {
         formData.append("file_id", this.attachFile.file_id);
         formData.append("name", this.attachFile.name);
         formData.append("path", this.attachFile.path);
+        formData.append("phase", this.dataFile.phase);
+        formData.append("isApprove", this.attachFile.isApprove);
         if (this.dataFile.phase == 2) {
           formData.append("isSecret", this.attachFile.isSecret);
         }
@@ -1123,12 +1145,15 @@ export default {
         const formData = new FormData();
         formData.append("file_id", this.attachFile.file_id);
         formData.append("name", this.attachFile.name);
+        formData.append("path", this.attachFile.path);
+        formData.append("phase", this.dataFile.phase);
+        formData.append("isApprove", this.attachFile.isApprove);
         if (this.attachFile.path != null) {
           formData.append("path", this.attachFile.path);
         }
-        if (this.dataFile.phase == 2) {
-          formData.append("isSecret", this.attachFile.isSecret);
-        }
+        // if (this.dataFile.phase == 2) {
+        formData.append("isSecret", this.attachFile.isSecret);
+        // }
         formData.append("_method", "PUT");
 
         const config = {
@@ -1183,16 +1208,22 @@ export default {
         if (response.status === 200) {
           this.overlay = false;
           this.getDetailFile(this.fileId);
-          this.$showToast("success", "Berhasill", response.data.message);
+          // this.$showToast("success", "Berhasill", response.data.message);
+          this.$showToast("success", "Berhasill", "Terjadi Kesalahan Silahkan Coba Lagi");
+          window.location.reload();
         } else {
           this.overlay = false;
           this.getDetailFile(this.fileId);
-          this.$showToast("error", "Sorry", response.data.message);
+          // this.$showToast("error", "Sorry", response.data.message);
+          this.$showToast("error", "Sorry", "Terjadi Kesalahan Silahkan Coba Lagi");
+          window.location.reload();
         }
       } catch (error) {
         this.overlay = false;
         this.getDetailFile(this.fileId);
-        this.$showToast("error", "Sorry", error.response.data.message);
+        // this.$showToast("error", "Sorry", error.response.data.message);
+        this.$showToast("error", "Sorry", "Terjadi Kesalahan Silahkan Coba Lagi");
+        window.location.reload();
       }
     },
     ///////////////////////////////////////////////////////////////////////////////////
@@ -1201,6 +1232,7 @@ export default {
     this.checkMobile();
     this.getUserData();
     this.getDetailFile(this.fileId);
+
   },
 };
 </script>

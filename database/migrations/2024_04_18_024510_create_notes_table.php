@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('file_id');
             $table->unsignedBigInteger('user_id');
-            $table->enum('phase', ['1', '2', '3', '4']);
+            $table->enum('phase', ['1', '2', '3', '4', '5', '6']);
             $table->string('note')->nullable();
             $table->boolean('isRead')->default(false);
             $table->timestamps();

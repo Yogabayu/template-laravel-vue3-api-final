@@ -289,6 +289,73 @@
         </EasyDataTable>
       </v-card>
 
+      <!--phase 5 -->
+      <v-card class="mx-2 my-2">
+        <VCardItem class="align-left">
+          <VCardTitle class="text-2xl font-weight-bold"> Phase Operation </VCardTitle>
+        </VCardItem>
+        <EasyDataTable show-index :headers="phase5Headers" :items="phase5Items">
+          <template #empty-message>
+            <p>Data Kosong</p>
+          </template>
+          <template #loading>
+            <p>loading data .....</p>
+          </template>
+          <template #item-minPlafon="item">
+            <p>{{ formatInput(item.minPlafon) }}</p>
+          </template>
+          <template #item-maxPlafon="item">
+            <p>{{ formatInput(item.maxPlafon) }}</p>
+          </template>
+          <template #item-canAppeal="item">
+            <p>{{ item.canAppeal == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-canApprove="item">
+            <p>{{ item.canApprove == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-notification="item">
+            <p>{{ item.notification == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-isSecret="item">
+            <p>{{ item.isSecret == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-canInsertData="item">
+            <p>{{ item.canInsertData == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-canUpdateData="item">
+            <p>{{ item.canUpdateData == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-canDeleteData="item">
+            <p>{{ item.canDeleteData == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
+          <template #item-operation="item">
+            <div class="operation-wrapper flex space-x-4">
+              <v-tooltip location="top" text="Edit">
+                <template v-slot:activator="{ props }">
+                  <button v-bind="props" @click="openModal(2, item)">
+                    <VIcon size="20" icon="bx-edit" color="info" />
+                  </button>
+                </template>
+              </v-tooltip>
+              <v-tooltip location="top" text="Copy">
+                <template v-slot:activator="{ props }">
+                  <button v-bind="props" @click="openModal(3, item)">
+                    <VIcon size="20" icon="bx-copy" color="warning" />
+                  </button>
+                </template>
+              </v-tooltip>
+              <v-tooltip location="top" text="Delete">
+                <template v-slot:activator="{ props }">
+                  <button v-bind="props" @click="deleteNotifConf(item)">
+                    <VIcon size="20" icon="bx-trash" color="danger" />
+                  </button>
+                </template>
+              </v-tooltip>
+            </div>
+          </template>
+        </EasyDataTable>
+      </v-card>
+
       <v-dialog v-model="insert" width="auto" persistent transition="dialog-top-transition">
         <v-card>
           <template v-slot:title> Tambah Data </template>
@@ -310,6 +377,7 @@
                     { value: 2, title: 'Phase 2' },
                     { value: 3, title: 'Phase 3' },
                     { value: 4, title: 'Phase 4' },
+                    { value: 5, title: 'Phase 5' },
                   ]" v-model="dataFormIn.phase" prepend-icon="mdi-help-rhombus"></v-select>
                 </VCol>
                 <VCol md="6" cols="12">
@@ -397,6 +465,7 @@
                     { value: 2, title: 'Phase 2' },
                     { value: 3, title: 'Phase 3' },
                     { value: 4, title: 'Phase 4' },
+                    { value: 5, title: 'Phase 5' },
                   ]" v-model="dataFormIn.phase" prepend-icon="mdi-help-rhombus"></v-select>
                 </VCol>
                 <VCol md="6" cols="12">
@@ -483,6 +552,7 @@
                     { value: 2, title: 'Phase 2' },
                     { value: 3, title: 'Phase 3' },
                     { value: 4, title: 'Phase 4' },
+                    { value: 5, title: 'Phase 5' },
                   ]" v-model="dataFormIn.phase" prepend-icon="mdi-help-rhombus"></v-select>
                 </VCol>
                 <VCol md="6" cols="12">
@@ -655,6 +725,38 @@ export default {
       //phase4
       phase4Items: [],
       phase4Headers: [
+        { text: "Jabatan", value: "position.name", sortable: true },
+        // { text: "Phase", value: "phase", sortable: true },
+        { text: "Min. Plafon", value: "minPlafon", sortable: true },
+        { text: "Max. Plafon", value: "maxPlafon", sortable: true },
+        { text: "Input Banding?", value: "canAppeal", sortable: true },
+        { text: "Approve?", value: "canApprove", sortable: true },
+        { text: "Notifikasi", value: "notification", sortable: true },
+        { text: "Akses Data Sensitif? (SLIK, dll)", value: "isSecret", sortable: true },
+        { text: "Tambah Data?", value: "canInsertData", sortable: true },
+        { text: "Edit Data?", value: "canUpdateData", sortable: true },
+        { text: "Hapus Data?", value: "canDeleteData", sortable: true },
+        { text: "Operation", value: "operation", width: 100 },
+      ],
+      //phase4
+      phase4Items: [],
+      phase4Headers: [
+        { text: "Jabatan", value: "position.name", sortable: true },
+        // { text: "Phase", value: "phase", sortable: true },
+        { text: "Min. Plafon", value: "minPlafon", sortable: true },
+        { text: "Max. Plafon", value: "maxPlafon", sortable: true },
+        { text: "Input Banding?", value: "canAppeal", sortable: true },
+        { text: "Approve?", value: "canApprove", sortable: true },
+        { text: "Notifikasi", value: "notification", sortable: true },
+        { text: "Akses Data Sensitif? (SLIK, dll)", value: "isSecret", sortable: true },
+        { text: "Tambah Data?", value: "canInsertData", sortable: true },
+        { text: "Edit Data?", value: "canUpdateData", sortable: true },
+        { text: "Hapus Data?", value: "canDeleteData", sortable: true },
+        { text: "Operation", value: "operation", width: 100 },
+      ],
+      //phase5
+      phase5Items: [],
+      phase5Headers: [
         { text: "Jabatan", value: "position.name", sortable: true },
         // { text: "Phase", value: "phase", sortable: true },
         { text: "Min. Plafon", value: "minPlafon", sortable: true },
@@ -949,6 +1051,8 @@ export default {
             this.phase3Items = response.data.data;
           } else if (phase == 4) {
             this.phase4Items = response.data.data;
+          } else if (phase == 5) {
+            this.phase5Items = response.data.data;
           }
         } else {
           this.$showToast("error", "Sorry", "error get data positions");
@@ -998,6 +1102,7 @@ export default {
       this.getNotifConf(this.officeId, 2);
       this.getNotifConf(this.officeId, 3);
       this.getNotifConf(this.officeId, 4);
+      this.getNotifConf(this.officeId, 5);
     },
   },
   mounted() {

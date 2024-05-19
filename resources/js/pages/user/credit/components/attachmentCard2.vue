@@ -11,7 +11,7 @@
             <v-list density="compact">
                 <v-list-item v-if="shouldDisplay(attachment)">
                     <template v-slot:prepend>
-                        {{ attachment.isApprove ? '✅' : '❌' }}
+                        {{ attachment.isApprove ? "✅" : "❌" }}
                         <v-icon icon="mdi-file"></v-icon>
                     </template>
                     <v-list-item-title> {{ attachment.name }} </v-list-item-title>
@@ -28,8 +28,11 @@
                                         </a>
                                     </template>
                                 </v-tooltip>
-                                <v-tooltip location="top" text="Upload File"
-                                    v-if="attachment.path === 'null' && userAccess && parseInt(userAccess.canInsertData) == 1">
+                                <v-tooltip location="top" text="Upload File" v-if="
+                                    attachment.path === 'null' &&
+                                    userAccess &&
+                                    parseInt(userAccess.canInsertData) == 1
+                                ">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="openModal(1, attachment)">
                                             <VIcon size="20" icon="bx-upload" color="blue" />
@@ -39,40 +42,136 @@
                                 <v-tooltip location="top" text="Edit File"
                                     v-if="userAccess && parseInt(userAccess.canUpdateData)">
                                     <template v-slot:activator="{ props }">
-                                        <button v-bind="props" @click="openModal(2, attachment)">
+                                        <button v-bind="props" @click="openModal(1, attachment)">
                                             <VIcon size="20" icon="bx-edit" color="blue" />
                                         </button>
                                     </template>
                                 </v-tooltip>
-                                <v-tooltip location="top" text="Hapus File"
+                                <!-- <v-tooltip location="top" text="Hapus File"
                                     v-if="userAccess && parseInt(userAccess.canDeleteData)">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="deleteAttachment(attachment.id)">
                                             <VIcon size="20" icon="bx-trash" color="red" />
                                         </button>
                                     </template>
-                                </v-tooltip>
+                                </v-tooltip> -->
                             </div>
                         </div>
                     </template>
                 </v-list-item>
             </v-list>
-            <div v-if="showAnalisaAwalCredit()">
-                <v-list density="compact">
-                    <v-list-item>
-                        <v-list-item-title>Analisa Awal Credit</v-list-item-title>
-                        <!-- Tambahkan elemen untuk Analisa Awal Credit di sini -->
-                    </v-list-item>
-                </v-list>
-            </div>
-            <div v-if="showFileBanding()">
-                <v-list density="compact">
-                    <v-list-item>
-                        <v-list-item-title>Upload File Banding</v-list-item-title>
-                        <!-- Tambahkan elemen untuk Upload File Banding di sini -->
-                    </v-list-item>
-                </v-list>
-            </div>
+        </div>
+        <div v-if="showAnalisaAwalCredit()">
+            <v-list density="compact">
+                <v-list-item>
+                    <template v-slot:prepend>
+                        {{ formAnalytic.isApprove ? "✅" : "❌" }}
+                        <v-icon icon="mdi-file"></v-icon>
+                    </template>
+                    <v-list-item-title> {{ formAnalytic.name }} </v-list-item-title>
+                    <template v-slot:append>
+                        <!-- {{ formAnalytic }} -->
+                        <div class="operation-wrapper">
+                            <div class="d-flex justify-space-between">
+                                <v-tooltip location="top" text="Lihat File"
+                                    v-if="formAnalytic.path != null || formAnalytic.path != 'null'">
+                                    <template v-slot:activator="{ props }">
+                                        <a v-bind="props" :href="`${filePath}/${fileId}/${formAnalytic.path}`"
+                                            target="_blank" rel="noopener noreferrer">
+                                            <button>
+                                                <VIcon size="20" icon="bx-link-external" color="blue" />
+                                            </button>
+                                        </a>
+                                    </template>
+                                </v-tooltip>
+                                <v-tooltip location="top" text="Upload File" v-if="
+                                    (formAnalytic.path == null || formAnalytic.path == 'null') &&
+                                    userAccess &&
+                                    parseInt(userAccess.canAppeal) == 1
+                                ">
+                                    <template v-slot:activator="{ props }">
+                                        <button v-bind="props" @click="openModal(2, formAnalytic)">
+                                            <VIcon size="20" icon="bx-upload" color="blue" />
+                                        </button>
+                                    </template>
+                                </v-tooltip>
+                                <v-tooltip location="top" text="Edit File"
+                                    v-if="userAccess && parseInt(userAccess.canAppeal) == 1">
+                                    <template v-slot:activator="{ props }">
+                                        <button v-bind="props" @click="openModal(2, formAnalytic)">
+                                            <VIcon size="20" icon="bx-edit" color="blue" />
+                                        </button>
+                                    </template>
+                                </v-tooltip>
+                                <!-- <v-tooltip location="top" text="Hapus File"
+                                    v-if="userAccess && parseInt(userAccess.canInsertData) == 1">
+                                    <template v-slot:activator="{ props }">
+                                        <button v-bind="props" @click="deleteAttachment(formAnalytic.id)">
+                                            <VIcon size="20" icon="bx-trash" color="red" />
+                                        </button>
+                                    </template>
+                                </v-tooltip> -->
+                            </div>
+                        </div>
+                    </template>
+                </v-list-item>
+            </v-list>
+        </div>
+        <div v-if="showFileBanding()">
+            <v-list density="compact">
+                <v-list-item>
+                    <template v-slot:prepend>
+                        {{ formAppeal.isApprove ? "✅" : "❌" }}
+                        <v-icon icon="mdi-file"></v-icon>
+                    </template>
+                    <v-list-item-title> {{ formAppeal.name }} </v-list-item-title>
+                    <template v-slot:append>
+                        <!-- {{ formAnalytic }} -->
+                        <div class="operation-wrapper">
+                            <div class="d-flex justify-space-between">
+                                <v-tooltip location="top" text="Lihat File"
+                                    v-if="formAppeal.path != null || formAppeal.path != 'null'">
+                                    <template v-slot:activator="{ props }">
+                                        <a v-bind="props" :href="`${filePath}/${fileId}/${formAppeal.path}`"
+                                            target="_blank" rel="noopener noreferrer">
+                                            <button>
+                                                <VIcon size="20" icon="bx-link-external" color="blue" />
+                                            </button>
+                                        </a>
+                                    </template>
+                                </v-tooltip>
+                                <v-tooltip location="top" text="Upload File" v-if="
+                                    (formAppeal.path == null || formAppeal.path == 'null') &&
+                                    userAccess &&
+                                    parseInt(userAccess.canAppeal) == 1
+                                ">
+                                    <template v-slot:activator="{ props }">
+                                        <button v-bind="props" @click="openModal(3, formAppeal)">
+                                            <VIcon size="20" icon="bx-upload" color="blue" />
+                                        </button>
+                                    </template>
+                                </v-tooltip>
+                                <v-tooltip location="top" text="Edit File"
+                                    v-if="userAccess && parseInt(userAccess.canAppeal) == 1">
+                                    <template v-slot:activator="{ props }">
+                                        <button v-bind="props" @click="openModal(3, formAppeal)">
+                                            <VIcon size="20" icon="bx-edit" color="blue" />
+                                        </button>
+                                    </template>
+                                </v-tooltip>
+                                <!-- <v-tooltip location="top" text="Hapus File"
+                                    v-if="userAccess && parseInt(userAccess.canInsertData) == 1">
+                                    <template v-slot:activator="{ props }">
+                                        <button v-bind="props" @click="deleteAttachment(formAppeal.id)">
+                                            <VIcon size="20" icon="bx-trash" color="red" />
+                                        </button>
+                                    </template>
+                                </v-tooltip> -->
+                            </div>
+                        </div>
+                    </template>
+                </v-list-item>
+            </v-list>
         </div>
     </v-card>
 
@@ -81,13 +180,13 @@
             <template v-slot:title> Data Attachment </template>
 
             <template v-slot:text>
-                <v-form @submit.prevent="insertDetailSlik">
+                <v-form @submit.prevent="insertSlik">
                     <v-row>
                         <VCol md="12" cols="12">
                             <span style="color: red">*</span><span class="subtitle-1 text-center">Keterangan File:
                             </span>
 
-                            <VTextField class="my-3" v-model="formDetailSlik.name" autofocus
+                            <VTextField class="my-3" v-model="formDetailSlik.name" autofocus disabled
                                 :rules="[rules.required]" />
                         </VCol>
                         <VCol md="12" cols="12">
@@ -95,7 +194,7 @@
                             <span class="subtitle-1 text-center"> Upload File: </span>
 
                             <v-file-input class="my-3"
-                                accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+                                accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                                 placeholder="Pick an image" :rules="[rules.required]"
                                 @change="(event) => handleFileChange(event)"></v-file-input>
                         </VCol>
@@ -105,8 +204,15 @@
                                 { value: 0, title: 'Tidak' },
                             ]" v-model="formDetailSlik.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
                         </VCol>
+                        <VCol md="12" cols="12">
+                            <v-select label="Apakah Anda Yakin file sudah benar ?" :items="[
+                                { value: 1, title: 'Ya' },
+                                { value: 0, title: 'Tidak' },
+                            ]" v-model="formDetailSlik.isApprove" prepend-icon="mdi-help-rhombus"></v-select>
+                        </VCol>
                         <VCol cols="12" class="d-flex flex-wrap gap-4">
-                            <VBtn type="submit" :disabled="(formDetailSlik.name && formDetailSlik.path) == null">
+                            <!-- <VBtn type="submit" :disabled="(formDetailSlik.name && formDetailSlik.path&& formDetailSlik.isApprove!=1) == null"> -->
+                            <VBtn type="submit">
                                 Simpan
                             </VBtn>
                             <button type="button" class="btn btn-blue" @click="closeModal(1)">
@@ -122,10 +228,172 @@
             </template>
         </v-card>
     </v-dialog>
+
+    <v-dialog v-model="isFormResumeSlik" width="auto" persistent transition="dialog-top-transition">
+        <v-card>
+            <template v-slot:title> Data Attachment </template>
+
+            <template v-slot:text>
+                <v-form @submit.prevent="insertSlik">
+                    <v-row>
+                        <VCol md="12" cols="12">
+                            <span style="color: red">*</span><span class="subtitle-1 text-center">Keterangan File:
+                            </span>
+
+                            <VTextField class="my-3" v-model="formDetailSlik.name" autofocus disabled
+                                :rules="[rules.required]" />
+                        </VCol>
+                        <VCol md="12" cols="12">
+                            <span style="color: red">*</span>
+                            <span class="subtitle-1 text-center"> Upload File: </span>
+
+                            <v-file-input class="my-3"
+                                accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                placeholder="Pick an image" :rules="[rules.required]"
+                                @change="(event) => handleFileChange(event)"></v-file-input>
+                        </VCol>
+                        <VCol md="12" cols="12">
+                            <v-select label="Apakah Termasuk File Rahasia ? (Detail SLIK, dll)" :items="[
+                                { value: 1, title: 'Ya' },
+                                { value: 0, title: 'Tidak' },
+                            ]" v-model="formDetailSlik.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
+                        </VCol>
+                        <VCol md="12" cols="12">
+                            <v-select label="Apakah Anda Yakin file sudah benar ?" :items="[
+                                { value: 1, title: 'Ya' },
+                                { value: 0, title: 'Tidak' },
+                            ]" v-model="formDetailSlik.isApprove" prepend-icon="mdi-help-rhombus"></v-select>
+                        </VCol>
+                        <VCol cols="12" class="d-flex flex-wrap gap-4">
+                            <!-- <VBtn type="submit" :disabled="(formDetailSlik.name && formDetailSlik.path && formDetailSlik.isApprove!=1) == null"> -->
+                            <VBtn type="submit">
+                                Simpan
+                            </VBtn>
+                            <button type="button" class="btn btn-blue" @click="closeModal(2)">
+                                Batal
+                            </button>
+                        </VCol>
+                    </v-row>
+                </v-form>
+            </template>
+
+            <template v-slot:actions>
+                <v-progress-linear v-model="uploadProgress" color="amber" height="25"></v-progress-linear>
+            </template>
+        </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="isAnalytic" width="auto" persistent transition="dialog-top-transition">
+        <v-card>
+            <template v-slot:title> Data Analisis AO </template>
+
+            <template v-slot:text>
+                <v-form @submit.prevent="insertAnalytic">
+                    <v-row>
+                        <VCol md="12" cols="12">
+                            <span style="color: red">*</span><span class="subtitle-1 text-center">Keterangan File:
+                            </span>
+
+                            <VTextField class="my-3" v-model="formAnalytic.name" autofocus disabled
+                                :rules="[rules.required]" />
+                        </VCol>
+                        <VCol md="12" cols="12">
+                            <span style="color: red">*</span>
+                            <span class="subtitle-1 text-center"> Upload File: </span>
+
+                            <v-file-input class="my-3"
+                                accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                placeholder="Pick an image" :rules="[rules.required]"
+                                @change="(event) => handleAnalyticChange(event)"></v-file-input>
+                        </VCol>
+                        <!-- <VCol md="12" cols="12">
+                            <v-select label="Apakah Termasuk File Rahasia ? (Detail SLIK, dll)" :items="[
+                                { value: 1, title: 'Ya' },
+                                { value: 0, title: 'Tidak' },
+                            ]" v-model="formAnalytic.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
+                        </VCol> -->
+                        <VCol md="12" cols="12">
+                            <v-select label="Apakah Anda Yakin file sudah benar ?" :items="[
+                                { value: 1, title: 'Ya' },
+                                { value: 0, title: 'Tidak' },
+                            ]" v-model="formAnalytic.isApprove" prepend-icon="mdi-help-rhombus"></v-select>
+                        </VCol>
+                        <VCol cols="12" class="d-flex flex-wrap gap-4">
+                            <!-- <VBtn type="submit" :disabled="(formDetailSlik.name && formDetailSlik.path && formDetailSlik.isApprove!=1) == null"> -->
+                            <VBtn type="submit">
+                                Simpan
+                            </VBtn>
+                            <button type="button" class="btn btn-blue" @click="closeModal(3)">
+                                Batal
+                            </button>
+                        </VCol>
+                    </v-row>
+                </v-form>
+            </template>
+
+            <template v-slot:actions>
+                <v-progress-linear v-model="uploadProgress" color="amber" height="25"></v-progress-linear>
+            </template>
+        </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="isAppeal" width="auto" persistent transition="dialog-top-transition">
+        <v-card>
+            <template v-slot:title> Data Banding AO </template>
+
+            <template v-slot:text>
+                <v-form @submit.prevent="insertAppeal">
+                    <v-row>
+                        <VCol md="12" cols="12">
+                            <span style="color: red">*</span><span class="subtitle-1 text-center">Keterangan File:
+                            </span>
+
+                            <VTextField class="my-3" v-model="formAppeal.name" autofocus disabled
+                                :rules="[rules.required]" />
+                        </VCol>
+                        <VCol md="12" cols="12">
+                            <span style="color: red">*</span>
+                            <span class="subtitle-1 text-center"> Upload File: </span>
+
+                            <v-file-input class="my-3"
+                                accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                placeholder="Pick an image" :rules="[rules.required]"
+                                @change="(event) => handleAppealChange(event)"></v-file-input>
+                        </VCol>
+                        <!-- <VCol md="12" cols="12">
+                            <v-select label="Apakah Termasuk File Rahasia ? (Detail SLIK, dll)" :items="[
+                                { value: 1, title: 'Ya' },
+                                { value: 0, title: 'Tidak' },
+                            ]" v-model="formAnalytic.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
+                        </VCol> -->
+                        <VCol md="12" cols="12">
+                            <v-select label="Apakah Anda Yakin file sudah benar ?" :items="[
+                                { value: 1, title: 'Ya' },
+                                { value: 0, title: 'Tidak' },
+                            ]" v-model="formAppeal.isApprove" prepend-icon="mdi-help-rhombus"></v-select>
+                        </VCol>
+                        <VCol cols="12" class="d-flex flex-wrap gap-4">
+                            <!-- <VBtn type="submit" :disabled="(formDetailSlik.name && formDetailSlik.path && formDetailSlik.isApprove!=1) == null"> -->
+                            <VBtn type="submit">
+                                Simpan
+                            </VBtn>
+                            <button type="button" class="btn btn-blue" @click="closeModal(4)">
+                                Batal
+                            </button>
+                        </VCol>
+                    </v-row>
+                </v-form>
+            </template>
+
+            <template v-slot:actions>
+                <v-progress-linear v-model="uploadProgress" color="amber" height="25"></v-progress-linear>
+            </template>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script>
-import mainURL from '@/axios';
+import mainURL from "@/axios";
 
 export default {
     props: {
@@ -138,13 +406,22 @@ export default {
             required: true,
         },
         fileId: {
-            type: String,
+            type: Number,
             required: true,
         },
         userAccess: {
             type: Object,
             required: true,
         },
+        deleteAttachment: {
+            type: Function,
+            required: true,
+        },
+        // openModal: {
+        //     type: Function,
+        //     required: true,
+        // },
+
         getDetailFile: {
             type: Function,
             required: true,
@@ -152,6 +429,7 @@ export default {
     },
     data() {
         return {
+            uploadProgress: null,
             rules: {
                 required: (value) => !!value || "Required",
             },
@@ -161,30 +439,105 @@ export default {
                 id: null,
                 name: null,
                 path: null,
+                file_id: this.fileId,
                 isApprove: 0,
                 isSecret: 0,
             },
-        }
+
+            isFormResumeSlik: false,
+            formResumeSlik: {
+                id: null,
+                name: null,
+                path: null,
+                file_id: this.fileId,
+                isApprove: 0,
+                isSecret: 0,
+            },
+
+            isAppeal: false,
+            formAppeal: {
+                id: null,
+                file_id: this.fileId,
+                phase: 2,
+                name: "File Banding",
+                path: null,
+                isApprove: 0,
+                isSecret: 0,
+            },
+
+            isAnalytic: false,
+            formAnalytic: {
+                id: null,
+                file_id: this.fileId,
+                phase: 2,
+                name: "Analisa Awal Kredit AO",
+                path: null,
+                isApprove: 0,
+                isSecret: 0,
+            },
+        };
     },
     methods: {
         shouldDisplay(attachment) {
-            if (attachment.name === 'Detail SLIK' && parseInt(this.userAccess.isSecret) == 1) {
+            if (
+                attachment.name === "Detail SLIK" &&
+                parseInt(this.userAccess.isSecret) == 1
+            ) {
                 return true;
             }
-            if (attachment.name === 'Resume SLIK' && !attachment.isSecret) {
+            if (attachment.name === "Resume SLIK") {
                 return true;
             }
             return false;
         },
         showAnalisaAwalCredit() {
-            const detailSLIK = this.data.find(att => att.name === 'Detail SLIK' && att.isApprove === 1);
-            const resumeSLIK = this.data.find(att => att.name === 'Resume SLIK' && att.isApprove === 1);
-            return detailSLIK && resumeSLIK && this.userAccess.canAppeal == 1;
+            const detailSLIK = this.data.find(
+                (att) => att.name === "Detail SLIK" && att.isApprove == 1
+            );
+            const resumeSLIK = this.data.find(
+                (att) => att.name === "Resume SLIK" && att.isApprove == 1
+            );
+
+            if (detailSLIK && resumeSLIK) {
+                let analytic = this.data.find((att) => att.name == "Analisa Awal Kredit AO");
+                if (analytic) {
+                    this.formAnalytic.id = analytic.id;
+                    this.formAnalytic.isApprove = analytic.isApprove;
+                    this.formAnalytic.isSecret = analytic.isSecret;
+                    this.formAnalytic.path = analytic.path;
+                }
+            }
+            // return detailSLIK && resumeSLIK && this.userAccess.canAppeal == 1;
+            return detailSLIK && resumeSLIK;
+            // return true;
         },
         showFileBanding() {
-            const detailSLIKNotApproved = this.data.find(att => att.name === 'Detail SLIK' && att.isApprove !== 1);
-            const resumeSLIKNotApproved = this.data.find(att => att.name === 'Resume SLIK' && att.isApprove !== 1);
-            return (detailSLIKNotApproved || resumeSLIKNotApproved) && this.userAccess.canAppeal == 1;
+            const detailSLIKNotApproved = this.data.find(
+                (att) => att.name == "Detail SLIK" && att.isApprove != 1
+            );
+            const resumeSLIKNotApproved = this.data.find(
+                (att) => att.name == "Resume SLIK" && att.isApprove != 1
+            );
+
+            const fileBandingNotNull = this.data.find(
+                (att) => att.name === "File Banding" && att.path != 'null'
+            );
+            const analystAoNotNull = this.data.find(
+                (att) => att.name === "Analisa Awal Kredit AO" && att.path != 'null'
+            );
+
+            if ((detailSLIKNotApproved && resumeSLIKNotApproved) || (fileBandingNotNull && analystAoNotNull)) {
+                let appeal = this.data.find((att) => att.name === "File Banding");
+                if (appeal) {
+                    this.formAppeal.id = appeal.id;
+                    this.formAppeal.isApprove = appeal.isApprove;
+                    this.formAppeal.isSecret = appeal.isSecret;
+                    this.formAppeal.path = appeal.path;
+                }
+                return true;
+            }
+
+            return false;
         },
 
         handleFileChange(event) {
@@ -196,7 +549,7 @@ export default {
                 "application/msword", // for .doc
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // for .docx
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // for .xlsx
-                "application/vnd.ms-excel"
+                "application/vnd.ms-excel",
             ];
             if (selectedFile && allowedTypes.includes(selectedFile.type)) {
                 this.formDetailSlik.path = selectedFile;
@@ -209,18 +562,71 @@ export default {
                 event.target.value = null;
             }
         },
+        handleAnalyticChange(event) {
+            const selectedFile = event.target.files[0];
+            const allowedTypes = [
+                "image/jpeg", // for .jpeg and .jpg
+                "image/png",
+                "application/pdf",
+                "application/msword", // for .doc
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // for .docx
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // for .xlsx
+                "application/vnd.ms-excel",
+            ];
+            if (selectedFile && allowedTypes.includes(selectedFile.type)) {
+                this.formAnalytic.path = selectedFile;
+            } else {
+                this.$showToast(
+                    "error",
+                    "Error",
+                    "Hanya file JPG, JPEG, PNG, PDF, DOC, dan DOCX yang diizinkan."
+                );
+                event.target.value = null;
+            }
+        },
+        handleAppealChange(event) {
+            const selectedFile = event.target.files[0];
+            const allowedTypes = [
+                "image/jpeg", // for .jpeg and .jpg
+                "image/png",
+                "application/pdf",
+                "application/msword", // for .doc
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // for .docx
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // for .xlsx
+                "application/vnd.ms-excel",
+            ];
+            if (selectedFile && allowedTypes.includes(selectedFile.type)) {
+                this.formAppeal.path = selectedFile;
+            } else {
+                this.$showToast(
+                    "error",
+                    "Error",
+                    "Hanya file JPG, JPEG, PNG, PDF, DOC, dan DOCX yang diizinkan."
+                );
+                event.target.value = null;
+            }
+        },
         openModal(type, item = null) {
             if (type == 1) {
-                if (item.name == 'Detail SLIK') {
+                if (item.name == "Detail SLIK") {
                     this.formDetailSlik.id = item.id;
                     this.formDetailSlik.name = item.name;
                     this.formDetailSlik.isSecret = item.isSecret;
                     this.formDetailSlik.isApprove = item.isApprove;
 
                     this.isFormDetailSlik = true;
-                } else if (item.name == 'Resume SLIK') {
-                    console.log('masuk resume SLIK');
+                } else if (item.name == "Resume SLIK") {
+                    this.formDetailSlik.id = item.id;
+                    this.formDetailSlik.name = item.name;
+                    this.formDetailSlik.isSecret = item.isSecret;
+                    this.formDetailSlik.isApprove = item.isApprove;
+
+                    this.isFormResumeSlik = true;
                 }
+            } else if (type == 2) {
+                this.isAnalytic = true;
+            } else if (type == 3) {
+                this.isAppeal = true;
             }
         },
         closeModal(type) {
@@ -230,9 +636,27 @@ export default {
                 this.formDetailSlik.isSecret = null;
                 this.formDetailSlik.isApprove = null;
                 this.isFormDetailSlik = false;
+            } else if (type == 2) {
+                this.formDetailSlik.id = null;
+                this.formDetailSlik.name = null;
+                this.formDetailSlik.isSecret = null;
+                this.formDetailSlik.isApprove = null;
+                this.isFormResumeSlik = false;
+            } else if (type == 3) {
+                this.formAnalytic.id = null;
+                this.formAnalytic.isSecret = null;
+                this.formAnalytic.isApprove = null;
+                this.formAnalytic.path = null;
+                this.isAnalytic = false;
+            } else if (type == 4) {
+                this.formAppeal.id = null;
+                this.formAppeal.isSecret = null;
+                this.formAppeal.isApprove = null;
+                this.formAppeal.path = null;
+                this.isAppeal = false;
             }
         },
-        async insertDetailSlik() {
+        async insertSlik() {
             try {
                 // this.overlay = true;
                 const formData = new FormData();
@@ -240,6 +664,7 @@ export default {
                 formData.append("path", this.formDetailSlik.path);
                 formData.append("isSecret", this.formDetailSlik.isSecret);
                 formData.append("isApprove", this.formDetailSlik.isApprove);
+                formData.append("file_id", this.formDetailSlik.file_id);
                 formData.append("_method", "PUT");
                 const config = {
                     onUploadProgress: (progressEvent) => {
@@ -264,12 +689,14 @@ export default {
                 if (response.status === 200) {
                     this.overlay = false;
                     this.closeModal(1);
+                    this.closeModal(2);
                     this.getDetailFile(this.fileId);
                     this.uploadProgress = null;
                     this.$showToast("success", "Success", response.data.message);
                 } else {
                     this.overlay = false;
                     this.closeModal(1);
+                    this.closeModal(2);
                     this.uploadProgress = null;
                     this.getDetailFile(this.fileId);
                     this.$showToast("error", "Sorry", response.data.message);
@@ -280,6 +707,105 @@ export default {
                 this.$showToast("error", "Sorry", error.response.data.message);
             }
         },
-    }
-}
+        async insertAnalytic() {
+            try {
+                // this.overlay = true;
+                const formData = new FormData();
+                formData.append("name", this.formAnalytic.name);
+                formData.append("path", this.formAnalytic.path);
+                formData.append("phase", this.formAnalytic.phase);
+                formData.append("isSecret", this.formAnalytic.isSecret);
+                formData.append("file_id", this.formAnalytic.file_id);
+                formData.append("isApprove", this.formAnalytic.isApprove);
+                formData.append("_method", "PUT");
+                const config = {
+                    onUploadProgress: (progressEvent) => {
+                        try {
+                            this.uploadProgress = Math.round(
+                                (progressEvent.loaded * 100) / progressEvent.total
+                            );
+                        } catch (error) {
+                            console.error("Error calculating progress:", error);
+                        }
+                    },
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                };
+
+                const response = await mainURL.post(
+                    `/user/edit-attach/${this.formAnalytic.id}`,
+                    formData,
+                    config
+                );
+                if (response.status === 200) {
+                    this.overlay = false;
+                    this.closeModal(3);
+                    this.getDetailFile(this.fileId);
+                    this.uploadProgress = null;
+                    this.$showToast("success", "Success", response.data.message);
+                } else {
+                    this.overlay = false;
+                    this.closeModal(3);
+                    this.uploadProgress = null;
+                    this.getDetailFile(this.fileId);
+                    this.$showToast("error", "Sorry", response.data.message);
+                }
+            } catch (error) {
+                this.closeModal(3);
+                this.getDetailFile(this.fileId);
+                this.$showToast("error", "Sorry", error.response.data.message);
+            }
+        },
+        async insertAppeal() {
+            try {
+                // this.overlay = true;
+                const formData = new FormData();
+                formData.append("name", this.formAppeal.name);
+                formData.append("path", this.formAppeal.path);
+                formData.append("phase", this.formAppeal.phase);
+                formData.append("isSecret", this.formAppeal.isSecret);
+                formData.append("file_id", this.formAppeal.file_id);
+                formData.append("isApprove", this.formAppeal.isApprove);
+                formData.append("_method", "PUT");
+                const config = {
+                    onUploadProgress: (progressEvent) => {
+                        try {
+                            this.uploadProgress = Math.round(
+                                (progressEvent.loaded * 100) / progressEvent.total
+                            );
+                        } catch (error) {
+                            console.error("Error calculating progress:", error);
+                        }
+                    },
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                };
+                const response = await mainURL.post(
+                    `/user/edit-attach/${this.formAppeal.id}`,
+                    formData,
+                    config
+                );
+                if (response.status === 200) {
+                    this.overlay = false;
+                    this.closeModal(4);
+                    this.getDetailFile(this.fileId);
+                    this.uploadProgress = null;
+                    this.$showToast("success", "Success", response.data.message);
+                } else {
+                    this.overlay = false;
+                    this.closeModal(4);
+                    this.uploadProgress = null;
+                    this.getDetailFile(this.fileId);
+                    this.$showToast("error", "Sorry", response.data.message);
+                }
+            } catch (error) {
+                this.closeModal(4);
+                this.getDetailFile(this.fileId);
+                this.$showToast("error", "Sorry", error.response.data.message);
+            }
+        },
+    },
+};
 </script>
