@@ -1440,9 +1440,7 @@ class FileController extends Controller
                     $dataPhase->delete();
                 }
 
-                dd($file->plafon);
-
-                if ($file->plafon == 5) {
+                if ($file->phase == 5) {
                     if ($file->plafon >= 250000000) {
                         $filephase = $file->phase - 1;
                         $file->phase = $file->phase - 1;
