@@ -805,7 +805,8 @@ export default {
         if (response.status === 200) {
           this.dataFile = response.data.data.file;          
           this.userAccess = response.data.data.userAccess;
-
+          console.log(this.userAccess);
+          
           //attach
           this.dataAttachPhase1 = response.data.data.file.attachments.filter(
             (item: { phase: number }) => item.phase == 1

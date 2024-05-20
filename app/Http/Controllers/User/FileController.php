@@ -1833,12 +1833,7 @@ class FileController extends Controller
             }
 
             $userPosNow = User::where('id', Auth::user()->id)->first();
-            $userAccess = [
-                'canAppeal' => 1,
-                'canApprove' => 1,
-                'canInsertData' => 1,
-                'isSecret' => 1,
-            ];
+            $userAccess = [];
 
             foreach ($notifPositions as $notifPosition) {
                 if ($notifPosition->position_id == $userPosNow->position_id) {
