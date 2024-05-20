@@ -270,7 +270,7 @@
     </v-card-text> -->
 
     <!-- Approval -->
-    <v-card-text v-if="dataFile && parseInt(dataFile.phase) < 5">
+    <v-card-text v-if="dataFile && parseInt(dataFile.phase) < 6">
       <v-card>
         <v-card-title> Status Approval Phase ✅ </v-card-title>
         <v-card-text>
@@ -296,6 +296,7 @@
               <v-chip color="success" @click="openModal(6)"> Data Durasi Waktu </v-chip>
               <v-chip color="success" @click="openModal(7)"> Data Riwayat File</v-chip>
               <v-chip color="success" @click="openModal(8)"> Data Riwayat Persetujuan</v-chip>
+              <v-chip color="success" @click="openModal(10)"> Data Riwayat Dokumen Pendukung</v-chip>
             </v-chip-group>
           </div>
         </v-card-text>
@@ -399,7 +400,7 @@
 import { default as AttachmentCard1 } from "./attachmentCard1.vue";
 import { default as AttachmentCard2 } from "./attachmentCard2.vue";
 import attachmentCard3, { default as AttachmentCard3 } from './attachmentCard3.vue';
-import attachmentOperation from './attachmentOperation.vue'
+import attachmentOperation from './attachmentOperation.vue';
 export default {
   components: { AttachmentCard1, AttachmentCard2, AttachmentCard3, attachmentCard3, attachmentOperation },
   name: "Phase",

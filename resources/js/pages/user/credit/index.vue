@@ -29,7 +29,7 @@
           <v-window-item :value="phase.value">
             <v-row class="d-flex justify-end pa-3">
               <v-btn color="primary" size="small" class="my-3 mx-3"
-                v-if="userAccess && parseInt(userAccess.canInsertData)" @click="openModal(1)">
+                v-if="userAccess && parseInt(userAccess.canInsertData) " @click="openModal(1)">
                 Tambah Data
               </v-btn>
               <v-spacer></v-spacer>
@@ -143,7 +143,7 @@
                 <v-file-input class="my-3"
                   accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                   placeholder="Pick an image" :rules="[rules.required]"
-                  @change="(event) => handleFileChange(event, 'file5')"></v-file-input>
+                  @change="handleFileChange($event, 'file5'); resetFile('file7'); resetFile('file8')"></v-file-input>
               </VCol>
 
               <VCol md="12" cols="12" v-if="selectedOption === 'jaminanSHM'">
@@ -152,7 +152,7 @@
                 <v-file-input class="my-3"
                   accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                   placeholder="Pick an image" :rules="[rules.required]"
-                  @change="(event) => handleFileChange(event, 'file7')"></v-file-input>
+                  @change="handleFileChange($event, 'file7'); resetFile('file5'); resetFile('file8')"></v-file-input>
               </VCol>
 
               <VCol md="12" cols="12" v-if="selectedOption === 'jaminanBPKB'">
@@ -161,7 +161,7 @@
                 <v-file-input class="my-3"
                   accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                   placeholder="Pick an image" :rules="[rules.required]"
-                  @change="(event) => handleFileChange(event, 'file8')"></v-file-input>
+                  @change="handleFileChange($event, 'file8'); resetFile('file5'); resetFile('file7')"></v-file-input>
               </VCol>
 
               <v-divider :thickness="5"></v-divider>

@@ -15,7 +15,6 @@
                         <v-icon icon="mdi-file"></v-icon>
                     </template>
                     <v-list-item-title> {{ attachment.name }} </v-list-item-title>
-                    <v-list-item-subtitle v-if="attachment.note != null"> {{ attachment.note }} </v-list-item-subtitle>
                     <template v-slot:append>
                         <div class="operation-wrapper">
                             <div class="d-flex justify-space-between">
@@ -70,8 +69,6 @@
                         <v-icon icon="mdi-file"></v-icon>
                     </template>
                     <v-list-item-title> {{ formAnalytic.name }} </v-list-item-title>
-                    <v-list-item-subtitle v-if="formAnalytic.note != null"> {{ formAnalytic.note }}
-                    </v-list-item-subtitle>
                     <template v-slot:append>
                         <div class="operation-wrapper">
                             <div class="d-flex justify-space-between">
@@ -314,7 +311,6 @@
                                 { value: 0, title: 'Tidak' },
                             ]" v-model="formAnalytic.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
                         </VCol> -->
-
                         <VCol md="12" cols="12">
                             <v-select label="Apakah Anda Yakin file sudah benar ?" :items="[
                                 { value: 1, title: 'Ya' },
@@ -661,7 +657,7 @@ export default {
         },
         async insertSlik() {
             try {
-                this.overlay = true;
+                // this.overlay = true;
                 const formData = new FormData();
                 formData.append("name", this.formDetailSlik.name);
                 formData.append("path", this.formDetailSlik.path);
@@ -685,7 +681,7 @@ export default {
                 };
 
                 const response = await mainURL.post(
-                    `/user/edit-attach/${this.formDetailSlik.id}`,
+                    `/edit-attach/${this.formDetailSlik.id}`,
                     formData,
                     config
                 );
@@ -712,7 +708,7 @@ export default {
         },
         async insertAnalytic() {
             try {
-                this.overlay = true;
+                // this.overlay = true;
                 const formData = new FormData();
                 formData.append("name", this.formAnalytic.name);
                 formData.append("path", this.formAnalytic.path);
@@ -737,7 +733,7 @@ export default {
                 };
 
                 const response = await mainURL.post(
-                    `/user/edit-attach/${this.formAnalytic.id}`,
+                    `/edit-attach/${this.formAnalytic.id}`,
                     formData,
                     config
                 );
@@ -762,7 +758,7 @@ export default {
         },
         async insertAppeal() {
             try {
-                this.overlay = true;
+                // this.overlay = true;
                 const formData = new FormData();
                 formData.append("name", this.formAppeal.name);
                 formData.append("path", this.formAppeal.path);
@@ -786,7 +782,7 @@ export default {
                     },
                 };
                 const response = await mainURL.post(
-                    `/user/edit-attach/${this.formAppeal.id}`,
+                    `/edit-attach/${this.formAppeal.id}`,
                     formData,
                     config
                 );

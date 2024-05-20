@@ -1,18 +1,26 @@
 <!-- URUNG  :   production tampilan masih salah -->
 <template>
   <v-card color="backgroundCard">
-    <v-card-title class="text-2xl font-weight-bold d-flex justify-center"
-      v-if="!['Account Officer', 'AO', 'ao', 'account officer', 'Account Officer Exceutive'].includes(userData.position.name)">
-      Detail
-      <v-chip color="success" v-if="parseInt(dataFile.isApproved) == 1" @click="openModal(9)">Approved</v-chip>
-      <v-chip color="warning" v-if="parseInt(dataFile.isApproved) == 2" @click="openModal(9)">Pending</v-chip>
-      <v-chip color="error" v-if="parseInt(dataFile.isApproved) == 3" @click="openModal(9)">Rejected</v-chip>
+    <v-card-title class="text-2xl font-weight-bold d-flex justify-center"  v-if="!['Account Officer', 'AO', 'ao', 'account officer', 'Account Officer Exceutive'].includes(userData.position.name)">
+      Detail 
+      <v-chip color="success"
+        v-if="parseInt(dataFile.isApproved) == 1"
+        @click="openModal(9)">Approved</v-chip>
+      <v-chip color="warning"
+        v-if="parseInt(dataFile.isApproved) == 2"
+        @click="openModal(9)">Pending</v-chip>
+      <v-chip color="error"
+        v-if="parseInt(dataFile.isApproved) == 3"
+        @click="openModal(9)">Rejected</v-chip>
     </v-card-title>
-    <v-card-title class="text-2xl font-weight-bold d-flex justify-center" v-else>
-      Detail
-      <v-chip color="success" v-if="parseInt(dataFile.isApproved) == 1">Approved</v-chip>
-      <v-chip color="warning" v-if="parseInt(dataFile.isApproved) == 2">Pending</v-chip>
-      <v-chip color="error" v-if="parseInt(dataFile.isApproved) == 3">Rejected</v-chip>
+    <v-card-title class="text-2xl font-weight-bold d-flex justify-center"  v-else>
+      Detail 
+      <v-chip color="success"
+        v-if="parseInt(dataFile.isApproved) == 1">Approved</v-chip>
+      <v-chip color="warning"
+        v-if="parseInt(dataFile.isApproved) == 2">Pending</v-chip>
+      <v-chip color="error"
+        v-if="parseInt(dataFile.isApproved) == 3">Rejected</v-chip>
     </v-card-title>
 
     <v-card-text v-if="dataFile.reasonRejected != null">
@@ -100,29 +108,28 @@
             <v-col cols="12" sm="6" md="8">
               <span>Dokumen Pendukung 📄</span>
             </v-col>
-            <!-- <v-col cols="12" sm="6" md="4" class="text-sm-right text-md-right"
+            <v-col cols="12" sm="6" md="4" class="text-sm-right text-md-right"
               v-if="userAccess && userAccess.canInsertData">
               <span>
                 <v-btn color="primary" size="small" class="my-3 mx-3" @click="openModal(1)">
                   Tambah Data Lain
                 </v-btn>
               </span>
-            </v-col> -->
+            </v-col>
           </v-row>
         </v-card-title>
         <v-card-text>
-          <!-- <div v-for="(attachment, index) in dataFile.attachments" :key="index">
+          <div v-for="(attachment, index) in dataFile.attachments" :key="index">
             <v-list density="compact" v-if="attachment.path != null && !parseInt(attachment.isSecret)">
               <v-list-item>
                 <template v-slot:prepend>
-                  {{ attachment.isApprove ? '✅' : '❌' }}
                   <v-icon icon="mdi-file"></v-icon>
                 </template>
-                <v-list-item-title> {{ attachment.name }}  </v-list-item-title>
+                <v-list-item-title> {{ attachment.name }} </v-list-item-title>
                 <template v-slot:append>
                   <div class="operation-wrapper">
                     <div class="d-flex justify-space-between">
-                      <v-tooltip location="top" text="Lihat File" v-if="  attachment.path!='null'">
+                      <v-tooltip location="top" text="Lihat File">
                         <template v-slot:activator="{ props }">
                           <a v-bind="props" :href="filePath +
                             '/' +
@@ -138,7 +145,8 @@
                       </v-tooltip>
 
                       <v-tooltip location="top" text="Edit File" v-if="
-                        userAccess && parseInt(userAccess.canUpdateData)
+                        userData.id == dataFile.user_id ||
+                        (userAccess && parseInt(userAccess.canInsertData))
                       ">
                         <template v-slot:activator="{ props }">
                           <button v-bind="props" @click="openModal(2, attachment)">
@@ -148,7 +156,8 @@
                       </v-tooltip>
 
                       <v-tooltip location="top" text="Hapus File" v-if="
-                        userAccess && parseInt(userAccess.canDeleteData)
+                        userData.id == dataFile.user_id ||
+                        (userAccess && parseInt(userAccess.canInsertData))
                       ">
                         <template v-slot:activator="{ props }">
                           <button v-bind="props" @click="deleteAttachment(attachment.id)">
@@ -165,14 +174,13 @@
             <v-list density="compact" v-else>
               <v-list-item>
                 <template v-slot:prepend>
-                  {{ attachment.isApprove ? '✅' : '❌' }}
                   <v-icon icon="mdi-file"></v-icon>
                 </template>
                 <v-list-item-title> {{ attachment.name }} </v-list-item-title>
                 <template v-slot:append>
                   <div class="operation-wrapper">
                     <div class="d-flex justify-space-between">
-                      <v-tooltip location="top" text="Lihat File" v-if="userAccess && parseInt(userAccess.isSecret) && attachment.path!='null'">
+                      <v-tooltip location="top" text="Lihat File">
                         <template v-slot:activator="{ props }">
                           <a v-bind="props" :href="filePath +
                             '/' +
@@ -186,10 +194,10 @@
                           </a>
                         </template>
                       </v-tooltip>
-                      
 
                       <v-tooltip location="top" text="Edit File" v-if="
-                        userAccess && parseInt(userAccess.canUpdateData) 
+                        userData.id == dataFile.user_id ||
+                        (userAccess && parseInt(userAccess.canInsertData))
                       ">
                         <template v-slot:activator="{ props }">
                           <button v-bind="props" @click="openModal(2, attachment)">
@@ -198,7 +206,10 @@
                         </template>
                       </v-tooltip>
 
-                      <v-tooltip location="top" text="Hapus File" v-if="userAccess && parseInt(userAccess.canDeleteData)">
+                      <v-tooltip location="top" text="Hapus File" v-if="
+                        userData.id == dataFile.user_id ||
+                        (userAccess && parseInt(userAccess.canInsertData))
+                      ">
                         <template v-slot:activator="{ props }">
                           <button v-bind="props" @click="deleteAttachment(attachment.id)">
                             <VIcon size="20" icon="bx-trash" color="red" />
@@ -209,33 +220,13 @@
                   </div>
                 </template>
               </v-list-item>
-            </v-list>            
-          </div> -->
-
-          <div class="mb-5">
-            <AttachmentCard1 :data="phase1Attachments" :fileId="parseInt(dataFile.id)" :filePath="filePath"
-              :userAccess="userAccess" :deleteAttachment="deleteAttachment" :openModal="openModal"></AttachmentCard1>
-          </div>
-          <div class="mb-5">
-            <AttachmentCard2 v-if="parseInt(dataFile.phase) > 1" :data="phase2Attachments"
-              :fileId="parseInt(dataFile.id)" :filePath="filePath" :userAccess="userAccess"
-              :deleteAttachment="deleteAttachment" :getDetailFile="getDetailFile"></AttachmentCard2>
-          </div>
-          <div class="mb-5">
-            <attachmentCard3 v-if="parseInt(dataFile.phase) > 2" :data="phase3Attachments"
-              :fileId="parseInt(dataFile.id)" :filePath="filePath" :userAccess="userAccess"
-              :deleteAttachment="deleteAttachment" :getDetailFile="getDetailFile"></attachmentCard3>
-          </div>
-          <div class="mb-5">
-            <attachmentOperation v-if="parseInt(dataFile.phase) > 4" :data="phase5Attachments"
-              :fileId="parseInt(dataFile.id)" :filePath="filePath" :userAccess="userAccess"
-              :deleteAttachment="deleteAttachment" :getDetailFile="getDetailFile"></attachmentOperation>
+            </v-list>
           </div>
         </v-card-text>
       </v-card>
     </v-card-text>
 
-    <!-- <v-card-text v-if="dataFile.phase > 2">
+    <v-card-text v-if="dataFile.phase > 2">
       <v-card class="mb-5">
         <v-card-title>
           <v-row class="d-flex justify-space-between">
@@ -267,18 +258,18 @@
           </v-list>
         </v-card-text>
       </v-card>
-    </v-card-text> -->
+    </v-card-text>
 
     <!-- Approval -->
-    <v-card-text v-if="dataFile && parseInt(dataFile.phase) < 6">
+    <v-card-text v-if="dataFile && parseInt(dataFile.phase) < 5">
       <v-card>
-        <v-card-title> Status Approval Phase ✅ </v-card-title>
+        <v-card-title> Status Verifikasi ✅ </v-card-title>
         <v-card-text>
           <div v-if="dataFile && dataFile.approvals && dataFile.approvals.length">
             <template v-for="(app, index) in dataFile.approvals" :key="index">
               <v-chip v-if="dataFile.phase == app.phase" :color="app.approved == 1 ? 'success' : 'error'" class="mr-2"
                 @click="changeApproval(app.id)">
-                {{ app.user.name }} - {{ app.user.position.name }}
+                {{ app.user.name }}
               </v-chip>
             </template>
           </div>
@@ -296,7 +287,6 @@
               <v-chip color="success" @click="openModal(6)"> Data Durasi Waktu </v-chip>
               <v-chip color="success" @click="openModal(7)"> Data Riwayat File</v-chip>
               <v-chip color="success" @click="openModal(8)"> Data Riwayat Persetujuan</v-chip>
-              <v-chip color="success" @click="openModal(10)"> Data Riwayat Dokumen Pendukung</v-chip>
             </v-chip-group>
           </div>
         </v-card-text>
@@ -376,8 +366,8 @@
     </v-card-text>
 
     <!-- prev/next btn -->
-    <v-card-actions v-if="userAccess && parseInt(userAccess.canApprove)">
-      <v-col class="d-flex justify-space-beetwen" v-if="dataFile && parseInt(dataFile.plafon) >= 25000000">
+    <v-card-actions>
+      <v-col class="d-flex justify-space-beetwen" v-if="dataFile && parseInt(dataFile.plafon) > 25000000">
         <v-btn color="info" text="Prev Phase" variant="tonal" @click="step(fileId, '-')"
           v-if="dataFile && parseInt(dataFile.phase) > 1"></v-btn>
 
@@ -397,30 +387,9 @@
 </template>
 
 <script>
-import { default as AttachmentCard1 } from "./attachmentCard1.vue";
-import { default as AttachmentCard2 } from "./attachmentCard2.vue";
-import attachmentCard3, { default as AttachmentCard3 } from './attachmentCard3.vue';
-import attachmentOperation from './attachmentOperation.vue';
 export default {
-  components: { AttachmentCard1, AttachmentCard2, AttachmentCard3, attachmentCard3, attachmentOperation },
   name: "Phase",
   props: {
-    phase1Attachments: {
-      type: Object,
-      required: true,
-    },
-    phase2Attachments: {
-      type: Object,
-      required: true,
-    },
-    phase3Attachments: {
-      type: Object,
-      required: true,
-    },
-    phase5Attachments: {
-      type: Object,
-      required: true,
-    },
     userAccess: {
       type: Object,
       required: true,

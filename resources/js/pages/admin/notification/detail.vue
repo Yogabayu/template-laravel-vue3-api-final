@@ -373,11 +373,11 @@
                 </VCol>
                 <VCol md="12" cols="12">
                   <v-select label="Pilih Phase" :items="[
-                    { value: 1, title: 'Phase 1' },
-                    { value: 2, title: 'Phase 2' },
-                    { value: 3, title: 'Phase 3' },
-                    { value: 4, title: 'Phase 4' },
-                    { value: 5, title: 'Phase 5' },
+                    { value: 1, title: 'Phase 1 (Pooling Order)' },
+                    { value: 2, title: 'Phase 2 (SLIK)' },
+                    { value: 3, title: 'Phase 3 (Survey)' },
+                    { value: 4, title: 'Phase 4 (Komite)' },
+                    { value: 5, title: 'Phase 5 (Operation)' },
                   ]" v-model="dataFormIn.phase" prepend-icon="mdi-help-rhombus"></v-select>
                 </VCol>
                 <VCol md="6" cols="12">
@@ -461,11 +461,11 @@
                 </VCol>
                 <VCol md="12" cols="12">
                   <v-select label="Pilih Phase" :items="[
-                    { value: 1, title: 'Phase 1' },
-                    { value: 2, title: 'Phase 2' },
-                    { value: 3, title: 'Phase 3' },
-                    { value: 4, title: 'Phase 4' },
-                    { value: 5, title: 'Phase 5' },
+                    { value: 1, title: 'Phase 1 (Pooling Order)' },
+                    { value: 2, title: 'Phase 2 (SLIK)' },
+                    { value: 3, title: 'Phase 3 (Survey)' },
+                    { value: 4, title: 'Phase 4 (Komite)' },
+                    { value: 5, title: 'Phase 5 (Operation)' },
                   ]" v-model="dataFormIn.phase" prepend-icon="mdi-help-rhombus"></v-select>
                 </VCol>
                 <VCol md="6" cols="12">
@@ -548,11 +548,11 @@
                 </VCol>
                 <VCol md="12" cols="12">
                   <v-select label="Pilih Phase" :items="[
-                    { value: 1, title: 'Phase 1' },
-                    { value: 2, title: 'Phase 2' },
-                    { value: 3, title: 'Phase 3' },
-                    { value: 4, title: 'Phase 4' },
-                    { value: 5, title: 'Phase 5' },
+                    { value: 1, title: 'Phase 1 (Pooling Order)' },
+                    { value: 2, title: 'Phase 2 (SLIK)' },
+                    { value: 3, title: 'Phase 3 (Survey)' },
+                    { value: 4, title: 'Phase 4 (Komite)' },
+                    { value: 5, title: 'Phase 5 (Operation)' },
                   ]" v-model="dataFormIn.phase" prepend-icon="mdi-help-rhombus"></v-select>
                 </VCol>
                 <VCol md="6" cols="12">
@@ -709,22 +709,6 @@ export default {
       //phase3
       phase3Items: [],
       phase3Headers: [
-        { text: "Jabatan", value: "position.name", sortable: true },
-        // { text: "Phase", value: "phase", sortable: true },
-        { text: "Min. Plafon", value: "minPlafon", sortable: true },
-        { text: "Max. Plafon", value: "maxPlafon", sortable: true },
-        { text: "Input Banding?", value: "canAppeal", sortable: true },
-        { text: "Approve?", value: "canApprove", sortable: true },
-        { text: "Notifikasi", value: "notification", sortable: true },
-        { text: "Akses Data Sensitif? (SLIK, dll)", value: "isSecret", sortable: true },
-        { text: "Tambah Data?", value: "canInsertData", sortable: true },
-        { text: "Edit Data?", value: "canUpdateData", sortable: true },
-        { text: "Hapus Data?", value: "canDeleteData", sortable: true },
-        { text: "Operation", value: "operation", width: 100 },
-      ],
-      //phase4
-      phase4Items: [],
-      phase4Headers: [
         { text: "Jabatan", value: "position.name", sortable: true },
         // { text: "Phase", value: "phase", sortable: true },
         { text: "Min. Plafon", value: "minPlafon", sortable: true },

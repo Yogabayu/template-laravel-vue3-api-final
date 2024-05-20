@@ -3,7 +3,7 @@
         <v-card-title>
             <v-row class="d-flex justify-space-between">
                 <v-col cols="12" sm="6" md="8">
-                    <span>Phase 3 (Analisa Kredit) 📄</span>
+                    <span>Operation 📄</span>
                 </v-col>
             </v-row>
         </v-card-title>
@@ -16,7 +16,6 @@
                         <v-icon icon="mdi-file"></v-icon>
                     </template>
                     <v-list-item-title> {{ attachment.name }} </v-list-item-title>
-                    <v-list-item-subtitle v-if="attachment.note != null"> {{ attachment.note }} </v-list-item-subtitle>
                     <template v-slot:append>
                         <div class="operation-wrapper">
                             <div class="d-flex justify-space-between">
@@ -65,18 +64,18 @@
         </div>
     </v-card>
 
-    <v-dialog v-model="isAnalisaKredit" width="auto" persistent transition="dialog-top-transition">
+    <v-dialog v-model="isSp3k" width="auto" persistent transition="dialog-top-transition">
         <v-card>
             <template v-slot:title> Data Attachment </template>
 
             <template v-slot:text>
-                <v-form @submit.prevent="insertAnalisa">
+                <v-form @submit.prevent="insertSpk3k">
                     <v-row>
                         <VCol md="12" cols="12">
                             <span style="color: red">*</span><span class="subtitle-1 text-center">Keterangan File:
                             </span>
 
-                            <VTextField class="my-3" v-model="formAnalisaKredit.name" autofocus disabled
+                            <VTextField class="my-3" v-model="formsp3k.name" autofocus disabled
                                 :rules="[rules.required]" />
                         </VCol>
                         <VCol md="12" cols="12">
@@ -92,13 +91,13 @@
                             <v-select label="Apakah Termasuk File Rahasia ? (Detail SLIK, dll)" :items="[
                                 { value: 1, title: 'Ya' },
                                 { value: 0, title: 'Tidak' },
-                            ]" v-model="formAnalisaKredit.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
+                            ]" v-model="formsp3k.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
                         </VCol>
                         <VCol md="12" cols="12">
                             <v-select label="Apakah Anda Yakin file sudah benar ?" :items="[
                                 { value: 1, title: 'Ya' },
                                 { value: 0, title: 'Tidak' },
-                            ]" v-model="formAnalisaKredit.isApprove" prepend-icon="mdi-help-rhombus"></v-select>
+                            ]" v-model="formsp3k.isApprove" prepend-icon="mdi-help-rhombus"></v-select>
                         </VCol>
                         <VCol cols="12" class="d-flex flex-wrap gap-4">
                             <!-- <VBtn type="submit" :disabled="(formDetailSlik.name && formDetailSlik.path&& formDetailSlik.isApprove!=1) == null"> -->
@@ -124,7 +123,7 @@
 import mainURL from '@/axios';
 
 export default {
-    name: 'AttachmentCard3',
+    name: 'AttachmentOperation',
     props: {
         data: {
             type: Object,
@@ -163,10 +162,10 @@ export default {
                 required: (value) => !!value || "Required",
             },
 
-            isAnalisaKredit: false,
-            formAnalisaKredit: {
+            isSp3k: false,
+            formsp3k: {
                 id: null,
-                name: "Analisa Kredit",
+                name: "SP3K",
                 file_id: this.fileId,
                 path: null,
                 isApprove: 0,
@@ -177,20 +176,20 @@ export default {
     methods: {
         openModal(type, item = null) {
             if (type == 1) {
-                this.formAnalisaKredit.id = item.id;
-                this.formAnalisaKredit.name = item.name;
-                this.formAnalisaKredit.isSecret = item.isSecret;
-                this.formAnalisaKredit.isApprove = item.isApprove;
+                this.formsp3k.id = item.id;
+                this.formsp3k.name = item.name;
+                this.formsp3k.isSecret = item.isSecret;
+                this.formsp3k.isApprove = item.isApprove;
 
-                this.isAnalisaKredit = true;
+                this.isSp3k = true;
             }
         },
         closeModal(type) {
             if (type == 1) {
-                this.formAnalisaKredit.id = null;
-                this.formAnalisaKredit.isSecret = null;
-                this.formAnalisaKredit.isApprove = null;
-                this.isAnalisaKredit = false;
+                this.formsp3k.id = null;
+                this.formsp3k.isSecret = null;
+                this.formsp3k.isApprove = null;
+                this.isSp3k = false;
             } 
         },
 
@@ -206,7 +205,7 @@ export default {
                 "application/vnd.ms-excel",
             ];
             if (selectedFile && allowedTypes.includes(selectedFile.type)) {
-                this.formAnalisaKredit.path = selectedFile;
+                this.formsp3k.path = selectedFile;
             } else {
                 this.$showToast(
                     "error",
@@ -217,15 +216,15 @@ export default {
             }
         },
 
-        async insertAnalisa() {
+        async insertSpk3k() {
             try {
                 // this.overlay = true;
                 const formData = new FormData();
-                formData.append("name", this.formAnalisaKredit.name);
-                formData.append("path", this.formAnalisaKredit.path);
-                formData.append("isSecret", this.formAnalisaKredit.isSecret);
-                formData.append("isApprove", this.formAnalisaKredit.isApprove);
-                formData.append("file_id", this.formAnalisaKredit.file_id);
+                formData.append("name", this.formsp3k.name);
+                formData.append("path", this.formsp3k.path);
+                formData.append("isSecret", this.formsp3k.isSecret);
+                formData.append("isApprove", this.formsp3k.isApprove);
+                formData.append("file_id", this.formsp3k.file_id);
                 formData.append("_method", "PUT");
                 const config = {
                     onUploadProgress: (progressEvent) => {
@@ -243,7 +242,7 @@ export default {
                 };
 
                 const response = await mainURL.post(
-                    `/user/edit-attach/${this.formAnalisaKredit.id}`,
+                    `/edit-attach/${this.formsp3k.id}`,
                     formData,
                     config
                 );
@@ -267,5 +266,6 @@ export default {
             }
         },
     },
+    
 }
 </script>

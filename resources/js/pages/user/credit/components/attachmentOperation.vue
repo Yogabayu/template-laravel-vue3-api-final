@@ -16,6 +16,7 @@
                         <v-icon icon="mdi-file"></v-icon>
                     </template>
                     <v-list-item-title> {{ attachment.name }} </v-list-item-title>
+                    <v-list-item-subtitle v-if="attachment.note != null"> {{ attachment.note }} </v-list-item-subtitle>
                     <template v-slot:append>
                         <div class="operation-wrapper">
                             <div class="d-flex justify-space-between">
