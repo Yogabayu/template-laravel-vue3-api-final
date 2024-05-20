@@ -1439,6 +1439,9 @@ class FileController extends Controller
                 if ($dataPhase) {
                     $dataPhase->delete();
                 }
+
+                dd($file->plafon);
+
                 if ($file->plafon == 5) {
                     if ($file->plafon >= 250000000) {
                         $filephase = $file->phase - 1;
