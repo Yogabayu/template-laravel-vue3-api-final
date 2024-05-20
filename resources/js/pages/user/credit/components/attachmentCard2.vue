@@ -1,4 +1,8 @@
 <template>
+    <v-overlay :model-value="overlay" class="align-center justify-center">
+      <v-progress-circular color="blue-lighten-3" indeterminate :size="41" :width="5"></v-progress-circular>
+      Loading...
+    </v-overlay>
     <v-card color="warning">
         <v-card-title>
             <v-row class="d-flex justify-space-between">
@@ -11,7 +15,7 @@
             <v-list density="compact">
                 <v-list-item v-if="shouldDisplay(attachment)">
                     <template v-slot:prepend>
-                        {{ attachment.isApprove ? "✅" : "❌" }}
+                        {{ parseInt(attachment.isApprove) ? "✅" : "❌" }}
                         <v-icon icon="mdi-file"></v-icon>
                     </template>
                     <v-list-item-title> {{ attachment.name }} </v-list-item-title>
@@ -66,7 +70,7 @@
             <v-list density="compact">
                 <v-list-item>
                     <template v-slot:prepend>
-                        {{ formAnalytic.isApprove ? "✅" : "❌" }}
+                        {{ parseInt(formAnalytic.isApprove) ? "✅" : "❌" }}
                         <v-icon icon="mdi-file"></v-icon>
                     </template>
                     <v-list-item-title> {{ formAnalytic.name }} </v-list-item-title>
@@ -123,7 +127,7 @@
             <v-list density="compact">
                 <v-list-item>
                     <template v-slot:prepend>
-                        {{ formAppeal.isApprove ? "✅" : "❌" }}
+                        {{ parseInt(formAppeal.isApprove) ? "✅" : "❌" }}
                         <v-icon icon="mdi-file"></v-icon>
                     </template>
                     <v-list-item-title> {{ formAppeal.name }} </v-list-item-title>
@@ -432,6 +436,7 @@ export default {
     },
     data() {
         return {
+            overlay:false,
             uploadProgress: null,
             rules: {
                 required: (value) => !!value || "Required",
@@ -505,8 +510,8 @@ export default {
                 let analytic = this.data.find((att) => att.name == "Analisa Awal Kredit AO");
                 if (analytic) {
                     this.formAnalytic.id = analytic.id;
-                    this.formAnalytic.isApprove = analytic.isApprove;
-                    this.formAnalytic.isSecret = analytic.isSecret;
+                    this.formAnalytic.isApprove = parseInt(analytic.isApprove);
+                    this.formAnalytic.isSecret = parseInt(analytic.isSecret);
                     this.formAnalytic.path = analytic.path;
                 }
             }
@@ -533,8 +538,8 @@ export default {
                 let appeal = this.data.find((att) => att.name === "File Banding");
                 if (appeal) {
                     this.formAppeal.id = appeal.id;
-                    this.formAppeal.isApprove = appeal.isApprove;
-                    this.formAppeal.isSecret = appeal.isSecret;
+                    this.formAppeal.isApprove = parseInt(appeal.isApprove);
+                    this.formAppeal.isSecret = parseInt(appeal.isSecret);
                     this.formAppeal.path = appeal.path;
                 }
                 return true;
@@ -614,15 +619,15 @@ export default {
                 if (item.name == "Detail SLIK") {
                     this.formDetailSlik.id = item.id;
                     this.formDetailSlik.name = item.name;
-                    this.formDetailSlik.isSecret = item.isSecret;
-                    this.formDetailSlik.isApprove = item.isApprove;
+                    this.formDetailSlik.isSecret = parseInt(item.isSecret);
+                    this.formDetailSlik.isApprove = parseInt(item.isApprove);
 
                     this.isFormDetailSlik = true;
                 } else if (item.name == "Resume SLIK") {
                     this.formDetailSlik.id = item.id;
                     this.formDetailSlik.name = item.name;
-                    this.formDetailSlik.isSecret = item.isSecret;
-                    this.formDetailSlik.isApprove = item.isApprove;
+                    this.formDetailSlik.isSecret = parseInt(item.isSecret);
+                    this.formDetailSlik.isApprove = parseInt(item.isApprove);
 
                     this.isFormResumeSlik = true;
                 }
@@ -636,25 +641,25 @@ export default {
             if (type == 1) {
                 this.formDetailSlik.id = null;
                 this.formDetailSlik.name = null;
-                this.formDetailSlik.isSecret = null;
-                this.formDetailSlik.isApprove = null;
+                this.formDetailSlik.isSecret = 0;
+                this.formDetailSlik.isApprove = 0;
                 this.isFormDetailSlik = false;
             } else if (type == 2) {
                 this.formDetailSlik.id = null;
                 this.formDetailSlik.name = null;
-                this.formDetailSlik.isSecret = null;
-                this.formDetailSlik.isApprove = null;
+                this.formDetailSlik.isSecret = 0;
+                this.formDetailSlik.isApprove = 0;
                 this.isFormResumeSlik = false;
             } else if (type == 3) {
                 this.formAnalytic.id = null;
-                this.formAnalytic.isSecret = null;
-                this.formAnalytic.isApprove = null;
+                this.formAnalytic.isSecret = 0;
+                this.formAnalytic.isApprove = 0;
                 this.formAnalytic.path = null;
                 this.isAnalytic = false;
             } else if (type == 4) {
                 this.formAppeal.id = null;
-                this.formAppeal.isSecret = null;
-                this.formAppeal.isApprove = null;
+                this.formAppeal.isSecret = 0;
+                this.formAppeal.isApprove = 0;
                 this.formAppeal.path = null;
                 this.isAppeal = false;
             }
@@ -721,6 +726,8 @@ export default {
                 formData.append("file_id", this.formAnalytic.file_id);
                 formData.append("isApprove", this.formAnalytic.isApprove);
                 formData.append("_method", "PUT");
+
+                // console.log(...formData);
                 const config = {
                     onUploadProgress: (progressEvent) => {
                         try {

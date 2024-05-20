@@ -1,4 +1,8 @@
 <template>
+    <v-overlay :model-value="overlay" class="align-center justify-center">
+        <v-progress-circular color="blue-lighten-3" indeterminate :size="41" :width="5"></v-progress-circular>
+        Loading...
+    </v-overlay>
     <v-card color="warning">
         <v-card-title>
             <v-row class="d-flex justify-space-between">
@@ -12,7 +16,7 @@
             <v-list density="compact">
                 <v-list-item>
                     <template v-slot:prepend>
-                        {{ attachment.isApprove ? "✅" : "❌" }}
+                        {{ parseInt(attachment.isApprove) ? "✅" : "❌" }}
                         <v-icon icon="mdi-file"></v-icon>
                     </template>
                     <v-list-item-title> {{ attachment.name }} </v-list-item-title>
@@ -158,6 +162,7 @@ export default {
     },
     data() {
         return {
+            overlay: false,
             uploadProgress: null,
             rules: {
                 required: (value) => !!value || "Required",
@@ -179,8 +184,8 @@ export default {
             if (type == 1) {
                 this.formsp3k.id = item.id;
                 this.formsp3k.name = item.name;
-                this.formsp3k.isSecret = item.isSecret;
-                this.formsp3k.isApprove = item.isApprove;
+                this.formsp3k.isSecret = parseInt(item.isSecret);
+                this.formsp3k.isApprove = parseInt(item.isApprove);
 
                 this.isSp3k = true;
             }
@@ -188,8 +193,8 @@ export default {
         closeModal(type) {
             if (type == 1) {
                 this.formsp3k.id = null;
-                this.formsp3k.isSecret = null;
-                this.formsp3k.isApprove = null;
+                this.formsp3k.isSecret = 0;
+                this.formsp3k.isApprove = 0;
                 this.isSp3k = false;
             } 
         },
@@ -219,7 +224,7 @@ export default {
 
         async insertSpk3k() {
             try {
-                // this.overlay = true;
+                this.overlay = true;
                 const formData = new FormData();
                 formData.append("name", this.formsp3k.name);
                 formData.append("path", this.formsp3k.path);

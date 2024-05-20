@@ -1,4 +1,8 @@
 <template>
+    <v-overlay :model-value="overlay" class="align-center justify-center">
+        <v-progress-circular color="blue-lighten-3" indeterminate :size="41" :width="5"></v-progress-circular>
+        Loading...
+    </v-overlay>
     <v-card color="warning">
         <v-card-title>
             <v-row class="d-flex justify-space-between">
@@ -12,7 +16,7 @@
             <v-list density="compact">
                 <v-list-item>
                     <template v-slot:prepend>
-                        {{ attachment.isApprove ? "✅" : "❌" }}
+                        {{ parseInt(attachment.isApprove) ? "✅" : "❌" }}
                         <v-icon icon="mdi-file"></v-icon>
                     </template>
                     <v-list-item-title> {{ attachment.name }} </v-list-item-title>
@@ -158,6 +162,7 @@ export default {
     },
     data() {
         return {
+            overlay: false,
             uploadProgress: null,
             rules: {
                 required: (value) => !!value || "Required",
@@ -179,8 +184,8 @@ export default {
             if (type == 1) {
                 this.formAnalisaKredit.id = item.id;
                 this.formAnalisaKredit.name = item.name;
-                this.formAnalisaKredit.isSecret = item.isSecret;
-                this.formAnalisaKredit.isApprove = item.isApprove;
+                this.formAnalisaKredit.isSecret = parseInt(item.isSecret);
+                this.formAnalisaKredit.isApprove = parseInt(item.isApprove);
 
                 this.isAnalisaKredit = true;
             }
@@ -188,10 +193,10 @@ export default {
         closeModal(type) {
             if (type == 1) {
                 this.formAnalisaKredit.id = null;
-                this.formAnalisaKredit.isSecret = null;
-                this.formAnalisaKredit.isApprove = null;
+                this.formAnalisaKredit.isSecret = 0;
+                this.formAnalisaKredit.isApprove = 0;
                 this.isAnalisaKredit = false;
-            } 
+            }
         },
 
         handleFileChange(event) {
@@ -219,7 +224,7 @@ export default {
 
         async insertAnalisa() {
             try {
-                // this.overlay = true;
+                this.overlay = true;
                 const formData = new FormData();
                 formData.append("name", this.formAnalisaKredit.name);
                 formData.append("path", this.formAnalisaKredit.path);

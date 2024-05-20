@@ -978,7 +978,7 @@ export default {
           this.dataFormIn.phase = item.phase;
           this.dataFormIn.minPlafon = item.minPlafon;
           this.dataFormIn.maxPlafon = item.maxPlafon;
-          this.dataFormIn.canAppeal = item.canAppeal;
+          this.dataFormIn.canAppeal = parseInt(item.canAppeal);
           this.dataFormIn.canApprove = parseInt(item.canApprove);
           this.dataFormIn.notification = parseInt(item.notification);
           this.dataFormIn.isSecret = parseInt(item.isSecret);
@@ -997,12 +997,12 @@ export default {
           this.dataFormIn.phase = item.phase;
           this.dataFormIn.minPlafon = item.minPlafon;
           this.dataFormIn.maxPlafon = item.maxPlafon;
-          this.dataFormIn.canAppeal = item.canAppeal;
+          this.dataFormIn.canAppeal = parseInt(item.canAppeal);
           this.dataFormIn.canApprove = parseInt(item.canApprove);
           this.dataFormIn.notification = parseInt(item.notification);
           this.dataFormIn.isSecret = parseInt(item.isSecret);
           this.dataFormIn.canInsertData = parseInt(item.canInsertData);
-          this.dataFormIn.canUpdateData = parseInt(item.canInsertData);
+          this.dataFormIn.canUpdateData = parseInt(item.canUpdateData);
           this.dataFormIn.canDeleteData = parseInt(item.canInsertData);
           this.copy = true;
         }
