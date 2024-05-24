@@ -546,7 +546,7 @@ export default {
     },
     async insertData() {
       try {
-        // this.overlay = true;
+        this.overlay = true;
         const formData = new FormData();
         formData.append("name", this.dataForm.name);
         formData.append("nik_pemohon", this.dataForm.nik_pemohon);
