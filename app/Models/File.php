@@ -10,6 +10,11 @@ class File extends Model
     protected $fillable = [
         'user_id',
         'phase',
+        'nik_pemohon',
+        'nik_pasangan',
+        'nik_jaminan',
+        'address',
+        'no_hp',
         'plafon',
         'surveyResult',
         'otsResult',

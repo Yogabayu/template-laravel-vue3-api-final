@@ -1,19 +1,5 @@
 <template>
   <div>
-    <!-- <v-overlay
-      :absolute="true"
-      v-model="overlay"
-      contained
-      persistent
-      class="align-center justify-center"
-    >
-      <v-col>
-        <v-progress-circular color="primary" size="32" indeterminate>
-        </v-progress-circular>
-        <br />
-        <span class="font-weight-bold text-lg">Loading....</span>
-      </v-col>
-    </v-overlay> -->
     <v-overlay :model-value="overlay" class="align-center justify-center">
       <v-progress-circular color="blue-lighten-3" indeterminate :size="41" :width="5"></v-progress-circular>
       Loading...
@@ -34,21 +20,20 @@
             <v-stepper-item title="Phase 2 (SLIK)" value="2" :complete="stepperModel > 2"></v-stepper-item>
 
             <v-divider></v-divider>
-
-            <!-- <v-stepper-item title="Phase 3 (Survei)" value="3" :complete="stepperModel > 3"
-              v-if="parseInt(dataFile.plafon) > 25000000"></v-stepper-item>
-            <v-stepper-item title="Phase 3 (Keputusan)" value="3" :complete="stepperModel > 3" v-else></v-stepper-item> -->
             <v-stepper-item title="Phase 3 (Keputusan)" value="3" :complete="stepperModel > 3"></v-stepper-item>
 
-            <v-divider v-if="isShowPhase4"></v-divider>
+            <v-divider></v-divider>
 
-            <v-stepper-item title="Phase 4 (Komite)" value="4" :complete="stepperModel > 4"
-              v-if="isShowPhase4"></v-stepper-item>
+            <v-stepper-item title="Phase 4 (Komite)" value="4" :complete="stepperModel > 4"></v-stepper-item>
 
             <!-- khusus operation -->
-            <v-divider v-if="isShowPhase5"></v-divider>
+            <v-divider></v-divider>
 
-            <v-stepper-item title="Operation" value="5" v-if="isShowPhase5"></v-stepper-item>
+            <v-stepper-item title="Operation" value="5" :complete="stepperModel > 5"></v-stepper-item>
+            <!-- khusus approved -->
+            <v-divider></v-divider>
+
+            <v-stepper-item title="Operation" value="6" :complete="stepperModel > 6"></v-stepper-item>
           </v-stepper-header>
 
           <v-stepper-window>
@@ -61,7 +46,8 @@
                 :data-note="dataNote" :update-data-note="updateDataNote" :note-phase1="notePhase1"
                 :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
                 :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2"
-                :phase3Attachments="dataAttachPhase3" :phase5Attachments="dataAttachPhase5" />
+                :phase3Attachments="dataAttachPhase3" :phase4Attachments="dataAttachPhase4"
+                :phase5Attachments="dataAttachPhase5" />
             </v-stepper-window-item>
             <v-stepper-window-item value="1" v-else>
               <div style="
@@ -83,7 +69,8 @@
                 :data-note="dataNote" :update-data-note="updateDataNote" :note-phase1="notePhase1"
                 :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
                 :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2"
-                :phase3Attachments="dataAttachPhase3" :phase5Attachments="dataAttachPhase5" />
+                :phase3Attachments="dataAttachPhase3" :phase4Attachments="dataAttachPhase4"
+                :phase5Attachments="dataAttachPhase5" />
             </v-stepper-window-item>
             <v-stepper-window-item value="2" v-else>
               <div style="
@@ -105,7 +92,8 @@
                 :data-note="dataNote" :update-data-note="updateDataNote" :note-phase1="notePhase1"
                 :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
                 :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2"
-                :phase3Attachments="dataAttachPhase3" :phase5Attachments="dataAttachPhase5" />
+                :phase3Attachments="dataAttachPhase3" :phase4Attachments="dataAttachPhase4"
+                :phase5Attachments="dataAttachPhase5" />
             </v-stepper-window-item>
             <v-stepper-window-item value="3" v-else>
               <div style="
@@ -127,7 +115,8 @@
                 :data-note="dataNote" :update-data-note="updateDataNote" :note-phase1="notePhase1"
                 :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
                 :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2"
-                :phase3Attachments="dataAttachPhase3" :phase5Attachments="dataAttachPhase5" />
+                :phase3Attachments="dataAttachPhase3" :phase4Attachments="dataAttachPhase4"
+                :phase5Attachments="dataAttachPhase5" />
             </v-stepper-window-item>
             <v-stepper-window-item value="4" v-else>
               <div style="
@@ -148,7 +137,19 @@
                 :data-note="dataNote" :update-data-note="updateDataNote" :note-phase1="notePhase1"
                 :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
                 :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2"
-                :phase3Attachments="dataAttachPhase3" :phase5Attachments="dataAttachPhase5" />
+                :phase3Attachments="dataAttachPhase3" :phase4Attachments="dataAttachPhase4"
+                :phase5Attachments="dataAttachPhase5" />
+            </v-stepper-window-item>
+            <v-stepper-window-item value="6">
+              <phase :dataFile="dataFile" :userData="userData" :insert-note="insertNote"
+                :change-approval="changeApproval" :format-date="formatDate" :open-modal="openModal"
+                :delete-attachment="deleteAttachment" :delete-note="deleteNote" :get-detail-file="getDetailFile"
+                :step="step" :file-id="formatFileId(fileId)" :user-access="userAccess" :reset-note="resetNote"
+                :data-note="dataNote" :update-data-note="updateDataNote" :note-phase1="notePhase1"
+                :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
+                :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2"
+                :phase3Attachments="dataAttachPhase3" :phase4Attachments="dataAttachPhase4"
+                :phase5Attachments="dataAttachPhase5" />
             </v-stepper-window-item>
           </v-stepper-window>
         </v-stepper>
@@ -163,16 +164,23 @@
           <v-form @submit.prevent="insertAttachment">
             <v-row>
               <VCol md="12" cols="12">
-                <!-- <span style="color: red">*</span><span class="subtitle-1 text-center">Keterangan File: </span> -->
-                <v-select label="Pilih Keterangan File" :items="nameFileList" v-model="attachFile.name"
+                <v-select label="Pilih Keterangan File" :items="nameFileList" autofocus v-model="attachFile.name"
                   prepend-icon="mdi-help-rhombus"></v-select>
-                <!-- <VTextField class="my-3" v-model="attachFile.name" autofocus :rules="[rules.required]" /> -->
               </VCol>
               <VCol md="12" cols="12">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">Note: </span>
-                <VTextField class="my-3" v-model="attachFile.note" autofocus :rules="[rules.required]" />
+                <VTextField class="my-3" v-model="attachFile.note" :rules="[rules.required]" />
               </VCol>
-              <VCol md="12" cols="12">
+              <VCol md="12" cols="12"
+                v-if="attachFile.name === 'Analisa Awal Kredit AO' || attachFile.name === 'Analisa Kredit'">
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih Salah Satu :
+                </span>
+                <v-radio-group v-model="selectedOption" :mandatory="true" row>
+                  <v-radio label="File" value="file"></v-radio>
+                  <v-radio label="Link" value="link"></v-radio>
+                </v-radio-group>
+              </VCol>
+              <VCol md="12" cols="12" v-if="selectedOption === 'file'">
                 <span style="color: red">*</span>
                 <span class="subtitle-1 text-center"> Upload File: </span>
 
@@ -181,8 +189,15 @@
                   placeholder="Pick an image" :rules="[rules.required]"
                   @change="(event) => handleFileChange(event)"></v-file-input>
               </VCol>
-              <VCol md="12" cols="12" v-if="dataFile.phase == 2">
-                <v-select label="Apakah Termasuk File Rahasia ? (SLIK, dll)" :items="[
+              <VCol md="12" cols="12" v-if="selectedOption === 'link'">
+                <span style="color: red">*</span>
+                <span class="subtitle-1 text-center"> Upload File: </span>
+
+                <VTextField class="my-3" v-model="attachFile.link" autofocus :rules="[rules.required]" />
+              </VCol>
+
+              <VCol md="12" cols="12" v-if="dataFile.phase >= 2">
+                <v-select label="Apakah Termasuk File Rahasia ? (Detail SLIK, dll)" :items="[
                   { value: 1, title: 'Ya' },
                   { value: 0, title: 'Tidak' },
                 ]" v-model="attachFile.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
@@ -289,6 +304,21 @@
 
                 <VTextField class="my-3" v-model="generalInfo.desc_bussiness" :rules="[rules.required]" />
               </VCol>
+              <VCol md="12" cols="12">
+                <span style="color: red">*</span><span class="subtitle-1 text-center">NIK Pemohon: </span>
+
+                <VTextField class="my-3" v-model="generalInfo.nik_pemohon" :rules="[rules.required]" />
+              </VCol>
+              <VCol md="12" cols="12">
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Alamat Pemohon: </span>
+
+                <VTextField class="my-3" v-model="generalInfo.address" :rules="[rules.required]" />
+              </VCol>
+              <VCol md="12" cols="12">
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Alamat Pemohon: </span>
+
+                <VTextField class="my-3" v-model="generalInfo.address" :rules="[rules.required]" />
+              </VCol>
               <VCol cols="12" class="d-flex flex-wrap gap-4">
                 <VBtn type="submit"> Update </VBtn>
                 <button type="button" class="btn btn-blue" @click="closeModal(4)">
@@ -365,7 +395,7 @@
           <EasyDataTable :headers="timerHeaders" :items="dataFile.phase_times">
             <template #item-timeDiff="item">{{
               calculateTimeDiff(item.startTime, item.endTime)
-              }}</template>
+            }}</template>
           </EasyDataTable>
         </template>
       </v-card>
@@ -374,7 +404,7 @@
       <v-card>
         <template v-slot:title> Data Waktu </template>
         <template v-slot:text>
-          <EasyDataTable :headers="attachmentHeaders" :items="dataFile.attachments">
+          <EasyDataTable :headers="attachmentHeaders" :items="attachments">
           </EasyDataTable>
         </template>
       </v-card>
@@ -399,7 +429,7 @@
         <template v-slot:text>
           <EasyDataTable :headers="approvalHeaders" :items="dataFile.approvals">
             <template #item-approved="item">
-              <v-chip color="success" v-if="item.approved == 1"> Disetujui </v-chip>
+              <v-chip color="success" v-if="parseInt(item.approved) == 1"> Disetujui </v-chip>
               <v-chip color="error" v-else> Belum disetujui </v-chip>
             </template>
             <template #item-created_at="item">
@@ -453,6 +483,7 @@ export default {
   components: { phase },
   data() {
     return {
+      selectedOption: "",
       overlay: false,
       isMobile: false,
       userData: null,
@@ -472,6 +503,7 @@ export default {
         { value: 'Kartu Keluarga', title: 'Kartu Keluarga' },
         { value: 'Jaminan SHM', title: 'Jaminan SHM' },
         { value: 'Foto Kunjungan', title: 'Foto Kunjungan' },
+        { value: 'Foto WhatsApp', title: 'Foto WhatsApp' },
         { value: 'Buku Nikah', title: 'Buku Nikah' },
         { value: 'SHM', title: 'Jaminan SHM' },
         { value: 'BPKB', title: 'Jaminan BPKB' },
@@ -484,6 +516,8 @@ export default {
         { value: 'File Banding', title: 'File Banding' },
         { value: 'Analisa Awal Kredit AO', title: 'Analisa Awal Kredit AO' },
         { value: 'Analisa Kredit', title: 'Analisa Kredit' },
+        { value: 'Lembar Pengesahan', title: 'Lembar Pengesahan' },
+        { value: 'Rekomendasi Kepatuhan', title: 'Rekomendasi Kepatuhan' },
         { value: 'SP3K', title: 'SP3K' },
         { value: 'Notaris', title: 'Notaris' },
         { value: 'Lain-lain', title: 'Lain-lain' },
@@ -505,6 +539,11 @@ export default {
         type_bussiness: "",
         desc_bussiness: "",
         plafon: "0",
+        nik_pemohon: null,
+        nik_pasangan: null,
+        nik_jaminan: null,
+        address: null,
+        no_hp: null,
       },
 
       dataFile: {
@@ -514,6 +553,11 @@ export default {
         name: "",
         type_bussiness: "",
         desc_bussiness: "",
+        nik_pemohon: null,
+        nik_pasangan: null,
+        nik_jaminan: null,
+        address: null,
+        no_hp: null,
         plafon: "0",
         surveyResult: "-",
         otsResult: "-",
@@ -588,6 +632,7 @@ export default {
         name: null,
         path: null,
         note: null,
+        link: null,
         isSecret: 0,
         isApprove: 1,
       },
@@ -606,6 +651,7 @@ export default {
         surveyResult: "",
       },
 
+      attachments: [],
       //=> data attachment phase 
       dataAttachPhase1: [],
       dataAttachPhase2: [],
@@ -639,7 +685,7 @@ export default {
           formData.append("reasonRejected", this.changeStatus.reasonRejected);
         }
 
-        const response = await mainURL.post(`/change-status`, formData);
+        const response = await mainURL.post(`/user/change-status`, formData);
 
         if (response.status === 200) {
           this.overlay = false;
@@ -655,6 +701,8 @@ export default {
           this.$showToast("error", "Sorry", response.data.message);
         }
       } catch (error) {
+        console.log(error);
+        this.overlay = false;
         this.closeModal(9);
         this.$showToast("error", "Sorry", error.response.data.message);
       }
@@ -690,7 +738,7 @@ export default {
         formData.append("_method", "PUT");
 
         const response = await mainURL.post(
-          `/survey-credit/${this.fileId}`,
+          `/user/survey-credit/${this.fileId}`,
           formData
         );
         if (response.status === 200) {
@@ -756,7 +804,7 @@ export default {
           formData.append("_method", "POST");
 
           const response = await mainURL.post(
-            "/change-phase-approve",
+            "/user/change-phase-approve",
             formData
           );
           if (response.status === 200) {
@@ -779,7 +827,7 @@ export default {
           formData.append("type", type);
           formData.append("_method", "POST");
           const response = await mainURL.post(
-            "/change-phase-approve",
+            "/user/change-phase-approve",
             formData
           );
           if (response.status === 200) {
@@ -802,10 +850,12 @@ export default {
     async getDetailFile(id: any) {
       try {
         this.overlay = true;
-        const response = await mainURL.get(`/credit/${id}`);
+        const response = await mainURL.get(`/user/credit/${id}`);
 
         if (response.status === 200) {
-          this.dataFile = response.data.data.file;          
+          // this.dataFile = response.data.data.file;                 
+          this.dataFile = response.data.data.file;
+          this.attachments = this.dataFile.attachments.filter(item => item.path != 'null');
           this.userAccess = response.data.data.userAccess;
 
           //attach
@@ -818,6 +868,10 @@ export default {
           this.dataAttachPhase3 = response.data.data.file.attachments.filter(
             (item: { phase: number }) => item.phase == 3
           )
+          this.dataAttachPhase4 = response.data.data.file.attachments.filter(
+            (item: { phase: number }) => item.phase == 4
+          )
+
           this.dataAttachPhase5 = response.data.data.file.attachments.filter(
             (item: { phase: number }) => item.phase == 5
           )
@@ -830,25 +884,30 @@ export default {
             this.isShowPhase5 = true;
           }
 
-          if (parseInt(this.dataFile.plafon) >= 25000000) {
-            if (parseInt(this.dataFile.phase) == 5) {
-              this.stepperModel = parseInt(this.dataFile.phase) - 1;
-            } else {
-              this.stepperModel = parseInt(this.dataFile.phase) - 1;
-            }
+          // if (parseInt(this.dataFile.plafon) >= 25000000) {
+          if (parseInt(this.dataFile.phase) == 5) {
+            this.stepperModel = parseInt(this.dataFile.phase) - 1;
           } else {
-            if (parseInt(this.dataFile.phase) == 5) {
-              this.stepperModel = parseInt(this.dataFile.phase) - 2;
-            } else {
-              this.stepperModel = parseInt(this.dataFile.phase) - 1;
-            }
+            this.stepperModel = parseInt(this.dataFile.phase) - 1;
           }
+          // } else {
+          //   if (parseInt(this.dataFile.phase) == 5) {
+          //     this.stepperModel = parseInt(this.dataFile.phase) - 2;
+          //   } else {
+          //     this.stepperModel = parseInt(this.dataFile.phase) - 1;
+          //   }
+          // }
 
           this.generalInfo.id = this.dataFile.id;
           this.generalInfo.name = this.dataFile.name;
           this.generalInfo.type_bussiness = this.dataFile.type_bussiness;
           this.generalInfo.desc_bussiness = this.dataFile.desc_bussiness;
           this.generalInfo.plafon = this.dataFile.plafon;
+          this.generalInfo.nik_pemohon = this.dataFile.nik_pemohon;
+          this.generalInfo.nik_pasangan = this.dataFile.nik_pasangan;
+          this.generalInfo.nik_jaminan = this.dataFile.nik_jaminan;
+          this.generalInfo.address = this.dataFile.address;
+          this.generalInfo.no_hp = this.dataFile.no_hp;
 
           for (let index = 0; index < 5; index++) {
             this.separateNotesByPhase(this.dataFile, index);
@@ -860,8 +919,9 @@ export default {
           this.overlay = false;
         }
       } catch (error) {
-        this.$showToast("error", "Sorry", error.response.data.message);
+        console.log(error);
         this.overlay = false;
+        this.$showToast("error", "Sorry", error.response.data.message);
       }
     },
 
@@ -878,8 +938,9 @@ export default {
         this.attachFile.id = item.id;
         this.attachFile.file_id = item.file_id;
         this.attachFile.name = item.name;
-        this.attachFile.isSecret = item.isSecret;
-        this.attachFile.isApprove = item.isApprove;
+        this.attachFile.isSecret = parseInt(item.isSecret);
+        this.attachFile.isApprove = parseInt(item.isApprove);
+        this.attachFile.link = item.link;
         this.updateAttch = true;
       } else if (type == 3) {
         this.updateDataNote.id = item.id;
@@ -937,7 +998,7 @@ export default {
         formData.append("_method", "PUT");
 
         const response = await mainURL.post(
-          `/edit-general-info/${this.generalInfo.id}`,
+          `/user/edit-general-info/${this.generalInfo.id}`,
           formData
         );
         if (response.status === 200) {
@@ -975,7 +1036,7 @@ export default {
         formData.append("note", this.dataNote.note);
         formData.append("_method", "POST");
 
-        const response = await mainURL.post("/note", formData);
+        const response = await mainURL.post("/user/note", formData);
         if (response.status === 200) {
           this.resetNote();
           this.overlay = false;
@@ -1003,7 +1064,7 @@ export default {
         formData.append("_method", "PUT");
 
         const response = await mainURL.post(
-          `/note/${this.updateDataNote.id}`,
+          `/user/note/${this.updateDataNote.id}`,
           formData
         );
         if (response.status === 200) {
@@ -1032,7 +1093,7 @@ export default {
         );
         if (!confirmDelete) return;
 
-        const response = await mainURL.delete(`/note/${id}`);
+        const response = await mainURL.delete(`/user/note/${id}`);
 
         if (response.status === 200) {
           this.overlay = false;
@@ -1080,7 +1141,7 @@ export default {
     async changeApproval(id: any) {
       try {
         this.overlay = true;
-        const response = await mainURL.get(`/change-phase-approve/${id}`);
+        const response = await mainURL.get(`/user/change-phase-approve/${id}`);
 
         if (response.status === 200) {
           this.overlay = false;
@@ -1131,6 +1192,7 @@ export default {
         name: null,
         path: null,
         note: null,
+        link: null,
         isSecret: false,
       };
     },
@@ -1139,15 +1201,16 @@ export default {
         this.overlay = true;
         const formData = new FormData();
         formData.append("file_id", this.attachFile.file_id);
+        formData.append("phase", this.dataFile.phase);
         formData.append("name", this.attachFile.name);
         formData.append("path", this.attachFile.path);
-        formData.append("phase", this.dataFile.phase);
+        formData.append("note", this.attachFile.note);
         formData.append("isApprove", this.attachFile.isApprove);
-        if (this.dataFile.phase == 2) {
+        if (this.dataFile.phase >= 2) {
           formData.append("isSecret", this.attachFile.isSecret);
         }
         formData.append("_method", "POST");
-
+        // console.log(...formData);      
         const config = {
           onUploadProgress: (progressEvent) => {
             try {
@@ -1164,7 +1227,7 @@ export default {
         };
 
         const response = await mainURL.post(
-          "/add-attach",
+          "/user/add-attach",
           formData,
           config
         );
@@ -1220,7 +1283,7 @@ export default {
         };
 
         const response = await mainURL.post(
-          `/edit-attach/${this.attachFile.id}`,
+          `/user/edit-attach/${this.attachFile.id}`,
           formData,
           config
         );
@@ -1245,33 +1308,33 @@ export default {
     },
     async deleteAttachment(id: any) {
       try {
-        this.overlay = true;
         const confirmDelete = window.confirm(
-          "Apakah Anda yakin ingin menghapus data? Data akan terhapus secara permanen."
+          "Apakah Anda yakin ingin menghapus data? Data akan terhapus secara permanen. a"
         );
         if (!confirmDelete) return;
 
-        const response = await mainURL.delete(`/delete-attach/${id}`);
+        this.overlay = true;
+        const response = await mainURL.delete(`/user/delete-attach/${id}`);
 
         if (response.status === 200) {
           this.overlay = false;
           this.getDetailFile(this.fileId);
           // this.$showToast("success", "Berhasill", response.data.message);
           this.$showToast("success", "Berhasill", "Terjadi Kesalahan Silahkan Coba Lagi");
-          window.location.reload();
+          // window.location.reload();
         } else {
           this.overlay = false;
           this.getDetailFile(this.fileId);
           // this.$showToast("error", "Sorry", response.data.message);
           this.$showToast("error", "Sorry", "Terjadi Kesalahan Silahkan Coba Lagi");
-          window.location.reload();
+          // window.location.reload();
         }
       } catch (error) {
         this.overlay = false;
         this.getDetailFile(this.fileId);
         // this.$showToast("error", "Sorry", error.response.data.message);
         this.$showToast("error", "Sorry", "Terjadi Kesalahan Silahkan Coba Lagi");
-        window.location.reload();
+        // window.location.reload();
       }
     },
     ///////////////////////////////////////////////////////////////////////////////////
@@ -1280,7 +1343,6 @@ export default {
     this.checkMobile();
     this.getUserData();
     this.getDetailFile(this.fileId);
-
   },
 };
 </script>

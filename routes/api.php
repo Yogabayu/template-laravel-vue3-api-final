@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\OfficeController;
 use App\Http\Controllers\Admin\PositionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\ZipController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\User\DashboardController;
 use App\Http\Controllers\User\FileController;
@@ -73,6 +74,8 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
         Route::put('edit-general-info/{id}', [AdminFileController::class, 'editGeneralInfo']);
         Route::put('survey-credit/{id}', [FileController::class, 'editSurveiResult']);
         Route::post('change-status', [FileController::class, 'changeStatus']);
+        //=>download all
+        Route::get('download-all/{id}', [ZipController::class, 'downloadAll']);
 
         //=>note
         Route::post('note', [AdminFileController::class, 'addNote']);

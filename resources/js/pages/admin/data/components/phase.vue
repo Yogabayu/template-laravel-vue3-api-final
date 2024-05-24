@@ -1,4 +1,4 @@
-<!-- URUNG  :   production tampilan masih salah -->
+
 <template>
   <v-card color="backgroundCard">
     <v-card-title class="text-2xl font-weight-bold d-flex justify-center"
@@ -43,53 +43,88 @@
           </v-row>
         </v-card-title>
         <v-card-text>
-          <v-list density="compact">
+          <v-list density="compact" lines="two">
             <v-list-item>
               <template v-slot:prepend>
-                <v-icon icon="mdi-person"></v-icon>
+                <v-icon icon="mdi-person" size="x-small"></v-icon>
               </template>
-              <v-list-item-title> Nama Pemohon</v-list-item-title>
-              <v-list-item-title>
-                <strong>
-                  {{ dataFile.name }}
-                </strong></v-list-item-title>
+              <v-list-item-title> Nama Pemohon </v-list-item-title>
+              <v-list-item>
+                <strong> {{ dataFile.name }} </strong>
+              </v-list-item>
             </v-list-item>
-            <v-list density="compact">
+            <v-list-item>
+              <template v-slot:prepend>
+                <v-icon icon="mdi-map-marker" size="x-small"></v-icon>
+              </template>
+              <v-list-item-title> Alamat Pemohon </v-list-item-title>
               <v-list-item>
-                <template v-slot:prepend>
-                  <v-icon icon="mdi-cash"></v-icon>
-                </template>
-                <v-list-item-title> Jumlah Plafon</v-list-item-title>
-                <v-list-item-title>
-                  <strong>
-                    Rp {{ formatInput(dataFile.plafon) }}
-                  </strong></v-list-item-title>
+                <strong> {{ dataFile.address }} </strong>
               </v-list-item>
-            </v-list>
-            <v-list density="compact">
+            </v-list-item>
+            <v-list-item>
+              <template v-slot:prepend>
+                <v-icon icon="mdi-phone" size="x-small"></v-icon>
+              </template>
+              <v-list-item-title> No. HP Pemohon</v-list-item-title>
               <v-list-item>
-                <template v-slot:prepend>
-                  <v-icon icon="mdi-office-building"></v-icon>
-                </template>
-                <v-list-item-title> Jenis Usaha</v-list-item-title>
-                <v-list-item-title>
-                  <strong>
-                    {{ dataFile.type_bussiness }}
-                  </strong></v-list-item-title>
+                <strong>
+                  {{ dataFile.no_hp }}
+                </strong>
               </v-list-item>
-            </v-list>
-            <v-list density="compact">
+            </v-list-item>
+            <v-list-item>
+              <template v-slot:prepend>
+                <v-icon icon="mdi-cash" size="x-small"></v-icon>
+              </template>
+              <v-list-item-title> Jumlah Plafon</v-list-item-title>
               <v-list-item>
-                <template v-slot:prepend>
-                  <v-icon icon="mdi-office-building"></v-icon>
-                </template>
-                <v-list-item-title> Deskripsi Usaha</v-list-item-title>
-                <v-list-item-title>
-                  <strong>
-                    {{ dataFile.desc_bussiness }}
-                  </strong></v-list-item-title>
+                <strong>
+                  Rp {{ formatInput(dataFile.plafon) }}
+                </strong></v-list-item>
+            </v-list-item>
+            <v-list-item v-if="dataFile.nik_pasangan != null && dataFile.nik_pasangan != ''">
+              <template v-slot:prepend>
+                <v-icon icon="mdi-code-greater-than" size="x-small"></v-icon>
+              </template>
+              <v-list-item-title> NIK Pasangan</v-list-item-title>
+              <v-list-item>
+                <strong>
+                  {{ dataFile.nik_pasangan }}
+                </strong>
               </v-list-item>
-            </v-list>
+            </v-list-item>
+            <v-list-item v-if="dataFile.nik_jaminan != null && dataFile.nik_jaminan != ''">
+              <template v-slot:prepend>
+                <v-icon icon="mdi-code-greater-than" size="x-small"></v-icon>
+              </template>
+              <v-list-item-title> NIK atas nama Jaminan</v-list-item-title>
+              <v-list-item>
+                <strong>
+                  {{ dataFile.nik_jaminan }}
+                </strong>
+              </v-list-item>
+            </v-list-item>
+            <v-list-item>
+              <template v-slot:prepend>
+                <v-icon icon="mdi-office-building" size="x-small"></v-icon>
+              </template>
+              <v-list-item-title> Jenis Usaha</v-list-item-title>
+              <v-list-item>
+                <strong>
+                  {{ dataFile.type_bussiness }}
+                </strong></v-list-item>
+            </v-list-item>
+            <v-list-item>
+              <template v-slot:prepend>
+                <v-icon icon="mdi-office-building" size="x-small"></v-icon>
+              </template>
+              <v-list-item-title> Deskripsi Usaha</v-list-item-title>
+              <v-list-item>
+                <strong>
+                  {{ dataFile.desc_bussiness }}
+                </strong></v-list-item>
+            </v-list-item>
           </v-list>
         </v-card-text>
       </v-card>
@@ -100,14 +135,14 @@
             <v-col cols="12" sm="6" md="8">
               <span>Dokumen Pendukung 📄</span>
             </v-col>
-            <!-- <v-col cols="12" sm="6" md="4" class="text-sm-right text-md-right"
+            <v-col cols="12" sm="6" md="4" class="text-sm-right text-md-right"
               v-if="userAccess && userAccess.canInsertData">
               <span>
                 <v-btn color="primary" size="small" class="my-3 mx-3" @click="openModal(1)">
                   Tambah Data Lain
                 </v-btn>
               </span>
-            </v-col> -->
+            </v-col>
           </v-row>
         </v-card-title>
         <v-card-text>
@@ -225,6 +260,11 @@
             <attachmentCard3 v-if="parseInt(dataFile.phase) > 2" :data="phase3Attachments"
               :fileId="parseInt(dataFile.id)" :filePath="filePath" :userAccess="userAccess"
               :deleteAttachment="deleteAttachment" :getDetailFile="getDetailFile"></attachmentCard3>
+          </div>
+          <div class="mb-5">
+            <attachmentCard4 v-if="parseInt(dataFile.phase) > 3" :data="phase4Attachments"
+              :fileId="parseInt(dataFile.id)" :filePath="filePath" :userAccess="userAccess"
+              :deleteAttachment="deleteAttachment" :getDetailFile="getDetailFile"></attachmentCard4>
           </div>
           <div class="mb-5">
             <attachmentOperation v-if="parseInt(dataFile.phase) > 4" :data="phase5Attachments"
@@ -377,21 +417,22 @@
 
     <!-- prev/next btn -->
     <v-card-actions v-if="userAccess && parseInt(userAccess.canApprove)">
-      <v-col class="d-flex justify-space-beetwen" v-if="dataFile && parseInt(dataFile.plafon) >= 25000000">
+      <v-col class="d-flex justify-space-beetwen">
         <v-btn color="info" text="Prev Phase" variant="tonal" @click="step(fileId, '-')"
           v-if="dataFile && parseInt(dataFile.phase) > 1"></v-btn>
-
         <v-spacer></v-spacer>
         <v-btn color="info" text="Next Phase" variant="tonal" @click="step(fileId, 'next')"
           v-if="dataFile && parseInt(dataFile.phase) < 5"></v-btn>
+        <v-btn color="success" text="Setujui" variant="tonal" @click="step(fileId, 'next')"
+          v-if="dataFile && parseInt(dataFile.phase) == 5"></v-btn>
       </v-col>
-      <v-col class="d-flex justify-space-beetwen" v-else>
+      <!-- <v-col class="d-flex justify-space-beetwen" v-else>
         <v-btn color="info" text="Prev Phase" variant="tonal" @click="step(fileId, '-')"
           v-if="dataFile && parseInt(dataFile.phase) > 1"></v-btn>
         <v-spacer></v-spacer>
         <v-btn color="info" text="Next Phase" variant="tonal" @click="step(fileId, 'next')"
           v-if="dataFile && parseInt(dataFile.phase) < 4"></v-btn>
-      </v-col>
+      </v-col> -->
     </v-card-actions>
   </v-card>
 </template>
@@ -400,9 +441,10 @@
 import { default as AttachmentCard1 } from "./attachmentCard1.vue";
 import { default as AttachmentCard2 } from "./attachmentCard2.vue";
 import attachmentCard3, { default as AttachmentCard3 } from './attachmentCard3.vue';
+import attachmentCard4, { default as AttachmentCard4 } from './attachmentCard4.vue';
 import attachmentOperation from './attachmentOperation.vue';
 export default {
-  components: { AttachmentCard1, AttachmentCard2, AttachmentCard3, attachmentCard3, attachmentOperation },
+  components: { AttachmentCard1, AttachmentCard2, AttachmentCard3, attachmentCard3, AttachmentCard4, attachmentCard4,attachmentOperation },
   name: "Phase",
   props: {
     phase1Attachments: {
@@ -414,6 +456,10 @@ export default {
       required: true,
     },
     phase3Attachments: {
+      type: Object,
+      required: true,
+    },
+    phase4Attachments: {
       type: Object,
       required: true,
     },
@@ -566,5 +612,13 @@ export default {
 
 .clickable {
   cursor: pointer;
+}
+
+.text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  /* Ensures it does not exceed the parent width */
 }
 </style>

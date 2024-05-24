@@ -11,6 +11,7 @@ class Attachment extends Model
         'phase',
         'name',
         'path',
+        'link',
         'note',
         'isSecret',
         'isApprove',

@@ -50,7 +50,7 @@
                 }}
               </template>
               <template #item-operation="item">
-                <div class="operation-wrapper">
+                <!-- <div class="operation-wrapper">
                   <button>
                     <VIcon size="20" icon="bx-file-find" color="blue" @click="toDetail(item)" />
                   </button>
@@ -58,6 +58,37 @@
                   <button @click="deleteFile(item)">
                     <VIcon size="20" icon="bx-trash" color="red" />
                   </button>
+                  &nbsp;
+                  <button @click="downloadFile(item.id)">
+                    <VIcon size="20" icon="bx-download" color="blue" />
+                  </button>
+                </div> -->
+                <div class="operation-wrapper">
+                  <div class="d-flex justify-space-between">
+                    <v-tooltip location="top" text="Detail Kredit">
+                      <template v-slot:activator="{ props }">
+                        <button v-bind="props" @click="toDetail(item)">
+                          <VIcon size="20" icon="bx-link-external" color="blue" />
+                        </button>
+                      </template>
+                    </v-tooltip>
+
+                    <v-tooltip location="top" text="Hapus Kredit">
+                      <template v-slot:activator="{ props }">
+                        <button v-bind="props" @click="deleteFile(item)">
+                          <VIcon size="20" icon="bx-trash" color="blue" />
+                        </button>
+                      </template>
+                    </v-tooltip>
+
+                    <v-tooltip location="top" text="Download Semua File Kredit">
+                      <template v-slot:activator="{ props }">
+                        <button v-bind="props" @click="downloadFile(item.id)">
+                          <VIcon size="20" icon="bx-download" color="red" />
+                        </button>
+                      </template>
+                    </v-tooltip>
+                  </div>
                 </div>
               </template>
             </EasyDataTable>
@@ -214,7 +245,7 @@
 
               <VCol cols="12" class="d-flex flex-wrap gap-4">
                 <VBtn type="submit" :disabled="(dataForm.hasFile2 &&
-                    (dataForm.file2 == null || dataForm.file5 == null)) ||
+                  (dataForm.file2 == null || dataForm.file5 == null)) ||
                   (dataForm.hasFile3 && dataForm.file3 == null) ||
                   (dataForm.hasFile7 && dataForm.file7 == null) ||
                   (dataForm.hasFile8 && dataForm.file8 == null) ||
@@ -266,7 +297,7 @@ export default {
         { text: "Plafon", value: "plafon", sortable: true },
         { text: "Status", value: "isApproved", sortable: true },
         // { text: "Phase", value: "phase", sortable: true },
-        { text: "Operation", value: "operation" },
+        { text: "Operation", value: "operation", width: 100 },
       ],
       phases: [
         { value: 0 },
@@ -316,6 +347,30 @@ export default {
     },
   },
   methods: {
+    async downloadFile(id) {
+      try {
+        const response = await mainURL.get(`/download-all/${id}`, {
+          responseType: 'blob' // tambahkan ini untuk mengunduh file sebagai Blob
+        });
+
+        if (response.status === 200) {
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', `${id}.zip`); // Nama file ZIP yang akan diunduh
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+
+          this.$showToast("success", "Berhasil", "File berhasil diunduh");
+        } else {
+          this.$showToast("error", "Error", "Gagal mengunduh file");
+        }
+      } catch (error) {
+        console.log(error);
+        this.$showToast("error", "Error", "Terjadi kesalahan saat mengunduh file");
+      }
+    },
     toDetail(item: any) {
       this.$router.push(`/a-credit/${item.id}`);
     },

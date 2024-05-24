@@ -24,18 +24,24 @@
                     <template v-slot:append>
                         <div class="operation-wrapper">
                             <div class="d-flex justify-space-between">
-                                <v-tooltip location="top" text="Lihat File" v-if="attachment.path !== 'null'">
+                                <v-tooltip location="top" text="Lihat File" v-if="(attachment.path !== 'null' || attachment.link !== null)">
                                     <template v-slot:activator="{ props }">
-                                        <a v-bind="props" :href="`${filePath}/${fileId}/${attachment.path}`"
+                                        <a v-if="attachment.path !== 'null'" v-bind="props" :href="`${filePath}/${fileId}/${attachment.path}`"
                                             target="_blank" rel="noopener noreferrer">
+                                            <button>
+                                                <VIcon size="20" icon="bx-link-external" color="blue" />
+                                            </button>
+                                        </a>
+                                        <a v-bind="props" :href="`${attachment.link}`" target="_blank"
+                                            rel="noopener noreferrer" v-if="attachment.link !== null">
                                             <button>
                                                 <VIcon size="20" icon="bx-link-external" color="blue" />
                                             </button>
                                         </a>
                                     </template>
                                 </v-tooltip>
-                                <v-tooltip location="top" text="Upload File" v-if="
-                                    attachment.path === 'null' &&
+                                <v-tooltip location="top" text="Upload File / Link" v-if="
+                                    (attachment.path == 'null' && attachment.link == null ) &&
                                     userAccess &&
                                     parseInt(userAccess.canInsertData) == 1
                                 ">
@@ -84,6 +90,30 @@
                                 :rules="[rules.required]" />
                         </VCol>
                         <VCol md="12" cols="12">
+                            <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih Salah Satu :
+                            </span>
+                            <v-radio-group v-model="selectedOption" :mandatory="true" row>
+                                <v-radio label="File" value="file"></v-radio>
+                                <v-radio label="Link" value="link"></v-radio>
+                            </v-radio-group>
+                        </VCol>
+                        <VCol md="12" cols="12" v-if="selectedOption === 'file'">
+                            <span style="color: red">*</span>
+                            <span class="subtitle-1 text-center"> Upload File: </span>
+
+                            <v-file-input class="my-3"
+                                accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                placeholder="Pick an image" :rules="[rules.required]"
+                                @change="handleFileChange($event); formAnalisaKredit.link = null"></v-file-input>
+                        </VCol>
+                        <VCol md="12" cols="12" v-if="selectedOption === 'link'">
+                            <span style="color: red">*</span>
+                            <span class="subtitle-1 text-center"> Upload File: </span>
+
+                            <VTextField class="my-3" v-model="formAnalisaKredit.link" type="link"
+                                hint="Pastikan menggunakan https://" :rules="[rules.required]" />
+                        </VCol>
+                        <!-- <VCol md="12" cols="12">
                             <span style="color: red">*</span>
                             <span class="subtitle-1 text-center"> Upload File: </span>
 
@@ -91,7 +121,7 @@
                                 accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                                 placeholder="Pick an image" :rules="[rules.required]"
                                 @change="(event) => handleFileChange(event)"></v-file-input>
-                        </VCol>
+                        </VCol> -->
                         <VCol md="12" cols="12">
                             <v-select label="Apakah Termasuk File Rahasia ? (Detail SLIK, dll)" :items="[
                                 { value: 1, title: 'Ya' },
@@ -127,6 +157,7 @@
 <script>
 import mainURL from '@/axios';
 
+
 export default {
     name: 'AttachmentCard3',
     props: {
@@ -160,8 +191,18 @@ export default {
             required: true,
         },
     },
+    watch: {
+        selectedOption(newVal) {
+            if (newVal === 'file') {
+                this.formAnalisaKredit.link = null;
+            } else if (newVal === 'link') {
+                this.formAnalisaKredit.path = null;
+            }
+        }
+    },
     data() {
         return {
+            selectedOption: "",
             overlay: false,
             uploadProgress: null,
             rules: {
@@ -173,7 +214,8 @@ export default {
                 id: null,
                 name: "Analisa Kredit",
                 file_id: this.fileId,
-                path: null,
+                path: 'null',
+                link: null,
                 isApprove: 0,
                 isSecret: 0,
             },
@@ -184,6 +226,8 @@ export default {
             if (type == 1) {
                 this.formAnalisaKredit.id = item.id;
                 this.formAnalisaKredit.name = item.name;
+                this.formAnalisaKredit.link = item.link;
+                this.formAnalisaKredit.path = item.path;
                 this.formAnalisaKredit.isSecret = parseInt(item.isSecret);
                 this.formAnalisaKredit.isApprove = parseInt(item.isApprove);
 
@@ -227,11 +271,17 @@ export default {
                 this.overlay = true;
                 const formData = new FormData();
                 formData.append("name", this.formAnalisaKredit.name);
-                formData.append("path", this.formAnalisaKredit.path);
                 formData.append("isSecret", this.formAnalisaKredit.isSecret);
                 formData.append("isApprove", this.formAnalisaKredit.isApprove);
                 formData.append("file_id", this.formAnalisaKredit.file_id);
+                if (this.formAnalisaKredit.path != 'null' && this.formAnalisaKredit.path != null) {
+                    formData.append("path", this.formAnalisaKredit.path);
+                } else
+                    if (this.formAnalisaKredit.link != null) {
+                        formData.append("link", this.formAnalisaKredit.link);
+                    }
                 formData.append("_method", "PUT");
+
                 const config = {
                     onUploadProgress: (progressEvent) => {
                         try {
@@ -266,6 +316,7 @@ export default {
                     this.$showToast("error", "Sorry", response.data.message);
                 }
             } catch (error) {
+                this.overlay = false;
                 this.closeModal(1);
                 this.getDetailFile(this.fileId);
                 this.$showToast("error", "Sorry", error.response.data.message);
