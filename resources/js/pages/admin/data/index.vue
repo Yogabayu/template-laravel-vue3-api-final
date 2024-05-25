@@ -290,6 +290,9 @@ export default {
       rules: {
         required: (value) => !!value || "Required",
       },
+      
+      //role
+      role:[],
       items: [],
       originalItems: [],
       headers: [
@@ -349,11 +352,13 @@ export default {
   methods: {
     async downloadFile(id) {
       try {
+        this.overlay = true;
         const response = await mainURL.get(`/download-all/${id}`, {
           responseType: 'blob' // tambahkan ini untuk mengunduh file sebagai Blob
         });
 
         if (response.status === 200) {
+          this.overlay = false;
           const url = window.URL.createObjectURL(new Blob([response.data]));
           const link = document.createElement('a');
           link.href = url;
@@ -364,9 +369,11 @@ export default {
 
           this.$showToast("success", "Berhasil", "File berhasil diunduh");
         } else {
+          this.overlay = false;
           this.$showToast("error", "Error", "Gagal mengunduh file");
         }
       } catch (error) {
+        this.overlay = false;
         console.log(error);
         this.$showToast("error", "Error", "Terjadi kesalahan saat mengunduh file");
       }

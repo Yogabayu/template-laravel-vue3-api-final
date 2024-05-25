@@ -51,13 +51,39 @@
               </template>
               <template #item-operation="item">
                 <div class="operation-wrapper">
-                  <button>
+                  <!-- <button>
                     <VIcon size="20" icon="bx-file-find" color="blue" @click="toDetail(item)" />
                   </button>
                   &nbsp;
                   <button v-if="userData && item.user_id == userData.id" @click="deleteFile(item)">
                     <VIcon size="20" icon="bx-trash" color="red" />
-                  </button>
+                  </button> -->
+
+                  <div class="d-flex justify-space-between">
+                    <v-tooltip location="top" text="Detail Kredit">
+                      <template v-slot:activator="{ props }">
+                        <button v-bind="props" @click="toDetail(item)">
+                          <VIcon size="20" icon="bx-link-external" color="blue" />
+                        </button>
+                      </template>
+                    </v-tooltip>
+
+                    <v-tooltip location="top" text="Hapus Kredit" v-if="userData && item.user_id == userData.id">
+                      <template v-slot:activator="{ props }">
+                        <button v-bind="props" @click="deleteFile(item)">
+                          <VIcon size="20" icon="bx-trash" color="red" />
+                        </button>
+                      </template>
+                    </v-tooltip>
+
+                    <v-tooltip location="top" text="Download Semua File Kredit" v-if="role && role.canDownload == 1">
+                      <template v-slot:activator="{ props }">
+                        <button v-bind="props" @click="downloadFile(item.id)">
+                          <VIcon size="20" icon="bx-download" color="red" />
+                        </button>
+                      </template>
+                    </v-tooltip>
+                  </div>
                 </div>
               </template>
             </EasyDataTable>
@@ -313,6 +339,12 @@ export default {
       rules: {
         required: (value) => !!value || "Required",
       },
+
+      //role
+      role: {
+        canDownload: 0,
+      },
+
       items: [],
       originalItems: [],
       userAccess: null,
@@ -321,7 +353,7 @@ export default {
         { text: "Plafon", value: "plafon", sortable: true },
         { text: "Status", value: "isApproved", sortable: true },
         // { text: "Phase", value: "phase", sortable: true },
-        { text: "Operation", value: "operation" },
+        { text: "Operation", value: "operation", width: 100 },
       ],
       phases: [
         { value: 0 },
@@ -380,6 +412,34 @@ export default {
     },
   },
   methods: {
+    async downloadFile(id) {
+      try {
+        this.overlay = true;
+        const response = await mainURL.get(`/download-all/${id}`, {
+          responseType: 'blob' // tambahkan ini untuk mengunduh file sebagai Blob
+        });
+
+        if (response.status === 200) {
+          this.overlay = false;
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', `${id}.zip`); // Nama file ZIP yang akan diunduh
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+
+          this.$showToast("success", "Berhasil", "File berhasil diunduh");
+        } else {
+          this.overlay = false;
+          this.$showToast("error", "Error", "Gagal mengunduh file");
+        }
+      } catch (error) {
+        this.overlay = false;
+        console.log(error);
+        this.$showToast("error", "Error", "Terjadi kesalahan saat mengunduh file");
+      }
+    },
     formatInput(value: string) {
       // Lakukan pemformatan nilai plafon di sini
       value = value.replace(/\D/g, ""); // Remove non-digit characters
@@ -530,6 +590,7 @@ export default {
         if (response.status === 200) {
           this.items = response.data.data.files;
           this.userAccess = response.data.data.userAccess;
+          this.role = response.data.data.role;
           this.originalItems = [...this.items];
         } else {
           this.$showToast("error", "Sorry", response.data.data.message);

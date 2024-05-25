@@ -195,12 +195,12 @@ class FileController extends Controller
                 'name' => 'required',
                 'path' => 'required | mimes:jpeg,jpg,png,pdf,doc,docx,xls,xlsx',
                 'note' => 'required',
-                'link' => 'required | url',
+                'link' => 'nullable | url',
                 'isApprove' => 'required',
             ], [
                 'required' => ':attribute harus diisi',
                 'mimes' => ':attribute harus berupa jpeg, jpg, png',
-                'url' => ':attribute harus berupa URL yang valid',
+                'url' => ':attribute harus berupa URL yang valid atau tambahkan https://',
             ]);
             $cekAttach = Attachment::where('name', $request->name)->count();
 
@@ -250,6 +250,12 @@ class FileController extends Controller
     public function editAttachment(Request $request, $id)
     {
         try {
+            $request->validate([
+                'link' => 'nullable | url',
+            ], [
+                'url' => ':attribute harus berupa URL yang valid atau tambahkan https://',
+            ]);
+
             $attachment = Attachment::findOrFail($id);
             $attachment->name = $request->name;
             $attachment->note = $request->note;
@@ -454,10 +460,8 @@ class FileController extends Controller
                     ->where('isApprove', '!=', 0)
                     ->count();
 
-                // dd($detailSlikApproved, $resumeSlikApproved, $analisaCreditApproved, $cekFileBanding, $cekAnalystAo);
-                // dd($file->phase);
                 if ($file->phase >= 2) {
-                    // Logika untuk memeriksa kondisi yang diinginkan
+                    // Logika untuk memeriksa kondisi 
                     if (($detailSlikApproved > 0 && $resumeSlikApproved > 0) && ($cekFileBanding > 0 || $cekAnalystAo > 0)) {
                         $filephase = $file->phase + 1;
 
@@ -588,6 +592,34 @@ class FileController extends Controller
                             return ResponseHelper::successRes('Berhasill Melakukan Perubahan Tahapan Kredit', $file);
                         }
                         if ($file->phase < 4) {
+                            if ($detailSlikApproved > 0 && $resumeSlikApproved > 0) {
+
+                                // Memeriksa apakah terdapat lampiran "Analisa Awal Kredit AO" yang nilai atributnya bukan string "null"
+                                $cekAnalystAoApproved = Attachment::where('file_id', $file->id)
+                                    ->where('phase', 2)
+                                    ->whereRaw('LOWER(name) = ?', [Str::lower('Analisa Awal Kredit AO')])
+                                    ->where('path', '!=', 'null') // Asumsi atribut yang dicek bernama 'path'
+                                    ->count();
+
+                                if ($cekAnalystAoApproved == 0) {
+                                    return ResponseHelper::errorRes('Analisa Awal Kredit AO Belum Disetujui');
+                                }
+                            } else if ($detailSlikApproved == 0 && $resumeSlikApproved == 0) {
+
+                                // Memeriksa apakah terdapat lampiran "File Banding" yang nilai atributnya bukan string "null"
+                                $cekFileBandingApproved = Attachment::where('file_id', $file->id)
+                                    ->where('phase', 2)
+                                    ->whereRaw('LOWER(name) = ?', [Str::lower('File Banding')])
+                                    ->where('path', '!=', 'null') // Asumsi atribut yang dicek bernama 'path'
+                                    ->count();
+
+                                if ($cekFileBandingApproved == 0) {
+                                    return ResponseHelper::errorRes('File Banding AO Belum Disetujui');
+                                }
+                            } else {
+                                return ResponseHelper::errorRes('Analisa Awal Kredit AO dan File Banding AO ada yang belum Disetujui');
+                            }
+                            dd('guarded');
                             if ($file->phase == 3 && $analisaCreditApproved == 0) {
                                 return ResponseHelper::errorRes('Analisa Kredit CA Belum Disetujui');
                             }
@@ -1609,6 +1641,9 @@ class FileController extends Controller
     {
         try {
             $userNow = User::with('position')->where('id', Auth::user()->id)->first();
+            $userPos = User::where('id', Auth::user()->id)->first();
+            $getPostionData = Position::where('id', $userPos->position_id)->first();
+            $role = Role::where('id', $getPostionData->role_id)->first();
 
             if ($userNow->position->name == 'Account Officer' || $userNow->position->name == 'AO' || $userNow->position->name == 'ao' || $userNow->position->name == 'account officer' || $userNow->position->name == 'Account Officer Exceutive') {
 
@@ -1647,7 +1682,7 @@ class FileController extends Controller
 
                 ActivityHelper::userActivity(Auth::user()->id, 'Mengakses halaman File Credit');
 
-                return ResponseHelper::successRes('Berhasil menampilkan datas', ['files' => $files, 'userAccess' => $userAccess]);
+                return ResponseHelper::successRes('Berhasil menampilkan datas', ['files' => $files, 'userAccess' => $userAccess, 'role' => $role]);
             } else {
                 $positionId = Auth::user()->position_id;
                 $position = Position::with('offices')->where('id', $positionId)->first();
@@ -1705,7 +1740,7 @@ class FileController extends Controller
                 }
                 ActivityHelper::userActivity(Auth::user()->id, 'Mengakses halaman File Credit');
 
-                return ResponseHelper::successRes('Berhasil menampilkan datas', ['files' => $files, 'userAccess' => $userAccess]);
+                return ResponseHelper::successRes('Berhasil menampilkan datas', ['files' => $files, 'userAccess' => $userAccess, 'role' => $role]);
             }
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());

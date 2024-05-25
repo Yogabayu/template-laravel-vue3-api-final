@@ -42,6 +42,7 @@ class RoleController extends Controller
                 'isPhase2Access' => 'required',
                 'isPhase3Access' => 'required',
                 'isPhase4Access' => 'required',
+                'canDownload' => 'required',
                 // 'isSecret' => 'required',
                 // 'canApprovePhase1' => 'required',
                 // 'canApprovePhase2' => 'required',
@@ -56,6 +57,7 @@ class RoleController extends Controller
                 'isPhase2Access.required' => 'Phase 2 Access Wajib diisi',
                 'isPhase3Access.required' => 'Phase 3 Access Wajib diisi',
                 'isPhase4Access.required' => 'Phase 4 Access Wajib diisi',
+                'canDownload.required' => 'Role Download wajib diisi',
                 // 'isSecret.required' => 'Slik Access Wajib diisi',
                 // 'canApprovePhase1.required' => 'Approve Phase 1 Access Wajib diisi',
                 // 'canApprovePhase2.required' => 'Approve Phase 1 Access Wajib diisi',
@@ -74,6 +76,7 @@ class RoleController extends Controller
             $role->isPhase2Access = $request->isPhase2Access;
             $role->isPhase3Access = $request->isPhase3Access;
             $role->isPhase4Access = $request->isPhase4Access;
+            $role->canDownload = $request->canDownload;
             // $role->isSecret = $request->isSecret;
             // $role->canApprovePhase1 = $request->canApprovePhase1;
             // $role->canApprovePhase2 = $request->canApprovePhase2;
@@ -119,6 +122,7 @@ class RoleController extends Controller
                 'isPhase2Access' => 'required',
                 'isPhase3Access' => 'required',
                 'isPhase4Access' => 'required',
+                'canDownload' => 'required',
                 // 'isSecret' => 'required',
                 // 'canApprovePhase1' => 'required',
                 // 'canApprovePhase2' => 'required',
@@ -133,6 +137,7 @@ class RoleController extends Controller
                 'isPhase2Access.required' => 'Phase 2 Access Wajib diisi',
                 'isPhase3Access.required' => 'Phase 3 Access Wajib diisi',
                 'isPhase4Access.required' => 'Phase 4 Access Wajib diisi',
+                'canDownload.required' => 'Role Download wajib diisi',
                 // 'isSecret.required' => 'Slik Access Wajib diisi',
                 // 'canApprovePhase1.required' => 'Approve Phase 1 Access Wajib diisi',
                 // 'canApprovePhase2.required' => 'Approve Phase 1 Access Wajib diisi',
@@ -149,6 +154,7 @@ class RoleController extends Controller
             $role->isPhase2Access = $request->isPhase2Access;
             $role->isPhase3Access = $request->isPhase3Access;
             $role->isPhase4Access = $request->isPhase4Access;
+            $role->canDownload = $request->canDownload;
             // $role->isSecret = $request->isSecret;
             // $role->canApprovePhase1 = $request->canApprovePhase1;
             // $role->canApprovePhase2 = $request->canApprovePhase2;

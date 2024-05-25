@@ -454,6 +454,7 @@ export default defineComponent({
         type: 1,
         username: "",
       },
+      
     };
   },
   methods: {

@@ -17,6 +17,7 @@ class Role extends Model
         'isPhase2Access',
         'isPhase3Access',
         'isPhase4Access',
+        'canDownloadAll',
         // 'canApprovePhase1',
         // 'canApprovePhase2',
         // 'canApprovePhase3',

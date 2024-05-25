@@ -106,8 +106,8 @@
                                         </a>
                                     </template>
                                 </v-tooltip>
-                                <v-tooltip location="top" text="Upload File" v-if="
-                                    (formAnalytic.path == null || formAnalytic.path == 'null' || formAnalytic.link == null) &&
+                                <v-tooltip location="top" text="Upload File / Link" v-if="
+                                    (formAnalytic.path == null && formAnalytic.path == 'null' && formAnalytic.link == null) &&
                                     userAccess &&
                                     parseInt(userAccess.canAppeal) == 1
                                 ">
@@ -179,8 +179,8 @@
                                         </a>
                                     </template>
                                 </v-tooltip>
-                                <v-tooltip location="top" text="Upload File" v-if="
-                                    (formAppeal.path == null || formAppeal.path == 'null') &&
+                                <v-tooltip location="top" text="Upload File / Link" v-if="
+                                    (formAppeal.path == null && formAppeal.path == 'null') &&
                                     userAccess &&
                                     parseInt(userAccess.canAppeal) == 1
                                 ">
@@ -216,7 +216,7 @@
 
     <v-dialog v-model="isFormDetailSlik" width="auto" persistent transition="dialog-top-transition">
         <v-card>
-            <template v-slot:title> Data Attachmenta </template>
+            <template v-slot:title> Data Attachment </template>
 
             <template v-slot:text>
                 <v-form @submit.prevent="insertSlik">
@@ -810,11 +810,12 @@ export default {
         },
         async insertSlik() {
             try {
+                // console.log(this.formDetailSlik);
                 this.overlay = true;
                 const formData = new FormData();
                 formData.append("name", this.formDetailSlik.name);
 
-                if (this.formDetailSlik.path != 'null') {
+                if (this.formDetailSlik.path != null) {
                     formData.append("path", this.formDetailSlik.path);
                 } else if (this.formDetailSlik.link != null) {
                     formData.append("link", this.formDetailSlik.link);
@@ -862,6 +863,7 @@ export default {
             } catch (error) {
                 this.overlay = false;
                 this.closeModal(1);
+                this.closeModal(2);
                 this.getDetailFile(this.fileId);
                 this.$showToast("error", "Sorry", error.response.data.message);
             }

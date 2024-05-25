@@ -96,6 +96,18 @@
                   ></v-select>
                 </VCol>
 
+                <VCol md="12" cols="12">
+                  <v-select
+                    label="Akses Download? "
+                    :items="[
+                      { value: 1, title: 'Ya' },
+                      { value: 0, title: 'Tidak' },
+                    ]"
+                    v-model="dataForm.canDownload"
+                    prepend-icon="mdi-help-rhombus"
+                  ></v-select>
+                </VCol>
+
                 <!-- <VCol md="12" cols="12">
                   <v-select
                     label="Akses Data Sensitif? (SLIK, dll)"
@@ -287,17 +299,17 @@
                   ></v-select>
                 </VCol>
 
-                <!-- <VCol md="12" cols="12">
+                <VCol md="12" cols="12">
                   <v-select
-                    label="Akses Data Sensitif? (SLIK, dll)"
+                    label="Akses Download? "
                     :items="[
                       { value: 1, title: 'Ya' },
                       { value: 0, title: 'Tidak' },
                     ]"
-                    v-model="dataForm.isSecret"
+                    v-model="dataForm.canDownload"
                     prepend-icon="mdi-help-rhombus"
                   ></v-select>
-                </VCol> -->
+                </VCol>
 
                 <!-- <VCol md="12" cols="12">
                   <v-select
@@ -436,6 +448,9 @@
         <template #item-isPhase4Access="item">
           <p>{{ item.isPhase4Access == 1 ? "&#x2713;" : "x" }}</p>
         </template>
+        <template #item-canDownload="item">
+          <p>{{ item.canDownload == 1 ? "&#x2713;" : "x" }}</p>
+        </template>
         <!-- <template #item-isSecret="item">
           <p>{{ item.isSecret == 1 ? "&#x2713;" : "x" }}</p>
         </template>
@@ -503,6 +518,7 @@ export default {
         isPhase2Access: 0,
         isPhase3Access: 0,
         isPhase4Access: 0,
+        canDownload: 0,
         // isSecret: 0,
         // canApprovePhase1: 1,
         // canApprovePhase2: 0,
@@ -520,6 +536,7 @@ export default {
         { text: "Akses Phase 2", value: "isPhase2Access", sortable: true },
         { text: "Akses Phase 3", value: "isPhase3Access", sortable: true },
         { text: "Akses Phase 4", value: "isPhase4Access", sortable: true },
+        { text: "Akses Download", value: "canDownload", sortable: true },
         // { text: "Akses Slik", value: "isSecret", sortable: true },
         // { text: "Approve Phase 1", value: "canApprovePhase1", sortable: true },
         // { text: "Approve Phase 2", value: "canApprovePhase2", sortable: true },
@@ -564,6 +581,7 @@ export default {
         formData.append("isPhase2Access", this.dataForm.isPhase2Access);
         formData.append("isPhase3Access", this.dataForm.isPhase3Access);
         formData.append("isPhase4Access", this.dataForm.isPhase4Access);
+        formData.append("canDownload", this.dataForm.canDownload);
         // formData.append("isSecret", this.dataForm.isSecret);
         // formData.append("canApprovePhase1", this.dataForm.canApprovePhase1);
         // formData.append("canApprovePhase2", this.dataForm.canApprovePhase2);
@@ -607,6 +625,7 @@ export default {
         formData.append("isPhase2Access", this.dataForm.isPhase2Access);
         formData.append("isPhase3Access", this.dataForm.isPhase3Access);
         formData.append("isPhase4Access", this.dataForm.isPhase4Access);
+        formData.append("canDownload", this.dataForm.canDownload);
         // formData.append("isSecret", this.dataForm.isSecret);
         // formData.append("canApprovePhase1", this.dataForm.canApprovePhase1);
         // formData.append("canApprovePhase2", this.dataForm.canApprovePhase2);
@@ -647,6 +666,7 @@ export default {
         isPhase2Access: 0,
         isPhase3Access: 0,
         isPhase4Access: 0,
+        canDownload: 0,
         // isSecret: 0,
         // canApprovePhase1: 1,
         // canApprovePhase2: 0,
@@ -669,6 +689,7 @@ export default {
           this.dataForm.isPhase2Access = parseInt(item.isPhase2Access);
           this.dataForm.isPhase3Access = parseInt(item.isPhase3Access);
           this.dataForm.isPhase4Access = parseInt(item.isPhase4Access);
+          this.dataForm.canDownload = parseInt(item.canDownload);
           // this.dataForm.isSecret = item.isSecret;
           // this.dataForm.canApprovePhase1 = item.canApprovePhase1;
           // this.dataForm.canApprovePhase2 = item.canApprovePhase2;
