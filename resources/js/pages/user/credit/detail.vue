@@ -20,7 +20,7 @@
             <v-stepper-item title="Phase 2 (SLIK)" value="2" :complete="stepperModel > 2"></v-stepper-item>
 
             <v-divider></v-divider>
-            <v-stepper-item title="Phase 3 (Keputusan)" value="3" :complete="stepperModel > 3"></v-stepper-item>
+            <v-stepper-item title="Phase 3 (Survei)" value="3" :complete="stepperModel > 3"></v-stepper-item>
 
             <v-divider></v-divider>
 
@@ -33,7 +33,7 @@
             <!-- khusus approved -->
             <v-divider></v-divider>
 
-            <v-stepper-item title="Operation" value="6" :complete="stepperModel > 6"></v-stepper-item>
+            <v-stepper-item title="Approved" value="6" :complete="stepperModel > 6"></v-stepper-item>
           </v-stepper-header>
 
           <v-stepper-window>
