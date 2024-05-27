@@ -619,7 +619,6 @@ class FileController extends Controller
                             } else {
                                 return ResponseHelper::errorRes('Analisa Awal Kredit AO dan File Banding AO ada yang belum Disetujui');
                             }
-                            dd('guarded');
                             if ($file->phase == 3 && $analisaCreditApproved == 0) {
                                 return ResponseHelper::errorRes('Analisa Kredit CA Belum Disetujui');
                             }
