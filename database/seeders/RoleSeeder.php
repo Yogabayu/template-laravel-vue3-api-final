@@ -16,8 +16,8 @@ class RoleSeeder extends Seeder
     {
         $roles = [
             ['id' => Str::uuid(), 'name' => 'administrator'],
-            ['id' => Str::uuid(), 'name' => 'Account Officer'],
-            // ['id' => Str::uuid(), 'name' => 'ca'],
+            ['id' => Str::uuid(), 'name' => 'Account Officer / Executive AO'],
+            // ['id' => Str::uuid(), 'name' => 'ca'], || $userNow->position->name == 'Account Officer / Executive AO'
             // ['id' => Str::uuid(), 'name' => 'dirut'],
         ];
 
