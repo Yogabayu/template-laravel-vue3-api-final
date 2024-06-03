@@ -75,13 +75,6 @@ export default {
     };
   },
   methods: {
-    // formatDate(dateString) {
-    //   const date = new Date(dateString);
-    //   return date.toLocaleString("id-ID");
-    // },
-    // toDetailFile(item) {
-    //   this.$router.push(`/u-filedetail/${item}`);
-    // },
     getUserData() {
       const savedUserData = localStorage.getItem("userData");
 

@@ -4,6 +4,34 @@
     <VCol cols="12" md="12">
       <AnalyticsCongratulations />
     </VCol>
+    <v-container>
+      <v-row>
+        <VCol cols="4" md="6">
+          <CardStatisticsVertical v-bind="{
+            title: 'Kredit Disetujui',
+            image: docs,
+            stats: `${tApproved}`,
+            link: '/u-credit',
+          }" />
+        </VCol>
+        <VCol cols="4" md="6">
+          <CardStatisticsVertical v-bind="{
+            title: 'Kredit Pending',
+            image: docs,
+            stats: `${tPending}`,
+            link: '/u-credit',
+          }" />
+        </VCol>
+        <VCol cols="4" md="6">
+          <CardStatisticsVertical v-bind="{
+            title: 'Kredit Ditolak',
+            image: docs,
+            stats: `${tRejected}`,
+            link: '/u-credit',
+          }" />
+        </VCol>
+      </v-row>
+    </v-container>
 <!-- 
     <VCol cols="12" sm="12">
       <VRow>
@@ -245,6 +273,9 @@ export default {
       tPosition: null,
       mostViews: null,
       mostUsers: null,
+      tApproved: 0,
+      tPending: 0,
+      tRejected: 0,
     };
   },
   methods: {
@@ -260,13 +291,36 @@ export default {
         this.userToken = savedUserToken;
       }
     },
-
-    async getTotalFile() {
+    async getRekapCredit() {
       try {
-        const response = await mainURL.get("/total-file");
+        const response = await mainURL.get("/dashboard");
 
         if (response.status === 200) {
-          this.tFile = response.data.data;
+          const files = response.data.data.files;
+          const isApprovedCounts = {
+            isApproved1: 0,
+            isApproved2: 0,
+            isApproved3: 0
+          };
+
+          files.forEach(file => {
+            let approvalStatus = Number(file.isApproved);
+            switch (approvalStatus) {
+              case 1:
+                isApprovedCounts.isApproved1++;
+                break;
+              case 2:
+                isApprovedCounts.isApproved2++;
+                break;
+              case 3:
+                isApprovedCounts.isApproved3++;
+                break;
+            }
+          });
+
+          this.tApproved = isApprovedCounts.isApproved1;
+          this.tPending = isApprovedCounts.isApproved2;
+          this.tRejected = isApprovedCounts.isApproved3;
         } else {
           const errorMessage =
             response && response.data && response.data.message
@@ -278,123 +332,13 @@ export default {
         const errorMessage =
           error.response && error.response.data && error.response.data.message
             ? error.response.data.message
-            : "Gagal login. Silakan coba lagi.";
-        this.$showToast("error", "Sorry", errorMessage);
-      }
-    },
-    async getTotalUser() {
-      try {
-        const response = await mainURL.get("/total-user");
-
-        if (response.status === 200) {
-          this.tUser = response.data.data;
-        } else {
-          const errorMessage =
-            response && response.data && response.data.message
-              ? response.data.message
-              : "Gagal. Silakan coba lagi.";
-          this.$showToast("error", "Sorry", errorMessage);
-        }
-      } catch (error) {
-        const errorMessage =
-          error.response && error.response.data && error.response.data.message
-            ? error.response.data.message
-            : "Gagal login. Silakan coba lagi.";
-        this.$showToast("error", "Sorry", errorMessage);
-      }
-    },
-    async getTotalCat() {
-      try {
-        const response = await mainURL.get("/total-category");
-
-        if (response.status === 200) {
-          this.tCategory = response.data.data;
-        } else {
-          const errorMessage =
-            response && response.data && response.data.message
-              ? response.data.message
-              : "Gagal. Silakan coba lagi.";
-          this.$showToast("error", "Sorry", errorMessage);
-        }
-      } catch (error) {
-        const errorMessage =
-          error.response && error.response.data && error.response.data.message
-            ? error.response.data.message
-            : "Gagal login. Silakan coba lagi.";
-        this.$showToast("error", "Sorry", errorMessage);
-      }
-    },
-    async getTotalPosition() {
-      try {
-        const response = await mainURL.get("/total-position");
-
-        if (response.status === 200) {
-          this.tPosition = response.data.data;
-        } else {
-          const errorMessage =
-            response && response.data && response.data.message
-              ? response.data.message
-              : "Gagal. Silakan coba lagi.";
-          this.$showToast("error", "Sorry", errorMessage);
-        }
-      } catch (error) {
-        const errorMessage =
-          error.response && error.response.data && error.response.data.message
-            ? error.response.data.message
-            : "Gagal login. Silakan coba lagi.";
-        this.$showToast("error", "Sorry", errorMessage);
-      }
-    },
-    async getMostView() {
-      try {
-        const response = await mainURL.get("/mostfileviews");
-
-        if (response.status === 200) {
-          this.mostViews = response.data.data;
-        } else {
-          const errorMessage =
-            response && response.data && response.data.message
-              ? response.data.message
-              : "Gagal. Silakan coba lagi.";
-          this.$showToast("error", "Sorry", errorMessage);
-        }
-      } catch (error) {
-        const errorMessage =
-          error.response && error.response.data && error.response.data.message
-            ? error.response.data.message
-            : "Gagal login. Silakan coba lagi.";
-        this.$showToast("error", "Sorry", errorMessage);
-      }
-    },
-    async getMostUserView() {
-      try {
-        const response = await mainURL.get("/getmostuserview");
-
-        if (response.status === 200) {
-          this.mostUsers = response.data.data;
-        } else {
-          const errorMessage =
-            response && response.data && response.data.message
-              ? response.data.message
-              : "Gagal. Silakan coba lagi.";
-          this.$showToast("error", "Sorry", errorMessage);
-        }
-      } catch (error) {
-        const errorMessage =
-          error.response && error.response.data && error.response.data.message
-            ? error.response.data.message
-            : "Gagal login. Silakan coba lagi.";
+            : "Gagal . Silakan coba lagi.";
         this.$showToast("error", "Sorry", errorMessage);
       }
     },
   },
   mounted() {
-    // this.getTotalFile();
-    // this.getTotalUser();
-    // this.getTotalCat();
-    // this.getTotalPosition();
-    // this.getMostView();
-    // this.getMostUserView();
+    this.getRekapCredit();
   },
 };
 </script>

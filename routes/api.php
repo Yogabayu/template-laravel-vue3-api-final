@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\FileController as AdminFileController;
 use App\Http\Controllers\Admin\NotificationConfigController;
 use App\Http\Controllers\Admin\OfficeController;
@@ -34,6 +35,9 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
 
         // // route admin
         Route::post('logout', [AuthController::class, 'destroy'])->name('logout');
+
+        //dashboard
+        Route::get('dashboard', [AdminDashboardController::class, 'index']);
 
         //office
         Route::get('office', [OfficeController::class, 'index']);

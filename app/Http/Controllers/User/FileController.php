@@ -1652,7 +1652,6 @@ class FileController extends Controller
                 // Dapatkan semua kantor yang terkait dengan posisi
                 $offices = $position->offices;
 
-                // dd($offices);
                 //get list access for user
                 $notifPositions = [];
                 foreach ($offices as $office) {
@@ -1689,7 +1688,6 @@ class FileController extends Controller
                 // Dapatkan semua kantor yang terkait dengan posisi
                 $offices = $position->offices;
 
-                // dd($offices);
                 //get list access for user
                 $notifPositions = [];
                 foreach ($offices as $office) {
