@@ -660,14 +660,33 @@ class FileController extends Controller
                             }
                             $matchFound = false;
 
-                            foreach ($notifPositions as $pos) {
-                                foreach ($notifUser as $user) {
-                                    if ($pos->position_id == $user->position_id) {
-                                        Approval::firstOrCreate(
-                                            ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
-                                            ['approved' => 0]
-                                        );
-                                        $matchFound = true;
+                            if ($file->phase == 3) {
+                                foreach ($notifPositions as $pos) { //URUNG bug komite
+                                    foreach ($notifUser as $user) {
+                                        if ($pos->position_id == $user->position_id && $userUploaded->position_id != $pos->position_id) {
+                                            Approval::firstOrCreate(
+                                                ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
+                                                ['approved' => 0]
+                                            );
+                                            $matchFound = true;
+                                        }
+                                    }
+                                }
+
+                                Approval::firstOrCreate(
+                                    ['file_id' => $file->id, 'user_id' => $userUploaded->id, 'phase' => $pos->phase],
+                                    ['approved' => 0]
+                                );
+                            } else {
+                                foreach ($notifPositions as $pos) {
+                                    foreach ($notifUser as $user) {
+                                        if ($pos->position_id == $user->position_id) {
+                                            Approval::firstOrCreate(
+                                                ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
+                                                ['approved' => 0]
+                                            );
+                                            $matchFound = true;
+                                        }
                                     }
                                 }
                             }
