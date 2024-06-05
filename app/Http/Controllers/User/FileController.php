@@ -494,7 +494,7 @@ class FileController extends Controller
                         }
                         if ($file->phase == 4) {
                             $lembarPengesahanApproved = Attachment::where('file_id', $file->id)
-                                ->where('phase', 3)
+                                ->where('phase', 4)
                                 ->whereRaw('LOWER(name) = ?', [Str::lower('Lembar Pengesahan')])
                                 ->where(function ($query) {
                                     $query->where('link', '!=', 'null')
@@ -503,7 +503,7 @@ class FileController extends Controller
                                 })
                                 ->count();
                             $rekomendasiKepatuhanApproved = Attachment::where('file_id', $file->id)
-                                ->where('phase', 3)
+                                ->where('phase', 4)
                                 ->whereRaw('LOWER(name) = ?', [Str::lower('Rekomendasi Kepatuhan')])
                                 ->where(function ($query) {
                                     $query->where('link', '!=', 'null')
