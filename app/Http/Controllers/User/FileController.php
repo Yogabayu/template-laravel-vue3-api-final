@@ -1608,9 +1608,13 @@ class FileController extends Controller
                 }
             } else {
                 $dataPhase = PhaseTime::where('file_id', $file->id)->where('phase', $file->phase)->first();
+                $dataApproval = Approval::where('file_id', $file->id)->where('phase', $file->phase)->first();
 
                 if ($dataPhase) {
                     $dataPhase->delete();
+                }
+                if ($dataApproval) {
+                    $dataApproval->delete();
                 }
 
                 if ($file->phase == 5) {
