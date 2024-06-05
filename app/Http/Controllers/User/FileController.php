@@ -598,7 +598,7 @@ class FileController extends Controller
                             $cekAnalystAoApproved = Attachment::where('file_id', $file->id)
                                 ->where('phase', 2)
                                 ->whereRaw('LOWER(name) = ?', [Str::lower('Analisa Awal Kredit AO')])
-                                ->where('path', '!=', 'null') // Asumsi atribut yang dicek bernama 'path'
+                                ->where('link', '!=', 'null') // Asumsi atribut yang dicek bernama 'path'
                                 ->count();
 
                             if ($cekAnalystAoApproved == 0) {
