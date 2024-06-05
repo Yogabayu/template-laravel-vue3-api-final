@@ -459,8 +459,8 @@ class FileController extends Controller
                     ->whereRaw('LOWER(name) = ?', [Str::lower('Analisa Kredit')])
                     ->where('isApprove', '!=', 0)
                     ->count();
-                dd('masuk');
-                // dd($detailSlikApproved, $resumeSlikApproved, $cekFileBanding, $cekAnalystAo);
+                // dd('masuk');
+                dd($detailSlikApproved, $resumeSlikApproved, $cekFileBanding, $cekAnalystAo);
 
                 if ($file->phase >= 2) {
                     // Logika untuk memeriksa kondisi 
