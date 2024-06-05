@@ -248,7 +248,7 @@
                         </VCol>
                         <VCol md="12" cols="12" v-if="selectedOption === 'link'">
                             <span style="color: red">*</span>
-                            <span class="subtitle-1 text-center"> Upload File: </span>
+                            <span class="subtitle-1 text-center"> Upload Link: </span>
 
                             <VTextField class="my-3" v-model="formDetailSlik.link" type="link"
                                 hint="Pastikan menggunakan https://" :rules="[rules.required]" />
@@ -327,7 +327,7 @@
                         </VCol>
                         <VCol md="12" cols="12" v-if="selectedOption === 'link'">
                             <span style="color: red">*</span>
-                            <span class="subtitle-1 text-center"> Upload File: </span>
+                            <span class="subtitle-1 text-center"> Upload Link: </span>
 
                             <VTextField class="my-3" v-model="formDetailSlik.link" type="link"
                                 hint="Pastikan menggunakan https://" :rules="[rules.required]" />
@@ -406,7 +406,7 @@
                         </VCol>
                         <VCol md="12" cols="12" v-if="selectedOption === 'link'">
                             <span style="color: red">*</span>
-                            <span class="subtitle-1 text-center"> Upload File: </span>
+                            <span class="subtitle-1 text-center"> Upload Link: </span>
 
                             <VTextField class="my-3" v-model="formAnalytic.link" type="link"
                                 hint="Pastikan menggunakan https://" :rules="[rules.required]" />
@@ -486,7 +486,7 @@
                         </VCol>
                         <VCol md="12" cols="12" v-if="formAppeal === 'link'">
                             <span style="color: red">*</span>
-                            <span class="subtitle-1 text-center"> Upload File: </span>
+                            <span class="subtitle-1 text-center"> Upload Link: </span>
 
                             <VTextField class="my-3" v-model="formDetailSlik.link" type="link"
                                 hint="Pastikan menggunakan https://" :rules="[rules.required]" />
