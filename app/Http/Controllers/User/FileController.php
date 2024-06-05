@@ -579,10 +579,6 @@ class FileController extends Controller
                                 }
                             }
 
-                            Approval::firstOrCreate(
-                                ['file_id' => $file->id, 'user_id' => $userUploaded->id, 'phase' => $pos->phase],
-                                ['approved' => 0]
-                            );
 
                             if (!$matchFound) {
                                 return ResponseHelper::errorRes('Error, user yang memiliki akses approve tidak ditemukan, mohon tambahkan User yang dapat memberi aproval di tahap selanjutnya');
