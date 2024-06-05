@@ -512,6 +512,8 @@ class FileController extends Controller
                                 })
                                 ->count();
 
+                            dd($lembarPengesahanApproved, $rekomendasiKepatuhanApproved);
+
                             if ($lembarPengesahanApproved > 0 && $rekomendasiKepatuhanApproved > 0) {
                                 return ResponseHelper::errorRes('File mandatory kosong / belum disetujui');
                             }
