@@ -515,7 +515,6 @@ class FileController extends Controller
                             if ($lembarPengesahanApproved == 0 || $rekomendasiKepatuhanApproved == 0) {
                                 return ResponseHelper::errorRes('File mandatory kosong / belum disetujui');
                             }
-                            dd('log');
 
                             $file->phase = 5;
                             $file->save();
