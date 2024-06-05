@@ -493,6 +493,29 @@ class FileController extends Controller
                             return ResponseHelper::successRes('File Status Telah diubah menjadi disetujui', $file);
                         }
                         if ($file->phase == 4) {
+                            $lembarPengesahanApproved = Attachment::where('file_id', $file->id)
+                                ->where('phase', 3)
+                                ->whereRaw('LOWER(name) = ?', [Str::lower('Lembar Pengesahan')])
+                                ->where(function ($query) {
+                                    $query->where('link', '!=', 'null')
+                                        ->orWhere('path', '!=', 'null')
+                                        ->orWhere('isApprove', '!=', 0);
+                                })
+                                ->count();
+                            $rekomendasiKepatuhanApproved = Attachment::where('file_id', $file->id)
+                                ->where('phase', 3)
+                                ->whereRaw('LOWER(name) = ?', [Str::lower('Rekomendasi Kepatuhan')])
+                                ->where(function ($query) {
+                                    $query->where('link', '!=', 'null')
+                                        ->orWhere('path', '!=', 'null')
+                                        ->orWhere('isApprove', '!=', 0);
+                                })
+                                ->count();
+
+                            if ($lembarPengesahanApproved > 0 && $rekomendasiKepatuhanApproved > 0) {
+                                return ResponseHelper::errorRes('File mandatory kosong / belum disetujui');
+                            }
+
                             $file->phase = 5;
                             $file->save();
 
