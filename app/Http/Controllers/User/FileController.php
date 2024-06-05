@@ -460,6 +460,8 @@ class FileController extends Controller
                     ->where('isApprove', '!=', 0)
                     ->count();
 
+                dd($detailSlikApproved, $resumeSlikApproved, $cekFileBanding, $cekAnalystAo);
+
                 if ($file->phase >= 2) {
                     // Logika untuk memeriksa kondisi 
                     if (($detailSlikApproved > 0 && $resumeSlikApproved > 0) && ($cekFileBanding > 0 || $cekAnalystAo > 0)) {   ///URUNG bug disini

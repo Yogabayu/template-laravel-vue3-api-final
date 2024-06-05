@@ -674,7 +674,7 @@ export default {
                 (att) => att.name === "File Banding" && att.path != 'null'
             );
             const analystAoNotNull = this.data.find(
-                (att) => att.name === "Analisa Awal Kredit AO" && att.path != 'null'
+                (att) => att.name === "Analisa Awal Kredit AO" && att.path != 'null' || att.name === "Analisa Awal Kredit AO" && att.link != 'null'
             );
             // console.log(detailSLIKNotApproved, resumeSLIKNotApproved, fileBandingNotNull, analystAoNotNull);
             if ((detailSLIKNotApproved && resumeSLIKNotApproved) || (fileBandingNotNull && analystAoNotNull)) {
