@@ -55,6 +55,15 @@
             </v-list-item>
             <v-list-item>
               <template v-slot:prepend>
+                <v-icon icon="mdi-person" size="x-small"></v-icon>
+              </template>
+              <v-list-item-title> NIK Pemohon </v-list-item-title>
+              <v-list-item>
+                <strong> {{ dataFile.nik_pemohon }} </strong>
+              </v-list-item>
+            </v-list-item>
+            <v-list-item>
+              <template v-slot:prepend>
                 <v-icon icon="mdi-map-marker" size="x-small"></v-icon>
               </template>
               <v-list-item-title> Alamat Pemohon </v-list-item-title>
