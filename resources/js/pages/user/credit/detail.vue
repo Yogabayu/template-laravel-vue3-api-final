@@ -855,7 +855,7 @@ export default {
         if (response.status === 200) {
           // this.dataFile = response.data.data.file;                 
           this.dataFile = response.data.data.file;
-          this.attachments = this.dataFile.attachments.filter(item => item.path != 'null');
+          this.attachments = this.dataFile.attachments.filter(item => item.path && item.path !== 'null' || item.link && item.link !== 'null');
           this.userAccess = response.data.data.userAccess;
 
           //attach
