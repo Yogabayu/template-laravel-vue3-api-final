@@ -642,10 +642,10 @@ export default {
         },
         showAnalisaAwalCredit() {
             const detailSLIK = this.data.find(
-                (att) => att.name === "Detail SLIK" && att.isApprove == 1 && att.path != 'null'
+                (att) => att.name === "Detail SLIK" && att.isApprove == 1 && (att.path != 'null' || att.link != null)
             );
             const resumeSLIK = this.data.find(
-                (att) => att.name === "Resume SLIK" && att.isApprove == 1
+                (att) => att.name === "Resume SLIK" && att.isApprove == 1 && (att.path != 'null' || att.link != null)
             );
 
             if (detailSLIK && resumeSLIK) {
@@ -664,17 +664,17 @@ export default {
         },
         showFileBanding() {
             const detailSLIKNotApproved = this.data.find(
-                (att) => att.name == "Detail SLIK" && att.isApprove != 1 && att.path != 'null'
+                (att) => att.name == "Detail SLIK" && att.isApprove != 1 && (att.path != 'null' || att.link != null)
             );
             const resumeSLIKNotApproved = this.data.find(
-                (att) => att.name == "Resume SLIK" && att.isApprove != 1 && att.path != 'null'
+                (att) => att.name == "Resume SLIK" && att.isApprove != 1 && (att.path != 'null' || att.link != null)
             );
 
             const fileBandingNotNull = this.data.find(
-                (att) => att.name === "File Banding" && att.path != 'null'
+                (att) => att.name === "File Banding" && (att.path != 'null' || att.link != null)
             );
             const analystAoNotNull = this.data.find(
-                (att) => att.name === "Analisa Awal Kredit AO" && att.path != 'null' || att.name === "Analisa Awal Kredit AO" && att.link != 'null'
+                (att) => att.name === "Analisa Awal Kredit AO" && (att.path != 'null' || att.link != null) || att.name === "Analisa Awal Kredit AO" && (att.path != 'null' || att.link != null)
             );
             // console.log(detailSLIKNotApproved, resumeSLIKNotApproved, fileBandingNotNull, analystAoNotNull);
             if ((detailSLIKNotApproved && resumeSLIKNotApproved) || (fileBandingNotNull && analystAoNotNull)) {
