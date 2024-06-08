@@ -53,14 +53,14 @@
                                         </button>
                                     </template>
                                 </v-tooltip>
-                                <!-- <v-tooltip location="top" text="Hapus File"
+                                <v-tooltip location="top" text="Hapus File"
                                     v-if="userAccess && parseInt(userAccess.canDeleteData)">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="deleteAttachment(attachment.id)">
                                             <VIcon size="20" icon="bx-trash" color="red" />
                                         </button>
                                     </template>
-                                </v-tooltip> -->
+                                </v-tooltip>
                             </div>
                         </div>
                     </template>
@@ -194,6 +194,7 @@ export default {
             if (type == 1) {
                 this.formsp3k.id = null;
                 this.formsp3k.isSecret = 0;
+                this.formsp3k.path = null;
                 this.formsp3k.isApprove = 0;
                 this.isSp3k = false;
             } 

@@ -983,8 +983,8 @@ export default {
           this.dataFormIn.notification = parseInt(item.notification);
           this.dataFormIn.isSecret = parseInt(item.isSecret);
           this.dataFormIn.canInsertData = parseInt(item.canInsertData);
-          this.dataFormIn.canUpdateData = parseInt(item.canInsertData);
-          this.dataFormIn.canDeleteData = parseInt(item.canInsertData);
+          this.dataFormIn.canUpdateData = parseInt(item.canUpdateData);
+          this.dataFormIn.canDeleteData = parseInt(item.canDeleteData);
           this.edit = true;
         }
       } else if (type === 3) {
@@ -1003,7 +1003,7 @@ export default {
           this.dataFormIn.isSecret = parseInt(item.isSecret);
           this.dataFormIn.canInsertData = parseInt(item.canInsertData);
           this.dataFormIn.canUpdateData = parseInt(item.canUpdateData);
-          this.dataFormIn.canDeleteData = parseInt(item.canInsertData);
+          this.dataFormIn.canDeleteData = parseInt(item.canDeleteData);
           this.copy = true;
         }
       }

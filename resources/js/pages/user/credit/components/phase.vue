@@ -33,7 +33,7 @@
               <span>Informasi Umum ℹ️</span>
             </v-col>
             <v-col cols="12" sm="6" md="4" class="text-sm-right text-md-right"
-              v-if="userAccess && userAccess.canInsertData">
+              v-if="userAccess && userAccess.canUpdateData">
               <span>
                 <v-btn color="primary" size="small" class="my-3 mx-3" @click="openModal(4)">
                   Edit Data
@@ -92,7 +92,7 @@
                   Rp {{ formatInput(dataFile.plafon) }}
                 </strong></v-list-item>
             </v-list-item>
-            <v-list-item v-if="dataFile.nik_pasangan != null && dataFile.nik_pasangan != ''">
+            <v-list-item v-if="dataFile.nik_pasangan != null && dataFile.nik_pasangan != '' && dataFile.nik_pasangan !='null'">
               <template v-slot:prepend>
                 <v-icon icon="mdi-code-greater-than" size="x-small"></v-icon>
               </template>
@@ -103,7 +103,7 @@
                 </strong>
               </v-list-item>
             </v-list-item>
-            <v-list-item v-if="dataFile.nik_jaminan != null && dataFile.nik_jaminan != ''">
+            <v-list-item v-if="dataFile.nik_jaminan != null && dataFile.nik_jaminan != '' && dataFile.nik_jaminan !='null'">
               <template v-slot:prepend>
                 <v-icon icon="mdi-code-greater-than" size="x-small"></v-icon>
               </template>

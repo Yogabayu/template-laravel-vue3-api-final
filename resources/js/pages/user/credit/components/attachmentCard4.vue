@@ -59,14 +59,14 @@
                                         </button>
                                     </template>
                                 </v-tooltip>
-                                <!-- <v-tooltip location="top" text="Hapus File"
+                                <v-tooltip location="top" text="Hapus File"
                                     v-if="userAccess && parseInt(userAccess.canDeleteData)">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="deleteAttachment(attachment.id)">
                                             <VIcon size="20" icon="bx-trash" color="red" />
                                         </button>
                                     </template>
-                                </v-tooltip> -->
+                                </v-tooltip>
                             </div>
                         </div>
                     </template>

@@ -11,7 +11,7 @@
             title: 'Kredit Disetujui',
             image: docs,
             stats: `${tApproved}`,
-            link: '/u-credit',
+            link: '/data-master',
           }" />
         </VCol>
         <VCol cols="4" md="6">
@@ -19,7 +19,7 @@
             title: 'Kredit Pending',
             image: docs,
             stats: `${tPending}`,
-            link: '/u-credit',
+            link: '/data-master',
           }" />
         </VCol>
         <VCol cols="4" md="6">
@@ -27,7 +27,7 @@
             title: 'Kredit Ditolak',
             image: docs,
             stats: `${tRejected}`,
-            link: '/u-credit',
+            link: '/data-master',
           }" />
         </VCol>
       </v-row>

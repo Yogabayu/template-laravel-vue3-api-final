@@ -171,8 +171,7 @@
                 <span style="color: red">*</span><span class="subtitle-1 text-center">Note: </span>
                 <VTextField class="my-3" v-model="attachFile.note" :rules="[rules.required]" />
               </VCol>
-              <VCol md="12" cols="12"
-                v-if="attachFile.name === 'Analisa Awal Kredit AO' || attachFile.name === 'Analisa Kredit'">
+              <VCol md="12" cols="12">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih Salah Satu :
                 </span>
                 <v-radio-group v-model="selectedOption" :mandatory="true" row>
@@ -210,9 +209,10 @@
               </VCol>
               <VCol cols="12" class="d-flex flex-wrap gap-4">
                 <VBtn type="submit"
-                  :disabled="(attachFile.name && attachFile.path && attachFile.isApprove != 1 && attachFile.note == null) == null">
+                  :disabled="!(attachFile.name && (attachFile.path || attachFile.link) && attachFile.isApprove === 1 && attachFile.note !== null)">
                   Simpan
                 </VBtn>
+
                 <button type="button" class="btn btn-blue" @click="closeModal(1)">
                   Batal
                 </button>
@@ -238,7 +238,7 @@
                 <span style="color: red">*</span>
                 <span class="subtitle-1 text-center">Keterangan File: </span>
 
-                <VTextField class="my-3" v-model="attachFile.name" autofocus :rules="[rules.required]" />
+                <VTextField class="my-3" v-model="attachFile.name" autofocus :rules="[rules.required]" disabled />
               </VCol>
               <VCol md="12" cols="12">
                 <span style="color: red">*</span>
@@ -315,9 +315,19 @@
                 <VTextField class="my-3" v-model="generalInfo.address" :rules="[rules.required]" />
               </VCol>
               <VCol md="12" cols="12">
-                <span style="color: red">*</span><span class="subtitle-1 text-center">Alamat Pemohon: </span>
+                <span class="subtitle-1 text-center">NIK Pasangan: </span>
 
-                <VTextField class="my-3" v-model="generalInfo.address" :rules="[rules.required]" />
+                <VTextField class="my-3" v-model="generalInfo.nik_pasangan" />
+              </VCol>
+              <VCol md="12" cols="12">
+                <span class="subtitle-1 text-center">NIK Pemilik Jaminan: </span>
+
+                <VTextField class="my-3" v-model="generalInfo.nik_jaminan" />
+              </VCol>
+              <VCol md="12" cols="12">
+                <span class="subtitle-1 text-center">No. HP: </span>
+
+                <VTextField class="my-3" v-model="generalInfo.no_hp" :rules="[rules.required]" />
               </VCol>
               <VCol cols="12" class="d-flex flex-wrap gap-4">
                 <VBtn type="submit"> Update </VBtn>
@@ -352,17 +362,6 @@
         </template>
       </v-card>
     </v-dialog>
-
-    <!-- <v-dialog v-model="isModalPhase" width="auto">
-      <v-card>
-        <template v-slot:title> Catatan </template>
-        <template v-slot:text>
-          <v-card>
-            <template v-slot:title> Phase 1 </template>
-          </v-card>
-        </template>
-      </v-card>
-    </v-dialog> -->
 
     <v-dialog v-model="isDataPhase3" width="auto" persistent transition="dialog-top-transition">
       <v-card>
@@ -510,9 +509,10 @@ export default {
         // { value: 'Mesin', title: 'Jaminan Mesin Produksi' },
         { value: 'KTP Pasangan', title: 'KTP Pasangan' },
         { value: 'KTP Atas Nama Jaminan', title: 'KTP Atas Nama Jaminan' },
-        { value: 'KTP Atas Nama Jaminan', title: 'KTP Atas Nama Jaminan' },
         { value: 'Resume SLIK', title: 'Resume SLIK' },
         { value: 'Detail SLIK', title: 'Detail SLIK' },
+        { value: 'Detail SLIK Pasangan', title: 'Detail SLIK Pasangan' },
+        { value: 'Detail SLIK Atas Nama jaminan', title: 'Detail SLIK Atas Nama jaminan' },
         { value: 'File Banding', title: 'File Banding' },
         { value: 'Analisa Awal Kredit AO', title: 'Analisa Awal Kredit AO' },
         { value: 'Analisa Kredit', title: 'Analisa Kredit' },
@@ -535,10 +535,10 @@ export default {
       isUpdateGeneralInfo: false,
       generalInfo: {
         id: null,
-        name: "",
-        type_bussiness: "",
-        desc_bussiness: "",
-        plafon: "0",
+        name: null,
+        type_bussiness: null,
+        desc_bussiness: null,
+        plafon: null,
         nik_pemohon: null,
         nik_pasangan: null,
         nik_jaminan: null,
@@ -865,6 +865,7 @@ export default {
           this.dataAttachPhase2 = response.data.data.file.attachments.filter(
             (item: { phase: number }) => item.phase == 2
           )
+
           this.dataAttachPhase3 = response.data.data.file.attachments.filter(
             (item: { phase: number }) => item.phase == 3
           )
@@ -908,6 +909,8 @@ export default {
           this.generalInfo.nik_jaminan = this.dataFile.nik_jaminan;
           this.generalInfo.address = this.dataFile.address;
           this.generalInfo.no_hp = this.dataFile.no_hp;
+
+          // console.log(this.generalInfo);          
 
           for (let index = 0; index < 5; index++) {
             this.separateNotesByPhase(this.dataFile, index);
@@ -990,11 +993,27 @@ export default {
     async updateGeneralInfo() {
       try {
         this.overlay = true;
+
         const formData = new FormData();
         formData.append("name", this.generalInfo.name);
         formData.append("plafon", this.generalInfo.plafon.replace(/\D/g, ""));
         formData.append("type_bussiness", this.generalInfo.type_bussiness);
         formData.append("desc_bussiness", this.generalInfo.desc_bussiness);
+        if (this.generalInfo.nik_pemohon != "") {
+          formData.append("nik_pemohon", this.generalInfo.nik_pemohon);
+        }
+        if (this.generalInfo.nik_pasangan != "") {
+          formData.append("nik_pasangan", this.generalInfo.nik_pasangan);
+        }
+        if (this.generalInfo.nik_jaminan != "") {
+          formData.append("nik_jaminan", this.generalInfo.nik_jaminan);
+        }
+        if (this.generalInfo.address != "") {
+          formData.append("address", this.generalInfo.address);
+        }
+        if (this.generalInfo.no_hp != "") {
+          formData.append("no_hp", this.generalInfo.no_hp);
+        }
         formData.append("_method", "PUT");
 
         const response = await mainURL.post(
@@ -1203,14 +1222,25 @@ export default {
         formData.append("file_id", this.attachFile.file_id);
         formData.append("phase", this.dataFile.phase);
         formData.append("name", this.attachFile.name);
-        formData.append("path", this.attachFile.path);
+        if (this.attachFile.path != null) {
+          formData.append("path", this.attachFile.path);
+        }
+        if (this.attachFile.link != null) {
+          formData.append("link", this.attachFile.link);
+        }
         formData.append("note", this.attachFile.note);
         formData.append("isApprove", this.attachFile.isApprove);
         if (this.dataFile.phase >= 2) {
-          formData.append("isSecret", this.attachFile.isSecret);
+          if (this.attachFile.isSecret === false) {
+            // Konversi nilai 0 menjadi string
+            formData.append("isSecret", "0");
+          } else {
+            // Konversi nilai isSecret menjadi string jika dia merupakan angka
+            formData.append("isSecret", String(this.attachFile.isSecret));
+          }
         }
+
         formData.append("_method", "POST");
-        // console.log(...formData);      
         const config = {
           onUploadProgress: (progressEvent) => {
             try {
@@ -1309,7 +1339,7 @@ export default {
     async deleteAttachment(id: any) {
       try {
         const confirmDelete = window.confirm(
-          "Apakah Anda yakin ingin menghapus data? Data akan terhapus secara permanen. a"
+          "Apakah Anda yakin ingin menghapus data? Data akan terhapus secara permanen."
         );
         if (!confirmDelete) return;
 
@@ -1320,7 +1350,7 @@ export default {
           this.overlay = false;
           this.getDetailFile(this.fileId);
           // this.$showToast("success", "Berhasill", response.data.message);
-          this.$showToast("success", "Berhasill", "Terjadi Kesalahan Silahkan Coba Lagi");
+          this.$showToast("success", "Berhasill", response.data.message);
           // window.location.reload();
         } else {
           this.overlay = false;
@@ -1329,6 +1359,8 @@ export default {
           this.$showToast("error", "Sorry", "Terjadi Kesalahan Silahkan Coba Lagi");
           // window.location.reload();
         }
+
+        //URUNG: delete attachment + phase 2
       } catch (error) {
         this.overlay = false;
         this.getDetailFile(this.fileId);

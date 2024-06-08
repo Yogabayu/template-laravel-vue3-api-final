@@ -14,12 +14,14 @@
         <div v-for="(attachment, index) in data" :key="index">
             <v-list density="compact">
                 <v-list-item v-if="shouldDisplay(attachment)">
+                    <!-- <v-list-item> -->
                     <template v-slot:prepend>
                         {{ parseInt(attachment.isApprove) ? "✅" : "❌" }}
                         <v-icon icon="mdi-file"></v-icon>
                     </template>
                     <v-list-item-title> {{ attachment.name }} </v-list-item-title>
-                    <v-list-item-subtitle v-if="attachment.note != null"> {{ attachment.note }} </v-list-item-subtitle>
+                    <v-list-item-subtitle v-if="attachment.note != 'null'"> {{ attachment.note }}
+                    </v-list-item-subtitle>
                     <template v-slot:append>
                         <div class="operation-wrapper">
                             <div class="d-flex justify-space-between">
@@ -59,14 +61,14 @@
                                         </button>
                                     </template>
                                 </v-tooltip>
-                                <!-- <v-tooltip location="top" text="Hapus File"
+                                <v-tooltip location="top" text="Hapus File"
                                     v-if="userAccess && parseInt(userAccess.canDeleteData)">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="deleteAttachment(attachment.id)">
                                             <VIcon size="20" icon="bx-trash" color="red" />
                                         </button>
                                     </template>
-                                </v-tooltip> -->
+                                </v-tooltip>
                             </div>
                         </div>
                     </template>
@@ -227,6 +229,11 @@
 
                             <VTextField class="my-3" v-model="formDetailSlik.name" autofocus disabled
                                 :rules="[rules.required]" />
+                        </VCol>
+
+                        <VCol md="12" cols="12">
+                            <span class="subtitle-1 text-center">Note: </span>
+                            <VTextField class="my-3" v-model="formDetailSlik.note" :rules="[rules.required]" />
                         </VCol>
 
                         <VCol md="12" cols="12">
@@ -584,6 +591,7 @@ export default {
             formDetailSlik: {
                 id: null,
                 name: null,
+                note: null,
                 path: null,
                 link: null,
                 file_id: this.fileId,
@@ -596,6 +604,7 @@ export default {
                 id: null,
                 name: null,
                 path: null,
+                note: null,
                 link: null,
                 file_id: this.fileId,
                 isApprove: 0,
@@ -609,6 +618,7 @@ export default {
                 phase: 2,
                 name: "File Banding",
                 path: null,
+                note: null,
                 link: null,
                 isApprove: 0,
                 isSecret: 0,
@@ -619,6 +629,7 @@ export default {
                 id: null,
                 file_id: this.fileId,
                 link: null,
+                note: null,
                 phase: 2,
                 name: "Analisa Awal Kredit AO",
                 path: null,
@@ -630,25 +641,21 @@ export default {
     methods: {
         shouldDisplay(attachment) {
             if (
-                attachment.name === "Detail SLIK" &&
-                parseInt(this.userAccess.isSecret) == 1
+                attachment.name === "Analisa Awal Kredit AO"
             ) {
-                return true;
+                return false;
             }
-            if (attachment.name === "Resume SLIK") {
-                return true;
+            if (attachment.name === "File Banding") {
+                return false;
             }
-            return false;
+            return true;
         },
         showAnalisaAwalCredit() {
-            const detailSLIK = this.data.find(
-                (att) => att.name === "Detail SLIK" && att.isApprove == 1 && (att.path != 'null' || att.link != null)
-            );
-            const resumeSLIK = this.data.find(
-                (att) => att.name === "Resume SLIK" && att.isApprove == 1 && (att.path != 'null' || att.link != null)
+            const containsApprovedSLIK = this.data.filter(
+                (att) => att.name.includes("SLIK") && att.isApprove === 1 && (att.path !== null || att.link !== null)
             );
 
-            if (detailSLIK && resumeSLIK) {
+            if (containsApprovedSLIK.length > 0) {
                 let analytic = this.data.find((att) => att.name == "Analisa Awal Kredit AO");
                 if (analytic) {
                     this.formAnalytic.id = analytic.id;
@@ -657,27 +664,22 @@ export default {
                     this.formAnalytic.path = analytic.path;
                     this.formAnalytic.link = analytic.link;
                 }
+
+                return true
             }
-            // return detailSLIK && resumeSLIK && this.userAccess.canAppeal == 1;
-            return detailSLIK && resumeSLIK;
-            // return true;
+            return false;
         },
         showFileBanding() {
-            const detailSLIKNotApproved = this.data.find(
-                (att) => att.name == "Detail SLIK" && att.isApprove != 1 && (att.path != 'null' || att.link != null)
-            );
-            const resumeSLIKNotApproved = this.data.find(
-                (att) => att.name == "Resume SLIK" && att.isApprove != 1 && (att.path != 'null' || att.link != null)
+            const containsUnapprovedSLIK = this.data.filter(
+                (att) => att.name.includes("SLIK") && att.isApprove === 0 && (att.path !== null || att.link !== null)
             );
 
-            const fileBandingNotNull = this.data.find(
-                (att) => att.name === "File Banding" && (att.path != 'null' || att.link != null)
+            const cekFileBanding = this.data.filter(
+                (att) => att.name == 'File Banding' && (att.path !== 'null' || att.link !== null)
             );
-            const analystAoNotNull = this.data.find(
-                (att) => att.name === "Analisa Awal Kredit AO" && (att.path != 'null' || att.link != null) || att.name === "Analisa Awal Kredit AO" && (att.path != 'null' || att.link != null)
-            );
-            // console.log(detailSLIKNotApproved, resumeSLIKNotApproved, fileBandingNotNull, analystAoNotNull);
-            if ((detailSLIKNotApproved && resumeSLIKNotApproved) || (fileBandingNotNull && analystAoNotNull)) {
+            
+
+            if (containsUnapprovedSLIK.length > 0 || cekFileBanding.length > 0) {
                 let appeal = this.data.find((att) => att.name === "File Banding");
                 if (appeal) {
                     this.formAppeal.id = appeal.id;
@@ -690,6 +692,7 @@ export default {
 
             return false;
         },
+
 
         handleFileChange(event) {
             const selectedFile = event.target.files[0];
@@ -758,11 +761,11 @@ export default {
             }
         },
         openModal(type, item = null) {
-            // console.log(item);
             if (type == 1) {
                 if (item.name == "Detail SLIK") {
                     this.formDetailSlik.id = item.id;
                     this.formDetailSlik.name = item.name;
+                    this.formDetailSlik.note = item.note;
                     this.formDetailSlik.isSecret = parseInt(item.isSecret);
                     this.formDetailSlik.isApprove = parseInt(item.isApprove);
 
@@ -770,6 +773,15 @@ export default {
                 } else if (item.name == "Resume SLIK") {
                     this.formDetailSlik.id = item.id;
                     this.formDetailSlik.name = item.name;
+                    this.formDetailSlik.note = item.note;
+                    this.formDetailSlik.isSecret = parseInt(item.isSecret);
+                    this.formDetailSlik.isApprove = parseInt(item.isApprove);
+
+                    this.isFormResumeSlik = true;
+                } else {
+                    this.formDetailSlik.id = item.id;
+                    this.formDetailSlik.name = item.name;
+                    this.formDetailSlik.note = item.note;
                     this.formDetailSlik.isSecret = parseInt(item.isSecret);
                     this.formDetailSlik.isApprove = parseInt(item.isApprove);
 
@@ -810,10 +822,12 @@ export default {
         },
         async insertSlik() {
             try {
-                // console.log(this.formDetailSlik);
                 this.overlay = true;
                 const formData = new FormData();
                 formData.append("name", this.formDetailSlik.name);
+                if (this.formDetailSlik.note != null) {
+                    formData.append("note", this.formDetailSlik.note);
+                }
 
                 if (this.formDetailSlik.path != null) {
                     formData.append("path", this.formDetailSlik.path);
@@ -873,6 +887,7 @@ export default {
                 this.overlay = true;
                 const formData = new FormData();
                 formData.append("name", this.formAnalytic.name);
+                formData.append("note", this.formAnalytic.note);
                 if (this.formAnalytic.path != 'null') {
                     formData.append("path", this.formAnalytic.path);
                 } else
@@ -930,6 +945,7 @@ export default {
                 this.overlay = true;
                 const formData = new FormData();
                 formData.append("name", this.formAppeal.name);
+                formData.append("note", this.formAppeal.note);
                 if (this.formAppeal.path != null) {
                     formData.append("path", this.formAppeal.path);
                 } else if (this.formAppeal.link != null) {
@@ -979,5 +995,8 @@ export default {
             }
         },
     },
+    // mounted() {
+    //     console.log(this.data);
+    // },
 };
 </script>
