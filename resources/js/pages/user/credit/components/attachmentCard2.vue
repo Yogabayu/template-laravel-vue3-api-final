@@ -652,9 +652,8 @@ export default {
         },
         showAnalisaAwalCredit() {
             const containsApprovedSLIK = this.data.filter(
-                (att) => att.name.includes("SLIK") && att.isApprove === 1 && (att.path !== null || att.link !== null)
+                (att) => att.name.includes("SLIK") && att.isApprove == 1 && (att.path != 'null' || att.link != null)
             );
-
             if (containsApprovedSLIK.length > 0) {
                 let analytic = this.data.find((att) => att.name == "Analisa Awal Kredit AO");
                 if (analytic) {
@@ -671,7 +670,7 @@ export default {
         },
         showFileBanding() {
             const containsUnapprovedSLIK = this.data.filter(
-                (att) => att.name.includes("SLIK") && att.isApprove === 0 && (att.path !== null || att.link !== null)
+                (att) => att.name.includes("SLIK") && att.isApprove == 0 && (att.path !== 'null' || att.link !== null)
             );
 
             const cekFileBanding = this.data.filter(
