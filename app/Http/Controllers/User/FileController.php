@@ -516,7 +516,7 @@ class FileController extends Controller
 
                     if ($file->nik_jaminan != null && $file->nik_jaminan != 'null') {
                         if ($detailSlikAtasNamaApproved == 0) {
-                            return ResponseHelper::errorRes('Maaf, Karena anda memasukkan data NIK Atas Nama Jaminan, maka Detail SLIK Atas nama jaminan wajin di isi / approve');
+                            return ResponseHelper::errorRes('Maaf, Karena anda memasukkan data NIK Atas Nama Jaminan, maka Detail SLIK Atas nama jaminan wajib di isi / approve');
                         }
                     }
 
