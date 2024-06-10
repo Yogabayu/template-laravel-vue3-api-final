@@ -11,7 +11,7 @@
             <v-list density="compact" v-if="attachment.path != null && !parseInt(attachment.isSecret)">
                 <v-list-item>
                     <template v-slot:prepend>
-                        {{ attachment.isApprove ? '✅' : '❌' }}
+                        {{ parseInt(attachment.isApprove) ? '✅' : '❌' }}
                         <v-icon icon="mdi-file"></v-icon>
                     </template>
                     <v-list-item-title> {{ attachment.name }} </v-list-item-title>
@@ -62,7 +62,7 @@
             <v-list density="compact" v-else>
                 <v-list-item>
                     <template v-slot:prepend>
-                        {{ attachment.isApprove ? '✅' : '❌' }}
+                        {{ parseInt(attachment.isApprove) ? '✅' : '❌' }}
                         <v-icon icon="mdi-file"></v-icon>
                     </template>
                     <v-list-item-title> {{ attachment.name }} </v-list-item-title>

@@ -652,7 +652,7 @@ export default {
         },
         showAnalisaAwalCredit() {
             const containsApprovedSLIK = this.data.filter(
-                (att) => att.name.includes("SLIK") && att.isApprove === 1 && (att.path !== null || att.link !== null)
+                (att) => att.name.includes("SLIK") && att.isApprove == 1 && (att.path != 'null' || att.link != null)
             );
 
             if (containsApprovedSLIK.length > 0) {
@@ -671,14 +671,13 @@ export default {
         },
         showFileBanding() {
             const containsUnapprovedSLIK = this.data.filter(
-                (att) => att.name.includes("SLIK") && att.isApprove === 0 && (att.path !== null || att.link !== null)
+                (att) => att.name.includes("SLIK") && att.isApprove == 0 && (att.path !== 'null' || att.link !== null)
             );
 
             const cekFileBanding = this.data.filter(
                 (att) => att.name == 'File Banding' && (att.path !== 'null' || att.link !== null)
             );
             
-
             if (containsUnapprovedSLIK.length > 0 || cekFileBanding.length > 0) {
                 let appeal = this.data.find((att) => att.name === "File Banding");
                 if (appeal) {
