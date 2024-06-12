@@ -125,6 +125,7 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
             Route::post('add-attach', [FileController::class, 'addAttchment']);
             Route::put('edit-attach/{id}', [FileController::class, 'editAttachment']);
             Route::delete('delete-attach/{id}', [FileController::class, 'deleteAttachment']);
+            Route::get('get-attach/{id}', [FileController::class, 'getAttachment']);
         });
     });
 });

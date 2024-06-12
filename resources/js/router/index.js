@@ -219,6 +219,19 @@ const router = createRouter({
         },
       ],
     },
+    {
+      path: "/u-pdfeditor/:idAttach",
+      component: () => import("../layouts/user/default.vue"),
+      children: [
+        {
+          path: "",
+          component: () => import("../pages/user/credit/components/compo/pdfeditor.vue"),
+          beforeEnter: (to, from, next) => {
+            checkLogin(next);
+          },
+        },
+      ],
+    },
     
   ],
 });
