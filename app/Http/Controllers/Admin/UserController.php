@@ -201,7 +201,7 @@ class UserController extends Controller
                         if ($updt['message']['chat']['username'] == $request->username) {
                             $chatId = $updt['message']['chat']['id'];
                             $user->telegram_username = $request->username;
-                            $user->telegram_chat_id = $chatId;
+                            $user->telegram_chat_id = strval($chatId);
                             $user->save();
 
                             $user->notify(new TelegramNotification('Berhasill mengkoneksikan ke sistem', null, null));
@@ -211,7 +211,7 @@ class UserController extends Controller
                 }
                 return ResponseHelper::errorRes('Gagal Username tidak ditemukan');
             } else {
-                return ResponseHelper::errorRes('Gagal Username tidak ditemukan');
+                return ResponseHelper::errorRes('Gagal Username tidak ditemukan 3');
             }
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
