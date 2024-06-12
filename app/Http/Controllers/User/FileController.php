@@ -1714,15 +1714,14 @@ class FileController extends Controller
                 ['file_id' => $file->id, 'user_id' => $file->user_id, 'phase' => $file->phase],
                 ['approved' => 0]
             );
-
-            EmailHelper::AddUpdate($file->id);
-            TelegramHelper::AddFile($file->id);
-
             //add count time
             PhaseTime::firstOrCreate(['file_id' => $file->id, 'phase' => $file->phase, 'startTime' => Carbon::now()]);
 
             ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Menambahkan Data Kredit');
             ActivityHelper::userActivity(Auth::user()->id, 'Menambahkan Data Kredit' . $file->name);
+
+            EmailHelper::AddUpdate($file->id);
+            TelegramHelper::AddFile($file->id);
 
             return ResponseHelper::successRes('Berhasil menambahkan data', $file);
         } catch (\Exception $e) {
