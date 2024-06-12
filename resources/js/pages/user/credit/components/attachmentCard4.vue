@@ -210,8 +210,7 @@ export default {
                 return;
             }
             
-            this.$router.push(`/u-pdfeditor/${attach.id}`);
-            // this.$router.push({ name: 'u-pdfeditor', params: { idAttach: attach.id, file: attach.path } });
+            this.$router.push(`/a-pdfeditor/${attach.id}`);
         },
         openModal(type, item = null) {
             if (type == 1) {

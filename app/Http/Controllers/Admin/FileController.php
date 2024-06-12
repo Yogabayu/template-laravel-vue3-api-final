@@ -383,6 +383,18 @@ class FileController extends Controller
         }
     }
 
+
+    public function getAttachment($id)
+    {
+        try {
+            $attachment = Attachment::findOrFail($id);
+
+            return ResponseHelper::successRes('Attachment found successfully', $attachment);
+        } catch (\Exception $e) {
+            return ResponseHelper::errorRes($e->getMessage());
+        }
+    }
+
     public function approveAttachment($id)
     {
         try {

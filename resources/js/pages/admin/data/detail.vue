@@ -858,7 +858,7 @@ export default {
           this.attachments = this.dataFile.attachments.filter(item => item.path && item.path !== 'null' || item.link && item.link !== 'null');
           this.userAccess = response.data.data.userAccess;
 
-          console.log(this.userAccess);
+          // console.log(this.userAccess);
           
 
           //attach

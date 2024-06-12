@@ -92,6 +92,7 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
         Route::post('add-attach', [AdminFileController::class, 'addAttchment']);
         Route::put('edit-attach/{id}', [AdminFileController::class, 'editAttachment']);
         Route::delete('delete-attach/{id}', [AdminFileController::class, 'deleteAttachment']);
+        Route::get('get-attach/{id}', [AdminFileController::class, 'getAttachment']);
 
 
         //////// Route User \\\\\\\\\

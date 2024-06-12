@@ -59,6 +59,13 @@
                                         </button>
                                     </template>
                                 </v-tooltip>
+                                <v-tooltip location="top" text="Tanda Tangan File" v-if="userAccess && parseInt(userAccess.canUpdateData)">
+                                    <template v-slot:activator="{ props }">
+                                        <button v-bind="props" @click="toSignature(attachment)">
+                                            <VIcon size="20" icon="bx-pen" color="blue" />
+                                        </button>
+                                    </template>
+                                </v-tooltip>
                                 <v-tooltip location="top" text="Hapus File"
                                     v-if="userAccess && parseInt(userAccess.canDeleteData)">
                                     <template v-slot:activator="{ props }">
@@ -197,6 +204,14 @@ export default {
         }
     },
     methods: {
+        toSignature(attach) {
+            if (attach.path == 'null' && attach.link == null) {
+                alert('Silahkan upload file terlebih dahulu');
+                return;
+            }
+            
+            this.$router.push(`/u-pdfeditor/${attach.id}`);
+        },
         openModal(type, item = null) {
             if (type == 1) {
                 this.formKomite.id = item.id;
