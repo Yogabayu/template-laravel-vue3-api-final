@@ -2,11 +2,11 @@ import axios from 'axios';
 
 const mainURL = axios.create({
   /** localhost */
-  baseURL: 'http://localhost:8000/api/v1',
+  // baseURL: 'http://localhost:8000/api/v1',
   /** development */
   // baseURL: 'https://templatevue.yogabayuap.com/api/v1',
   /** production */
-  // baseURL: 'https://ecar.bankarthaya.com/api/v1',
+  baseURL: 'https://ecar.bankarthaya.com/api/v1',
 });
 // Interceptor untuk menambahkan token ke header Authorization
 mainURL.interceptors.request.use(

@@ -325,7 +325,7 @@
         <v-card-text>
           <div v-if="dataFile && dataFile.approvals && dataFile.approvals.length">
             <template v-for="(app, index) in dataFile.approvals" :key="index">
-              <v-chip v-if="dataFile.phase == app.phase" :color="app.approved == 1 ? 'success' : 'error'" class="mr-2"
+              <v-chip v-if="dataFile.phase == app.phase" :color="app.approved == 1 ? 'success' : 'error'" class="mr-2 mb-2"
                 @click="changeApproval(app.id)">
                 {{ app.user.name }} - {{ app.user.position.name }}
               </v-chip>

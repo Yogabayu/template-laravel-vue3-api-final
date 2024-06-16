@@ -1525,7 +1525,7 @@ class FileController extends Controller
                 'isSecret' => 1,
             ];
             // Inisialisasi array untuk menampung semua file yang terkait
-            $files = File::all();
+            $files = File::with('user')->orderBy('created_at', 'desc')->get();
             ActivityHelper::userActivity(Auth::user()->id, 'Mengakses halaman File Credit');
 
             return ResponseHelper::successRes('Berhasil menampilkan datas', ['files' => $files, 'userAccess' => $userAccess]);

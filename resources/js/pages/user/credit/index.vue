@@ -49,6 +49,12 @@
                 <span v-if="parseInt(item.isApproved) == 2"> Pending</span>
                 <span v-if="parseInt(item.isApproved) == 3"> Rejected</span>
               </template>
+              <template #item-aoro="item">
+                <span>{{ item.user.name }}</span>
+              </template>              
+              <template #item-created_at="item">
+                <span>{{ formatDate(item.created_at) }} WIB</span>
+              </template>
               <template #item-operation="item">
                 <div class="operation-wrapper">
                   <!-- <button>
@@ -352,7 +358,8 @@ export default {
         { text: "Nama", value: "name", sortable: true },
         { text: "Plafon", value: "plafon", sortable: true },
         { text: "Status", value: "isApproved", sortable: true },
-        // { text: "Phase", value: "phase", sortable: true },
+        { text: "AO/RO", value: "aoro", sortable: true },
+        { text: "Tanggal", value: "created_at", sortable: true },
         { text: "Operation", value: "operation", width: 100 },
       ],
       phases: [
@@ -412,6 +419,10 @@ export default {
     },
   },
   methods: {
+    formatDate(dateString: any) {
+      const date = new Date(dateString);
+      return date.toLocaleString("id-ID");
+    },
     async downloadFile(id) {
       try {
         this.overlay = true;

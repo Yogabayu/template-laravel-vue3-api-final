@@ -14,7 +14,6 @@
         <div v-for="(attachment, index) in data" :key="index">
             <v-list density="compact">
                 <v-list-item v-if="shouldDisplay(attachment)">
-                    <!-- <v-list-item> -->
                     <template v-slot:prepend>
                         {{ parseInt(attachment.isApprove) ? "✅" : "❌" }}
                         <v-icon icon="mdi-file"></v-icon>
@@ -26,7 +25,28 @@
                         <div class="operation-wrapper">
                             <div class="d-flex justify-space-between">
                                 <v-tooltip location="top" text="Lihat File"
-                                    v-if="attachment.path !== 'null' || attachment.link !== null">
+                                    v-if="(attachment.path !== 'null' || attachment.link !== null) &&attachment.isSecret">
+                                    <template v-slot:activator="{ props }">
+                                        <a v-bind="props" :href="`${filePath}/${fileId}/${attachment.path}`"
+                                            target="_blank" rel="noopener noreferrer" v-if="attachment.path !== 'null' &&
+                                                userAccess &&
+                                                parseInt(userAccess.isSecret) == 1">
+                                            <button>
+                                                <VIcon size="20" icon="bx-link-external" color="blue" />
+                                            </button>
+                                        </a>
+                                        <a v-bind="props" :href="`${attachment.link}`" target="_blank"
+                                            rel="noopener noreferrer" v-if="attachment.link !== null &&
+                                                userAccess &&
+                                                parseInt(userAccess.isSecret) == 1">
+                                            <button>
+                                                <VIcon size="20" icon="bx-link-external" color="blue" />
+                                            </button>
+                                        </a>
+                                    </template>
+                                </v-tooltip>
+                                <v-tooltip location="top" text="Lihat File"
+                                    v-else>
                                     <template v-slot:activator="{ props }">
                                         <a v-bind="props" :href="`${filePath}/${fileId}/${attachment.path}`"
                                             target="_blank" rel="noopener noreferrer" v-if="attachment.path !== 'null'">
@@ -35,7 +55,8 @@
                                             </button>
                                         </a>
                                         <a v-bind="props" :href="`${attachment.link}`" target="_blank"
-                                            rel="noopener noreferrer" v-if="attachment.link !== null">
+                                            rel="noopener noreferrer" v-if="attachment.link !== null &&
+                                                userAccess ">
                                             <button>
                                                 <VIcon size="20" icon="bx-link-external" color="blue" />
                                             </button>
@@ -70,6 +91,53 @@
                                     </template>
                                 </v-tooltip>
                             </div>
+                            <!-- <div class="d-flex justify-space-between" v-else> -->
+                            <!-- <v-tooltip location="top" text="Lihat File"
+                                    v-if="(attachment.path !== 'null' || attachment.link !== null)">
+                                    <template v-slot:activator="{ props }">
+                                        <a v-bind="props" :href="`${filePath}/${fileId}/${attachment.path}`"
+                                            target="_blank" rel="noopener noreferrer"
+                                            v-if="attachment.path !== 'null'">
+                                            <button>
+                                                <VIcon size="20" icon="bx-link-external" color="blue" />
+                                            </button>
+                                        </a>
+                                        <a v-bind="props" :href="`${attachment.link}`" target="_blank"
+                                            rel="noopener noreferrer" v-if="attachment.link !== null">
+                                            <button>
+                                                <VIcon size="20" icon="bx-link-external" color="blue" />
+                                            </button>
+                                        </a>
+                                    </template>
+                                </v-tooltip> -->
+                            <!-- <v-tooltip location="top" text="Upload File" v-if="
+                                    (attachment.path === 'null' && attachment.link === null) &&
+                                    userAccess &&
+                                    parseInt(userAccess.canInsertData) == 1
+                                ">
+                                    <template v-slot:activator="{ props }">
+                                        <button v-bind="props" @click="openModal(1, attachment)">
+                                            <VIcon size="20" icon="bx-upload" color="blue" />
+                                        </button>
+                                    </template>
+                                </v-tooltip>
+                                <v-tooltip location="top" text="Edit File"
+                                    v-if="userAccess && parseInt(userAccess.canUpdateData)">
+                                    <template v-slot:activator="{ props }">
+                                        <button v-bind="props" @click="openModal(1, attachment)">
+                                            <VIcon size="20" icon="bx-edit" color="blue" />
+                                        </button>
+                                    </template>
+                                </v-tooltip>
+                                <v-tooltip location="top" text="Hapus File"
+                                    v-if="userAccess && parseInt(userAccess.canDeleteData)">
+                                    <template v-slot:activator="{ props }">
+                                        <button v-bind="props" @click="deleteAttachment(attachment.id)">
+                                            <VIcon size="20" icon="bx-trash" color="red" />
+                                        </button>
+                                    </template>
+                                </v-tooltip>
+                            </div> -->
                         </div>
                     </template>
                 </v-list-item>
@@ -187,7 +255,7 @@
                                     parseInt(userAccess.canAppeal) == 1
                                 ">
                                     <template v-slot:activator="{ props }">
-                                        <button v-bind="props" @click="openModal(3, formAppeal)">
+                                        <button v-bind="props" @click="openModal(3)">
                                             <VIcon size="20" icon="bx-upload" color="blue" />
                                         </button>
                                     </template>
@@ -195,7 +263,7 @@
                                 <v-tooltip location="top" text="Edit File"
                                     v-if="userAccess && parseInt(userAccess.canAppeal) == 1">
                                     <template v-slot:activator="{ props }">
-                                        <button v-bind="props" @click="openModal(3, formAppeal)">
+                                        <button v-bind="props" @click="openModal(3)">
                                             <VIcon size="20" icon="bx-edit" color="blue" />
                                         </button>
                                     </template>
@@ -491,23 +559,14 @@
                                 placeholder="Pick an image" :rules="[rules.required]"
                                 @change="handleAppealChange($event); formAppeal.link = null"></v-file-input>
                         </VCol>
-                        <VCol md="12" cols="12" v-if="formAppeal === 'link'">
+                        <VCol md="12" cols="12" v-if="selectedOption === 'link'">
                             <span style="color: red">*</span>
                             <span class="subtitle-1 text-center"> Upload Link: </span>
 
-                            <VTextField class="my-3" v-model="formDetailSlik.link" type="link"
-                                hint="Pastikan menggunakan https://" :rules="[rules.required]" />
+                            <VTextField class="my-3" v-model="formAppeal.link" type="link"
+                                hint="Pastikan menggunakan https://" :rules="[rules.required]"
+                                @change="formAppeal.path = null" />
                         </VCol>
-
-                        <!-- <VCol md="12" cols="12">
-                            <span style="color: red">*</span>
-                            <span class="subtitle-1 text-center"> Upload File: </span>
-
-                            <v-file-input class="my-3"
-                                accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                                placeholder="Pick an image" :rules="[rules.required]"
-                                @change="(event) => handleAppealChange(event)"></v-file-input>
-                        </VCol> -->
                         <VCol md="12" cols="12">
                             <v-select label="Apakah Anda Yakin file sudah benar ?" :items="[
                                 { value: 1, title: 'Ya' },
@@ -639,6 +698,14 @@ export default {
         };
     },
     methods: {
+        // handleFileInputChange(formName) {
+        //     console.log('formName', formName);
+        //     // this[formName].link = null; // Clear link if file is uploaded
+        // },
+        // handleLinkInputChange(formName) {
+        //     // console.log(formName);
+        //     formName.file = null; // Clear file if link is entered
+        // },
         shouldDisplay(attachment) {
             if (
                 attachment.name === "Analisa Awal Kredit AO"
@@ -676,8 +743,6 @@ export default {
             const cekFileBanding = this.data.filter(
                 (att) => att.name == 'File Banding' && (att.path !== 'null' || att.link !== null)
             );
-            
-
             if (containsUnapprovedSLIK.length > 0 || cekFileBanding.length > 0) {
                 let appeal = this.data.find((att) => att.name === "File Banding");
                 if (appeal) {
@@ -762,6 +827,7 @@ export default {
         openModal(type, item = null) {
             if (type == 1) {
                 if (item.name == "Detail SLIK") {
+                    this.selectedOption = "";
                     this.formDetailSlik.id = item.id;
                     this.formDetailSlik.name = item.name;
                     this.formDetailSlik.note = item.note;
@@ -770,6 +836,7 @@ export default {
 
                     this.isFormDetailSlik = true;
                 } else if (item.name == "Resume SLIK") {
+                    this.selectedOption = "";
                     this.formDetailSlik.id = item.id;
                     this.formDetailSlik.name = item.name;
                     this.formDetailSlik.note = item.note;
@@ -789,6 +856,8 @@ export default {
             } else if (type == 2) {
                 this.isAnalytic = true;
             } else if (type == 3) {
+                this.formAppeal.link = null;
+                this.formAppeal.path = null;
                 this.isAppeal = true;
             }
         },
@@ -796,12 +865,16 @@ export default {
             if (type == 1) {
                 this.formDetailSlik.id = null;
                 this.formDetailSlik.name = null;
+                this.formDetailSlik.path = null;
+                this.formDetailSlik.link = null;
                 this.formDetailSlik.isSecret = 0;
                 this.formDetailSlik.isApprove = 0;
                 this.isFormDetailSlik = false;
             } else if (type == 2) {
                 this.formDetailSlik.id = null;
                 this.formDetailSlik.name = null;
+                this.formDetailSlik.path = null;
+                this.formDetailSlik.link = null;
                 this.formDetailSlik.isSecret = 0;
                 this.formDetailSlik.isApprove = 0;
                 this.isFormResumeSlik = false;
@@ -810,12 +883,13 @@ export default {
                 this.formAnalytic.isSecret = 0;
                 this.formAnalytic.isApprove = 0;
                 this.formAnalytic.path = null;
+                this.formAnalytic.link = null;
                 this.isAnalytic = false;
             } else if (type == 4) {
                 this.formAppeal.id = null;
                 this.formAppeal.isSecret = 0;
                 this.formAppeal.isApprove = 0;
-                this.formAppeal.path = null;
+                this.formAppeal.link = null;
                 this.isAppeal = false;
             }
         },
@@ -944,9 +1018,10 @@ export default {
                 const formData = new FormData();
                 formData.append("name", this.formAppeal.name);
                 formData.append("note", this.formAppeal.note);
-                if (this.formAppeal.path != null) {
+                if (this.formAppeal.path != null && this.formAppeal.path != '') {
                     formData.append("path", this.formAppeal.path);
-                } else if (this.formAppeal.link != null) {
+                }
+                else if (this.formAppeal.link != null && this.formAppeal.link != '') {
                     formData.append("link", this.formAppeal.link);
                 }
                 formData.append("phase", this.formAppeal.phase);
@@ -987,11 +1062,15 @@ export default {
                     this.$showToast("error", "Sorry", response.data.message);
                 }
             } catch (error) {
+                this.overlay = false;
                 this.closeModal(4);
                 this.getDetailFile(this.fileId);
                 this.$showToast("error", "Sorry", error.response.data.message);
             }
         },
+    },
+    mounted() {
+        // console.log(this.userAccess);
     },
 };
 </script>
