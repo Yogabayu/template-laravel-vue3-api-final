@@ -25,7 +25,7 @@
                         <div class="operation-wrapper">
                             <div class="d-flex justify-space-between">
                                 <v-tooltip location="top" text="Lihat File"
-                                    v-if="(attachment.path !== 'null' || attachment.link !== null) &&attachment.isSecret">
+                                    v-if="(attachment.path !== 'null' || attachment.link !== null) &&parseInt(attachment.isSecret)">
                                     <template v-slot:activator="{ props }">
                                         <a v-bind="props" :href="`${filePath}/${fileId}/${attachment.path}`"
                                             target="_blank" rel="noopener noreferrer" v-if="attachment.path !== 'null' &&
