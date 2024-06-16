@@ -82,4 +82,8 @@ class File extends Model
     {
         return $this->hasMany(Attachment::class);
     }
+    public function filesubmissions()
+    {
+        return $this->hasMany(FileSubmission::class);
+    }
 }

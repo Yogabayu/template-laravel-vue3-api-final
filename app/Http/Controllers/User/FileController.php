@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Approval;
 use App\Models\Attachment;
 use App\Models\File;
+use App\Models\FileSubmission;
 use App\Models\Note;
 use App\Models\NotificationConfiguration;
 use App\Models\PhaseTime;
@@ -1749,6 +1750,7 @@ class FileController extends Controller
             $file->approvals()->delete();
             $file->notes()->delete();
             $file->appeals()->delete();
+            $file->filesubmissions()->delete();
             $file->fileActivities()->delete(); // This line may not be necessary if it is logged after deletion
 
             foreach ($attachments as $attch) {
@@ -1788,6 +1790,7 @@ class FileController extends Controller
                 'approvals.user',
                 'approvals.user.position',
                 'phaseTimes',
+                'filesubmissions',
             ])->findOrFail($id);
 
             // //add user to approval
@@ -1870,6 +1873,138 @@ class FileController extends Controller
             TelegramHelper::AddUpdatePhase($approv->file_id, "User merubah Status menjadi " . ($approv->approved ? "Disetujui" : "Ditolak"), $approv->user_id);
 
             return ResponseHelper::successRes('Berhasill mengubah status', $approv);
+        } catch (\Exception $e) {
+            return ResponseHelper::errorRes($e->getMessage());
+        }
+    }
+
+    //=>file-submission
+    public function addFileSubmission(Request $request)
+    {
+        try {
+            $file = new FileSubmission();
+            $file->file_id = $request->file_id;
+            $file->phase = $request->phase;
+            $file->name = $request->name;
+            if ($request->has('type')) {
+                $file->type = $request->type;
+            }
+
+            if ($request->has('link')) {
+                $file->link = $request->link;
+                $file->path = null;
+                $oldPath = public_path('file/' . $request->file_id . '/' . $file->path);
+                if (FacadesFile::exists($oldPath)) {
+                    FacadesFile::delete($oldPath);
+                }
+            } else {
+                if ($request->hasFile('path')) {
+                    // Delete old file
+                    $oldPath = public_path('file/' . $request->file_id . '/' . $file->path);
+                    if (FacadesFile::exists($oldPath)) {
+                        FacadesFile::delete($oldPath);
+                    }
+
+                    // Upload new file
+                    $rand = Str::random(10);
+                    $fileObject = $request->file('path');
+                    $imageEXT = $fileObject->getClientOriginalName();
+                    $filename = pathinfo($imageEXT, PATHINFO_FILENAME);
+                    $EXT = $fileObject->getClientOriginalExtension();
+                    $fileimage = $filename . '-' . $rand . '_' . time() . '.' . $EXT;
+                    $path = $fileObject->move(public_path('file/' . $request->file_id . '/'), $fileimage);
+
+                    $file->link = null;
+                    $file->path = $fileimage;
+                }
+            }
+
+            $file->save();
+
+            ActivityHelper::fileActivity($file->file_id, Auth::user()->id, 'Menambahkan File Penunjang Kredit');
+            ActivityHelper::userActivity(Auth::user()->id, 'Menambahkan File Penunjang kredit ' . $file->name);
+
+            TelegramHelper::AddUpdate($file->file_id, 'Menambahkan File Penunjang Kredit : ' . $request->name, Auth::user()->id);
+
+            return ResponseHelper::successRes('Berhasil menambahkan data', $file);
+        } catch (\Exception $e) {
+            return ResponseHelper::errorRes($e->getMessage());
+        }
+    }
+
+    public function updateFileSubmission(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'link' => 'nullable | url',
+            ], [
+                'url' => ':attribute harus berupa URL yang valid atau tambahkan https://',
+            ]);
+
+            $file = FileSubmission::findOrFail($id);
+            $file->file_id = $request->file_id;
+            $file->name    = $request->name;
+            $file->phase   = $request->phase;
+            $file->type   = $request->type;
+
+            if ($request->has('link')) {
+                $file->link = $request->link;
+                $file->path = null;
+                $oldPath = public_path('file/' . $request->file_id . '/' . $file->path);
+                if (FacadesFile::exists($oldPath)) {
+                    FacadesFile::delete($oldPath);
+                }
+            } else {
+                if ($request->hasFile('path')) {
+                    // Delete old file
+                    $oldPath = public_path('file/' . $request->file_id . '/' . $file->path);
+                    if (FacadesFile::exists($oldPath)) {
+                        FacadesFile::delete($oldPath);
+                    }
+
+                    // Upload new file
+                    $rand = Str::random(10);
+                    $fileObject = $request->file('path');
+                    $imageEXT = $fileObject->getClientOriginalName();
+                    $filename = pathinfo($imageEXT, PATHINFO_FILENAME);
+                    $EXT = $fileObject->getClientOriginalExtension();
+                    $fileimage = $filename . '-' . $rand . '_' . time() . '.' . $EXT;
+                    $path = $fileObject->move(public_path('file/' . $request->file_id . '/'), $fileimage);
+
+                    $file->link = null;
+                    $file->path = $fileimage;
+                }
+            }
+
+            $file->save();
+
+            ActivityHelper::fileActivity($file->file_id, Auth::user()->id, 'Mengedit File Penunjang Kredit');
+            ActivityHelper::userActivity(Auth::user()->id, 'Edit File Penunjang kredit ' . $file->name);
+
+            TelegramHelper::AddUpdate($file->file_id, 'Merubah File Penunjang Kredit : ' . $request->name, Auth::user()->id);
+
+            return ResponseHelper::successRes('File Penunjang Kredit Berhasil di update', $file);
+        } catch (\Exception $e) {
+            return ResponseHelper::errorRes($e->getMessage());
+        }
+    }
+
+    public function destroyFileSubmission($id)
+    {
+        try {
+            $file = FileSubmission::find($id);
+            $fileName = $file->name;
+            $filePath = public_path('file/' . $file->file_id . '/' . $file->path);
+            if (FacadesFile::exists($filePath)) {
+                FacadesFile::delete($filePath);
+            }
+            $file->delete();
+
+            ActivityHelper::fileActivity($file->file_id, Auth::user()->id, 'Menghapus File Penunjang Kredit: ' . $fileName);
+            ActivityHelper::userActivity(Auth::user()->id, 'Menghapus File Penunjang Kredit: ' . $fileName);
+
+            TelegramHelper::AddUpdate($file->file_id, 'Menghapus Lampiran : ' . $fileName, Auth::user()->id);
+            return ResponseHelper::successRes('Data berhasil dihapus', $file);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }

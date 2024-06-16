@@ -47,7 +47,7 @@
                 :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
                 :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2"
                 :phase3Attachments="dataAttachPhase3" :phase4Attachments="dataAttachPhase4"
-                :phase5Attachments="dataAttachPhase5" />
+                :phase5Attachments="dataAttachPhase5" :submissions="fileSubmissions" />
             </v-stepper-window-item>
             <v-stepper-window-item value="1" v-else>
               <div style="
@@ -70,7 +70,7 @@
                 :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
                 :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2"
                 :phase3Attachments="dataAttachPhase3" :phase4Attachments="dataAttachPhase4"
-                :phase5Attachments="dataAttachPhase5" />
+                :phase5Attachments="dataAttachPhase5" :submissions="fileSubmissions" />
             </v-stepper-window-item>
             <v-stepper-window-item value="2" v-else>
               <div style="
@@ -93,7 +93,7 @@
                 :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
                 :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2"
                 :phase3Attachments="dataAttachPhase3" :phase4Attachments="dataAttachPhase4"
-                :phase5Attachments="dataAttachPhase5" />
+                :phase5Attachments="dataAttachPhase5" :submissions="fileSubmissions" />
             </v-stepper-window-item>
             <v-stepper-window-item value="3" v-else>
               <div style="
@@ -116,7 +116,7 @@
                 :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
                 :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2"
                 :phase3Attachments="dataAttachPhase3" :phase4Attachments="dataAttachPhase4"
-                :phase5Attachments="dataAttachPhase5" />
+                :phase5Attachments="dataAttachPhase5" :submissions="fileSubmissions" />
             </v-stepper-window-item>
             <v-stepper-window-item value="4" v-else>
               <div style="
@@ -138,7 +138,7 @@
                 :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
                 :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2"
                 :phase3Attachments="dataAttachPhase3" :phase4Attachments="dataAttachPhase4"
-                :phase5Attachments="dataAttachPhase5" />
+                :phase5Attachments="dataAttachPhase5" :submissions="fileSubmissions" />
             </v-stepper-window-item>
             <v-stepper-window-item value="6">
               <phase :dataFile="dataFile" :userData="userData" :insert-note="insertNote"
@@ -149,7 +149,7 @@
                 :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
                 :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2"
                 :phase3Attachments="dataAttachPhase3" :phase4Attachments="dataAttachPhase4"
-                :phase5Attachments="dataAttachPhase5" />
+                :phase5Attachments="dataAttachPhase5" :submissions="fileSubmissions" />
             </v-stepper-window-item>
           </v-stepper-window>
         </v-stepper>
@@ -394,7 +394,7 @@
           <EasyDataTable :headers="timerHeaders" :items="dataFile.phase_times">
             <template #item-timeDiff="item">{{
               calculateTimeDiff(item.startTime, item.endTime)
-            }}</template>
+              }}</template>
           </EasyDataTable>
         </template>
       </v-card>
@@ -652,6 +652,7 @@ export default {
       },
 
       attachments: [],
+      fileSubmissions: [],
       //=> data attachment phase 
       dataAttachPhase1: [],
       dataAttachPhase2: [],
@@ -701,7 +702,6 @@ export default {
           this.$showToast("error", "Sorry", response.data.message);
         }
       } catch (error) {
-        console.log(error);
         this.overlay = false;
         this.closeModal(9);
         this.$showToast("error", "Sorry", error.response.data.message);
@@ -793,10 +793,19 @@ export default {
     async step(id: any, type: any) {
       try {
         if (type == "next") {
-          const confirmNext = window.confirm(
-            `Apakah Anda yakin melanjutkan ke tahap selanjutnya`
-          );
-          if (!confirmNext) return;
+
+          if (this.dataFile.phase === 3 && this.fileSubmissions.length === 0) {
+            const confirmNext = window.confirm(
+              `Tidak ada file Pendukung yang diajukan. Apakah Anda yakin melanjutkan ke tahap selanjutnya?`
+            );
+            if (!confirmNext) return;
+          } else {
+            const confirmNext = window.confirm(
+              `Apakah Anda yakin melanjutkan ke tahap selanjutnya`
+            );
+            if (!confirmNext) return;
+          }
+
           this.overlay = true;
           const formData = new FormData();
           formData.append("id", id);
@@ -856,6 +865,9 @@ export default {
           // this.dataFile = response.data.data.file;                 
           this.dataFile = response.data.data.file;
           this.attachments = this.dataFile.attachments.filter(item => item.path && item.path !== 'null' || item.link && item.link !== 'null');
+          // this.fileSubmissions = this.dataFile.filesubmissions.filter(item => item.path && item.path !== null || item.link && item.link !== null);
+          this.fileSubmissions = this.dataFile.filesubmissions;
+
           this.userAccess = response.data.data.userAccess;
 
           //attach
@@ -910,8 +922,6 @@ export default {
           this.generalInfo.address = this.dataFile.address;
           this.generalInfo.no_hp = this.dataFile.no_hp;
 
-          // console.log(this.generalInfo);          
-
           for (let index = 0; index < 5; index++) {
             this.separateNotesByPhase(this.dataFile, index);
           }
@@ -922,7 +932,6 @@ export default {
           this.overlay = false;
         }
       } catch (error) {
-        console.log(error);
         this.overlay = false;
         this.$showToast("error", "Sorry", error.response.data.message);
       }
@@ -1153,7 +1162,6 @@ export default {
     },
     modalNote() {
       this.isModalPhase = !this.isModalPhase;
-      console.log(this.isModalPhase);
     },
 
     //=>approval section

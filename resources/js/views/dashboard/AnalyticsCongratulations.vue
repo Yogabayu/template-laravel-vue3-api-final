@@ -8,7 +8,6 @@ const { global } = useTheme()
 
 const savedUserData = JSON.parse(localStorage.getItem("userData")) || { name: "User" };
 const illustrationJohn = computed(() => global.name.value === 'dark' ? illustrationJohnDark : illustrationJohnLight)
-// console.log(savedUserData);
 </script>
 
 <template>

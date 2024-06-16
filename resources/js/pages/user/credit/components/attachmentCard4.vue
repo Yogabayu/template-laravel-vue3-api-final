@@ -80,6 +80,7 @@
                 </v-list-item>
             </v-list>
         </div>
+
     </v-card>
 
     <v-dialog v-model="isKomite" width="auto" persistent transition="dialog-top-transition">
@@ -101,7 +102,7 @@
                             <span class="subtitle-1 text-center"> Upload File: </span>
 
                             <v-file-input class="my-3"
-                                accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                accept="application/pdf"
                                 placeholder="Pick an image" :rules="[rules.required]"
                                 @change="(event) => handleFileChange(event)"></v-file-input>
                         </VCol>
@@ -221,7 +222,6 @@ export default {
                 this.formKomite.isSecret = parseInt(item.isSecret);
                 this.formKomite.isApprove = parseInt(item.isApprove);
 
-                // console.log(this.formKomite);
                 this.isKomite = true;
             }
         },
@@ -237,21 +237,22 @@ export default {
         handleFileChange(event) {
             const selectedFile = event.target.files[0];
             const allowedTypes = [
-                "image/jpeg", // for .jpeg and .jpg
-                "image/png",
+                // "image/jpeg", // for .jpeg and .jpg
+                // "image/png",
                 "application/pdf",
-                "application/msword", // for .doc
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // for .docx
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // for .xlsx
-                "application/vnd.ms-excel",
+                // "application/msword", // for .doc
+                // "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // for .docx
+                // "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // for .xlsx
+                // "application/vnd.ms-excel",
             ];
             if (selectedFile && allowedTypes.includes(selectedFile.type)) {
                 this.formKomite.path = selectedFile;
             } else {
+                this.isKomite = false;
                 this.$showToast(
                     "error",
                     "Error",
-                    "Hanya file JPG, JPEG, PNG, PDF, DOC, dan DOCX yang diizinkan."
+                    "Hanya file PDF yang diizinkan."
                 );
                 event.target.value = null;
             }

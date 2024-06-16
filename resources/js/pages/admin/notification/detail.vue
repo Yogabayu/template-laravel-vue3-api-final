@@ -713,7 +713,7 @@ export default {
         // { text: "Phase", value: "phase", sortable: true },
         { text: "Min. Plafon", value: "minPlafon", sortable: true },
         { text: "Max. Plafon", value: "maxPlafon", sortable: true },
-        { text: "Input Banding?", value: "canAppeal", sortable: true },
+        { text: "Input Dokumen Penunjang?", value: "canAppeal", sortable: true },
         { text: "Approve?", value: "canApprove", sortable: true },
         { text: "Notifikasi", value: "notification", sortable: true },
         { text: "Akses Data Sensitif? (SLIK, dll)", value: "isSecret", sortable: true },

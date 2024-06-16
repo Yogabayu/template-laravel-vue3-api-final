@@ -94,7 +94,7 @@
 
     <v-dialog v-model="insert" width="auto" persistent transition="dialog-top-transition">
       <v-card>
-        <template v-slot:title> Tambah Data s</template>
+        <template v-slot:title> Tambah Data</template>
 
         <template v-slot:text>
           <VForm @submit.prevent="insertData">
@@ -436,7 +436,6 @@ export default {
         }
       } catch (error) {
         this.overlay = false;
-        console.log(error);
         this.$showToast("error", "Error", "Terjadi kesalahan saat mengunduh file");
       }
     },
@@ -528,7 +527,6 @@ export default {
       if (type === 1) {
         this.insert = true;
       } else if (type === 2) {
-        console.log("masuk");
       }
     },
     closeModal(type: number) {
@@ -654,18 +652,6 @@ export default {
         }
 
         formData.append("_method", "POST");
-        // console.log(...formData);
-
-        // formData.forEach((value, key) => {
-        //   // if (Array.isArray(value)) {
-        //   //   console.log(key + ":");
-        //   //   value.forEach((item) => {
-        //   //     console.log(item);
-        //   //   });
-        //   // } else {
-        //     console.log(key + ": " + value);
-        //   // }
-        // });
 
         const config = {
           onUploadProgress: (progressEvent) => {

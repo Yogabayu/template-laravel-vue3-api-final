@@ -899,7 +899,6 @@ export default {
                 formData.append("isApprove", this.formAnalytic.isApprove);
                 formData.append("_method", "PUT");
 
-                // console.log(...formData);
                 const config = {
                     onUploadProgress: (progressEvent) => {
                         try {
@@ -994,8 +993,5 @@ export default {
             }
         },
     },
-    // mounted() {
-    //     console.log(this.data);
-    // },
 };
 </script>

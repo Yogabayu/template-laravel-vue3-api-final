@@ -127,6 +127,11 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
             Route::put('edit-attach/{id}', [FileController::class, 'editAttachment']);
             Route::delete('delete-attach/{id}', [FileController::class, 'deleteAttachment']);
             Route::get('get-attach/{id}', [FileController::class, 'getAttachment']);
+
+            //=>filepenunjang [file-submission]
+            Route::post('file-submission', [FileController::class, 'addFileSubmission']);
+            Route::put('file-submission/{id}', [FileController::class, 'updateFileSubmission']);
+            Route::delete('file-submission/{id}', [FileController::class, 'destroyFileSubmission']);
         });
     });
 });

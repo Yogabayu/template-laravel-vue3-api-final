@@ -268,7 +268,7 @@
           <div class="mb-5">
             <attachmentCard3 v-if="parseInt(dataFile.phase) > 2" :data="phase3Attachments"
               :fileId="parseInt(dataFile.id)" :filePath="filePath" :userAccess="userAccess"
-              :deleteAttachment="deleteAttachment" :getDetailFile="getDetailFile"></attachmentCard3>
+              :deleteAttachment="deleteAttachment" :getDetailFile="getDetailFile" :submission="submissions"></attachmentCard3>
           </div>
           <div class="mb-5">
             <attachmentCard4 v-if="parseInt(dataFile.phase) > 3" :data="phase4Attachments"
@@ -556,6 +556,10 @@ export default {
       type: Function,
       required: true,
     },
+    submissions: {
+      type: Object,
+      required: true,
+    }
   },
   data() {
     return {

@@ -54,19 +54,18 @@ class EmailHelper
             $attachments = Attachment::where('file_id', $file->id)->get();
 
             // Membuat pesan yang lebih tertata
-            $message = "<h1>📣 Ada Update Baru</h1><br>"
+            $message = "<h1>📣 Ada Update Baru</h1>"
                 . "<p><strong>AO:</strong>" . str_pad($ao->name, 25) . "</p>"
                 . "<p><strong>Pemohon Kredit:</strong>" . str_pad($file->name, 18) . "</p><br>"
                 . "<p><strong>Phase :</strong>" . str_pad($file->phase, 18) . "</p><br>"
                 . "<p><strong>Pengguna Yang Memperbarui :</strong>" . str_pad(Auth::user()->name, 18) . "</p><br>"
                 . "<p><strong>Plafon:</strong> Rp. " . number_format($file->plafon, 0, ',', '.') . "</p>"
-                . "<p>Silakan cek detailnya di <a href='your_website_url'>Website ECAR</a>.</p>";
+                . "<p>Silakan cek detailnya di <a href='https://ecar.bankarthaya.com' style='color: #348eda; text-decoration: underline;'>Website ECAR</a>.</p>";
 
 
             try {
                 Mail::to($user->email)->send(new AlertEmail($message));
             } catch (\Exception $e) {
-                dd($e->getMessage());
                 Log::error("Failed to send email: " . $e->getMessage());
             }
         }

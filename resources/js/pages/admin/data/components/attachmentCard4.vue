@@ -221,7 +221,6 @@ export default {
                 this.formKomite.isSecret = parseInt(item.isSecret);
                 this.formKomite.isApprove = parseInt(item.isApprove);
 
-                // console.log(this.formKomite);
                 this.isKomite = true;
             }
         },

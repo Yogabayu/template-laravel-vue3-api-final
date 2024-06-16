@@ -701,7 +701,6 @@ export default {
           this.$showToast("error", "Sorry", response.data.message);
         }
       } catch (error) {
-        console.log(error);
         this.overlay = false;
         this.closeModal(9);
         this.$showToast("error", "Sorry", error.response.data.message);
@@ -857,10 +856,6 @@ export default {
           this.dataFile = response.data.data.file;
           this.attachments = this.dataFile.attachments.filter(item => item.path && item.path !== 'null' || item.link && item.link !== 'null');
           this.userAccess = response.data.data.userAccess;
-
-          // console.log(this.userAccess);
-          
-
           //attach
           this.dataAttachPhase1 = response.data.data.file.attachments.filter(
             (item: { phase: number }) => item.phase == 1
@@ -913,8 +908,6 @@ export default {
           this.generalInfo.address = this.dataFile.address;
           this.generalInfo.no_hp = this.dataFile.no_hp;
 
-          // console.log(this.generalInfo);          
-
           for (let index = 0; index < 5; index++) {
             this.separateNotesByPhase(this.dataFile, index);
           }
@@ -925,7 +918,6 @@ export default {
           this.overlay = false;
         }
       } catch (error) {
-        console.log(error);
         this.overlay = false;
         this.$showToast("error", "Sorry", error.response.data.message);
       }
@@ -1149,14 +1141,12 @@ export default {
               this.notePhase4.push(note);
               break;
             default:
-              console.log("Invalid phase");
           }
         }
       });
     },
     modalNote() {
       this.isModalPhase = !this.isModalPhase;
-      console.log(this.isModalPhase);
     },
 
     //=>approval section

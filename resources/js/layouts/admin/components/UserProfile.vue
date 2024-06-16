@@ -51,7 +51,7 @@
           <VDivider class="my-2" />
 
           <!-- 👉 Profile -->
-          <VListItem to="/account-profile">
+          <!-- <VListItem to="/account-profile">
             <template #prepend>
               <VIcon
                 class="me-2"
@@ -61,7 +61,7 @@
             </template>
 
             <VListItemTitle>Profile</VListItemTitle>
-          </VListItem>          
+          </VListItem>           -->
 
           <!-- Divider -->
           <VDivider class="my-2" />
