@@ -48,7 +48,12 @@ class TelegramHelper
         foreach ($notifUser as $notif) {
             $ao = User::find($file->user_id);
             $user = User::find($notif->id);
-            $attachments = Attachment::where('file_id', $file->id)->where('isSecret', '!=', 1)->get();
+            $attachments = Attachment::where('file_id', $file->id)
+                ->where('isSecret', '!=', 1)
+                ->where(function ($query) {
+                    $query->where('link', '!=', 'null')
+                        ->orWhere('path', '!=', 'null');
+                })->get();
 
             // Membuat pesan yang lebih tertata
             $message = "📣 *Ada Update Baru*\n\n"
@@ -96,7 +101,13 @@ class TelegramHelper
         foreach ($notifUser as $notif) {
             $ao = User::find($file->user_id);
             $user = User::find($notif->id);
-            $attachments = Attachment::where('file_id', $file->id)->where('isSecret', '!=', 1)->get();
+            $attachments = Attachment::where('file_id', $file->id)
+                ->where('isSecret', '!=', 1)
+                ->where(function ($query) {
+                    $query->where('link', '!=', 'null')
+                        ->orWhere('path', '!=', 'null');
+                })
+                ->get();
 
             // Membuat pesan yang lebih tertata
             $message = "📣 *Ada Data Credit Baru*\n\n"
@@ -144,7 +155,13 @@ class TelegramHelper
         foreach ($notifUser as $notif) {
             $ao = User::find($file->user_id);
             $user = User::find($notif->id);
-            $attachments = Attachment::where('file_id', $file->id)->where('isSecret', '!=', 1)->get();
+            $attachments = Attachment::where('file_id', $file->id)
+                ->where('isSecret', '!=', 1)
+                ->where(function ($query) {
+                    $query->where('link', '!=', 'null')
+                        ->orWhere('path', '!=', 'null');
+                })
+                ->get();
 
             // Membuat pesan yang lebih tertata
             $message = "📣 *Ada Update Baru*\n\n"
@@ -204,7 +221,13 @@ class TelegramHelper
         foreach ($notifUser as $notif) {
             $ao = User::find($file->user_id);
             $user = User::find($notif->id);
-            $attachments = Attachment::where('file_id', $file->id)->where('isSecret', '!=', 1)->get();
+            $attachments = Attachment::where('file_id', $file->id)
+                ->where('isSecret', '!=', 1)
+                ->where(function ($query) {
+                    $query->where('link', '!=', 'null')
+                        ->orWhere('path', '!=', 'null');
+                })
+                ->get();
 
             // Membuat pesan yang lebih tertata
             $message = "📣 *Ada Update Baru*\n\n"
@@ -261,7 +284,13 @@ class TelegramHelper
         foreach ($notifUser as $notif) {
             $ao = User::find($file->user_id);
             $user = User::find($notif->id);
-            $attachments = Attachment::where('file_id', $file->id)->where('isSecret', '!=', 1)->get();
+            $attachments = Attachment::where('file_id', $file->id)
+                ->where('isSecret', '!=', 1)
+                ->where(function ($query) {
+                    $query->where('link', '!=', 'null')
+                        ->orWhere('path', '!=', 'null');
+                })
+                ->get();
 
             // Membuat pesan yang lebih tertata
             $message = "📣 *Ada Update Baru*\n\n"
@@ -319,7 +348,13 @@ class TelegramHelper
         foreach ($notifUser as $notif) {
             $ao = User::find($file->user_id);
             $user = User::find($notif->id);
-            $attachments = Attachment::where('file_id', $file->id)->where('isSecret', '!=', 1)->get();
+            $attachments = Attachment::where('file_id', $file->id)
+                ->where('isSecret', '!=', 1)
+                ->where(function ($query) {
+                    $query->where('link', '!=', 'null')
+                        ->orWhere('path', '!=', 'null');
+                })
+                ->get();
             $message = "";
 
             if ($status == 1) {
