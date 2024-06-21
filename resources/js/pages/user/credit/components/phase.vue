@@ -38,7 +38,7 @@
               <span>Informasi Umum ℹ️</span>
             </v-col>
             <v-col cols="12" sm="6" md="4" class="text-sm-right text-md-right"
-              v-if="userAccessNow && userAccessNow.canUpdateData">
+              v-if="userAccessNow && parseInt(userAccessNow.canUpdateData) ==1">
               <span>
                 <v-btn color="primary" size="small" class="my-3 mx-3" @click="openModal(4)">
                   Edit Data
@@ -152,7 +152,7 @@
               <span>Dokumen Pendukung 📄</span>
             </v-col>
             <v-col cols="12" sm="6" md="4" class="text-sm-right text-md-right"
-              v-if="userAccessNow && userAccessNow.canInsertData">
+              v-if="userAccessNow && parseInt(userAccessNow.canInsertData)==1">
               <span>
                 <v-btn color="primary" size="small" class="my-3 mx-3" @click="openModal(1)">
                   Tambah Data Lain
