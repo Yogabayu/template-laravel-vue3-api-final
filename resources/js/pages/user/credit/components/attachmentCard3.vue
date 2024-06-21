@@ -83,7 +83,7 @@
                     <span>Dokumen Penunjang Kredit / Jaminan 📄</span>
                 </v-col>
                 <v-col cols="12" sm="6" md="4" class="text-sm-right text-md-right"
-                    v-if="userAccessPhase3 && userAccessPhase3.canAppeal && phase < 5"> <!-- canAppeal karena hanya AO/RO yang bisa input daya jaminan lain -->
+                    v-if="userAccessPhase3 && parseInt(userAccessPhase3.canAppeal)==1 && phase < 5"> <!-- canAppeal karena hanya AO/RO yang bisa input daya jaminan lain -->
                     <span>
                         <v-btn color="primary" size="small" class="my-3 mx-3" @click="openModal(2)">
                             Tambah Data Lain
