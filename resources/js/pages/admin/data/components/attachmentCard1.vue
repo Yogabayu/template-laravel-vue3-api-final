@@ -35,7 +35,7 @@
                                 </v-tooltip>
 
                                 <v-tooltip location="top" text="Edit File" v-if="
-                                    userAccess && parseInt(userAccess.canUpdateData)
+                                    userAccess && parseInt(userAccess.canUpdateData) && phase < 5
                                 ">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="openModal(2, attachment)">
@@ -45,7 +45,7 @@
                                 </v-tooltip>
 
                                 <v-tooltip location="top" text="Hapus File" v-if="
-                                    userAccess && parseInt(userAccess.canDeleteData)
+                                    userAccess && parseInt(userAccess.canDeleteData) && phase < 5
                                 ">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="deleteAttachment(attachment.id)">
@@ -88,7 +88,7 @@
 
 
                                 <v-tooltip location="top" text="Edit File" v-if="
-                                    userAccess && parseInt(userAccess.canUpdateData)
+                                    userAccess && parseInt(userAccess.canUpdateData) && phase < 5
                                 ">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="openModal(2, attachment)">
@@ -98,9 +98,9 @@
                                 </v-tooltip>
 
                                 <v-tooltip location="top" text="Hapus File"
-                                    v-if="userAccess && parseInt(userAccess.canDeleteData)">
+                                    v-if="userAccess && parseInt(userAccess.canDeleteData) && phase < 5">
                                     <template v-slot:activator="{ props }">
-                                        <button v-bind="props" @click="deleteAttachment(attachment.id)">
+                                        <button v-bind="props" @click="deleteAttachment(attachment.id) ">
                                             <VIcon size="20" icon="bx-trash" color="red" />
                                         </button>
                                     </template>
@@ -139,6 +139,10 @@ export default {
         },
         openModal: {
             type: Function,
+            required: true,
+        },
+        phase : {
+            type: Number,
             required: true,
         },
     },

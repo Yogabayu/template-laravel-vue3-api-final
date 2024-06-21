@@ -31,12 +31,55 @@
         </VCol>
       </v-row>
     </v-container>
+
+    <VCol cols="12" md="12" v-if="results.length > 0">
+      <v-card class="mx-5 my-5">
+        <v-card-title> Statistik Kredit </v-card-title>
+        <v-card-text>
+          <v-row v-if="isShowing">
+            <VCol cols="12" md="6" v-if="results.length > 0">
+              <Line :options="options" :data="data" />
+            </VCol>
+            <VCol cols="12" md="6">
+              <Line :options="options" :data="dataAverageTimes" />
+            </VCol>
+          </v-row>
+          <v-row v-else>
+            <VCol cols="12" md="12" v-if="results.length > 0">
+              <Line :options="options" :data="data" />
+            </VCol>
+          </v-row>
+        </v-card-text>
+      </v-card>
+    </VCol>
+
   </VRow>
 </template>
 
 <script>
 import mainURL from "@/axios";
 import AnalyticsCongratulations from "@/views/dashboard/AnalyticsCongratulations.vue";
+import {
+  CategoryScale,
+  Chart as ChartJS,
+  Legend,
+  LineElement,
+  LinearScale,
+  PointElement,
+  Title,
+  Tooltip
+} from 'chart.js';
+import { Line } from 'vue-chartjs';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+)
 
 // Images
 import chart from "@images/cards/chart-success.png";
@@ -52,6 +95,7 @@ import wallet from "@images/cards/wallet-info.png";
 export default {
   components: {
     AnalyticsCongratulations,
+    Line
   },
   data() {
     return {
@@ -70,6 +114,12 @@ export default {
       tPending: 0,
       tRejected: 0,
       newestFile: {},
+      results: [],
+      data: null,
+      options: null,
+
+      dataAverageTimes: null,
+      isShowing: false,
 
       userData: {},
     };
@@ -88,6 +138,7 @@ export default {
 
         if (response.status === 200) {
           const files = response.data.data.files;
+          this.results = response.data.data.results;
           const isApprovedCounts = {
             isApproved1: 0,
             isApproved2: 0,
@@ -112,6 +163,58 @@ export default {
           this.tApproved = isApprovedCounts.isApproved1;
           this.tPending = isApprovedCounts.isApproved2;
           this.tRejected = isApprovedCounts.isApproved3;
+
+          // this.renderLineChart();
+
+          this.data = {
+            labels: this.results.map(result => `${result.month}/${result.year}`),
+            datasets: [
+              {
+                label: 'Disetujui',
+                borderColor: '#36a2eb',
+                backgroundColor: 'transparent',
+                data: this.results.map(result => result.approved),
+                fill: false,
+              },
+              {
+                label: 'Pending',
+                borderColor: '#ffcd56',
+                backgroundColor: 'transparent',
+                data: this.results.map(result => result.pending),
+                fill: false,
+              },
+              {
+                label: 'Ditolak',
+                borderColor: '#ff6384',
+                backgroundColor: 'transparent',
+                data: this.results.map(result => result.rejected),
+                fill: false,
+              },
+            ],
+          };
+
+          this.options = {
+            responsive: true,
+            maintainAspectRatio: false,
+          };
+
+          if (response.data.data.labelsAverageTimes.length > 0) {
+            this.isShowing = true;
+            this.dataAverageTimes = {
+              labels: response.data.data.labelsAverageTimes,
+              datasets: [
+                {
+                  label: 'Rata Waktu per fase (menit)',
+                  borderColor: '#36a2eb',
+                  backgroundColor: 'transparent',
+                  data: response.data.data.dataAverageTimes.map(value => parseFloat(value)),
+                  fill: false,
+                }
+              ]
+            };
+          }
+
+
         } else {
           const errorMessage =
             response && response.data && response.data.message
@@ -120,6 +223,7 @@ export default {
           this.$showToast("error", "Sorry", errorMessage);
         }
       } catch (error) {
+        console.log(error);
         const errorMessage =
           error.response && error.response.data && error.response.data.message
             ? error.response.data.message
@@ -127,8 +231,9 @@ export default {
         this.$showToast("error", "Sorry", errorMessage);
       }
     },
+
   },
-  mounted() {
+  beforeMount() {
     this.getUserData();
     this.getRekapCredit();
   },

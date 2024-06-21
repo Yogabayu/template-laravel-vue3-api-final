@@ -14,6 +14,11 @@
       <v-chip color="warning" v-if="parseInt(dataFile.isApproved) == 2">Pending</v-chip>
       <v-chip color="error" v-if="parseInt(dataFile.isApproved) == 3">Rejected</v-chip>
     </v-card-title>
+    <v-card-text class="font-weight-bold d-flex justify-end" v-if="dataFile && parseInt(dataFile.phase) == 6">
+      <v-btn color="primary" @click="generateReport(fileId)" size="x-small">
+        Generate Laporan
+      </v-btn>
+    </v-card-text>
 
     <v-card-text v-if="dataFile.reasonRejected != null">
       <v-card>
@@ -155,130 +160,34 @@
           </v-row>
         </v-card-title>
         <v-card-text>
-          <!-- <div v-for="(attachment, index) in dataFile.attachments" :key="index">
-            <v-list density="compact" v-if="attachment.path != null && !parseInt(attachment.isSecret)">
-              <v-list-item>
-                <template v-slot:prepend>
-                  {{ attachment.isApprove ? '✅' : '❌' }}
-                  <v-icon icon="mdi-file"></v-icon>
-                </template>
-                <v-list-item-title> {{ attachment.name }}  </v-list-item-title>
-                <template v-slot:append>
-                  <div class="operation-wrapper">
-                    <div class="d-flex justify-space-between">
-                      <v-tooltip location="top" text="Lihat File" v-if="  attachment.path!='null'">
-                        <template v-slot:activator="{ props }">
-                          <a v-bind="props" :href="filePath +
-                            '/' +
-                            dataFile.id +
-                            '/' +
-                            attachment.path
-                            " target="_blank" rel="noopener noreferrer">
-                            <button>
-                              <VIcon size="20" icon="bx-link-external" color="blue" />
-                            </button>
-                          </a>
-                        </template>
-                      </v-tooltip>
-
-                      <v-tooltip location="top" text="Edit File" v-if="
-                        userAccess && parseInt(userAccess.canUpdateData)
-                      ">
-                        <template v-slot:activator="{ props }">
-                          <button v-bind="props" @click="openModal(2, attachment)">
-                            <VIcon size="20" icon="bx-edit" color="blue" />
-                          </button>
-                        </template>
-                      </v-tooltip>
-
-                      <v-tooltip location="top" text="Hapus File" v-if="
-                        userAccess && parseInt(userAccess.canDeleteData)
-                      ">
-                        <template v-slot:activator="{ props }">
-                          <button v-bind="props" @click="deleteAttachment(attachment.id)">
-                            <VIcon size="20" icon="bx-trash" color="red" />
-                          </button>
-                        </template>
-                      </v-tooltip>
-                    </div>
-                  </div>
-                </template>
-              </v-list-item>
-            </v-list>
-
-            <v-list density="compact" v-else>
-              <v-list-item>
-                <template v-slot:prepend>
-                  {{ attachment.isApprove ? '✅' : '❌' }}
-                  <v-icon icon="mdi-file"></v-icon>
-                </template>
-                <v-list-item-title> {{ attachment.name }} </v-list-item-title>
-                <template v-slot:append>
-                  <div class="operation-wrapper">
-                    <div class="d-flex justify-space-between">
-                      <v-tooltip location="top" text="Lihat File" v-if="userAccess && parseInt(userAccess.isSecret) && attachment.path!='null'">
-                        <template v-slot:activator="{ props }">
-                          <a v-bind="props" :href="filePath +
-                            '/' +
-                            dataFile.id +
-                            '/' +
-                            attachment.path
-                            " target="_blank" rel="noopener noreferrer">
-                            <button>
-                              <VIcon size="20" icon="bx-link-external" color="blue" />
-                            </button>
-                          </a>
-                        </template>
-                      </v-tooltip>
-                      
-
-                      <v-tooltip location="top" text="Edit File" v-if="
-                        userAccess && parseInt(userAccess.canUpdateData) 
-                      ">
-                        <template v-slot:activator="{ props }">
-                          <button v-bind="props" @click="openModal(2, attachment)">
-                            <VIcon size="20" icon="bx-edit" color="blue" />
-                          </button>
-                        </template>
-                      </v-tooltip>
-
-                      <v-tooltip location="top" text="Hapus File" v-if="userAccess && parseInt(userAccess.canDeleteData)">
-                        <template v-slot:activator="{ props }">
-                          <button v-bind="props" @click="deleteAttachment(attachment.id)">
-                            <VIcon size="20" icon="bx-trash" color="red" />
-                          </button>
-                        </template>
-                      </v-tooltip>
-                    </div>
-                  </div>
-                </template>
-              </v-list-item>
-            </v-list>            
-          </div> -->
-
           <div class="mb-5">
             <AttachmentCard1 :data="phase1Attachments" :fileId="parseInt(dataFile.id)" :filePath="filePath"
-              :userAccess="userAccess" :deleteAttachment="deleteAttachment" :openModal="openModal"></AttachmentCard1>
+              :userAccess="userAccess" :deleteAttachment="deleteAttachment" :openModal="openModal" 
+              :phase="parseInt(dataFile.phase)"></AttachmentCard1>
           </div>
           <div class="mb-5">
             <AttachmentCard2 v-if="parseInt(dataFile.phase) > 1" :data="phase2Attachments"
               :fileId="parseInt(dataFile.id)" :filePath="filePath" :userAccess="userAccess"
-              :deleteAttachment="deleteAttachment" :getDetailFile="getDetailFile"></AttachmentCard2>
+              :deleteAttachment="deleteAttachment" :getDetailFile="getDetailFile" 
+              :phase="parseInt(dataFile.phase)"></AttachmentCard2>
           </div>
           <div class="mb-5">
             <attachmentCard3 v-if="parseInt(dataFile.phase) > 2" :data="phase3Attachments"
               :fileId="parseInt(dataFile.id)" :filePath="filePath" :userAccess="userAccess"
-              :deleteAttachment="deleteAttachment" :getDetailFile="getDetailFile"></attachmentCard3>
+              :deleteAttachment="deleteAttachment" :getDetailFile="getDetailFile" 
+              :phase="parseInt(dataFile.phase)"></attachmentCard3>
           </div>
           <div class="mb-5">
             <attachmentCard4 v-if="parseInt(dataFile.phase) > 3" :data="phase4Attachments"
               :fileId="parseInt(dataFile.id)" :filePath="filePath" :userAccess="userAccess"
-              :deleteAttachment="deleteAttachment" :getDetailFile="getDetailFile"></attachmentCard4>
+              :deleteAttachment="deleteAttachment" :getDetailFile="getDetailFile" 
+              :phase="parseInt(dataFile.phase)"></attachmentCard4>
           </div>
           <div class="mb-5">
             <attachmentOperation v-if="parseInt(dataFile.phase) > 4" :data="phase5Attachments"
               :fileId="parseInt(dataFile.id)" :filePath="filePath" :userAccess="userAccess"
-              :deleteAttachment="deleteAttachment" :getDetailFile="getDetailFile"></attachmentOperation>
+              :deleteAttachment="deleteAttachment" :getDetailFile="getDetailFile" 
+              :phase="parseInt(dataFile.phase)"></attachmentOperation>
           </div>
         </v-card-text>
       </v-card>
@@ -447,6 +356,7 @@
 </template>
 
 <script>
+import mainURL from "@/axios";
 import { default as AttachmentCard1 } from "./attachmentCard1.vue";
 import { default as AttachmentCard2 } from "./attachmentCard2.vue";
 import attachmentCard3, { default as AttachmentCard3 } from './attachmentCard3.vue';
@@ -582,6 +492,34 @@ export default {
     },
   },
   methods: {
+    async generateReport(id) {
+      try {
+        this.overlay = true;
+        const response = await mainURL.get(`/generatereport/${id}`, {
+          responseType: 'blob' // tambahkan ini untuk mengunduh file sebagai Blob
+        });
+
+        if (response.status == 200) {
+          this.overlay = false;
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', `${this.dataFile.name}.pdf`); // Nama file ZIP yang akan diunduh
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+
+          this.$showToast("success", "Berhasil", "File berhasil diunduh");
+        } else {
+          this.overlay = false;
+          this.$showToast("error", "Error", "Gagal mengunduh file");
+        }
+      } catch (error) {
+        console.log(error);
+        this.overlay = false;
+        this.$showToast("error", "Error", "Terjadi kesalahan saat mengunduh file");
+      }
+    },
     //=>pagination
     onPageChange(page) {
       this.currentPage = page;

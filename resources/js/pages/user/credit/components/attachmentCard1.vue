@@ -35,7 +35,7 @@
                                 </v-tooltip>
 
                                 <v-tooltip location="top" text="Edit File" v-if="
-                                    userAccess && parseInt(userAccess.canUpdateData)
+                                    userAccessPhase1 && parseInt(userAccessPhase1.canUpdateData) && phase < 2
                                 ">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="openModal(2, attachment)">
@@ -45,7 +45,7 @@
                                 </v-tooltip>
 
                                 <v-tooltip location="top" text="Hapus File" v-if="
-                                    userAccess && parseInt(userAccess.canDeleteData)
+                                    userAccessPhase1 && parseInt(userAccessPhase1.canDeleteData) && phase < 2
                                 ">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="deleteAttachment(attachment.id)">
@@ -71,7 +71,7 @@
                         <div class="operation-wrapper">
                             <div class="d-flex justify-space-between">
                                 <v-tooltip location="top" text="Lihat File"
-                                    v-if="userAccess && parseInt(userAccess.isSecret) && attachment.path != 'null'">
+                                    v-if="userAccessPhase1 && parseInt(userAccessPhase1.isSecret) && attachment.path != 'null'">
                                     <template v-slot:activator="{ props }">
                                         <a v-bind="props" :href="filePath +
                                             '/' +
@@ -88,7 +88,7 @@
 
 
                                 <v-tooltip location="top" text="Edit File" v-if="
-                                    userAccess && parseInt(userAccess.canUpdateData)
+                                    userAccessPhase1 && parseInt(userAccessPhase1.canUpdateData) && phase < 2
                                 ">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="openModal(2, attachment)">
@@ -98,7 +98,7 @@
                                 </v-tooltip>
 
                                 <v-tooltip location="top" text="Hapus File"
-                                    v-if="userAccess && parseInt(userAccess.canDeleteData)">
+                                    v-if="userAccessPhase1 && parseInt(userAccessPhase1.canDeleteData) && phase < 2">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="deleteAttachment(attachment.id)">
                                             <VIcon size="20" icon="bx-trash" color="red" />
@@ -141,6 +141,19 @@ export default {
             type: Function,
             required: true,
         },
+        phase : {
+            type: Number,
+            required: true,
+        },
+    },
+    data() {
+        return {
+            userAccessPhase1: null,
+        }
+    },
+
+    mounted() {
+        this.userAccessPhase1 = this.userAccess['1']
     },
 }
 </script>

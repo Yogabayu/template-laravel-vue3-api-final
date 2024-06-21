@@ -19,6 +19,9 @@ use App\Models\PositionToOffice;
 use App\Models\Role;
 use App\Models\User;
 use App\Notifications\TelegramNotification;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -658,7 +661,7 @@ class FileController extends Controller
                         }
                         $matchFound = false;
 
-                        foreach ($notifPositions as $pos) { //URUNG bug komite
+                        foreach ($notifPositions as $pos) {
                             foreach ($notifUser as $user) {
                                 if ($pos->position_id == $user->position_id && $userUploaded->position_id != $pos->position_id) {
                                     Approval::firstOrCreate(
@@ -1620,6 +1623,129 @@ class FileController extends Controller
         }
     }
 
+    public function getFile(Request $request)
+    {
+        try {
+            $monthYear = explode('-', $request->monthYear);
+
+            // Ambil bulan dan tahun
+            $month = $monthYear[0];
+            $year = $monthYear[1];
+
+            $userNow = User::with('position')->where('id', Auth::user()->id)->first();
+            $userPos = User::where('id', Auth::user()->id)->first();
+            $getPostionData = Position::where('id', $userPos->position_id)->first();
+            $role = Role::where('id', $getPostionData->role_id)->first();
+
+            if ($userNow->position->name == 'Account Officer' || $userNow->position->name == 'AO' || $userNow->position->name == 'ao' || $userNow->position->name == 'account officer' || $userNow->position->name == 'Account Officer Executive' || $userNow->position->name == 'account officer executive' || $userNow->position->name == 'Account Officer / Executive AO' || $userNow->position->name == 'AO / RO') {
+
+                $positionId = Auth::user()->position_id;
+                $position = Position::with('offices')->where('id', $positionId)->first();
+
+                // Dapatkan semua kantor yang terkait dengan posisi
+                $offices = $position->offices;
+
+                //get list access for user
+                $notifPositions = [];
+                foreach ($offices as $office) {
+                    $notificationConfigurations = DB::table('notification_configurations')
+                        ->where('office_id', $office->id)
+                        ->where('phase', 1)
+                        ->get();
+
+                    $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
+                }
+                $userPosNow = User::where('id', Auth::user()->id)->first();
+                $userAccess = [];
+
+                foreach ($notifPositions as $notifPosition) {
+                    if ($notifPosition->position_id == $userPosNow->position_id) {
+                        $userAccess = [
+                            'canAppeal' => $notifPosition->canAppeal,
+                            'canApprove' => $notifPosition->canApprove,
+                            'canInsertData' => $notifPosition->canInsertData,
+                            'isSecret' => $notifPosition->isSecret,
+                        ];
+                        break;
+                    }
+                }
+                $files = File::where('user_id', Auth::user()->id)
+                    ->with('user')
+                    ->whereMonth('created_at', $month)
+                    ->whereYear('created_at', $year)
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+
+                ActivityHelper::userActivity(Auth::user()->id, 'Mengakses halaman File Credit');
+
+                return ResponseHelper::successRes('Berhasil menampilkan datas', ['files' => $files, 'userAccess' => $userAccess, 'role' => $role]);
+            } else {
+                $positionId = Auth::user()->position_id;
+                $position = Position::with('offices')->where('id', $positionId)->first();
+
+                // Dapatkan semua kantor yang terkait dengan posisi
+                $offices = $position->offices;
+
+                //get list access for user
+                $notifPositions = [];
+                foreach ($offices as $office) {
+                    $notificationConfigurations = DB::table('notification_configurations')
+                        ->where('office_id', $office->id)
+                        ->where('phase', 1)
+                        ->get();
+
+                    $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
+                }
+                $userPosNow = User::where('id', Auth::user()->id)->first();
+                $userAccess = [];
+
+                foreach ($notifPositions as $notifPosition) {
+                    if ($notifPosition->position_id == $userPosNow->position_id) {
+                        $userAccess = [
+                            'canAppeal' => $notifPosition->canAppeal,
+                            'canApprove' => $notifPosition->canApprove,
+                            'canInsertData' => $notifPosition->canInsertData,
+                            'isSecret' => $notifPosition->isSecret,
+                        ];
+                        break;
+                    }
+                }
+
+                // Inisialisasi array untuk menampung semua file yang terkait
+                $files = [];
+
+                $fileAll = File::with('user')
+                    ->whereMonth('created_at', $month)
+                    ->whereYear('created_at', $year)
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+                foreach ($fileAll as $eachFile) {
+                    // Periksa posisi pengguna yang mengunggah file
+                    $uploaderPositionId = DB::table('users')
+                        ->where('id', $eachFile->user_id)
+                        ->value('position_id');
+
+                    // Dapatkan daftar kantor yang terkait dengan posisi pengguna
+                    $uploaderOfficeIds = DB::table('positiontooffices')
+                        ->where('position_id', $uploaderPositionId)
+                        ->pluck('office_id')
+                        ->toArray();
+
+                    // Periksa apakah ada kantor yang sama antara kantor pengguna dan kantor-kantor yang terkait dengan posisi yang dicari
+                    if (array_intersect($uploaderOfficeIds, $offices->pluck('id')->toArray())) {
+                        // Jika ada, tambahkan file ke dalam array files
+                        $files[] = $eachFile;
+                    }
+                }
+                ActivityHelper::userActivity(Auth::user()->id, 'Mengakses halaman File Credit');
+
+                return ResponseHelper::successRes('Berhasil menampilkan datas', ['files' => $files, 'userAccess' => $userAccess, 'role' => $role]);
+            }
+        } catch (\Exception $e) {
+            return ResponseHelper::errorRes($e->getMessage());
+        }
+    }
+
     public function store(Request $request)
     {
         try {
@@ -1801,38 +1927,49 @@ class FileController extends Controller
 
             //add user to approval
             foreach ($userOffices as $userOffice) {
-                // if ($file->phase == 6) {
-                //     $notificationConfigurations = DB::table('notification_configurations')
-                //         ->where('office_id', $userOffice->office_id)
-                //         ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
-                //         ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon]);
-
-                //     if ($file->phase == 6) {
-                //         $notificationConfigurations = $notificationConfigurations->where('phase', $file->phase - 1);
-                //     } else {
-                //         $notificationConfigurations = $notificationConfigurations->where('phase', $file->phase - 2);
-                //     };
-
-                //     $notificationConfigurations = $notificationConfigurations->get();
-
-                //     $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
-                // } else {
                 $notificationConfigurations = DB::table('notification_configurations')
                     ->where('office_id', $userOffice->office_id)
                     ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
                     ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
-                    ->where('phase', $file->phase)
+                    // ->where('phase', $file->phase)
                     ->get();
 
                 $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
-                // }
             }
 
             $userPosNow = User::where('id', Auth::user()->id)->first();
             $userAccess = [];
 
+            // foreach ($notifPositions as $notifPosition) {
+            //     if ($notifPosition->position_id == $userPosNow->position_id) {
+            //         $userAccess = [
+            //             'canAppeal' => $notifPosition->canAppeal,
+            //             'canApprove' => $notifPosition->canApprove,
+            //             'canInsertData' => $notifPosition->canInsertData,
+            //             'canUpdateData' => $notifPosition->canUpdateData,
+            //             'canDeleteData' => $notifPosition->canDeleteData,
+            //             'isSecret' => $notifPosition->isSecret,
+            //             'phase' => $notifPosition->phase,
+            //         ];
+
+            //         break;
+            //     }
+            // }
+
+            $userAccessByPhase = [
+                1 => [],
+                2 => [],
+                3 => [],
+                4 => [],
+                5 => [],
+                6 => []
+            ];
+
+            // Iterate over each notifPosition to categorize user access based on phase.
             foreach ($notifPositions as $notifPosition) {
+                // Check if the position_id matches the user's current position.
                 if ($notifPosition->position_id == $userPosNow->position_id) {
+                    // Extract user access details for the current notifPosition.
                     $userAccess = [
                         'canAppeal' => $notifPosition->canAppeal,
                         'canApprove' => $notifPosition->canApprove,
@@ -1840,14 +1977,27 @@ class FileController extends Controller
                         'canUpdateData' => $notifPosition->canUpdateData,
                         'canDeleteData' => $notifPosition->canDeleteData,
                         'isSecret' => $notifPosition->isSecret,
+                        'phase' => $notifPosition->phase,
                     ];
-                    break;
+
+                    // Get the phase of the current notifPosition and convert it to an integer.
+                    $phase = (int) $notifPosition->phase;
+
+                    // Check if the phase is within the expected range (1 to 6).
+                    if (isset($userAccessByPhase[$phase])) {
+                        // Add the user access details to the corresponding phase array.
+                        $userAccessByPhase[$phase] = $userAccess;
+                    } else {
+                        // Handle unexpected phase values (optional).
+                        // For now, we skip unexpected phase values.
+                        continue;
+                    }
                 }
             }
 
             ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Mengakses detail file');
 
-            return ResponseHelper::successRes('Berhasill menampilkan data', ['file' => $file, 'userAccess' => $userAccess]);
+            return ResponseHelper::successRes('Berhasill menampilkan data', ['file' => $file, 'userAccess' => $userAccessByPhase]);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -2007,6 +2157,35 @@ class FileController extends Controller
             return ResponseHelper::successRes('Data berhasil dihapus', $file);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
+        }
+    }
+    public function generateReport($id)
+    {
+        try {
+            $file = File::with([
+                'user',
+                'notes' => function ($query) {
+                    $query->latest();
+                },
+                'notes.user',
+                'notes.user.position',
+                'fileActivities' => function ($query) {
+                    $query->latest();
+                },
+                'fileActivities.user',
+                'attachments',
+                'approvals',
+                'approvals.user',
+                'approvals.user.position',
+                'phaseTimes',
+                'filesubmissions',
+            ])->findOrFail($id);
+
+            $pdf = pdf::loadView('report.approve', compact('file'));
+
+            return $pdf->download('laporan-generated.pdf');
+        } catch (\Exception $e) {
+            dd($e->getMessage());
         }
     }
 }

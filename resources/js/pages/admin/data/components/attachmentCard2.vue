@@ -54,7 +54,7 @@
                                     </template>
                                 </v-tooltip>
                                 <v-tooltip location="top" text="Edit File"
-                                    v-if="userAccess && parseInt(userAccess.canUpdateData)">
+                                    v-if="userAccess && parseInt(userAccess.canUpdateData) && phase < 3">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="openModal(1, attachment)">
                                             <VIcon size="20" icon="bx-edit" color="blue" />
@@ -62,7 +62,7 @@
                                     </template>
                                 </v-tooltip>
                                 <v-tooltip location="top" text="Hapus File"
-                                    v-if="userAccess && parseInt(userAccess.canDeleteData)">
+                                    v-if="userAccess && parseInt(userAccess.canDeleteData) && phase < 3">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="deleteAttachment(attachment.id)">
                                             <VIcon size="20" icon="bx-trash" color="red" />
@@ -120,7 +120,7 @@
                                     </template>
                                 </v-tooltip>
                                 <v-tooltip location="top" text="Edit File"
-                                    v-if="userAccess && parseInt(userAccess.canAppeal) == 1">
+                                    v-if="userAccess && parseInt(userAccess.canAppeal) == 1 && phase < 3">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="openModal(2, formAnalytic)">
                                             <VIcon size="20" icon="bx-edit" color="blue" />
@@ -128,7 +128,7 @@
                                     </template>
                                 </v-tooltip>
                                 <v-tooltip location="top" text="Hapus File"
-                                    v-if="userAccess && parseInt(userAccess.canInsertData) == 1">
+                                    v-if="userAccess && parseInt(userAccess.canInsertData) == 1 && phase < 3">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="deleteAttachment(formAnalytic.id)">
                                             <VIcon size="20" icon="bx-trash" color="red" />
@@ -193,7 +193,7 @@
                                     </template>
                                 </v-tooltip>
                                 <v-tooltip location="top" text="Edit File"
-                                    v-if="userAccess && parseInt(userAccess.canAppeal) == 1">
+                                    v-if="userAccess && parseInt(userAccess.canAppeal) == 1 && phase < 3">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="openModal(3, formAppeal)">
                                             <VIcon size="20" icon="bx-edit" color="blue" />
@@ -201,7 +201,7 @@
                                     </template>
                                 </v-tooltip>
                                 <v-tooltip location="top" text="Hapus File"
-                                    v-if="userAccess && parseInt(userAccess.canInsertData) == 1">
+                                    v-if="userAccess && parseInt(userAccess.canInsertData) == 1 && phase < 3">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="deleteAttachment(formAppeal.id)">
                                             <VIcon size="20" icon="bx-trash" color="red" />
@@ -277,9 +277,9 @@
                             ]" v-model="formDetailSlik.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
                         </VCol>
                         <VCol md="12" cols="12">
-                            <v-select label="Apakah Anda Yakin file sudah benar ?" :items="[
-                                { value: 1, title: 'Ya' },
-                                { value: 0, title: 'Tidak' },
+                            <v-select label="Apakah Anda Yakin File Sudah benar / mengubah status file ini ? ?" :items="[
+                                { value: 1, title: 'Setuju' },
+                                { value: 0, title: 'Tidak Setuju' },
                             ]" v-model="formDetailSlik.isApprove" prepend-icon="mdi-help-rhombus"></v-select>
                         </VCol>
                         <VCol cols="12" class="d-flex flex-wrap gap-4">
@@ -355,9 +355,9 @@
                             ]" v-model="formDetailSlik.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
                         </VCol>
                         <VCol md="12" cols="12">
-                            <v-select label="Apakah Anda Yakin file sudah benar ?" :items="[
-                                { value: 1, title: 'Ya' },
-                                { value: 0, title: 'Tidak' },
+                            <v-select label="Apakah Anda Yakin File Sudah benar / mengubah status file ini ? ?" :items="[
+                                { value: 1, title: 'Setuju' },
+                                { value: 0, title: 'Tidak Setuju' },
                             ]" v-model="formDetailSlik.isApprove" prepend-icon="mdi-help-rhombus"></v-select>
                         </VCol>
                         <VCol cols="12" class="d-flex flex-wrap gap-4">
@@ -436,9 +436,9 @@
                         </VCol> -->
 
                         <VCol md="12" cols="12">
-                            <v-select label="Apakah Anda Yakin file sudah benar ?" :items="[
-                                { value: 1, title: 'Ya' },
-                                { value: 0, title: 'Tidak' },
+                            <v-select label="Apakah Anda Yakin File Sudah benar / mengubah status file ini ? ?" :items="[
+                                { value: 1, title: 'Setuju' },
+                                { value: 0, title: 'Tidak Setuju' },
                             ]" v-model="formAnalytic.isApprove" prepend-icon="mdi-help-rhombus"></v-select>
                         </VCol>
                         <VCol cols="12" class="d-flex flex-wrap gap-4">
@@ -509,9 +509,9 @@
                                 @change="(event) => handleAppealChange(event)"></v-file-input>
                         </VCol> -->
                         <VCol md="12" cols="12">
-                            <v-select label="Apakah Anda Yakin file sudah benar ?" :items="[
-                                { value: 1, title: 'Ya' },
-                                { value: 0, title: 'Tidak' },
+                            <v-select label="Apakah Anda Yakin File Sudah benar / mengubah status file ini ? ?" :items="[
+                                { value: 1, title: 'Setuju' },
+                                { value: 0, title: 'Tidak Setuju' },
                             ]" v-model="formAppeal.isApprove" prepend-icon="mdi-help-rhombus"></v-select>
                         </VCol>
                         <VCol cols="12" class="d-flex flex-wrap gap-4">
@@ -566,6 +566,10 @@ export default {
 
         getDetailFile: {
             type: Function,
+            required: true,
+        },
+        phase : {
+            type: Number,
             required: true,
         },
     },

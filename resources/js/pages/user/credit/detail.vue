@@ -5,9 +5,9 @@
       Loading...
     </v-overlay>
 
-    <v-card>
+    <v-card v-if="dataLoaded">
       <VCardTitle class="text-2xl font-weight-bold d-flex justify-left">
-        Credit
+        Detail Kredit
       </VCardTitle>
       <v-card-text>
         <v-stepper :model-value="stepperModel" :mobile="isMobile">
@@ -156,6 +156,12 @@
       </v-card-text>
     </v-card>
 
+    <v-card v-else>
+      <VCardTitle class="text-2xl font-weight-bold d-flex justify-left">
+        Mempersiapkan data.....
+      </VCardTitle>
+    </v-card>
+
     <v-dialog v-model="insertAttch" width="auto" persistent transition="dialog-top-transition">
       <v-card>
         <template v-slot:title> Tambah Data </template>
@@ -202,9 +208,9 @@
                 ]" v-model="attachFile.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
               </VCol>
               <VCol md="12" cols="12">
-                <v-select label="Apakah Anda Yakin file sudah benar ?" :items="[
-                  { value: 1, title: 'Ya' },
-                  { value: 0, title: 'Tidak' },
+                <v-select label="Apakah Anda Yakin File Sudah benar / mengubah status file ini ? ?" :items="[
+                  { value: 1, title: 'Setuju' },
+                  { value: 0, title: 'Tidak Setuju' },
                 ]" v-model="attachFile.isApprove" prepend-icon="mdi-help-rhombus"></v-select>
               </VCol>
               <VCol cols="12" class="d-flex flex-wrap gap-4">
@@ -256,9 +262,9 @@
                 ]" v-model="attachFile.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
               </VCol>
               <VCol md="12" cols="12">
-                <v-select label="Apakah Anda Yakin file sudah benar ?" :items="[
-                  { value: 1, title: 'Ya' },
-                  { value: 0, title: 'Tidak' },
+                <v-select label="Apakah Anda Yakin File Sudah benar / mengubah status file ini ? ?" :items="[
+                  { value: 1, title: 'Setuju' },
+                  { value: 0, title: 'Tidak Setuju' },
                 ]" v-model="attachFile.isApprove" prepend-icon="mdi-help-rhombus"></v-select>
               </VCol>
               <VCol cols="12" class="d-flex flex-wrap gap-4">
@@ -482,6 +488,7 @@ export default {
   components: { phase },
   data() {
     return {
+      dataLoaded: false,
       selectedOption: "",
       overlay: false,
       isMobile: false,
@@ -861,11 +868,9 @@ export default {
         this.overlay = true;
         const response = await mainURL.get(`/user/credit/${id}`);
 
-        if (response.status === 200) {
-          // this.dataFile = response.data.data.file;                 
+        if (response.status === 200) {                
           this.dataFile = response.data.data.file;
           this.attachments = this.dataFile.attachments.filter(item => item.path && item.path !== 'null' || item.link && item.link !== 'null');
-          // this.fileSubmissions = this.dataFile.filesubmissions.filter(item => item.path && item.path !== null || item.link && item.link !== null);
           this.fileSubmissions = this.dataFile.filesubmissions;
 
           this.userAccess = response.data.data.userAccess;
@@ -897,19 +902,11 @@ export default {
             this.isShowPhase5 = true;
           }
 
-          // if (parseInt(this.dataFile.plafon) >= 25000000) {
           if (parseInt(this.dataFile.phase) == 5) {
             this.stepperModel = parseInt(this.dataFile.phase) - 1;
           } else {
             this.stepperModel = parseInt(this.dataFile.phase) - 1;
           }
-          // } else {
-          //   if (parseInt(this.dataFile.phase) == 5) {
-          //     this.stepperModel = parseInt(this.dataFile.phase) - 2;
-          //   } else {
-          //     this.stepperModel = parseInt(this.dataFile.phase) - 1;
-          //   }
-          // }
 
           this.generalInfo.id = this.dataFile.id;
           this.generalInfo.name = this.dataFile.name;
@@ -925,7 +922,7 @@ export default {
           for (let index = 0; index < 5; index++) {
             this.separateNotesByPhase(this.dataFile, index);
           }
-
+          this.dataLoaded = true;
           this.overlay = false;
         } else {
           this.$showToast("error", "Sorry", response.data.data.message);
@@ -1368,7 +1365,6 @@ export default {
           // window.location.reload();
         }
 
-        //URUNG: delete attachment + phase 2
       } catch (error) {
         this.overlay = false;
         this.getDetailFile(this.fileId);

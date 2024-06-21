@@ -5,6 +5,7 @@ namespace App\Helpers;
 use App\Models\Attachment;
 use App\Models\File;
 use App\Models\FileActivity;
+use App\Models\FileSubmission;
 use App\Models\Position;
 use App\Models\PositionToOffice;
 use App\Models\User;
@@ -54,6 +55,12 @@ class TelegramHelper
                     $query->where('link', '!=', 'null')
                         ->orWhere('path', '!=', 'null');
                 })->get();
+            $submissions = FileSubmission::where('file_id', $file->id)
+                ->where(function ($query) {
+                    $query->where('link', '!=', 'null')
+                        ->orWhere('path', '!=', 'null');
+                })->get();
+            $combined = $attachments->merge($submissions);
 
             // Membuat pesan yang lebih tertata
             $message = "📣 *Ada Update Baru*\n\n"
@@ -65,7 +72,7 @@ class TelegramHelper
                 . "\nSilakan cek detailnya di Website ECAR.\n";
 
 
-            $user->notify(new TelegramNotification($message, $file, $attachments));
+            $user->notify(new TelegramNotification($message, $file, $combined));
         }
     }
 
@@ -106,8 +113,13 @@ class TelegramHelper
                 ->where(function ($query) {
                     $query->where('link', '!=', 'null')
                         ->orWhere('path', '!=', 'null');
-                })
-                ->get();
+                })->get();
+            $submissions = FileSubmission::where('file_id', $file->id)
+                ->where(function ($query) {
+                    $query->where('link', '!=', 'null')
+                        ->orWhere('path', '!=', 'null');
+                })->get();
+            $combined = $attachments->merge($submissions);
 
             // Membuat pesan yang lebih tertata
             $message = "📣 *Ada Data Credit Baru*\n\n"
@@ -118,7 +130,7 @@ class TelegramHelper
                 . "*Deskripsi Usaha*: " . $file->desc_bussiness . "\n"
                 . "\nSilakan cek detailnya di Website ECAR.\n";
 
-            $user->notify(new TelegramNotification($message, $file, $attachments));
+            $user->notify(new TelegramNotification($message, $file, $combined));
         }
     }
     public static function AddUpdatePhase($fileId, $note, $senderId)
@@ -160,8 +172,13 @@ class TelegramHelper
                 ->where(function ($query) {
                     $query->where('link', '!=', 'null')
                         ->orWhere('path', '!=', 'null');
-                })
-                ->get();
+                })->get();
+            $submissions = FileSubmission::where('file_id', $file->id)
+                ->where(function ($query) {
+                    $query->where('link', '!=', 'null')
+                        ->orWhere('path', '!=', 'null');
+                })->get();
+            $combined = $attachments->merge($submissions);
 
             // Membuat pesan yang lebih tertata
             $message = "📣 *Ada Update Baru*\n\n"
@@ -174,7 +191,7 @@ class TelegramHelper
                 . "\nSilakan cek detailnya di Website ECAR.\n";
 
 
-            $user->notify(new TelegramNotification($message, $file, $attachments));
+            $user->notify(new TelegramNotification($message, $file, $combined));
         }
     }
 
@@ -226,8 +243,13 @@ class TelegramHelper
                 ->where(function ($query) {
                     $query->where('link', '!=', 'null')
                         ->orWhere('path', '!=', 'null');
-                })
-                ->get();
+                })->get();
+            $submissions = FileSubmission::where('file_id', $file->id)
+                ->where(function ($query) {
+                    $query->where('link', '!=', 'null')
+                        ->orWhere('path', '!=', 'null');
+                })->get();
+            $combined = $attachments->merge($submissions);
 
             // Membuat pesan yang lebih tertata
             $message = "📣 *Ada Update Baru*\n\n"
@@ -238,7 +260,7 @@ class TelegramHelper
                 . "\nSilakan cek detailnya di Website ECAR.\n";
 
 
-            $user->notify(new TelegramNotification($message, $file, $attachments));
+            $user->notify(new TelegramNotification($message, $file, $combined));
         }
     }
     public static function AgreementPhase3($fileId, $note, $senderId)
@@ -289,8 +311,13 @@ class TelegramHelper
                 ->where(function ($query) {
                     $query->where('link', '!=', 'null')
                         ->orWhere('path', '!=', 'null');
-                })
-                ->get();
+                })->get();
+            $submissions = FileSubmission::where('file_id', $file->id)
+                ->where(function ($query) {
+                    $query->where('link', '!=', 'null')
+                        ->orWhere('path', '!=', 'null');
+                })->get();
+            $combined = $attachments->merge($submissions);
 
             // Membuat pesan yang lebih tertata
             $message = "📣 *Ada Update Baru*\n\n"
@@ -301,7 +328,7 @@ class TelegramHelper
                 . "\nSilakan cek detailnya di Website ECAR.\n";
 
 
-            $user->notify(new TelegramNotification($message, $file, $attachments));
+            $user->notify(new TelegramNotification($message, $file, $combined));
         }
     }
 
@@ -353,8 +380,13 @@ class TelegramHelper
                 ->where(function ($query) {
                     $query->where('link', '!=', 'null')
                         ->orWhere('path', '!=', 'null');
-                })
-                ->get();
+                })->get();
+            $submissions = FileSubmission::where('file_id', $file->id)
+                ->where(function ($query) {
+                    $query->where('link', '!=', 'null')
+                        ->orWhere('path', '!=', 'null');
+                })->get();
+            $combined = $attachments->merge($submissions);
             $message = "";
 
             if ($status == 1) {
@@ -384,8 +416,7 @@ class TelegramHelper
                     . "\nSilakan cek detailnya di Website ECAR.\n";
             }
 
-
-            $user->notify(new TelegramNotification($message, $file, $attachments));
+            $user->notify(new TelegramNotification($message, $file, $combined));
         }
     }
 

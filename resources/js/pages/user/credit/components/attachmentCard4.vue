@@ -24,10 +24,12 @@
                     <template v-slot:append>
                         <div class="operation-wrapper">
                             <div class="d-flex justify-space-between">
-                                <v-tooltip location="top" text="Lihat File" v-if="(attachment.path !== 'null' || attachment.link !== null)">
+                                <v-tooltip location="top" text="Lihat File"
+                                    v-if="(attachment.path !== 'null' || attachment.link !== null)">
                                     <template v-slot:activator="{ props }">
-                                        <a v-if="attachment.path !== 'null'" v-bind="props" :href="`${filePath}/${fileId}/${attachment.path}`"
-                                            target="_blank" rel="noopener noreferrer">
+                                        <a v-if="attachment.path !== 'null'" v-bind="props"
+                                            :href="`${filePath}/${fileId}/${attachment.path}`" target="_blank"
+                                            rel="noopener noreferrer">
                                             <button>
                                                 <VIcon size="20" icon="bx-link-external" color="blue" />
                                             </button>
@@ -41,9 +43,9 @@
                                     </template>
                                 </v-tooltip>
                                 <v-tooltip location="top" text="Upload File / Link" v-if="
-                                    (attachment.path == 'null' && attachment.link == null ) &&
-                                    userAccess &&
-                                    parseInt(userAccess.canInsertData) == 1
+                                    (attachment.path == 'null' && attachment.link == null) &&
+                                    userAccessPhase4 &&
+                                    parseInt(userAccessPhase4.canInsertData) == 1
                                 ">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="openModal(1, attachment)">
@@ -52,14 +54,15 @@
                                     </template>
                                 </v-tooltip>
                                 <v-tooltip location="top" text="Edit File"
-                                    v-if="userAccess && parseInt(userAccess.canUpdateData)">
+                                    v-if="userAccessPhase4 && parseInt(userAccessPhase4.canUpdateData) && phase < 5">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="openModal(1, attachment)">
                                             <VIcon size="20" icon="bx-edit" color="blue" />
                                         </button>
                                     </template>
                                 </v-tooltip>
-                                <v-tooltip location="top" text="Tanda Tangan File" v-if="userAccess && parseInt(userAccess.canUpdateData)">
+                                <v-tooltip location="top" text="Tanda Tangan File"
+                                    v-if="userAccessPhase4 && parseInt(userAccessPhase4.canApprove) && phase < 5">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="toSignature(attachment)">
                                             <VIcon size="20" icon="bx-pen" color="blue" />
@@ -67,7 +70,7 @@
                                     </template>
                                 </v-tooltip>
                                 <v-tooltip location="top" text="Hapus File"
-                                    v-if="userAccess && parseInt(userAccess.canDeleteData)">
+                                    v-if="userAccessPhase4 && parseInt(userAccessPhase4.canDeleteData) && phase < 5">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="deleteAttachment(attachment.id)">
                                             <VIcon size="20" icon="bx-trash" color="red" />
@@ -80,7 +83,6 @@
                 </v-list-item>
             </v-list>
         </div>
-
     </v-card>
 
     <v-dialog v-model="isKomite" width="auto" persistent transition="dialog-top-transition">
@@ -101,10 +103,8 @@
                             <span style="color: red">*</span>
                             <span class="subtitle-1 text-center"> Upload File: </span>
 
-                            <v-file-input class="my-3"
-                                accept="application/pdf"
-                                placeholder="Pick an image" :rules="[rules.required]"
-                                @change="(event) => handleFileChange(event)"></v-file-input>
+                            <v-file-input class="my-3" accept="application/pdf" placeholder="Pick an image"
+                                :rules="[rules.required]" @change="(event) => handleFileChange(event)"></v-file-input>
                         </VCol>
                         <VCol md="12" cols="12">
                             <v-select label="Apakah Termasuk File Rahasia ? (Detail SLIK, dll)" :items="[
@@ -112,10 +112,12 @@
                                 { value: 0, title: 'Tidak' },
                             ]" v-model="formKomite.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
                         </VCol>
+
+                        <v-divider :thickness="5" class="border-opacity-75" color="info"></v-divider>
                         <VCol md="12" cols="12">
-                            <v-select label="Apakah Anda Yakin file sudah benar ?" :items="[
-                                { value: 1, title: 'Ya' },
-                                { value: 0, title: 'Tidak' },
+                            <v-select label="Apakah Anda Yakin File Sudah benar / mengubah status file ini ? ?" :items="[
+                                { value: 1, title: 'Setuju' },
+                                { value: 0, title: 'Tidak Setuju' },
                             ]" v-model="formKomite.isApprove" prepend-icon="mdi-help-rhombus"></v-select>
                         </VCol>
                         <VCol cols="12" class="d-flex flex-wrap gap-4">
@@ -173,6 +175,11 @@ export default {
             type: Function,
             required: true,
         },
+        
+        phase : {
+            type: Number,
+            required: true,
+        },
     },
     watch: {
         selectedOption(newVal) {
@@ -185,6 +192,7 @@ export default {
     },
     data() {
         return {
+            userAccessPhase4:null,
             selectedOption: "",
             overlay: false,
             uploadProgress: null,
@@ -210,8 +218,8 @@ export default {
                 alert('Silahkan upload file terlebih dahulu');
                 return;
             }
-            
-            this.$router.push(`/a-pdfeditor/${attach.id}`);
+
+            this.$router.push(`/u-pdfeditor/${attach.id}`);
         },
         openModal(type, item = null) {
             if (type == 1) {
@@ -314,6 +322,9 @@ export default {
                 this.$showToast("error", "Sorry", error.response.data.message);
             }
         },
+    },
+    mounted() {
+        this.userAccessPhase4 = this.userAccess['4'];
     },
 }
 </script>

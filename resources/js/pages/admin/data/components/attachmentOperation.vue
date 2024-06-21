@@ -46,7 +46,7 @@
                                     </template>
                                 </v-tooltip>
                                 <v-tooltip location="top" text="Edit File"
-                                    v-if="userAccess && parseInt(userAccess.canUpdateData)">
+                                    v-if="userAccess && parseInt(userAccess.canUpdateData) && phase < 5">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="openModal(1, attachment)">
                                             <VIcon size="20" icon="bx-edit" color="blue" />
@@ -54,7 +54,7 @@
                                     </template>
                                 </v-tooltip>
                                 <v-tooltip location="top" text="Hapus File"
-                                    v-if="userAccess && parseInt(userAccess.canDeleteData)">
+                                    v-if="userAccess && parseInt(userAccess.canDeleteData) && phase < 5">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="deleteAttachment(attachment.id)">
                                             <VIcon size="20" icon="bx-trash" color="red" />
@@ -99,9 +99,9 @@
                             ]" v-model="formsp3k.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
                         </VCol>
                         <VCol md="12" cols="12">
-                            <v-select label="Apakah Anda Yakin file sudah benar ?" :items="[
-                                { value: 1, title: 'Ya' },
-                                { value: 0, title: 'Tidak' },
+                            <v-select label="Apakah Anda Yakin File Sudah benar / mengubah status file ini ? ?" :items="[
+                                { value: 1, title: 'Setuju' },
+                                { value: 0, title: 'Tidak Setuju' },
                             ]" v-model="formsp3k.isApprove" prepend-icon="mdi-help-rhombus"></v-select>
                         </VCol>
                         <VCol cols="12" class="d-flex flex-wrap gap-4">
@@ -157,6 +157,10 @@ export default {
 
         getDetailFile: {
             type: Function,
+            required: true,
+        },
+        phase : {
+            type: Number,
             required: true,
         },
     },

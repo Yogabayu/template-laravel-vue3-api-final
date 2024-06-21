@@ -10,7 +10,7 @@
 
   <v-card>
     <VCardTitle class="text-2xl font-weight-bold d-flex justify-left">
-      List Credit
+      List Credit <v-icon icon="mdi-view-comfy" class="ml-2" @click="toPage"></v-icon>
     </VCardTitle>
     <v-tabs v-model="tab" class="v-tabs-pill" bg-color="secondary">
       <v-tab value="0">Semua</v-tab>
@@ -419,6 +419,9 @@ export default {
     },
   },
   methods: {
+    toPage() {
+      this.$router.push(`/u-indexfilter`);
+    },
     formatDate(dateString: any) {
       const date = new Date(dateString);
       return date.toLocaleString("id-ID");

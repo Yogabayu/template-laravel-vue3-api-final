@@ -152,6 +152,19 @@ const router = createRouter({
       ],
     },  
     {
+      path: "/data-master/:monthYear",
+      component: () => import("../layouts/admin/default.vue"),
+      children: [
+        {
+          path: "",
+          component: () => import("../pages/admin/data/indexfilter.vue"),
+          beforeEnter: (to, from, next) => {
+            checkAdminLogin(next);
+          },
+        },
+      ],
+    },  
+    {
       path: "/a-credit/:fileId",
       component: () => import("../layouts/admin/default.vue"),
       children: [
@@ -245,7 +258,32 @@ const router = createRouter({
         },
       ],
     },
-    
+    {
+      path: "/u-indexfilter",
+      component: () => import("../layouts/user/default.vue"),
+      children: [
+        {
+          path: "",
+          component: () => import("../pages/user/credit/indexfilter.vue"),
+          beforeEnter: (to, from, next) => {
+            checkLogin(next);
+          },
+        },
+      ],
+    },
+    {
+      path: "/u-indexfilter/:monthYear",
+      component: () => import("../layouts/user/default.vue"),
+      children: [
+        {
+          path: "",
+          component: () => import("../pages/user/credit/indexfiltermonth.vue"),
+          beforeEnter: (to, from, next) => {
+            checkLogin(next);
+          },
+        },
+      ],
+    },
   ],
 });
 

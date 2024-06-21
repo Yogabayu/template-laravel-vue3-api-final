@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\File;
 use App\Models\Position;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -17,6 +18,35 @@ class DashboardController extends Controller
     public function index()
     {
         try {
+            // Mengambil tanggal 3 bulan yang lalu dari sekarang
+            $threeMonthsAgo = Carbon::now()->subMonths(3)->format('Y-m-d H:i:s');
+
+            // Mengambil data rata-rata selisih waktu per fase selama 3 bulan terakhir
+            $averageTimes = DB::table('phase_times')
+                ->join('files', 'phase_times.file_id', '=', 'files.id')
+                ->select('phase_times.phase')
+                ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, phase_times.startTime, phase_times.endTime)) AS average_time_minutes')
+                ->where('phase_times.endTime', '>=', $threeMonthsAgo)
+                ->where('files.user_id', Auth::user()->id)
+                ->groupBy('phase_times.phase')
+                ->get();
+
+            // Persiapkan data untuk Chart.js
+            $labelsAverageTimes = $averageTimes->pluck('phase');
+            $dataAverageTimes = $averageTimes->pluck('average_time_minutes');
+
+            $results = DB::table('files')
+                ->selectRaw('YEAR(created_at) as year, MONTH(created_at) as month')
+                ->selectRaw('SUM(CASE WHEN isApproved = 1 THEN 1 ELSE 0 END) as approved')
+                ->selectRaw('SUM(CASE WHEN isApproved = 2 THEN 1 ELSE 0 END) as pending')
+                ->selectRaw('SUM(CASE WHEN isApproved = 3 THEN 1 ELSE 0 END) as rejected')
+                ->where('created_at', '>=', DB::raw('DATE_SUB(CURDATE(), INTERVAL 6 MONTH)'))
+                ->groupBy('year', 'month')
+                ->orderBy('year', 'asc')
+                ->orderBy('month', 'asc')
+                ->where('user_id', Auth::user()->id)
+                ->get();
+
             $userNow = User::with('position')->where('id', Auth::user()->id)->first();
 
             if ($userNow->position->name == 'Account Officer' || $userNow->position->name == 'AO' || $userNow->position->name == 'ao' || $userNow->position->name == 'account officer' || $userNow->position->name == 'Account Officer Executive' || $userNow->position->name == 'account officer executive' || $userNow->position->name == 'Account Officer / Executive AO' || $userNow->position->name == 'AO / RO') {
@@ -54,7 +84,7 @@ class DashboardController extends Controller
 
                 ActivityHelper::userActivity(Auth::user()->id, 'Mengakses halaman File Credit');
 
-                return ResponseHelper::successRes('Berhasil menampilkan datas', ['files' => $files, 'userAccess' => $userAccess]);
+                return ResponseHelper::successRes('Berhasil menampilkan datas', ['files' => $files, 'userAccess' => $userAccess, 'results' => $results, 'labelsAverageTimes' => $labelsAverageTimes, 'dataAverageTimes' => $dataAverageTimes]);
             } else {
                 $positionId = Auth::user()->position_id;
                 $position = Position::with('offices')->where('id', $positionId)->first();
@@ -110,7 +140,7 @@ class DashboardController extends Controller
                 }
                 ActivityHelper::userActivity(Auth::user()->id, 'Mengakses halaman File Credit');
 
-                return ResponseHelper::successRes('Berhasill menampilkan datas', ['files' => $files, 'userAccess' => $userAccess]);
+                return ResponseHelper::successRes('Berhasill menampilkan datas', ['files' => $files, 'userAccess' => $userAccess, 'results' => $results, 'labelsAverageTimes' => $labelsAverageTimes, 'dataAverageTimes' => $dataAverageTimes]);
             }
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());

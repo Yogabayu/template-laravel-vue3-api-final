@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\FileController as AdminFileController;
+use App\Http\Controllers\Admin\HelperController;
 use App\Http\Controllers\Admin\NotificationConfigController;
 use App\Http\Controllers\Admin\OfficeController;
 use App\Http\Controllers\Admin\PositionController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\ZipController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\User\DashboardController;
 use App\Http\Controllers\User\FileController;
+use App\Http\Controllers\User\HelperController as UserHelperController;
 use App\Http\Controllers\User\UserController as UserUserController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +31,7 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
     Route::post('login', [AuthController::class, 'login'])->name('login');
 
     Route::middleware('auth:api')->group(function () {
+        Route::get('generatereport/{id}', [FileController::class, 'generateReport']);
         //all
         /////=>download all
         Route::get('download-all/{id}', [ZipController::class, 'downloadAll']);
@@ -74,6 +77,7 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
 
         //credit
         Route::get('credit', [AdminFileController::class, 'index']);
+        Route::post('getCredit', [AdminFileController::class, 'getCredit']);
         Route::get('credit/{id}', [AdminFileController::class, 'detailFile']);
         Route::post('credit', [AdminFileController::class, 'store']);
         Route::delete('credit/{id}', [AdminFileController::class, 'destroy']);
@@ -82,6 +86,9 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
         Route::put('edit-general-info/{id}', [AdminFileController::class, 'editGeneralInfo']);
         Route::put('survey-credit/{id}', [FileController::class, 'editSurveiResult']);
         Route::post('change-status', [FileController::class, 'changeStatus']);
+
+        //dashboard-Credit
+        Route::get('dashboardCredit', [HelperController::class, 'getYears']);
 
         //=>note
         Route::post('note', [AdminFileController::class, 'addNote']);
@@ -94,9 +101,15 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
         Route::delete('delete-attach/{id}', [AdminFileController::class, 'deleteAttachment']);
         Route::get('get-attach/{id}', [AdminFileController::class, 'getAttachment']);
 
+        //=>filepenunjang [file-submission]
+        Route::post('file-submission', [AdminFileController::class, 'addFileSubmission']);
+        Route::put('file-submission/{id}', [AdminFileController::class, 'updateFileSubmission']);
+        Route::delete('file-submission/{id}', [AdminFileController::class, 'destroyFileSubmission']);
+
 
         //////// Route User \\\\\\\\\
         Route::group(['prefix' => 'user'], function () {
+            Route::get('generatereport/{id}', [FileController::class, 'generateReport']);
 
             //dashboard
             Route::get('dashboard', [DashboardController::class, 'index']);
@@ -116,6 +129,8 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
             Route::put('edit-general-info/{id}', [FileController::class, 'editGeneralInfo']);
             Route::put('survey-credit/{id}', [FileController::class, 'editSurveiResult']);
             Route::post('change-status', [FileController::class, 'changeStatus']);
+            Route::get('dashboardCredit', [UserHelperController::class, 'getYears']);
+            Route::post('getCredit', [FileController::class, 'getFile']);
 
             //=>note
             Route::post('note', [FileController::class, 'addNote']);

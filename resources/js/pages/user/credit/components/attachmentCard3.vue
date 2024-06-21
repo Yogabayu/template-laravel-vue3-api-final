@@ -44,8 +44,8 @@
                                 </v-tooltip>
                                 <v-tooltip location="top" text="Upload File / Link" v-if="
                                     (attachment.path == 'null' && attachment.link == null) &&
-                                    userAccess &&
-                                    parseInt(userAccess.canInsertData) == 1
+                                    userAccessPhase3 &&
+                                    parseInt(userAccessPhase3.canInsertData) == 1
                                 ">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="openModal(1, attachment)">
@@ -54,21 +54,21 @@
                                     </template>
                                 </v-tooltip>
                                 <v-tooltip location="top" text="Edit File"
-                                    v-if="userAccess && parseInt(userAccess.canUpdateData)">
+                                    v-if="userAccessPhase3 && parseInt(userAccessPhase3.canUpdateData) && phase < 4">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="openModal(1, attachment)">
                                             <VIcon size="20" icon="bx-edit" color="blue" />
                                         </button>
                                     </template>
                                 </v-tooltip>
-                                <!-- <v-tooltip location="top" text="Hapus File"
-                                    v-if="userAccess && parseInt(userAccess.canDeleteData)">
+                                <v-tooltip location="top" text="Hapus File"
+                                    v-if="userAccessPhase3 && parseInt(userAccessPhase3.canDeleteData) && phase < 4">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="deleteAttachment(attachment.id)">
                                             <VIcon size="20" icon="bx-trash" color="red" />
                                         </button>
                                     </template>
-                                </v-tooltip> -->
+                                </v-tooltip>
                             </div>
                         </div>
                     </template>
@@ -83,7 +83,7 @@
                     <span>Dokumen Penunjang Kredit / Jaminan 📄</span>
                 </v-col>
                 <v-col cols="12" sm="6" md="4" class="text-sm-right text-md-right"
-                    v-if="userAccess && userAccess.canAppeal">
+                    v-if="userAccessPhase3 && userAccessPhase3.canAppeal && phase < 5"> <!-- canAppeal karena hanya AO/RO yang bisa input daya jaminan lain -->
                     <span>
                         <v-btn color="primary" size="small" class="my-3 mx-3" @click="openModal(2)">
                             Tambah Data Lain
@@ -123,7 +123,7 @@
                                     </template>
                                 </v-tooltip>
                                 <v-tooltip location="top" text="Edit File"
-                                    v-if="userAccess && parseInt(userAccess.canAppeal)">
+                                    v-if="userAccessPhase3 && parseInt(userAccessPhase3.canAppeal) && phase < 4">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="openModal(3, sub)">
                                             <VIcon size="20" icon="bx-edit" color="blue" />
@@ -131,7 +131,7 @@
                                     </template>
                                 </v-tooltip>
                                 <v-tooltip location="top" text="Hapus File"
-                                    v-if="userAccess && parseInt(userAccess.canAppeal)">
+                                    v-if="userAccessPhase3 && parseInt(userAccessPhase3.canAppeal) && phase < 4">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="deleteSubmission(sub.id)">
                                             <VIcon size="20" icon="bx-trash" color="red" />
@@ -201,9 +201,9 @@
                             ]" v-model="formAnalisaKredit.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
                         </VCol>
                         <VCol md="12" cols="12">
-                            <v-select label="Apakah Anda Yakin file sudah benar ?" :items="[
-                                { value: 1, title: 'Ya' },
-                                { value: 0, title: 'Tidak' },
+                            <v-select label="Apakah Anda Yakin File Sudah benar / mengubah status file ini ? ?" :items="[
+                                { value: 1, title: 'Setuju' },
+                                { value: 0, title: 'Tidak Setuju' },
                             ]" v-model="formAnalisaKredit.isApprove" prepend-icon="mdi-help-rhombus"></v-select>
                         </VCol>
                         <VCol cols="12" class="d-flex flex-wrap gap-4">
@@ -398,6 +398,10 @@ export default {
             type: Function,
             required: true,
         },
+        phase : {
+            type: Number,
+            required: true,
+        },
     },
     watch: {
         selectedOption(newVal) {
@@ -420,6 +424,7 @@ export default {
     },
     data() {
         return {
+            userAccessPhase3:null,
             selectedOption: "",
             overlay: false,
             uploadProgress: null,
@@ -742,6 +747,9 @@ export default {
                 this.$showToast("error", "Sorry", error.response.data.message);
             }
         }
+    },
+    mounted() {
+        this.userAccessPhase3 = this.userAccess['3'];
     },
 }
 </script>

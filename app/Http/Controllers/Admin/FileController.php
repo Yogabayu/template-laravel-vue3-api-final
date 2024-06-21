@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Approval;
 use App\Models\Attachment;
 use App\Models\File;
+use App\Models\FileSubmission;
 use App\Models\Note;
 use App\Models\NotificationConfiguration;
 use App\Models\PhaseTime;
@@ -18,6 +19,7 @@ use App\Models\PositionToOffice;
 use App\Models\Role;
 use App\Models\User;
 use App\Notifications\TelegramNotification;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -28,7 +30,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
-// URUNG: Tinggal Tahap 3, 4 ,5
 class FileController extends Controller
 {
     //=> change file status
@@ -659,7 +660,7 @@ class FileController extends Controller
                         }
                         $matchFound = false;
 
-                        foreach ($notifPositions as $pos) { //URUNG bug komite
+                        foreach ($notifPositions as $pos) {
                             foreach ($notifUser as $user) {
                                 if ($pos->position_id == $user->position_id && $userUploaded->position_id != $pos->position_id) {
                                     Approval::firstOrCreate(
@@ -1534,6 +1535,38 @@ class FileController extends Controller
         }
     }
 
+    public function getCredit(Request $request)
+    {
+        try {
+            $userAccess = [
+                'canAppeal' => 1,
+                'canApprove' => 1,
+                'canInsertData' => 1,
+                'canUpdateData' => 1,
+                'canDeleteData' => 1,
+                'isSecret' => 1,
+            ];
+            // Inisialisasi array untuk menampung semua file yang terkait
+            $monthYear = explode('-', $request->monthYear);
+
+            // Ambil bulan dan tahun
+            $month = $monthYear[0];
+            $year = $monthYear[1];
+
+            // Query untuk mengambil file berdasarkan bulan dan tahun
+            $files = File::with('user')
+                ->whereMonth('created_at', $month)
+                ->whereYear('created_at', $year)
+                ->orderBy('created_at', 'desc')
+                ->get();
+            ActivityHelper::userActivity(Auth::user()->id, 'Mengakses halaman File Credit');
+
+            return ResponseHelper::successRes('Berhasil menampilkan datas', ['files' => $files, 'userAccess' => $userAccess]);
+        } catch (\Exception $e) {
+            return ResponseHelper::errorRes($e->getMessage());
+        }
+    }
+
     public function store(Request $request)
     {
         try {
@@ -1742,6 +1775,167 @@ class FileController extends Controller
             return ResponseHelper::successRes('Berhasill mengubah status', $approv);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
+        }
+    }
+
+    //=>file-submission
+    public function addFileSubmission(Request $request)
+    {
+        try {
+            $file = new FileSubmission();
+            $file->file_id = $request->file_id;
+            $file->phase = $request->phase;
+            $file->name = $request->name;
+            if ($request->has('type')) {
+                $file->type = $request->type;
+            }
+
+            if ($request->has('link')) {
+                $file->link = $request->link;
+                $file->path = null;
+                $oldPath = public_path('file/' . $request->file_id . '/' . $file->path);
+                if (FacadesFile::exists($oldPath)) {
+                    FacadesFile::delete($oldPath);
+                }
+            } else {
+                if ($request->hasFile('path')) {
+                    // Delete old file
+                    $oldPath = public_path('file/' . $request->file_id . '/' . $file->path);
+                    if (FacadesFile::exists($oldPath)) {
+                        FacadesFile::delete($oldPath);
+                    }
+
+                    // Upload new file
+                    $rand = Str::random(10);
+                    $fileObject = $request->file('path');
+                    $imageEXT = $fileObject->getClientOriginalName();
+                    $filename = pathinfo($imageEXT, PATHINFO_FILENAME);
+                    $EXT = $fileObject->getClientOriginalExtension();
+                    $fileimage = $filename . '-' . $rand . '_' . time() . '.' . $EXT;
+                    $path = $fileObject->move(public_path('file/' . $request->file_id . '/'), $fileimage);
+
+                    $file->link = null;
+                    $file->path = $fileimage;
+                }
+            }
+
+            $file->save();
+
+            ActivityHelper::fileActivity($file->file_id, Auth::user()->id, 'Menambahkan File Penunjang Kredit');
+            ActivityHelper::userActivity(Auth::user()->id, 'Menambahkan File Penunjang kredit ' . $file->name);
+
+            TelegramHelper::AddUpdate($file->file_id, 'Menambahkan File Penunjang Kredit : ' . $request->name, Auth::user()->id);
+
+            return ResponseHelper::successRes('Berhasil menambahkan data', $file);
+        } catch (\Exception $e) {
+            return ResponseHelper::errorRes($e->getMessage());
+        }
+    }
+
+    public function updateFileSubmission(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'link' => 'nullable | url',
+            ], [
+                'url' => ':attribute harus berupa URL yang valid atau tambahkan https://',
+            ]);
+
+            $file = FileSubmission::findOrFail($id);
+            $file->file_id = $request->file_id;
+            $file->name    = $request->name;
+            $file->phase   = $request->phase;
+            $file->type   = $request->type;
+
+            if ($request->has('link')) {
+                $file->link = $request->link;
+                $file->path = null;
+                $oldPath = public_path('file/' . $request->file_id . '/' . $file->path);
+                if (FacadesFile::exists($oldPath)) {
+                    FacadesFile::delete($oldPath);
+                }
+            } else {
+                if ($request->hasFile('path')) {
+                    // Delete old file
+                    $oldPath = public_path('file/' . $request->file_id . '/' . $file->path);
+                    if (FacadesFile::exists($oldPath)) {
+                        FacadesFile::delete($oldPath);
+                    }
+
+                    // Upload new file
+                    $rand = Str::random(10);
+                    $fileObject = $request->file('path');
+                    $imageEXT = $fileObject->getClientOriginalName();
+                    $filename = pathinfo($imageEXT, PATHINFO_FILENAME);
+                    $EXT = $fileObject->getClientOriginalExtension();
+                    $fileimage = $filename . '-' . $rand . '_' . time() . '.' . $EXT;
+                    $path = $fileObject->move(public_path('file/' . $request->file_id . '/'), $fileimage);
+
+                    $file->link = null;
+                    $file->path = $fileimage;
+                }
+            }
+
+            $file->save();
+
+            ActivityHelper::fileActivity($file->file_id, Auth::user()->id, 'Mengedit File Penunjang Kredit');
+            ActivityHelper::userActivity(Auth::user()->id, 'Edit File Penunjang kredit ' . $file->name);
+
+            TelegramHelper::AddUpdate($file->file_id, 'Merubah File Penunjang Kredit : ' . $request->name, Auth::user()->id);
+
+            return ResponseHelper::successRes('File Penunjang Kredit Berhasil di update', $file);
+        } catch (\Exception $e) {
+            return ResponseHelper::errorRes($e->getMessage());
+        }
+    }
+
+    public function destroyFileSubmission($id)
+    {
+        try {
+            $file = FileSubmission::find($id);
+            $fileName = $file->name;
+            $filePath = public_path('file/' . $file->file_id . '/' . $file->path);
+            if (FacadesFile::exists($filePath)) {
+                FacadesFile::delete($filePath);
+            }
+            $file->delete();
+
+            ActivityHelper::fileActivity($file->file_id, Auth::user()->id, 'Menghapus File Penunjang Kredit: ' . $fileName);
+            ActivityHelper::userActivity(Auth::user()->id, 'Menghapus File Penunjang Kredit: ' . $fileName);
+
+            TelegramHelper::AddUpdate($file->file_id, 'Menghapus Lampiran : ' . $fileName, Auth::user()->id);
+            return ResponseHelper::successRes('Data berhasil dihapus', $file);
+        } catch (\Exception $e) {
+            return ResponseHelper::errorRes($e->getMessage());
+        }
+    }
+    public function generateReport($id)
+    {
+        try {
+            $file = File::with([
+                'user',
+                'notes' => function ($query) {
+                    $query->latest();
+                },
+                'notes.user',
+                'notes.user.position',
+                'fileActivities' => function ($query) {
+                    $query->latest();
+                },
+                'fileActivities.user',
+                'attachments',
+                'approvals',
+                'approvals.user',
+                'approvals.user.position',
+                'phaseTimes',
+                'filesubmissions',
+            ])->findOrFail($id);
+
+            $pdf = Pdf::loadView('report.approve', compact('file'));
+
+            return $pdf->download('laporan-generated.pdf');
+        } catch (\Exception $e) {
+            dd($e->getMessage());
         }
     }
 }

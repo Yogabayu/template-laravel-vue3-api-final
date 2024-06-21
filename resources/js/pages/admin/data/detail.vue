@@ -7,7 +7,7 @@
 
     <v-card>
       <VCardTitle class="text-2xl font-weight-bold d-flex justify-left">
-        Credit
+        Kredit
       </VCardTitle>
       <v-card-text>
         <v-stepper :model-value="stepperModel" :mobile="isMobile">
@@ -202,9 +202,9 @@
                 ]" v-model="attachFile.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
               </VCol>
               <VCol md="12" cols="12">
-                <v-select label="Apakah Anda Yakin file sudah benar ?" :items="[
-                  { value: 1, title: 'Ya' },
-                  { value: 0, title: 'Tidak' },
+                <v-select label="Apakah Anda Yakin File Sudah benar / mengubah status file ini ? ?" :items="[
+                  { value: 1, title: 'Setuju' },
+                  { value: 0, title: 'Tidak Setuju' },
                 ]" v-model="attachFile.isApprove" prepend-icon="mdi-help-rhombus"></v-select>
               </VCol>
               <VCol cols="12" class="d-flex flex-wrap gap-4">
@@ -256,9 +256,9 @@
                 ]" v-model="attachFile.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
               </VCol>
               <VCol md="12" cols="12">
-                <v-select label="Apakah Anda Yakin file sudah benar ?" :items="[
-                  { value: 1, title: 'Ya' },
-                  { value: 0, title: 'Tidak' },
+                <v-select label="Apakah Anda Yakin File Sudah benar / mengubah status file ini ? ?" :items="[
+                  { value: 1, title: 'Setuju' },
+                  { value: 0, title: 'Tidak Setuju' },
                 ]" v-model="attachFile.isApprove" prepend-icon="mdi-help-rhombus"></v-select>
               </VCol>
               <VCol cols="12" class="d-flex flex-wrap gap-4">
@@ -1353,7 +1353,6 @@ export default {
           // window.location.reload();
         }
 
-        //URUNG: delete attachment + phase 2
       } catch (error) {
         this.overlay = false;
         this.getDetailFile(this.fileId);

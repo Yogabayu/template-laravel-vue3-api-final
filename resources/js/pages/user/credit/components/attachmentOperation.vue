@@ -16,7 +16,7 @@
             <v-list density="compact">
                 <v-list-item>
                     <template v-slot:prepend>
-                        {{ parseInt(attachment.isApprove) ? "✅" : "❌" }}
+                        {{ parseInt(attachment.isApprove) ? "✅" : "❌" }} 
                         <v-icon icon="mdi-file"></v-icon>
                     </template>
                     <v-list-item-title> {{ attachment.name }} </v-list-item-title>
@@ -36,8 +36,8 @@
                                 </v-tooltip>
                                 <v-tooltip location="top" text="Upload File" v-if="
                                     attachment.path === 'null' &&
-                                    userAccess &&
-                                    parseInt(userAccess.canInsertData) == 1
+                                    userAccessPhase5 &&
+                                    parseInt(userAccessPhase5.canInsertData) == 1
                                 ">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="openModal(1, attachment)">
@@ -46,7 +46,7 @@
                                     </template>
                                 </v-tooltip>
                                 <v-tooltip location="top" text="Edit File"
-                                    v-if="userAccess && parseInt(userAccess.canUpdateData)">
+                                    v-if="userAccessPhase5 && parseInt(userAccessPhase5.canUpdateData) && phase < 6">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="openModal(1, attachment)">
                                             <VIcon size="20" icon="bx-edit" color="blue" />
@@ -54,7 +54,7 @@
                                     </template>
                                 </v-tooltip>
                                 <v-tooltip location="top" text="Hapus File"
-                                    v-if="userAccess && parseInt(userAccess.canDeleteData)">
+                                    v-if="userAccessPhase5 && parseInt(userAccessPhase5.canDeleteData) && phase < 6">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="deleteAttachment(attachment.id)">
                                             <VIcon size="20" icon="bx-trash" color="red" />
@@ -99,9 +99,9 @@
                             ]" v-model="formsp3k.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
                         </VCol>
                         <VCol md="12" cols="12">
-                            <v-select label="Apakah Anda Yakin file sudah benar ?" :items="[
-                                { value: 1, title: 'Ya' },
-                                { value: 0, title: 'Tidak' },
+                            <v-select label="Apakah Anda Yakin File Sudah benar / mengubah status file ini ? ?" :items="[
+                                { value: 1, title: 'Setuju' },
+                                { value: 0, title: 'Tidak Setuju' },
                             ]" v-model="formsp3k.isApprove" prepend-icon="mdi-help-rhombus"></v-select>
                         </VCol>
                         <VCol cols="12" class="d-flex flex-wrap gap-4">
@@ -159,9 +159,15 @@ export default {
             type: Function,
             required: true,
         },
+        
+        phase : {
+            type: Number,
+            required: true,
+        },
     },
     data() {
         return {
+            userAccessPhase5: null,
             overlay: false,
             uploadProgress: null,
             rules: {
@@ -273,6 +279,8 @@ export default {
             }
         },
     },
-    
+    mounted() {
+        this.userAccessPhase5 = this.userAccess['5'];
+    },
 }
 </script>
