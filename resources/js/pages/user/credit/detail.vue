@@ -215,7 +215,7 @@
               </VCol>
               <VCol cols="12" class="d-flex flex-wrap gap-4">
                 <VBtn type="submit"
-                  :disabled="!(attachFile.name && (attachFile.path || attachFile.link) && attachFile.isApprove === 1 && attachFile.note !== null)">
+                  :disabled="!(attachFile.name && (attachFile.path || attachFile.link) && attachFile.note !== null)">
                   Simpan
                 </VBtn>
 
