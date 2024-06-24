@@ -46,34 +46,96 @@ class TelegramHelper
                 ->get();
             $notifUser = array_merge($notifUser, $users->toArray());
         }
-        foreach ($notifUser as $notif) {
-            $ao = User::find($file->user_id);
-            $user = User::find($notif->id);
-            $attachments = Attachment::where('file_id', $file->id)
-                ->where('isSecret', '!=', 1)
-                ->where(function ($query) {
-                    $query->where('link', '!=', 'null')
-                        ->orWhere('path', '!=', 'null');
-                })->get();
-            $submissions = FileSubmission::where('file_id', $file->id)
-                ->where(function ($query) {
-                    $query->where('link', '!=', 'null')
-                        ->orWhere('path', '!=', 'null');
-                })->get();
-            $combined = $attachments->merge($submissions);
 
-            // Membuat pesan yang lebih tertata
-            $message = "📣 *Ada Update Baru*\n\n"
-                . str_pad("*AO*", 25) . ": " . $ao->name . "\n"
-                . str_pad("*Pemohon Kredit*", 18) . ": " . $file->name . "\n\n"
-                . str_pad("*Pengguna Yang Memperbarui*", 18) . ": " . ($sender->name ?? '-') . "\n"
-                . ($note ?? '-') . "\n\n"
-                . str_pad("*Plafon*", 25) . ": Rp. " . number_format($file->plafon, 0, ',', '.') . "\n"
-                . "\nSilakan cek detailnya di Website ECAR.\n";
+        foreach ($notifPositions as $pos) {
+            foreach ($notifUser as $user) {
+                if ($pos->position_id == $user->position_id && $userUploaded->position_id != $pos->position_id) {
+                    $ao = User::find($file->user_id);
+                    $user = User::find($user->id);
+                    $attachments = Attachment::where('file_id', $file->id)
+                        ->where('isSecret', '!=', 1)
+                        ->where(function ($query) {
+                            $query->where('link', '!=', 'null')
+                                ->orWhere('path', '!=', 'null');
+                        })->get();
+                    $submissions = FileSubmission::where('file_id', $file->id)
+                        ->where(function ($query) {
+                            $query->where('link', '!=', 'null')
+                                ->orWhere('path', '!=', 'null');
+                        })->get();
+                    $combined = $attachments->merge($submissions);
 
+                    // Membuat pesan yang lebih tertata
+                    $message = "📣 *Ada Update Baru*\n\n"
+                        . str_pad("*AO*", 25) . ": " . $ao->name . "\n"
+                        . str_pad("*Pemohon Kredit*", 18) . ": " . $file->name . "\n\n"
+                        . str_pad("*Pengguna Yang Memperbarui*", 18) . ": " . ($sender->name ?? '-') . "\n"
+                        . ($note ?? '-') . "\n\n"
+                        . str_pad("*Plafon*", 25) . ": Rp. " . number_format($file->plafon, 0, ',', '.') . "\n"
+                        . "\nSilakan cek detailnya di Website ECAR.\n";
 
-            $user->notify(new TelegramNotification($message, $file, $combined));
+                    $user->notify(new TelegramNotification($message, $file, $combined));
+                    $matchFound = true;
+                }
+            }
         }
+
+        //khusus AO yg upload
+        $ao = User::find($file->user_id);
+        $user = User::find($userUploaded->id);
+        $attachments = Attachment::where('file_id', $file->id)
+            ->where('isSecret', '!=', 1)
+            ->where(function ($query) {
+                $query->where('link', '!=', 'null')
+                    ->orWhere('path', '!=', 'null');
+            })->get();
+        $submissions = FileSubmission::where('file_id', $file->id)
+            ->where(function ($query) {
+                $query->where('link', '!=', 'null')
+                    ->orWhere('path', '!=', 'null');
+            })->get();
+        $combined = $attachments->merge($submissions);
+
+        // Membuat pesan yang lebih tertata
+        $message = "📣 *Ada Update Baru*\n\n"
+            . str_pad("*AO*", 25) . ": " . $ao->name . "\n"
+            . str_pad("*Pemohon Kredit*", 18) . ": " . $file->name . "\n\n"
+            . str_pad("*Pengguna Yang Memperbarui*", 18) . ": " . ($sender->name ?? '-') . "\n"
+            . ($note ?? '-') . "\n\n"
+            . str_pad("*Plafon*", 25) . ": Rp. " . number_format($file->plafon, 0, ',', '.') . "\n"
+            . "\nSilakan cek detailnya di Website ECAR.\n";
+
+        $user->notify(new TelegramNotification($message, $file, $combined));
+
+
+        // foreach ($notifUser as $notif) {
+        //     $ao = User::find($file->user_id);
+        //     $user = User::find($notif->id);
+        //     $attachments = Attachment::where('file_id', $file->id)
+        //         ->where('isSecret', '!=', 1)
+        //         ->where(function ($query) {
+        //             $query->where('link', '!=', 'null')
+        //                 ->orWhere('path', '!=', 'null');
+        //         })->get();
+        //     $submissions = FileSubmission::where('file_id', $file->id)
+        //         ->where(function ($query) {
+        //             $query->where('link', '!=', 'null')
+        //                 ->orWhere('path', '!=', 'null');
+        //         })->get();
+        //     $combined = $attachments->merge($submissions);
+
+        //     // Membuat pesan yang lebih tertata
+        //     $message = "📣 *Ada Update Baru*\n\n"
+        //         . str_pad("*AO*", 25) . ": " . $ao->name . "\n"
+        //         . str_pad("*Pemohon Kredit*", 18) . ": " . $file->name . "\n\n"
+        //         . str_pad("*Pengguna Yang Memperbarui*", 18) . ": " . ($sender->name ?? '-') . "\n"
+        //         . ($note ?? '-') . "\n\n"
+        //         . str_pad("*Plafon*", 25) . ": Rp. " . number_format($file->plafon, 0, ',', '.') . "\n"
+        //         . "\nSilakan cek detailnya di Website ECAR.\n";
+
+
+        //     $user->notify(new TelegramNotification($message, $file, $combined));
+        // }
     }
 
     public static function AddFile($fileId)
@@ -105,33 +167,95 @@ class TelegramHelper
                 ->get();
             $notifUser = array_merge($notifUser, $users->toArray());
         }
-        foreach ($notifUser as $notif) {
-            $ao = User::find($file->user_id);
-            $user = User::find($notif->id);
-            $attachments = Attachment::where('file_id', $file->id)
-                ->where('isSecret', '!=', 1)
-                ->where(function ($query) {
-                    $query->where('link', '!=', 'null')
-                        ->orWhere('path', '!=', 'null');
-                })->get();
-            $submissions = FileSubmission::where('file_id', $file->id)
-                ->where(function ($query) {
-                    $query->where('link', '!=', 'null')
-                        ->orWhere('path', '!=', 'null');
-                })->get();
-            $combined = $attachments->merge($submissions);
+        $matchFound = false;
 
-            // Membuat pesan yang lebih tertata
-            $message = "📣 *Ada Data Credit Baru*\n\n"
-                . "*AO*: " . $ao->name . "\n"
-                . "*Pemohon Kredit*: " . $file->name . "\n"
-                . "*Plafon*: " . number_format($file->plafon, 0, ',', '.') . "\n"
-                . "*Jenis Usaha*: " . $file->type_bussiness . "\n"
-                . "*Deskripsi Usaha*: " . $file->desc_bussiness . "\n"
-                . "\nSilakan cek detailnya di Website ECAR.\n";
+        foreach ($notifPositions as $pos) {
+            foreach ($notifUser as $user) {
+                if ($pos->position_id == $user->position_id && $userUploaded->position_id != $pos->position_id) {
+                    $ao = User::find($file->user_id);
+                    $user = User::find($user->id);
+                    $attachments = Attachment::where('file_id', $file->id)
+                        ->where('isSecret', '!=', 1)
+                        ->where(function ($query) {
+                            $query->where('link', '!=', 'null')
+                                ->orWhere('path', '!=', 'null');
+                        })->get();
+                    $submissions = FileSubmission::where('file_id', $file->id)
+                        ->where(function ($query) {
+                            $query->where('link', '!=', 'null')
+                                ->orWhere('path', '!=', 'null');
+                        })->get();
+                    $combined = $attachments->merge($submissions);
 
-            $user->notify(new TelegramNotification($message, $file, $combined));
+                    // Membuat pesan yang lebih tertata
+                    $message = "📣 *Ada Data Credit Baru*\n\n"
+                        . "*AO*: " . $ao->name . "\n"
+                        . "*Pemohon Kredit*: " . $file->name . "\n"
+                        . "*Plafon*: " . number_format($file->plafon, 0, ',', '.') . "\n"
+                        . "*Jenis Usaha*: " . $file->type_bussiness . "\n"
+                        . "*Deskripsi Usaha*: " . $file->desc_bussiness . "\n"
+                        . "\nSilakan cek detailnya di Website ECAR.\n";
+
+                    $user->notify(new TelegramNotification($message, $file, $combined));
+                    $matchFound = true;
+                }
+            }
         }
+
+        //khusus AO yg upload
+        $ao = User::find($file->user_id);
+        $user = User::find($userUploaded->id);
+        $attachments = Attachment::where('file_id', $file->id)
+            ->where('isSecret', '!=', 1)
+            ->where(function ($query) {
+                $query->where('link', '!=', 'null')
+                    ->orWhere('path', '!=', 'null');
+            })->get();
+        $submissions = FileSubmission::where('file_id', $file->id)
+            ->where(function ($query) {
+                $query->where('link', '!=', 'null')
+                    ->orWhere('path', '!=', 'null');
+            })->get();
+        $combined = $attachments->merge($submissions);
+
+        // Membuat pesan yang lebih tertata
+        $message = "📣 *Ada Data Credit Baru*\n\n"
+            . "*AO*: " . $ao->name . "\n"
+            . "*Pemohon Kredit*: " . $file->name . "\n"
+            . "*Plafon*: " . number_format($file->plafon, 0, ',', '.') . "\n"
+            . "*Jenis Usaha*: " . $file->type_bussiness . "\n"
+            . "*Deskripsi Usaha*: " . $file->desc_bussiness . "\n"
+            . "\nSilakan cek detailnya di Website ECAR.\n";
+
+        $user->notify(new TelegramNotification($message, $file, $combined));
+
+        // foreach ($notifUser as $notif) {
+        //     $ao = User::find($file->user_id);
+        //     $user = User::find($notif->id);
+        //     $attachments = Attachment::where('file_id', $file->id)
+        //         ->where('isSecret', '!=', 1)
+        //         ->where(function ($query) {
+        //             $query->where('link', '!=', 'null')
+        //                 ->orWhere('path', '!=', 'null');
+        //         })->get();
+        //     $submissions = FileSubmission::where('file_id', $file->id)
+        //         ->where(function ($query) {
+        //             $query->where('link', '!=', 'null')
+        //                 ->orWhere('path', '!=', 'null');
+        //         })->get();
+        //     $combined = $attachments->merge($submissions);
+
+        //     // Membuat pesan yang lebih tertata
+        //     $message = "📣 *Ada Data Credit Baru*\n\n"
+        //         . "*AO*: " . $ao->name . "\n"
+        //         . "*Pemohon Kredit*: " . $file->name . "\n"
+        //         . "*Plafon*: " . number_format($file->plafon, 0, ',', '.') . "\n"
+        //         . "*Jenis Usaha*: " . $file->type_bussiness . "\n"
+        //         . "*Deskripsi Usaha*: " . $file->desc_bussiness . "\n"
+        //         . "\nSilakan cek detailnya di Website ECAR.\n";
+
+        //     $user->notify(new TelegramNotification($message, $file, $combined));
+        // }
     }
     public static function AddUpdatePhase($fileId, $note, $senderId)
     {
@@ -149,6 +273,7 @@ class TelegramHelper
                 ->where('phase', $file->phase)
                 ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
                 ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
+                ->where('notification', 1)
                 ->get();
 
             $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
@@ -164,35 +289,101 @@ class TelegramHelper
             $notifUser = array_merge($notifUser, $users->toArray());
         }
 
-        foreach ($notifUser as $notif) {
-            $ao = User::find($file->user_id);
-            $user = User::find($notif->id);
-            $attachments = Attachment::where('file_id', $file->id)
-                ->where('isSecret', '!=', 1)
-                ->where(function ($query) {
-                    $query->where('link', '!=', 'null')
-                        ->orWhere('path', '!=', 'null');
-                })->get();
-            $submissions = FileSubmission::where('file_id', $file->id)
-                ->where(function ($query) {
-                    $query->where('link', '!=', 'null')
-                        ->orWhere('path', '!=', 'null');
-                })->get();
-            $combined = $attachments->merge($submissions);
+        $matchFound = false;
 
-            // Membuat pesan yang lebih tertata
-            $message = "📣 *Ada Update Baru*\n\n"
-                . str_pad("*AO*", 25) . ": " . $ao->name . "\n"
-                . str_pad("*Pemohon Kredit*", 18) . ": " . $file->name . "\n\n"
-                . str_pad("*Phase*", 18) . ": " . $file->phase . "\n"
-                . str_pad("*Pengguna Yang Memperbarui*", 18) . ": " . ($sender->name ?? '-') . "\n"
-                . ($note ?? '-') . "\n\n"
-                . str_pad("*Plafon*", 25) . ": Rp. " . number_format($file->plafon, 0, ',', '.') . "\n"
-                . "\nSilakan cek detailnya di Website ECAR.\n";
+        foreach ($notifPositions as $pos) {
+            foreach ($notifUser as $user) {
+                if ($pos->position_id == $user->position_id && $userUploaded->position_id != $pos->position_id) {
+                    $ao = User::find($file->user_id);
+                    $user = User::find($user->id);
+                    $attachments = Attachment::where('file_id', $file->id)
+                        ->where('isSecret', '!=', 1)
+                        ->where(function ($query) {
+                            $query->where('link', '!=', 'null')
+                                ->orWhere('path', '!=', 'null');
+                        })->get();
+                    $submissions = FileSubmission::where('file_id', $file->id)
+                        ->where(function ($query) {
+                            $query->where('link', '!=', 'null')
+                                ->orWhere('path', '!=', 'null');
+                        })->get();
+                    $combined = $attachments->merge($submissions);
 
+                    // Membuat pesan yang lebih tertata
+                    // Membuat pesan yang lebih tertata
+                    $message = "📣 *Ada Update Baru*\n\n"
+                        . str_pad("*AO*", 25) . ": " . $ao->name . "\n"
+                        . str_pad("*Pemohon Kredit*", 18) . ": " . $file->name . "\n\n"
+                        . str_pad("*Phase*", 18) . ": " . $file->phase . "\n"
+                        . str_pad("*Pengguna Yang Memperbarui*", 18) . ": " . ($sender->name ?? '-') . "\n"
+                        . ($note ?? '-') . "\n\n"
+                        . str_pad("*Plafon*", 25) . ": Rp. " . number_format($file->plafon, 0, ',', '.') . "\n"
+                        . "\nSilakan cek detailnya di Website ECAR.\n";
 
-            $user->notify(new TelegramNotification($message, $file, $combined));
+                    $user->notify(new TelegramNotification($message, $file, $combined));
+                    $matchFound = true;
+                }
+            }
         }
+
+        //khusus AO yg upload
+        $ao = User::find($file->user_id);
+        $user = User::find($userUploaded->id);
+        $attachments = Attachment::where('file_id', $file->id)
+            ->where('isSecret', '!=', 1)
+            ->where(function ($query) {
+                $query->where('link', '!=', 'null')
+                    ->orWhere('path', '!=', 'null');
+            })->get();
+        $submissions = FileSubmission::where('file_id', $file->id)
+            ->where(function ($query) {
+                $query->where('link', '!=', 'null')
+                    ->orWhere('path', '!=', 'null');
+            })->get();
+        $combined = $attachments->merge($submissions);
+
+        // Membuat pesan yang lebih tertata
+        // Membuat pesan yang lebih tertata
+        $message = "📣 *Ada Update Baru*\n\n"
+            . str_pad("*AO*", 25) . ": " . $ao->name . "\n"
+            . str_pad("*Pemohon Kredit*", 18) . ": " . $file->name . "\n\n"
+            . str_pad("*Phase*", 18) . ": " . $file->phase . "\n"
+            . str_pad("*Pengguna Yang Memperbarui*", 18) . ": " . ($sender->name ?? '-') . "\n"
+            . ($note ?? '-') . "\n\n"
+            . str_pad("*Plafon*", 25) . ": Rp. " . number_format($file->plafon, 0, ',', '.') . "\n"
+            . "\nSilakan cek detailnya di Website ECAR.\n";
+
+        $user->notify(new TelegramNotification($message, $file, $combined));
+
+        // foreach ($notifUser as $notif) {
+        //     $ao = User::find($file->user_id);
+        //     $user = User::find($notif->id);
+        //     $attachments = Attachment::where('file_id', $file->id)
+        //         ->where('isSecret', '!=', 1)
+        //         ->where(function ($query) {
+        //             $query->where('link', '!=', 'null')
+        //                 ->orWhere('path', '!=', 'null');
+        //         })->get();
+        //     $submissions = FileSubmission::where('file_id', $file->id)
+        //         ->where(function ($query) {
+        //             $query->where('link', '!=', 'null')
+        //                 ->orWhere('path', '!=', 'null');
+        //         })->get();
+        //     $combined = $attachments->merge($submissions);
+
+        //     // Membuat pesan yang lebih tertata
+        //     $message = "📣 *Ada Update Baru*\n\n"
+        //         . str_pad("*AO*", 25) . ": " . $ao->name . "\n"
+        //         . str_pad("*Pemohon Kredit*", 18) . ": " . $file->name . "\n\n"
+        //         . str_pad("*Phase*", 18) . ": " . $file->phase . "\n"
+        //         . str_pad("*Pengguna Yang Memperbarui*", 18) . ": " . ($sender->name ?? '-') . "\n"
+        //         . ($note ?? '-') . "\n\n"
+        //         . str_pad("*Plafon*", 25) . ": Rp. " . number_format($file->plafon, 0, ',', '.') . "\n"
+        //         . "\nSilakan cek detailnya di Website ECAR.\n";
+
+
+        //     $user->notify(new TelegramNotification($message, $file, $combined));
+        // }
     }
 
     public static function AgreementPhase4($fileId, $note, $senderId)
