@@ -99,7 +99,7 @@
                             ]" v-model="formsp3k.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
                         </VCol>
                         <VCol md="12" cols="12">
-                            <v-select label="Apakah Anda Yakin File Sudah benar / mengubah status file ini ? ?" :items="[
+                            <v-select label="Apakah Anda menyetujui file ini ?" :items="[
                                 { value: 1, title: 'Setuju' },
                                 { value: 0, title: 'Tidak Setuju' },
                             ]" v-model="formsp3k.isApprove" prepend-icon="mdi-help-rhombus"></v-select>

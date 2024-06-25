@@ -297,7 +297,7 @@
                             ]" v-model="formDetailSlik.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
                         </VCol>
                         <VCol md="12" cols="12">
-                            <v-select label="Apakah Anda Yakin File Sudah benar / mengubah status file ini ? ?" :items="[
+                            <v-select label="Apakah Anda menyetujui file ini ?" :items="[
                                 { value: 1, title: 'Setuju' },
                                 { value: 0, title: 'Tidak Setuju' },
                             ]" v-model="formDetailSlik.isApprove" prepend-icon="mdi-help-rhombus"></v-select>
@@ -375,7 +375,7 @@
                             ]" v-model="formDetailSlik.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
                         </VCol>
                         <VCol md="12" cols="12">
-                            <v-select label="Apakah Anda Yakin File Sudah benar / mengubah status file ini ? ?" :items="[
+                            <v-select label="Apakah Anda menyetujui file ini ?" :items="[
                                 { value: 1, title: 'Setuju' },
                                 { value: 0, title: 'Tidak Setuju' },
                             ]" v-model="formDetailSlik.isApprove" prepend-icon="mdi-help-rhombus"></v-select>
@@ -456,7 +456,7 @@
                         </VCol> -->
 
                         <VCol md="12" cols="12">
-                            <v-select label="Apakah Anda Yakin File Sudah benar / mengubah status file ini ? ?" :items="[
+                            <v-select label="Apakah Anda menyetujui file ini ?" :items="[
                                 { value: 1, title: 'Setuju' },
                                 { value: 0, title: 'Tidak Setuju' },
                             ]" v-model="formAnalytic.isApprove" prepend-icon="mdi-help-rhombus"></v-select>
@@ -520,7 +520,7 @@
                                 @change="formAppeal.path = null" />
                         </VCol>
                         <VCol md="12" cols="12">
-                            <v-select label="Apakah Anda Yakin File Sudah benar / mengubah status file ini ? ?" :items="[
+                            <v-select label="Apakah Anda menyetujui file ini ?" :items="[
                                 { value: 1, title: 'Setuju' },
                                 { value: 0, title: 'Tidak Setuju' },
                             ]" v-model="formAppeal.isApprove" prepend-icon="mdi-help-rhombus"></v-select>
