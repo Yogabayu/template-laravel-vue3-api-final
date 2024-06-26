@@ -106,6 +106,9 @@
           <template #item-maxPlafon="item">
             <p>{{ formatInput(item.maxPlafon) }}</p>
           </template>
+          <template #item-canApproveAppeal="item">
+            <p>{{ item.canApproveAppeal == 1 ? "&#x2713;" : "x" }}</p>
+          </template>
           <template #item-canApprove="item">
             <p>{{ item.canApprove == 1 ? "&#x2713;" : "x" }}</p>
           </template>
@@ -389,11 +392,17 @@
                     hint="Masukkan 1.000.000.000 untuk maksimal, jika ingin tanpa batas" autofocus
                     prepend-icon="mdi-help-rhombus" />
                 </VCol>
-                <VCol md="12" cols="12">
+                <VCol md="12" cols="12" v-if="dataFormIn.phase == 2">
                   <v-select label="Input Banding?" :items="[
                     { value: 1, title: 'Ya' },
                     { value: 0, title: 'Tidak' },
                   ]" v-model="dataFormIn.canAppeal" prepend-icon="mdi-help-rhombus"></v-select>
+                </VCol>
+                <VCol md="12" cols="12" v-if="dataFormIn.phase == 2">
+                  <v-select label="Approve Banding?" :items="[
+                    { value: 1, title: 'Ya' },
+                    { value: 0, title: 'Tidak' },
+                  ]" v-model="dataFormIn.canApproveAppeal" prepend-icon="mdi-help-rhombus"></v-select>
                 </VCol>
                 <VCol md="12" cols="12">
                   <v-select label="Approve?" :items="[
@@ -477,11 +486,17 @@
                     hint="Masukkan 1.000.000.000 untuk maksimal, jika ingin tanpa batas" autofocus
                     prepend-icon="mdi-help-rhombus" />
                 </VCol>
-                <VCol md="12" cols="12">
+                <VCol md="12" cols="12" v-if="dataFormIn.phase == 2">
                   <v-select label="Input Banding?" :items="[
                     { value: 1, title: 'Ya' },
                     { value: 0, title: 'Tidak' },
                   ]" v-model="dataFormIn.canAppeal" prepend-icon="mdi-help-rhombus"></v-select>
+                </VCol>
+                <VCol md="12" cols="12" v-if="dataFormIn.phase == 2">
+                  <v-select label="Approve Banding?" :items="[
+                    { value: 1, title: 'Ya' },
+                    { value: 0, title: 'Tidak' },
+                  ]" v-model="dataFormIn.canApproveAppeal" prepend-icon="mdi-help-rhombus"></v-select>
                 </VCol>
                 <VCol md="12" cols="12">
                   <v-select label="Approve?" :items="[
@@ -564,11 +579,17 @@
                     hint="Masukkan 1.000.000.000 untuk maksimal, jika ingin tanpa batas" autofocus
                     prepend-icon="mdi-help-rhombus" />
                 </VCol>
-                <VCol md="12" cols="12">
+                <VCol md="12" cols="12" v-if="dataFormIn.phase == 2">
                   <v-select label="Input Banding?" :items="[
                     { value: 1, title: 'Ya' },
                     { value: 0, title: 'Tidak' },
                   ]" v-model="dataFormIn.canAppeal" prepend-icon="mdi-help-rhombus"></v-select>
+                </VCol>
+                <VCol md="12" cols="12" v-if="dataFormIn.phase == 2">
+                  <v-select label="Approve Banding?" :items="[
+                    { value: 1, title: 'Ya' },
+                    { value: 0, title: 'Tidak' },
+                  ]" v-model="dataFormIn.canApproveAppeal" prepend-icon="mdi-help-rhombus"></v-select>
                 </VCol>
                 <VCol md="12" cols="12">
                   <v-select label="Approve?" :items="[
@@ -657,6 +678,7 @@ export default {
         minPlafon: '',
         maxPlafon: '',
         canAppeal: 0,
+        canApproveAppeal: 0,
         canApprove: 0,
         notification: 0,
         canInsertData: 0,
@@ -682,7 +704,7 @@ export default {
         // { text: "Phase", value: "phase", sortable: true },
         { text: "Min. Plafon", value: "minPlafon", sortable: true },
         { text: "Max. Plafon", value: "maxPlafon", sortable: true },
-        { text: "Input Banding?", value: "canAppeal", sortable: true },
+        // { text: "Input Banding?", value: "canAppeal", sortable: true },
         { text: "Approve?", value: "canApprove", sortable: true },
         { text: "Notifikasi?", value: "notification", sortable: true },
         { text: "Tambah Data?", value: "canInsertData", sortable: true },
@@ -698,6 +720,7 @@ export default {
         { text: "Min. Plafon", value: "minPlafon", sortable: true },
         { text: "Max. Plafon", value: "maxPlafon", sortable: true },
         { text: "Input Banding?", value: "canAppeal", sortable: true },
+        { text: "Approve Banding?", value: "canApproveAppeal", sortable: true },
         { text: "Approve?", value: "canApprove", sortable: true },
         { text: "Notifikasi?", value: "notification", sortable: true },
         { text: "Akses Data Sensitif? (SLIK, dll)", value: "isSecret", sortable: true },
@@ -729,7 +752,7 @@ export default {
         // { text: "Phase", value: "phase", sortable: true },
         { text: "Min. Plafon", value: "minPlafon", sortable: true },
         { text: "Max. Plafon", value: "maxPlafon", sortable: true },
-        { text: "Input Banding?", value: "canAppeal", sortable: true },
+        // { text: "Input Banding?", value: "canAppeal", sortable: true },
         { text: "Approve?", value: "canApprove", sortable: true },
         { text: "Notifikasi", value: "notification", sortable: true },
         { text: "Akses Data Sensitif? (SLIK, dll)", value: "isSecret", sortable: true },
@@ -745,7 +768,7 @@ export default {
         // { text: "Phase", value: "phase", sortable: true },
         { text: "Min. Plafon", value: "minPlafon", sortable: true },
         { text: "Max. Plafon", value: "maxPlafon", sortable: true },
-        { text: "Input Banding?", value: "canAppeal", sortable: true },
+        // { text: "Input Banding?", value: "canAppeal", sortable: true },
         { text: "Approve?", value: "canApprove", sortable: true },
         { text: "Notifikasi", value: "notification", sortable: true },
         { text: "Akses Data Sensitif? (SLIK, dll)", value: "isSecret", sortable: true },
@@ -804,6 +827,7 @@ export default {
         formData.append("position_id", this.dataFormIn.position_id);
         formData.append("phase", this.dataFormIn.phase);
         formData.append("canAppeal", this.dataFormIn.canAppeal);
+        formData.append("canApproveAppeal", this.dataFormIn.canApproveAppeal);
         formData.append("canApprove", this.dataFormIn.canApprove);
         formData.append("notification", this.dataFormIn.notification);
         formData.append("canInsertData", this.dataFormIn.canInsertData);
@@ -857,6 +881,7 @@ export default {
         formData.append("phase", this.dataFormIn.phase);
         formData.append("canAppeal", this.dataFormIn.canAppeal);
         formData.append("canApprove", this.dataFormIn.canApprove);
+        formData.append("canApproveAppeal", this.dataFormIn.canApproveAppeal);
         formData.append("notification", this.dataFormIn.notification);
         formData.append("canInsertData", this.dataFormIn.canInsertData);
         formData.append("canUpdateData", this.dataFormIn.canUpdateData);
@@ -899,6 +924,7 @@ export default {
         formData.append("position_id", this.dataFormIn.position_id);
         formData.append("phase", this.dataFormIn.phase);
         formData.append("canAppeal", this.dataFormIn.canAppeal);
+        formData.append("canApproveAppeal", this.dataFormIn.canApproveAppeal);
         formData.append("canApprove", this.dataFormIn.canApprove);
         formData.append("notification", this.dataFormIn.notification);
         formData.append("canInsertData", this.dataFormIn.canInsertData);
@@ -957,16 +983,21 @@ export default {
         phase: null,
         minPlafon: null,
         maxPlafon: null,
-        // canAppeal: null,
-        canApprove: null,
-        notification: null,
+        canAppeal: 0,
+        canApproveAppeal: 0,
+        canApprove: 0,
+        notification: 0,
+        canInsertData: 0,
+        canUpdateData: 0,
+        canDeleteData: 0,
+        isSecret: 0,
       };
     },
     openModal(type: number, item = null) {
       if (type === 1) {
         this.getOffices();
         this.getPositions();
-        this.dataFormIn.office_id = this.officeId;
+        this.dataFormIn.office_id = this.officeId;        
         this.insert = true;
       } else if (type === 2) {
         if (item) {
@@ -979,12 +1010,14 @@ export default {
           this.dataFormIn.minPlafon = item.minPlafon;
           this.dataFormIn.maxPlafon = item.maxPlafon;
           this.dataFormIn.canAppeal = parseInt(item.canAppeal);
+          this.dataFormIn.canApproveAppeal = parseInt(item.canApproveAppeal);
           this.dataFormIn.canApprove = parseInt(item.canApprove);
           this.dataFormIn.notification = parseInt(item.notification);
           this.dataFormIn.isSecret = parseInt(item.isSecret);
           this.dataFormIn.canInsertData = parseInt(item.canInsertData);
           this.dataFormIn.canUpdateData = parseInt(item.canUpdateData);
           this.dataFormIn.canDeleteData = parseInt(item.canDeleteData);
+          
           this.edit = true;
         }
       } else if (type === 3) {
@@ -998,6 +1031,7 @@ export default {
           this.dataFormIn.minPlafon = item.minPlafon;
           this.dataFormIn.maxPlafon = item.maxPlafon;
           this.dataFormIn.canAppeal = parseInt(item.canAppeal);
+          this.dataFormIn.canApproveAppeal = parseInt(item.canApproveAppeal);
           this.dataFormIn.canApprove = parseInt(item.canApprove);
           this.dataFormIn.notification = parseInt(item.notification);
           this.dataFormIn.isSecret = parseInt(item.isSecret);

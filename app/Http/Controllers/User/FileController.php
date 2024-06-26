@@ -675,7 +675,7 @@ class FileController extends Controller
 
 
                         if (!$matchFound) {
-                            return ResponseHelper::errorRes('Error, user yang memiliki akses approve tidak ditemukan, mohon tambahkan User yang dapat memberi aproval di tahap selanjutnya');
+                            return ResponseHelper::errorRes('Error1, user yang memiliki akses approve tidak ditemukan, mohon tambahkan User yang dapat memberi aproval di tahap selanjutnya');
                         }
 
                         if ($file->phase == 5) {
@@ -751,7 +751,6 @@ class FileController extends Controller
                         $userPosition = Position::where('id', $userUploaded->position_id)->first();
                         $userOffices = PositionToOffice::where('position_id', $userPosition->id)->get();
                         $notifPositions = [];
-
                         //add user to approval
                         foreach ($userOffices as $userOffice) {
                             $notificationConfigurations = DB::table('notification_configurations')
@@ -806,7 +805,7 @@ class FileController extends Controller
                         }
 
                         if (!$matchFound) {
-                            return ResponseHelper::errorRes('Error, user yang memiliki akses approve tidak ditemukan, mohon tambahkan User yang dapat memberi aproval di tahap selanjutnya');
+                            return ResponseHelper::errorRes('Error2, user yang memiliki akses approve tidak ditemukan, mohon tambahkan User yang dapat memberi aproval di tahap selanjutnya');
                         }
 
                         $phaseTime = PhaseTime::where('file_id', $file->id)->where('phase', $filephase - 1)->first();
@@ -1972,6 +1971,7 @@ class FileController extends Controller
                     // Extract user access details for the current notifPosition.
                     $userAccess = [
                         'canAppeal' => $notifPosition->canAppeal,
+                        'canApproveAppeal' => $notifPosition->canApproveAppeal,
                         'canApprove' => $notifPosition->canApprove,
                         'canInsertData' => $notifPosition->canInsertData,
                         'canUpdateData' => $notifPosition->canUpdateData,

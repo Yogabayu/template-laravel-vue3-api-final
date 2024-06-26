@@ -519,7 +519,7 @@
                                 hint="Pastikan menggunakan https://" :rules="[rules.required]"
                                 @change="formAppeal.path = null" />
                         </VCol>
-                        <VCol md="12" cols="12">
+                        <VCol md="12" cols="12" v-if="userAccessPhase2 && parseInt(userAccessPhase2.canApproveAppeal) == 1">
                             <v-select label="Apakah Anda menyetujui file ini ?" :items="[
                                 { value: 1, title: 'Setuju' },
                                 { value: 0, title: 'Tidak Setuju' },

@@ -19,6 +19,7 @@ class NotificationConfiguration extends Model
         'canUpdateData',
         'canDeleteData',
         'isSecret',
+        'canApproveAppeal',
     ];
 
     public function position()
