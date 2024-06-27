@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Exports\PhaseTimeReportExport;
 use App\Helpers\ActivityHelper;
 use App\Helpers\EmailHelper;
 use App\Helpers\ResponseHelper;
@@ -31,9 +32,62 @@ use Illuminate\Support\Facades\File as FacadesFile;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Maatwebsite\Excel\Facades\Excel;
 
 class FileController extends Controller
 {
+    public function generateMonthlyReport($monthYear)
+    {
+        try {
+            $monthYear = explode('-', $monthYear);
+
+            // Ambil bulan dan tahun
+            $month = $monthYear[0];
+            $year = $monthYear[1];
+
+            $data = DB::table('phase_times')
+                ->join('files', 'phase_times.file_id', '=', 'files.id')
+                ->join('users', 'files.user_id', '=', 'users.id')
+                ->select('phase_times.file_id', 'phase_times.phase', 'phase_times.startTime', 'phase_times.endTime', 'files.name as fileName')
+                ->whereMonth('files.created_at', $month)
+                ->whereYear('files.created_at', $year)
+                ->orderBy('phase_times.file_id')
+                ->orderBy('phase_times.phase')
+                ->where('users.id', Auth::user()->id)
+                ->get();
+
+            // Kelompokkan data berdasarkan file_id
+            $groupedData = $data->groupBy('file_id');
+
+            // Format data untuk laporan
+            $reportData = [];
+            foreach ($groupedData as $fileId => $phases) {
+                $row = ['no' => count($reportData) + 1];
+                $fileName = 'Kredit_' . $phases->first()->fileName;
+                $row['nameFile'] = $fileName;
+
+                for ($i = 1; $i <= 5; $i++) {
+                    $phase = $phases->firstWhere('phase', $i);
+                    if ($phase) {
+                        $startTime = strtotime($phase->startTime);
+                        $endTime = $phase->endTime ? strtotime($phase->endTime) : time();
+                        $duration = $endTime - $startTime;
+                        $row['phase' . $i . 'Time'] = gmdate('H:i:s', $duration);
+                    } else {
+                        $row['phase' . $i . 'Time'] = 'N/A';
+                    }
+                }
+                $reportData[] = $row;
+            }
+
+            $date = \Carbon\Carbon::create($year, $month, 1);
+            $fileName = 'phase_time_report_' . $date->format('Y-m') . '.xlsx';
+
+            return Excel::download(new PhaseTimeReportExport($reportData), $fileName);
+        } catch (\Exception $e) {
+            return ResponseHelper::errorRes($e->getMessage());
+        }
+    }
     //=> change file status
     public function changeStatus(Request $request)
     {
@@ -197,14 +251,17 @@ class FileController extends Controller
                 'file_id' => 'required ',
                 'phase' => 'required',
                 'name' => 'required',
-                // 'path' => ' mimes:jpeg,jpg,png,pdf,doc,docx,xls,xlsx | nullable',
                 'note' => 'required',
-                'link' => 'nullable | url',
+                'link' => 'nullable|url|required_without:path',
+                'path' => 'nullable|file|mimes:jpeg,jpg,png,pdf,doc,docx,xls,xlsx|required_without:link',
                 'isApprove' => 'required',
             ], [
                 'required' => ':attribute harus diisi',
-                'mimes' => ':attribute harus berupa jpeg, jpg, png',
+                'mimes' => ':attribute harus berupa file dengan tipe: jpeg, jpg, png, pdf, doc, docx, xls, atau xlsx',
                 'url' => ':attribute harus berupa URL yang valid atau tambahkan https://',
+                'path.required_without' => ':attribute harus diisi jika link kosong',
+                'link.required_without' => ':attribute harus diisi jika path kosong',
+                'file' => ':attribute harus berupa file yang diunggah',
             ]);
             $cekAttach = Attachment::where('name', $request->name)->where('file_id', $request->file_id)->count();
 
@@ -269,9 +326,14 @@ class FileController extends Controller
     {
         try {
             $request->validate([
-                'link' => 'nullable | url',
+                'link' => 'nullable|url|required_without:path',
+                'path' => 'nullable|file|mimes:jpeg,jpg,png,pdf,doc,docx,xls,xlsx|required_without:link',
             ], [
-                'url' => ':attribute harus berupa URL yang valid atau tambahkan https://',
+                'link.url' => ':attribute harus berupa URL yang valid atau tambahkan https://',
+                'path.file' => ':attribute harus berupa file',
+                'path.mimes' => ':attribute harus berupa file dengan tipe: jpeg, jpg, png, pdf, doc, docx, xls, atau xlsx',
+                'path.required_without' => ':attribute harus diisi jika link kosong',
+                'link.required_without' => ':attribute harus diisi jika path kosong',
             ]);
 
             $attachment = Attachment::findOrFail($id);
@@ -2086,9 +2148,14 @@ class FileController extends Controller
     {
         try {
             $request->validate([
-                'link' => 'nullable | url',
+                'link' => 'nullable|url|required_without:path',
+                'path' => 'nullable|file|mimes:jpeg,jpg,png,pdf,doc,docx,xls,xlsx|required_without:link',
             ], [
+                'mimes' => ':attribute harus berupa file dengan tipe: jpeg, jpg, png, pdf, doc, docx, xls, atau xlsx',
                 'url' => ':attribute harus berupa URL yang valid atau tambahkan https://',
+                'path.required_without' => ':attribute harus diisi jika link kosong',
+                'link.required_without' => ':attribute harus diisi jika path kosong',
+                'file' => ':attribute harus berupa file yang diunggah',
             ]);
 
             $file = FileSubmission::findOrFail($id);

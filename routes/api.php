@@ -27,11 +27,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
+Route::group(['namespace' => 'Api', 'prefix' => 'v1', 'throttle:60,1'], function () {
     Route::post('login', [AuthController::class, 'login'])->name('login');
 
     Route::middleware('auth:api')->group(function () {
         Route::get('generatereport/{id}', [FileController::class, 'generateReport']);
+        Route::get('generatemonthly/{monthYear}', [AdminFileController::class, 'generateMonthlyReport']);
         //all
         /////=>download all
         Route::get('download-all/{id}', [ZipController::class, 'downloadAll']);
@@ -110,6 +111,7 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
         //////// Route User \\\\\\\\\
         Route::group(['prefix' => 'user'], function () {
             Route::get('generatereport/{id}', [FileController::class, 'generateReport']);
+            Route::get('generatemonthly/{monthYear}', [FileController::class, 'generateMonthlyReport']);
 
             //dashboard
             Route::get('dashboard', [DashboardController::class, 'index']);

@@ -37,6 +37,9 @@
                 v-if="userAccess && parseInt(userAccess.canInsertData)" @click="openModal(1)">
                 Tambah Data
               </v-btn>
+              <v-btn color="primary" size="small" class="my-3 mx-3" @click="openModal(2)">
+                Rekap Data
+              </v-btn>
               <v-spacer></v-spacer>
               <v-text-field prepend-inner-icon="mdi-magnify" density="compact" label="Search" single-line flat
                 hide-details variant="solo-filled" v-model="searchValue"></v-text-field>
@@ -550,10 +553,54 @@ export default {
         event.target.value = null;
       }
     },
+    async getRecaptData(monthYear: any) {
+      try {
+        this.overlay = true;
+        
+        const response = await mainURL.get(`/user/generatemonthly/${monthYear}`, {
+          responseType: 'blob' // tambahkan ini untuk mengunduh file sebagai Blob
+        });
+
+        if (response.status === 200) {
+          this.overlay = false;
+
+          // Dapatkan nama file dari header respons
+          const contentDisposition = response.headers['content-disposition'];
+          let filename = 'download.xlsx'; // Default filename
+          if (contentDisposition) {
+            const filenameMatch = contentDisposition.match(/filename="?(.+)"?/i);
+            if (filenameMatch.length === 2)
+              filename = filenameMatch[1];
+          }
+
+          // Buat Blob dari respons data
+          const blob = new Blob([response.data], {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+          });
+
+          // Buat URL objek dan unduh file
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', filename);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+
+          this.$showToast("success", "Berhasil", "File Excel berhasil diunduh");
+        } else {
+          this.$showToast("error", "Sorry", response.data.data.message);
+        }
+      } catch (error) {
+        this.overlay = false;
+        this.$showToast("error", "Sorry", error.response.data.message);
+      }
+    },
     async openModal(type: number, item = null) {
       if (type === 1) {
         this.insert = true;
       } else if (type === 2) {
+        this.getRecaptData(this.monthYear);
       }
     },
     closeModal(type: number) {
