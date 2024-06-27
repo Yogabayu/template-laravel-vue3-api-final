@@ -1,5 +1,5 @@
 <template>
-  <v-card color="backgroundCard">
+  <v-card color="backgroundCard" min-width="100%" class="v-card-custom">
     <v-card-title class="text-2xl font-weight-bold d-flex justify-center"
       v-if="!['Account Officer', 'AO', 'ao', 'account officer', 'Account Officer Executive', 'account officer executive', 'Account Officer / Executive AO', 'AO / RO'].includes(userData.position.name)">
       Detail
@@ -579,5 +579,15 @@ export default {
   text-overflow: ellipsis;
   max-width: 100%;
   /* Ensures it does not exceed the parent width */
+}
+
+@media (max-width: 600px) {
+  .v-card-custom {
+    padding: 0 !important; /* Ensure the padding is applied */
+    margin: 0 !important; /* You can also adjust the margin if needed */
+  }
+  .v-card-custom .v-card__text, .v-card-custom .v-card__title, .v-card-custom .v-card__actions {
+    padding: 0 !important; /* Override Vuetify's internal padding */
+  }
 }
 </style>

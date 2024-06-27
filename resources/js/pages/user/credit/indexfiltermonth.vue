@@ -23,10 +23,6 @@
     </VCardItem>
     <v-tabs v-model="tab" class="v-tabs-pill" bg-color="secondary">
       <v-tab value="0">Semua</v-tab>
-      <!-- <v-tab value="1">Phase 1</v-tab>
-      <v-tab value="2">Phase 2</v-tab>
-      <v-tab value="3">Phase 3</v-tab>
-      <v-tab value="4">Phase 4</v-tab> -->
       <v-tab value="1">Approved</v-tab>
       <v-tab value="2">Pending</v-tab>
       <v-tab value="3">Rejected</v-tab>
@@ -45,28 +41,30 @@
               <v-text-field prepend-inner-icon="mdi-magnify" density="compact" label="Search" single-line flat
                 hide-details variant="solo-filled" v-model="searchValue"></v-text-field>
             </v-row>
-            <EasyDataTable show-index :headers="headers" :items="items" :search-value="searchValue">
-              <template #empty-message>
-                <p>Data Kosong</p>
-              </template>
-              <template #loading>
-                <p>loading data .....</p>
-              </template>
-              <template #item-plafon="item">Rp. {{ formatInput(item.plafon) }},-</template>
-              <template #item-isApproved="item">
-                <span v-if="parseInt(item.isApproved) == 1"> Approved</span>
-                <span v-if="parseInt(item.isApproved) == 2"> Pending</span>
-                <span v-if="parseInt(item.isApproved) == 3"> Rejected</span>
-              </template>
-              <template #item-aoro="item">
-                <span>{{ item.user.name }}</span>
-              </template>
-              <template #item-created_at="item">
-                <span>{{ formatDate(item.created_at) }} WIB</span>
-              </template>
-              <template #item-operation="item">
-                <div class="operation-wrapper">
-                  <!-- <button>
+
+            <div class="table-container" @touchstart.stop @touchmove.stop>
+              <EasyDataTable show-index :headers="headers" :items="items" :search-value="searchValue">
+                <template #empty-message>
+                  <p>Data Kosong</p>
+                </template>
+                <template #loading>
+                  <p>loading data .....</p>
+                </template>
+                <template #item-plafon="item">Rp. {{ formatInput(item.plafon) }},-</template>
+                <template #item-isApproved="item">
+                  <span v-if="parseInt(item.isApproved) == 1"> Approved</span>
+                  <span v-if="parseInt(item.isApproved) == 2"> Pending</span>
+                  <span v-if="parseInt(item.isApproved) == 3"> Rejected</span>
+                </template>
+                <template #item-aoro="item">
+                  <span>{{ item.user.name }}</span>
+                </template>
+                <template #item-created_at="item">
+                  <span>{{ formatDate(item.created_at) }} WIB</span>
+                </template>
+                <template #item-operation="item">
+                  <div class="operation-wrapper">
+                    <!-- <button>
                     <VIcon size="20" icon="bx-file-find" color="blue" @click="toDetail(item)" />
                   </button>
                   &nbsp;
@@ -74,34 +72,36 @@
                     <VIcon size="20" icon="bx-trash" color="red" />
                   </button> -->
 
-                  <div class="d-flex justify-space-between">
-                    <v-tooltip location="top" text="Detail Kredit">
-                      <template v-slot:activator="{ props }">
-                        <button v-bind="props" @click="toDetail(item)">
-                          <VIcon size="20" icon="bx-link-external" color="blue" />
-                        </button>
-                      </template>
-                    </v-tooltip>
+                    <div class="d-flex justify-space-between">
+                      <v-tooltip location="top" text="Detail Kredit">
+                        <template v-slot:activator="{ props }">
+                          <button v-bind="props" @click="toDetail(item)">
+                            <VIcon size="20" icon="bx-link-external" color="blue" />
+                          </button>
+                        </template>
+                      </v-tooltip>
 
-                    <v-tooltip location="top" text="Hapus Kredit" v-if="userData && item.user_id == userData.id">
-                      <template v-slot:activator="{ props }">
-                        <button v-bind="props" @click="deleteFile(item)">
-                          <VIcon size="20" icon="bx-trash" color="red" />
-                        </button>
-                      </template>
-                    </v-tooltip>
+                      <v-tooltip location="top" text="Hapus Kredit" v-if="userData && item.user_id == userData.id">
+                        <template v-slot:activator="{ props }">
+                          <button v-bind="props" @click="deleteFile(item)">
+                            <VIcon size="20" icon="bx-trash" color="red" />
+                          </button>
+                        </template>
+                      </v-tooltip>
 
-                    <v-tooltip location="top" text="Download Semua File Kredit" v-if="role && role.canDownload == 1">
-                      <template v-slot:activator="{ props }">
-                        <button v-bind="props" @click="downloadFile(item.id)">
-                          <VIcon size="20" icon="bx-download" color="red" />
-                        </button>
-                      </template>
-                    </v-tooltip>
+                      <v-tooltip location="top" text="Download Semua File Kredit" v-if="role && role.canDownload == 1">
+                        <template v-slot:activator="{ props }">
+                          <button v-bind="props" @click="downloadFile(item.id)">
+                            <VIcon size="20" icon="bx-download" color="red" />
+                          </button>
+                        </template>
+                      </v-tooltip>
+                    </div>
                   </div>
-                </div>
-              </template>
-            </EasyDataTable>
+                </template>
+              </EasyDataTable>
+            </div>
+
           </v-window-item>
         </template>
       </v-window>
@@ -730,3 +730,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.table-container {
+  overflow-x: auto;
+}
+</style>
