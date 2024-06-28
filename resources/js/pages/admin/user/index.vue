@@ -343,7 +343,7 @@
         </template>
         <template #item-isActive="item">
           <v-chip
-            v-if="item.isActive"
+            v-if="parseInt(item.isActive) == 1"
             color="success"
             @click="changeStatus(item)"
             >Active</v-chip

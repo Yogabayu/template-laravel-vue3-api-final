@@ -105,6 +105,11 @@
           <VForm @submit.prevent="insertData">
             <VRow>
               <VCol md="12" cols="12">
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih AO/RO: </span>
+                <v-select :items="users" autofocus v-model="dataForm.user_id"
+                  prepend-icon="mdi-help-rhombus"></v-select>
+              </VCol>
+              <VCol md="12" cols="12">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">Nama Pemohon: </span>
 
                 <VTextField class="my-3" v-model="dataForm.name" autofocus :rules="[rules.required]" />
@@ -112,33 +117,78 @@
               <VCol md="12" cols="12">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">Jumlah Plafon: </span>
 
-                <VTextField class="my-3" v-model="dataForm.plafon" type="text" @input="formatInputPlafon" />
+                <VTextField class="my-3" v-model="formattedPlafon" type="text" @input="formatInputIn" />
+              </VCol>
+              <VCol md="12" cols="12">
+                <span style="color: red">*</span><span class="subtitle-1 text-center">NIK Pemohon: </span>
+
+                <VTextField class="my-3" v-model="dataForm.nik_pemohon" type="number" :rules="[rules.required]" />
+              </VCol>
+              <VCol md="12" cols="12">
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Alamat Pemohon: </span>
+
+                <VTextField class="my-3" v-model="dataForm.address" :rules="[rules.required]" />
+              </VCol>
+              <VCol md="12" cols="12">
+                <span style="color: red">*</span><span class="subtitle-1 text-center">No. HP Pemohon: </span>
+
+                <VTextField class="my-3" v-model="dataForm.no_hp" :rules="[rules.required]" />
+              </VCol>
+              <VCol md="12" cols="12">
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih sumber order: </span>
+                <v-select :items="orderList" autofocus v-model="dataForm.order_source"
+                  prepend-icon="mdi-help-rhombus"></v-select>
               </VCol>
 
               <VCol md="12" cols="12">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">KTP Pemohon : </span>
 
-                <v-file-input class="my-3" accept="image/jpeg,image/png" placeholder="Pick an image"
-                  :rules="[rules.required]" @change="(event) => handleFileChange(event, 'file1')"></v-file-input>
+                <v-file-input class="my-3"
+                  accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                  placeholder="Pick an image" :rules="[rules.required]"
+                  @change="(event) => handleFileChange(event, 'file1')"></v-file-input>
               </VCol>
               <VCol md="12" cols="12">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">Kartu Keluarga : </span>
 
-                <v-file-input class="my-3" accept="image/jpeg,image/png" placeholder="Pick an image"
-                  :rules="[rules.required]" @change="(event) => handleFileChange(event, 'file4')"></v-file-input>
+                <v-file-input class="my-3"
+                  accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                  placeholder="Pick an image" :rules="[rules.required]"
+                  @change="(event) => handleFileChange(event, 'file4')"></v-file-input>
               </VCol>
-              <VCol md="12" cols="12">
-                <span style="color: red">*</span><span class="subtitle-1 text-center">Foto Kunjungan : </span>
 
-                <v-file-input class="my-3" accept="image/jpeg,image/png" placeholder="Pick an image"
-                  :rules="[rules.required]" @change="(event) => handleFileChange(event, 'file10')"></v-file-input>
+              <VCol md="12" cols="12">
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih Jenis Bukti Kunjungan :
+                </span>
+                <v-radio-group v-model="selectedPhoto" :mandatory="true" row>
+                  <v-radio label="Foto Kunjungan" value="fotoKunjungan"></v-radio>
+                  <v-radio label="Foto WhatsApp" value="fotoWhatsApp"></v-radio>
+                </v-radio-group>
+              </VCol>
+
+              <VCol md="12" cols="12" v-if="selectedPhoto === 'fotoKunjungan'">
+                <span style="color: red">*</span>
+                <span class="subtitle-1 text-center">Foto Kunjungan :</span>
+                <v-file-input class="my-3"
+                  accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                  placeholder="Pick an image" :rules="[rules.required]"
+                  @change="handleFileChange($event, 'file10'); resetFile('file11')"></v-file-input>
+              </VCol>
+
+              <VCol md="12" cols="12" v-if="selectedPhoto === 'fotoWhatsApp'">
+                <span style="color: red">*</span>
+                <span class="subtitle-1 text-center">Foto WhatsApp :</span>
+                <v-file-input class="my-3"
+                  accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                  placeholder="Pick an image" :rules="[rules.required]"
+                  @change="handleFileChange($event, 'file11'); resetFile('file10')"></v-file-input>
               </VCol>
 
               <v-divider :thickness="5"></v-divider>
               <!-- sudah menikah -->
               <VCol cols="12" md="12">
                 <v-checkbox v-model="dataForm.hasFile2" label="Apakah pemohon sudah menikah?"
-                  @change="resetFile('file2'), resetFile('file5')"></v-checkbox>
+                  @change="resetFile('file2'), dataForm.nik_pasangan = null"></v-checkbox>
               </VCol>
 
               <v-divider :thickness="5"></v-divider>
@@ -146,28 +196,76 @@
                 <span style="color: red">*</span><span class="subtitle-1 text-center">KTP Pasangan Pemohon :
                 </span>
 
-                <v-file-input class="my-3" accept="image/jpeg,image/png" placeholder="Pick an image"
-                  :rules="[rules.required]" @change="(event) => handleFileChange(event, 'file2')"></v-file-input>
+                <v-file-input class="my-3"
+                  accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                  placeholder="Pick an image" :rules="[rules.required]"
+                  @change="(event) => handleFileChange(event, 'file2')"></v-file-input>
               </VCol>
-              <VCol md="12" cols="12" v-if="dataForm.hasFile2">
-                <span style="color: red">*</span><span class="subtitle-1 text-center">Buku Nikah : </span>
 
-                <v-file-input class="my-3" accept="image/jpeg,image/png" placeholder="Pick an image"
-                  :rules="[rules.required]" @change="(event) => handleFileChange(event, 'file5')"></v-file-input>
+              <VCol md="12" cols="12" v-if="dataForm.hasFile2">
+                <span style="color: red">*</span><span class="subtitle-1 text-center">NIK Pasangan Pemohon: </span>
+
+                <VTextField class="my-3" type="number" v-model="dataForm.nik_pasangan" :rules="[rules.required]" />
               </VCol>
+
+              <!-- <v-divider :thickness="5"></v-divider> -->
+              <!-- <VCol md="12" cols="12">
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih Salah Satu Kelengkapan :
+                </span>
+                <v-radio-group v-model="selectedOption" :mandatory="true" row>
+                  <v-radio label="Buku Nikah" value="bukuNikah"></v-radio>
+                  <v-radio label="Jenis Jaminan SHM" value="jaminanSHM"></v-radio>
+                  <v-radio label="Jenis Jaminan BPKB" value="jaminanBPKB"></v-radio>
+                </v-radio-group>
+              </VCol> -->
+
+              <VCol md="12" cols="12">
+                <span class="subtitle-1 text-center">Buku Nikah:</span>
+                <v-file-input class="my-3"
+                  accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                  placeholder="Pick an image" :rules="[rules.required]"
+                  @change="handleFileChange($event, 'file5'); resetFile('file7'); resetFile('file8')"></v-file-input>
+              </VCol>
+
+              <!-- <VCol md="12" cols="12" v-if="selectedOption === 'jaminanSHM'">
+                <span style="color: red">*</span>
+                <span class="subtitle-1 text-center">Jaminan SHM:</span>
+                <v-file-input class="my-3"
+                  accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                  placeholder="Pick an image" :rules="[rules.required]"
+                  @change="handleFileChange($event, 'file7'); resetFile('file5'); resetFile('file8')"></v-file-input>
+              </VCol>
+
+              <VCol md="12" cols="12" v-if="selectedOption === 'jaminanBPKB'">
+                <span style="color: red">*</span>
+                <span class="subtitle-1 text-center">Jaminan BPKB:</span>
+                <v-file-input class="my-3"
+                  accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                  placeholder="Pick an image" :rules="[rules.required]"
+                  @change="handleFileChange($event, 'file8'); resetFile('file5'); resetFile('file7')"></v-file-input>
+              </VCol> -->
+
+              <v-divider :thickness="5"></v-divider>
 
               <!-- ktp atas nama jaminan -->
               <VCol cols="12" md="12">
                 <v-checkbox v-model="dataForm.hasFile3" label="Apakah agunan bukan atas nama pemohon?"
-                  @change="resetFile('file3')"></v-checkbox>
+                  @change="resetFile('file3'), dataForm.nik_jaminan = null"></v-checkbox>
               </VCol>
               <VCol md="12" cols="12" v-if="dataForm.hasFile3">
                 <span style="color: red">*</span>
                 <span class="subtitle-1 text-center">KTP atas nama Jaminan :
                 </span>
 
-                <v-file-input class="my-3" accept="image/jpeg,image/png" placeholder="Pick an image"
-                  :rules="[rules.required]" @change="(event) => handleFileChange(event, 'file3')"></v-file-input>
+                <v-file-input class="my-3"
+                  accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                  placeholder="Pick an image" :rules="[rules.required]"
+                  @change="(event) => handleFileChange(event, 'file3')"></v-file-input>
+              </VCol>
+              <VCol md="12" cols="12" v-if="dataForm.hasFile3">
+                <span style="color: red">*</span><span class="subtitle-1 text-center">NIK Pemilik Jaminan: </span>
+
+                <VTextField class="my-3" type="number" v-model="dataForm.nik_jaminan" :rules="[rules.required]" />
               </VCol>
 
               <v-divider :thickness="5"></v-divider>
@@ -183,79 +281,9 @@
                 <VTextField class="my-3" v-model="dataForm.desc_bussiness" :rules="[rules.required]" />
               </VCol>
 
-              <VCol><span style="color: red">*</span><span class="subtitle-1 text-center">Lampirkan Salah Satu Jenis
-                  Jaminan :
-                </span></VCol>
-              <!-- shm -->
-              <VCol cols="12" md="12">
-                <v-checkbox v-model="dataForm.hasFile7" label="Jenis Jaminan SHM ?"
-                  @change="resetFile('file7')"></v-checkbox>
-              </VCol>
-              <VCol md="12" cols="12" v-if="dataForm.hasFile7">
-                <span style="color: red">*</span>
-                <span class="subtitle-1 text-center">Jaminan SHM : </span>
-
-                <v-file-input class="my-3" accept="image/jpeg,image/png" placeholder="Pick an image"
-                  :rules="[rules.required]" @change="(event) => handleFileChange(event, 'file7')"></v-file-input>
-              </VCol>
-
-              <!-- bpkb -->
-              <!-- <VCol cols="12" md="12">
-                <v-checkbox
-                  v-model="dataForm.hasFile8"
-                  label="Jenis Jaminan BPKB ?"
-                  @change="resetFile('file8')"
-                ></v-checkbox>
-              </VCol>
-              <VCol md="12" cols="12" v-if="dataForm.hasFile8">
-                <span style="color: red">*</span>
-                <span class="subtitle-1 text-center">Jaminan SHM : </span>
-
-                <v-file-input
-                  class="my-3"
-                  accept="image/jpeg,image/png"
-                  placeholder="Pick an image"
-                  :rules="[rules.required]"
-                  @change="(event) => handleFileChange(event, 'file8')"
-                ></v-file-input>
-              </VCol> -->
-
-              <!-- mesin produksi -->
-              <!-- <VCol cols="12" md="12">
-                <v-checkbox
-                  v-model="dataForm.hasFile9"
-                  label="Jenis Jaminan Mesin Produksi ?"
-                  @change="resetFile('file9')"
-                ></v-checkbox>
-              </VCol>
-              <VCol md="12" cols="12" v-if="dataForm.hasFile9">
-                <span style="color: red">*</span>
-                <span class="subtitle-1 text-center"
-                  >Foto Tentang Mesin :
-                </span>
-
-                <v-file-input
-                  class="my-3"
-                  accept="image/jpeg,image/png"
-                  placeholder="Pick an image"
-                  :rules="[rules.required]"
-                  @change="(event) => handleFileChange(event, 'file9')"
-                ></v-file-input>
-              </VCol> -->
-
               <VCol cols="12" class="d-flex flex-wrap gap-4">
-                <VBtn type="submit" :disabled="(dataForm.hasFile2 &&
-                  (dataForm.file2 == null || dataForm.file5 == null)) ||
-                  (dataForm.hasFile3 && dataForm.file3 == null) ||
-                  (dataForm.hasFile7 && dataForm.file7 == null) ||
-                  (dataForm.hasFile8 && dataForm.file8 == null) ||
-                  (dataForm.hasFile9 && dataForm.file9 == null) ||
-                  (dataForm.file7 == null &&
-                    dataForm.file8 == null &&
-                    dataForm.file9 == null) ||
-                  (dataForm.type_bussiness == null &&
-                    dataForm.desc_bussiness == null)
-                  ">
+                <VBtn type="submit"
+                  :disabled="(dataForm.name == null || dataForm.plafon == null || dataForm.type_bussiness == null || dataForm.desc_bussiness == null || dataForm.order_source == null) || (dataForm.file1 == null || dataForm.file4 == null) || (dataForm.file10 == null && dataForm.file11 == null)">
                   Simpan
                 </VBtn>
 
@@ -279,6 +307,24 @@
 import { formatDate } from "@/@core/utils/formatters";
 import mainURL from "@/axios";
 export default {
+  computed: {
+    formattedPlafon: {
+      get() {
+        return this.formatNumber(this.dataForm.plafon);
+      },
+      set(value) {
+        this.dataForm.plafon = value.replace(/\D/g, '');
+      }
+    },
+    formattedMaxPlafon: {
+      get() {
+        return this.formatNumber(this.dataForm.plafon);
+      },
+      set(value) {
+        this.dataForm.plafon = value.replace(/\D/g, '');
+      }
+    }
+  },
   data() {
     return {
       monthYear: this.$route.params.monthYear,
@@ -286,6 +332,7 @@ export default {
       insert: false,
       searchValue: "",
       userData: null,
+      selectedPhoto: '',
       userToken: null,
       uploadProgress: null,
       tab: 0,
@@ -296,6 +343,7 @@ export default {
       //role
       role: [],
       items: [],
+      users: [],
       originalItems: [],
       headers: [
         { text: "Nama", value: "name", sortable: true },
@@ -314,10 +362,17 @@ export default {
       ],
       dataForm: {
         id: null,
+        user_id: null,
         name: "",
         plafon: null,
         type_bussiness: null,
         desc_bussiness: null,
+        nik_pemohon: null,
+        nik_pasangan: null,
+        nik_jaminan: null,
+        address: null,
+        no_hp: null,
+        order_source: null,
         file1: null, //ktp pemohon
         hasFile2: false,
         file2: null, //ktp pasangan
@@ -333,7 +388,21 @@ export default {
         file9: null, //foto detail mesin
         hasFile10: false,
         file10: null, // foto kunjungan
+        hasFile11: false,
+        file11: null, // foto wa
       },
+      orderList: [
+        { value: 'AO SENDIRI', title: 'AO SENDIRI' },
+        { value: 'C. SERVIS / KANTOR', title: 'C. SERVIS / KANTOR' },
+        { value: 'NASABAH', title: 'NASABAH' },
+        { value: 'CROSS SALING DIVISI', title: 'CROSS SALING DIVISI' },
+        { value: 'AGEN MGM / LAINNYA', title: 'AGEN MGM / LAINNYA' },
+        { value: 'WEBSITE / WA / SOSMED', title: 'WEBSITE / WA/ SOSMED' },
+        { value: 'TEAM BUSSINES', title: 'TEAM BUSSINES' },
+        { value: 'PROGRAM KKB NEW', title: 'PROGRAM KKB NEW' },
+        { value: 'PROGRAM KKB SECOND', title: 'PROGRAM KKB SECOND' },
+        { value: 'CENTRO', title: 'CENTRO' },
+      ],
     };
   },
   watch: {
@@ -387,11 +456,18 @@ export default {
         this.$showToast("error", "Error", "Terjadi kesalahan saat mengunduh file");
       }
     },
+    formatInput(value: string) {
+      // Lakukan pemformatan nilai plafon di sini
+      value = value.replace(/\D/g, ""); // Remove non-digit characters
+      value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ","); // Add comma as thousand separator
+      return value;
+    },
     toDetail(item: any) {
       this.$router.push(`/a-credit/${item.id}`);
     },
     async deleteFile(item: { id: any }) {
       try {
+        this.overlay = true;
         const confirmDelete = window.confirm(
           "Apakah Anda yakin ingin menghapus data? Semua Data akan terhapus secara permanen."
         );
@@ -400,12 +476,17 @@ export default {
         const response = await mainURL.delete(`/credit/${item.id}`);
 
         if (response.status === 200) {
+          this.overlay = false;
           this.getAllFiles();
           this.$showToast("success", "Berhasill", response.data.message);
         } else {
+          this.overlay = false;
+          this.getAllFiles();
           this.$showToast("error", "Sorry", response.data.message);
         }
       } catch (error) {
+        this.overlay = false;
+        this.getAllFiles();
         this.$showToast("error", "Sorry", error.response.data.message);
       }
     },
@@ -446,65 +527,23 @@ export default {
           this.dataForm.noteFile9 = "Foto Detail Mesin";
         } else if (fileKey == "file10") {
           this.dataForm.noteFile10 = "Foto Kunjungan";
+        } else if (fileKey == "file11") {
+          this.dataForm.noteFile11 = "Foto WhatsApp";
         }
       } else {
+        this.overlay = false;
         this.$showToast(
           "error",
           "Error",
-          "Hanya file JPG, JPEG, dan PNG yang diizinkan."
+          "Hanya file JPG, JPEG, PNG, dan PDF, WORD yang diizinkan."
         );
         event.target.value = null;
-      }
-    },
-
-    async getRecaptData(monthYear: any) {
-      try {
-        this.overlay = true;
-
-        const response = await mainURL.get(`/generatemonthly/${monthYear}`, {
-          responseType: 'blob' // tambahkan ini untuk mengunduh file sebagai Blob
-        });
-
-        if (response.status === 200) {
-          this.overlay = false;
-
-          // Dapatkan nama file dari header respons
-          const contentDisposition = response.headers['content-disposition'];
-          let filename = 'download.xlsx'; // Default filename
-          if (contentDisposition) {
-            const filenameMatch = contentDisposition.match(/filename="?(.+)"?/i);
-            if (filenameMatch.length === 2)
-              filename = filenameMatch[1];
-          }
-
-          // Buat Blob dari respons data
-          const blob = new Blob([response.data], {
-            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-          });
-
-          // Buat URL objek dan unduh file
-          const url = window.URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.setAttribute('download', filename);
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-
-          this.$showToast("success", "Berhasil", "File Excel berhasil diunduh");
-        } else {
-          this.$showToast("error", "Sorry", response.data.data.message);
-        }
-      } catch (error) {
-        this.overlay = false;
-        this.$showToast("error", "Sorry", error.response.data.message);
       }
     },
     async openModal(type: number, item = null) {
       if (type === 1) {
         this.insert = true;
       } else if (type === 2) {
-        this.getRecaptData(this.monthYear);
       }
     },
     closeModal(type: number) {
@@ -521,6 +560,7 @@ export default {
         id: null,
         name: "",
         plafon: null,
+        order_source: null,
         file1: null, //ktp pemohon
         hasFile2: false,
         file2: null, //ktp pasangan
@@ -538,15 +578,19 @@ export default {
         file10: null, // foto kunjungan
       };
     },
-    formatInput(value: string) {
-      // Lakukan pemformatan nilai plafon di sini
+    formatInputIn(event: { target: { value: any } }) {
+      let value = event.target.value;
       value = value.replace(/\D/g, ""); // Remove non-digit characters
       value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ","); // Add comma as thousand separator
-      return value;
+      event.target.value = value;
+    },
+    formatNumber(value) {
+      if (!value) return '';
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     },
     filterDataStatus(phase: any) {
       this.items = this.originalItems.filter(
-        (item: { isApproved: any, }) => item.isApproved == phase
+        (item: { isApproved: any }) => item.isApproved == phase
       );
     },
     getUserData() {
@@ -565,6 +609,11 @@ export default {
 
         if (response.status === 200) {
           this.items = response.data.data.files;
+          this.users = response.data.data.users.map(item => ({
+            value: item.id,   // Mengambil nilai dari 'id'
+            title: item.name  // Mengambil nilai dari 'name'
+          }));
+
           this.originalItems = [...this.items];
           this.overlay = false;
         } else {
@@ -586,12 +635,25 @@ export default {
         this.overlay = true;
         const formData = new FormData();
         formData.append("name", this.dataForm.name);
+        formData.append("user_id", this.dataForm.user_id);
+        formData.append("nik_pemohon", this.dataForm.nik_pemohon);
+        formData.append("address", this.dataForm.address);
+        formData.append("no_hp", this.dataForm.no_hp);
+        formData.append("order_source", this.dataForm.order_source);
         formData.append("plafon", this.dataForm.plafon.replace(/\D/g, ""));
         formData.append("type_bussiness", this.dataForm.type_bussiness);
         formData.append("desc_bussiness", this.dataForm.desc_bussiness);
+        formData.append("order_source", this.dataForm.order_source);
+
+        if (this.dataForm.file2 != null) {
+          formData.append('nik_pasangan', this.dataForm.nik_pasangan);
+        }
+        if (this.dataForm.file3 != null) {
+          formData.append('nik_jaminan', this.dataForm.nik_jaminan);
+        }
 
         // Append files to formData
-        for (let i = 1; i <= 10; i++) {
+        for (let i = 1; i <= 11; i++) {
           if (i === 6) continue;
 
           let fileKey = "file" + i;
@@ -615,22 +677,6 @@ export default {
               formData.append(fileKey, this.dataForm[fileKey]);
             }
           }
-        }
-
-        // Ensure at least one of file7, file8, and file9 exists
-        if (
-          !this.dataForm.file7 &&
-          !this.dataForm.file8 &&
-          !this.dataForm.file9
-        ) {
-          // console.error("At least one of file7, file8, and file9 must exist");
-          this.overlay = false;
-          this.$showToast(
-            "success",
-            "Success",
-            "Wajib memasukkan salah satu jenis jaminan"
-          );
-          return;
         }
 
         formData.append("_method", "POST");
@@ -675,6 +721,7 @@ export default {
   mounted() {
     this.getAllFiles();
     this.getUserData();
+
   },
 };
 </script>

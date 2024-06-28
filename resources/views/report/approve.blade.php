@@ -50,7 +50,8 @@
             margin-bottom: 20px;
         }
 
-        th, td {
+        th,
+        td {
             padding: 10px;
             border: 1px solid #ddd;
             text-align: left;
@@ -143,18 +144,18 @@
                             <td>Rp {{ number_format($file->plafon, 2, ',', '.') }}</td>
                         </tr>
 
-                        @if (!empty($file->nik_pasangan))
-                        <tr>
-                            <th>NIK Pasangan:</th>
-                            <td>{{ $file->nik_pasangan }}</td>
-                        </tr>
+                        @if (!empty($file->nik_pasangan) && $file->nik_pasangan !== 'null' && $file->nik_pasangan !== null)
+                            <tr>
+                                <th>NIK Pasangan:</th>
+                                <td>{{ $file->nik_pasangan }}</td>
+                            </tr>
                         @endif
 
                         @if (!empty($file->nik_jaminan) && $file->nik_jaminan !== 'null' && $file->nik_jaminan !== null)
-                        <tr>
-                            <th>NIK atas nama Jaminan:</th>
-                            <td>{{ $file->nik_jaminan }}</td>
-                        </tr>
+                            <tr>
+                                <th>NIK atas nama Jaminan:</th>
+                                <td>{{ $file->nik_jaminan }}</td>
+                            </tr>
                         @endif
 
                         <tr>
@@ -174,33 +175,35 @@
                 <table>
                     <tbody>
                         @foreach ($file->attachments as $attachment)
-                        <tr>
-                            <th>{{ $attachment->name }}:</th>
-                            <td>
-                                @if ($attachment->path != 'null')
-                                <a href="{{ url('/file/' . $file->id . '/' . $attachment->path) }}" class="attachment-link">Buka File</a>
-                                @else
-                                <a href="{{ $attachment->link }}" class="attachment-link">Buka Link</a>
-                                @endif
-                            </td>
-                        </tr>
+                            <tr>
+                                <th>{{ $attachment->name }}:</th>
+                                <td>
+                                    @if ($attachment->path != 'null')
+                                        <a href="{{ url('/file/' . $file->id . '/' . $attachment->path) }}"
+                                            class="attachment-link">Buka File</a>
+                                    @else
+                                        <a href="{{ $attachment->link }}" class="attachment-link">Buka Link</a>
+                                    @endif
+                                </td>
+                            </tr>
                         @endforeach
                         @foreach ($file->filesubmissions as $attachment)
-                        <tr>
-                            <th>{{ $attachment->name }}:</th>
-                            <td>
-                                @if ($attachment->path != 'null')
-                                <a href="{{ url('/file/' . $file->id . '/' . $attachment->path) }}" class="attachment-link">Buka File</a>
-                                @else
-                                <a href="{{ $attachment->link }}" class="attachment-link">Buka Link</a>
-                                @endif
-                            </td>
-                        </tr>
+                            <tr>
+                                <th>{{ $attachment->name }}:</th>
+                                <td>
+                                    @if ($attachment->path != 'null')
+                                        <a href="{{ url('/file/' . $file->id . '/' . $attachment->path) }}"
+                                            class="attachment-link">Buka File</a>
+                                    @else
+                                        <a href="{{ $attachment->link }}" class="attachment-link">Buka Link</a>
+                                    @endif
+                                </td>
+                            </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
-            
+
         </main>
     </div>
 

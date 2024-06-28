@@ -429,8 +429,10 @@ class FileController extends Controller
             $file->type_bussiness = $request->type_bussiness;
             $file->desc_bussiness = $request->desc_bussiness;
             $file->nik_pemohon = $request->nik_pemohon;
-            $file->nik_pasangan = $request->nik_pasangan;
-            $file->nik_jaminan = $request->nik_jaminan;
+
+            $file->nik_pasangan = $request->nik_pasangan || $request->nik_pasangan != 'null' ? $request->nik_pasangan : null;
+            $file->nik_jaminan = $request->nik_jaminan || $request->nik_jaminan != 'null' ? $request->nik_jaminan : null;
+
             $file->address = $request->address;
             $file->no_hp = $request->no_hp;
             $file->save();
@@ -1535,6 +1537,7 @@ class FileController extends Controller
                 'canDeleteData' => 1,
                 'isSecret' => 1,
             ];
+
             // Inisialisasi array untuk menampung semua file yang terkait
             $files = File::with('user')->orderBy('created_at', 'desc')->get();
             ActivityHelper::userActivity(Auth::user()->id, 'Mengakses halaman File Credit');
@@ -1569,9 +1572,11 @@ class FileController extends Controller
                 ->whereYear('created_at', $year)
                 ->orderBy('created_at', 'desc')
                 ->get();
+
+            $users = User::all();
             ActivityHelper::userActivity(Auth::user()->id, 'Mengakses halaman File Credit');
 
-            return ResponseHelper::successRes('Berhasil menampilkan datas', ['files' => $files, 'userAccess' => $userAccess]);
+            return ResponseHelper::successRes('Berhasil menampilkan datas', ['files' => $files, 'userAccess' => $userAccess, 'users' => $users]);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -1581,6 +1586,7 @@ class FileController extends Controller
     {
         try {
             $request->validate([
+                'user_id'   => 'required',
                 'name'   => 'required',
                 'plafon' => 'required',
                 'type_bussiness' => 'required',
@@ -1588,6 +1594,7 @@ class FileController extends Controller
                 'nik_pemohon' => 'required',
                 'address' => 'required',
                 'no_hp' => 'required',
+                'order_source' => 'required',
                 'file1'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
                 'file2'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
                 'file3'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
@@ -1603,11 +1610,12 @@ class FileController extends Controller
             ]);
 
             $file = new File();
-            $file->user_id = Auth::user()->id;
+            $file->user_id = $request->user_id;
             $file->name = $request->name;
             $file->plafon = $request->plafon;
             $file->type_bussiness = $request->type_bussiness;
             $file->desc_bussiness = $request->desc_bussiness;
+            $file->order_source = $request->order_source;
             $file->nik_pemohon = $request->nik_pemohon;
             $file->address = $request->address;
             $file->no_hp = $request->no_hp;
@@ -1708,6 +1716,7 @@ class FileController extends Controller
             $file->approvals()->delete();
             $file->notes()->delete();
             $file->appeals()->delete();
+            $file->filesubmissions()->delete();
             $file->fileActivities()->delete(); // This line may not be necessary if it is logged after deletion
 
             foreach ($attachments as $attch) {

@@ -127,8 +127,13 @@
               </VCol>
               <VCol md="12" cols="12">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">No. HP Pemohon: </span>
-
+                
                 <VTextField class="my-3" v-model="dataForm.no_hp" :rules="[rules.required]" />
+              </VCol>
+              <VCol md="12" cols="12">
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih sumber order: </span>
+                <v-select :items="orderList" autofocus v-model="dataForm.order_source"
+                  prepend-icon="mdi-help-rhombus"></v-select>
               </VCol>
 
               <VCol md="12" cols="12">
@@ -200,18 +205,17 @@
               </VCol>
 
               <!-- <v-divider :thickness="5"></v-divider> -->
-              <VCol md="12" cols="12">
+              <!-- <VCol md="12" cols="12">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih Salah Satu Kelengkapan :
                 </span>
                 <v-radio-group v-model="selectedOption" :mandatory="true" row>
                   <v-radio label="Buku Nikah" value="bukuNikah"></v-radio>
-                  <!-- <v-radio label="Jenis Jaminan SHM" value="jaminanSHM"></v-radio>
-                  <v-radio label="Jenis Jaminan BPKB" value="jaminanBPKB"></v-radio> -->
+                  <v-radio label="Jenis Jaminan SHM" value="jaminanSHM"></v-radio>
+                  <v-radio label="Jenis Jaminan BPKB" value="jaminanBPKB"></v-radio>
                 </v-radio-group>
-              </VCol>
+              </VCol> -->
 
-              <VCol md="12" cols="12" v-if="selectedOption === 'bukuNikah'">
-                <span style="color: red">*</span>
+              <VCol md="12" cols="12" >
                 <span class="subtitle-1 text-center">Buku Nikah:</span>
                 <v-file-input class="my-3"
                   accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -219,7 +223,7 @@
                   @change="handleFileChange($event, 'file5'); resetFile('file7'); resetFile('file8')"></v-file-input>
               </VCol>
 
-              <VCol md="12" cols="12" v-if="selectedOption === 'jaminanSHM'">
+              <!--<VCol md="12" cols="12" v-if="selectedOption === 'jaminanSHM'">
                 <span style="color: red">*</span>
                 <span class="subtitle-1 text-center">Jaminan SHM:</span>
                 <v-file-input class="my-3"
@@ -235,7 +239,7 @@
                   accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                   placeholder="Pick an image" :rules="[rules.required]"
                   @change="handleFileChange($event, 'file8'); resetFile('file5'); resetFile('file7')"></v-file-input>
-              </VCol>
+              </VCol> -->
 
               <v-divider :thickness="5"></v-divider>
 
@@ -274,12 +278,8 @@
               </VCol>
 
               <VCol cols="12" class="d-flex flex-wrap gap-4">
-                <!-- <VBtn type="submit"
-                  :disabled="(dataForm.name == null || dataForm.plafon == null || dataForm.type_bussiness == null || dataForm.desc_bussiness == null) || (dataForm.file1 == null || dataForm.file4 == null || dataForm.file10 == null) || (dataForm.file5 == null && dataForm.file7 == null && dataForm.file8 == null)">
-                  Simpan
-                </VBtn> -->
                 <VBtn type="submit"
-                  :disabled="(dataForm.name == null || dataForm.plafon == null || dataForm.type_bussiness == null || dataForm.desc_bussiness == null) || (dataForm.file1 == null || dataForm.file4 == null) || (dataForm.file10 == null && dataForm.file11 == null)">
+                  :disabled="(dataForm.name == null || dataForm.plafon == null || dataForm.type_bussiness == null || dataForm.desc_bussiness == null || dataForm.order_source == null) || (dataForm.file1 == null || dataForm.file4 == null) || (dataForm.file10 == null && dataForm.file11 == null)">
                   Simpan
                 </VBtn>
 
@@ -369,6 +369,18 @@ export default {
         { value: 3 },
         { value: 4 },
       ],
+      orderList: [
+        { value: 'AO SENDIRI', title: 'AO SENDIRI' },
+        { value: 'C. SERVIS / KANTOR', title: 'C. SERVIS / KANTOR' },
+        { value: 'NASABAH', title: 'NASABAH' },
+        { value: 'CROSS SALING DIVISI', title: 'CROSS SALING DIVISI' },
+        { value: 'AGEN MGM / LAINNYA', title: 'AGEN MGM / LAINNYA' },
+        { value: 'WEBSITE / WA / SOSMED', title: 'WEBSITE / WA/ SOSMED' },
+        { value: 'TEAM BUSSINES', title: 'TEAM BUSSINES' },
+        { value: 'PROGRAM KKB NEW', title: 'PROGRAM KKB NEW' },
+        { value: 'PROGRAM KKB SECOND', title: 'PROGRAM KKB SECOND' },
+        { value: 'CENTRO', title: 'CENTRO' },
+      ],
       dataForm: {
         id: null,
         name: "",
@@ -380,6 +392,7 @@ export default {
         nik_jaminan: null,
         address: null,
         no_hp: null,
+        order_source: null,
         file1: null, //ktp pemohon
         hasFile2: false,
         file2: null, //ktp pasangan
@@ -557,6 +570,7 @@ export default {
         id: null,
         name: "",
         plafon: null,
+        order_source: null,
         file1: null, //ktp pemohon
         hasFile2: false,
         file2: null, //ktp pasangan
@@ -625,11 +639,11 @@ export default {
         formData.append("nik_pemohon", this.dataForm.nik_pemohon);
         formData.append("address", this.dataForm.address);
         formData.append("no_hp", this.dataForm.no_hp);
-        // formData.append("name", this.dataForm.name);
-        // formData.append("name", this.dataForm.name);
+        formData.append("order_source", this.dataForm.order_source);
         formData.append("plafon", this.dataForm.plafon.replace(/\D/g, ""));
         formData.append("type_bussiness", this.dataForm.type_bussiness);
         formData.append("desc_bussiness", this.dataForm.desc_bussiness);
+        formData.append("order_source", this.dataForm.order_source);
 
         if (this.dataForm.file2 != null) {
           formData.append('nik_pasangan', this.dataForm.nik_pasangan);

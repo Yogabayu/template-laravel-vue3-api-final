@@ -141,6 +141,16 @@
                   {{ dataFile.desc_bussiness }}
                 </strong></v-list-item>
             </v-list-item>
+            <v-list-item>
+              <template v-slot:prepend>
+                <v-icon icon="mdi-office-building" size="x-small"></v-icon>
+              </template>
+              <v-list-item-title> Sumber Order</v-list-item-title>
+              <v-list-item>
+                <strong>
+                  {{ dataFile.order_source }}
+                </strong></v-list-item>
+            </v-list-item>
           </v-list>
         </v-card-text>
       </v-card>

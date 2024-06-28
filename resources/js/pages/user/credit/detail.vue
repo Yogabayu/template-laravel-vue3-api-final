@@ -311,25 +311,33 @@
                 <VTextField class="my-3" v-model="generalInfo.desc_bussiness" :rules="[rules.required]" />
               </VCol>
               <VCol md="12" cols="12">
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih sumber order: </span>
+                <v-select :items="orderList" autofocus v-model="generalInfo.order_source"
+                  prepend-icon="mdi-help-rhombus"></v-select>
+              </VCol>
+              <VCol md="12" cols="12">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">NIK Pemohon: </span>
 
-                <VTextField class="my-3" v-model="generalInfo.nik_pemohon" :rules="[rules.required]" />
+                <VTextField type="number" class="my-3" v-model="generalInfo.nik_pemohon" :rules="[rules.required]" />
               </VCol>
               <VCol md="12" cols="12">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">Alamat Pemohon: </span>
 
                 <VTextField class="my-3" v-model="generalInfo.address" :rules="[rules.required]" />
               </VCol>
+
               <VCol md="12" cols="12">
                 <span class="subtitle-1 text-center">NIK Pasangan: </span>
 
-                <VTextField class="my-3" v-model="generalInfo.nik_pasangan" />
+                <VTextField type="number" class="my-3" v-model="generalInfo.nik_pasangan" hint="kosongkan jika tidak ada" />
               </VCol>
+
               <VCol md="12" cols="12">
                 <span class="subtitle-1 text-center">NIK Pemilik Jaminan: </span>
 
-                <VTextField class="my-3" v-model="generalInfo.nik_jaminan" />
+                <VTextField type="number" class="my-3" v-model="generalInfo.nik_jaminan" hint="kosongkan jika tidak ada" />
               </VCol>
+
               <VCol md="12" cols="12">
                 <span class="subtitle-1 text-center">No. HP: </span>
 
@@ -545,6 +553,7 @@ export default {
         name: null,
         type_bussiness: null,
         desc_bussiness: null,
+        order_source: null,
         plafon: null,
         nik_pemohon: null,
         nik_pasangan: null,
@@ -560,6 +569,7 @@ export default {
         name: "",
         type_bussiness: "",
         desc_bussiness: "",
+        order_source: "",
         nik_pemohon: null,
         nik_pasangan: null,
         nik_jaminan: null,
@@ -643,6 +653,18 @@ export default {
         isSecret: 0,
         isApprove: 1,
       },
+      orderList: [
+        { value: 'AO SENDIRI', title: 'AO SENDIRI' },
+        { value: 'C. SERVIS / KANTOR', title: 'C. SERVIS / KANTOR' },
+        { value: 'NASABAH', title: 'NASABAH' },
+        { value: 'CROSS SALING DIVISI', title: 'CROSS SALING DIVISI' },
+        { value: 'AGEN MGM / LAINNYA', title: 'AGEN MGM / LAINNYA' },
+        { value: 'WEBSITE / WA / SOSMED', title: 'WEBSITE / WA/ SOSMED' },
+        { value: 'TEAM BUSSINES', title: 'TEAM BUSSINES' },
+        { value: 'PROGRAM KKB NEW', title: 'PROGRAM KKB NEW' },
+        { value: 'PROGRAM KKB SECOND', title: 'PROGRAM KKB SECOND' },
+        { value: 'CENTRO', title: 'CENTRO' },
+      ],
       notePhase1: [],
       notePhase2: [],
       notePhase3: [],
@@ -912,6 +934,7 @@ export default {
           this.generalInfo.name = this.dataFile.name;
           this.generalInfo.type_bussiness = this.dataFile.type_bussiness;
           this.generalInfo.desc_bussiness = this.dataFile.desc_bussiness;
+          this.generalInfo.order_source = this.dataFile.order_source;
           this.generalInfo.plafon = this.dataFile.plafon;
           this.generalInfo.nik_pemohon = this.dataFile.nik_pemohon;
           this.generalInfo.nik_pasangan = this.dataFile.nik_pasangan;
@@ -999,19 +1022,19 @@ export default {
     async updateGeneralInfo() {
       try {
         this.overlay = true;
-
         const formData = new FormData();
         formData.append("name", this.generalInfo.name);
         formData.append("plafon", this.generalInfo.plafon.replace(/\D/g, ""));
         formData.append("type_bussiness", this.generalInfo.type_bussiness);
         formData.append("desc_bussiness", this.generalInfo.desc_bussiness);
+        formData.append("order_source", this.generalInfo.order_source);
         if (this.generalInfo.nik_pemohon != "") {
           formData.append("nik_pemohon", this.generalInfo.nik_pemohon);
         }
-        if (this.generalInfo.nik_pasangan != "") {
+        if (this.generalInfo.nik_pasangan != "" && this.generalInfo.nik_pasangan != null && this.generalInfo.nik_pasangan != 'null' && this.generalInfo.nik_pasangan != '-') {
           formData.append("nik_pasangan", this.generalInfo.nik_pasangan);
         }
-        if (this.generalInfo.nik_jaminan != "") {
+        if (this.generalInfo.nik_jaminan != "" && this.generalInfo.nik_jaminan != null && this.generalInfo.nik_jaminan != 'null' && this.generalInfo.nik_jaminan != '-') {
           formData.append("nik_jaminan", this.generalInfo.nik_jaminan);
         }
         if (this.generalInfo.address != "") {
@@ -1021,7 +1044,7 @@ export default {
           formData.append("no_hp", this.generalInfo.no_hp);
         }
         formData.append("_method", "PUT");
-
+        
         const response = await mainURL.post(
           `/user/edit-general-info/${this.generalInfo.id}`,
           formData

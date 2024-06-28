@@ -41,49 +41,152 @@ class FileController extends Controller
         try {
             $monthYear = explode('-', $monthYear);
 
-            // Ambil bulan dan tahun
-            $month = $monthYear[0];
-            $year = $monthYear[1];
+            $userNow = User::with('position')->where('id', Auth::user()->id)->first();
+            $userPos = User::where('id', Auth::user()->id)->first();
+            $getPostionData = Position::where('id', $userPos->position_id)->first();
+            $role = Role::where('id', $getPostionData->role_id)->first();
 
-            $data = DB::table('phase_times')
-                ->join('files', 'phase_times.file_id', '=', 'files.id')
-                ->join('users', 'files.user_id', '=', 'users.id')
-                ->select('phase_times.file_id', 'phase_times.phase', 'phase_times.startTime', 'phase_times.endTime', 'files.name as fileName')
-                ->whereMonth('files.created_at', $month)
-                ->whereYear('files.created_at', $year)
-                ->orderBy('phase_times.file_id')
-                ->orderBy('phase_times.phase')
-                ->where('users.id', Auth::user()->id)
-                ->get();
+            if ($userNow->position->name == 'Account Officer' || $userNow->position->name == 'AO' || $userNow->position->name == 'ao' || $userNow->position->name == 'account officer' || $userNow->position->name == 'Account Officer Executive' || $userNow->position->name == 'account officer executive' || $userNow->position->name == 'Account Officer / Executive AO' || $userNow->position->name == 'AO / RO') {
+                // Ambil bulan dan tahun
+                $month = $monthYear[0];
+                $year = $monthYear[1];
 
-            // Kelompokkan data berdasarkan file_id
-            $groupedData = $data->groupBy('file_id');
+                $data = DB::table('phase_times')
+                    ->join('files', 'phase_times.file_id', '=', 'files.id')
+                    ->join('users', 'files.user_id', '=', 'users.id')
+                    ->select(
+                        'phase_times.file_id',
+                        'phase_times.phase',
+                        'phase_times.startTime',
+                        'phase_times.endTime',
+                        'files.name as fileName',
+                        'files.nik_pemohon as nikPemohon',
+                        'files.nik_pasangan as nikPasangan',
+                        'files.nik_jaminan as nikJaminan',
+                    )
+                    ->whereMonth('files.created_at', $month)
+                    ->whereYear('files.created_at', $year)
+                    ->orderBy('phase_times.file_id')
+                    ->orderBy('phase_times.phase')
+                    ->where('users.id', Auth::user()->id)
+                    ->get();
 
-            // Format data untuk laporan
-            $reportData = [];
-            foreach ($groupedData as $fileId => $phases) {
-                $row = ['no' => count($reportData) + 1];
-                $fileName = 'Kredit_' . $phases->first()->fileName;
-                $row['nameFile'] = $fileName;
+                // Kelompokkan data berdasarkan file_id
+                $groupedData = $data->groupBy('file_id');
 
-                for ($i = 1; $i <= 5; $i++) {
-                    $phase = $phases->firstWhere('phase', $i);
-                    if ($phase) {
-                        $startTime = strtotime($phase->startTime);
-                        $endTime = $phase->endTime ? strtotime($phase->endTime) : time();
-                        $duration = $endTime - $startTime;
-                        $row['phase' . $i . 'Time'] = gmdate('H:i:s', $duration);
-                    } else {
-                        $row['phase' . $i . 'Time'] = 'N/A';
+                // Format data untuk laporan
+                $reportData = [];
+                foreach ($groupedData as $fileId => $phases) {
+                    $row = ['no' => count($reportData) + 1];
+                    $fileName = $phases->first()->fileName;
+                    $row['nameFile'] = $fileName;
+                    $row['nikPemohon'] = $phases->first()->nikPemohon;
+                    $row['nikPasangan'] = $phases->first()->nikPasangan;
+                    $row['nikJaminan'] = $phases->first()->nikJaminan;
+
+                    for ($i = 1; $i <= 5; $i++) {
+                        $phase = $phases->firstWhere('phase', $i);
+                        if ($phase) {
+                            $startTime = strtotime($phase->startTime);
+                            $endTime = $phase->endTime ? strtotime($phase->endTime) : time();
+                            $duration = $endTime - $startTime;
+                            $row['phase' . $i . 'Time'] = gmdate('H:i:s', $duration);
+                        } else {
+                            $row['phase' . $i . 'Time'] = 'N/A';
+                        }
+                    }
+                    $reportData[] = $row;
+                }
+
+                $date = \Carbon\Carbon::create($year, $month, 1);
+                $fileName = 'phase_time_report_' . $date->format('Y-m') . '.xlsx';
+
+                ActivityHelper::userActivity(Auth::user()->id, 'USER MENDOWNLOAD REKAP DATA FILE KREDIT');
+
+                return Excel::download(new PhaseTimeReportExport($reportData), $fileName);
+            } else {
+                // Langkah 1: Dapatkan kantor-kantor terkait dengan posisi pengguna yang login
+                $positionId = Auth::user()->position_id;
+                $position = Position::with('offices')->where('id', $positionId)->first();
+                $officeIds = $position->offices->pluck('id')->toArray();
+
+                // Langkah 2: Filter file berdasarkan kantor
+                $files = File::with('user')->get(); // Ambil semua file beserta informasi pengunggahnya
+                $fileIds = [];
+
+                foreach ($files as $file) {
+                    $uploaderPositionId = DB::table('users')
+                        ->where('id', $file->user_id)
+                        ->value('position_id');
+
+                    $uploaderOfficeIds = DB::table('positiontooffices')
+                        ->where('position_id', $uploaderPositionId)
+                        ->pluck('office_id')
+                        ->toArray();
+
+                    if (array_intersect($uploaderOfficeIds, $officeIds)) {
+                        // Jika ada kantor yang sama, tambahkan file_id ke array
+                        $fileIds[] = $file->id;
                     }
                 }
-                $reportData[] = $row;
+
+                // Langkah 3: Ambil data phase_times berdasarkan file_id yang sudah difilter
+                $month = $monthYear[0];
+                $year = $monthYear[1];
+
+                $data = DB::table('phase_times')
+                    ->join('files', 'phase_times.file_id', '=', 'files.id')
+                    ->join('users', 'files.user_id', '=', 'users.id')
+                    ->select(
+                        'phase_times.file_id',
+                        'phase_times.phase',
+                        'phase_times.startTime',
+                        'phase_times.endTime',
+                        'files.name as fileName',
+                        'files.nik_pemohon as nikPemohon',
+                        'files.nik_pasangan as nikPasangan',
+                        'files.nik_jaminan as nikJaminan',
+                    )
+                    ->whereMonth('files.created_at', $month)
+                    ->whereYear('files.created_at', $year)
+                    ->whereIn('phase_times.file_id', $fileIds)
+                    ->orderBy('phase_times.file_id')
+                    ->orderBy('phase_times.phase')
+                    ->get();
+
+                // Kelompokkan data berdasarkan file_id
+                $groupedData = $data->groupBy('file_id');
+
+                // Format data untuk laporan
+                $reportData = [];
+                foreach ($groupedData as $fileId => $phases) {
+                    $row = ['no' => count($reportData) + 1];
+                    $fileName = $phases->first()->fileName;
+                    $row['nameFile'] = $fileName;
+                    $row['nikPemohon'] = $phases->first()->nikPemohon;
+                    $row['nikPasangan'] = $phases->first()->nikPasangan;
+                    $row['nikJaminan'] = $phases->first()->nikJaminan;
+
+                    for ($i = 1; $i <= 5; $i++) {
+                        $phase = $phases->firstWhere('phase', $i);
+                        if ($phase) {
+                            $startTime = strtotime($phase->startTime);
+                            $endTime = $phase->endTime ? strtotime($phase->endTime) : time();
+                            $duration = $endTime - $startTime;
+                            $row['phase' . $i . 'Time'] = gmdate('H:i:s', $duration);
+                        } else {
+                            $row['phase' . $i . 'Time'] = 'N/A';
+                        }
+                    }
+                    $reportData[] = $row;
+                }
+
+                $date = \Carbon\Carbon::create($year, $month, 1);
+                $fileName = 'phase_time_report_' . $date->format('Y-m') . '.xlsx';
+                ActivityHelper::userActivity(Auth::user()->id, 'USER MENDOWNLOAD REKAP DATA FILE KREDIT');
+
+                return Excel::download(new PhaseTimeReportExport($reportData), $fileName);
             }
-
-            $date = \Carbon\Carbon::create($year, $month, 1);
-            $fileName = 'phase_time_report_' . $date->format('Y-m') . '.xlsx';
-
-            return Excel::download(new PhaseTimeReportExport($reportData), $fileName);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -481,9 +584,12 @@ class FileController extends Controller
             $file->name = $request->name;
             $file->type_bussiness = $request->type_bussiness;
             $file->desc_bussiness = $request->desc_bussiness;
+            $file->order_source = $request->order_source;
             $file->nik_pemohon = $request->nik_pemohon;
-            $file->nik_pasangan = $request->nik_pasangan;
-            $file->nik_jaminan = $request->nik_jaminan;
+
+            $file->nik_pasangan = $request->nik_pasangan || $request->nik_pasangan != 'null' ? $request->nik_pasangan : null;
+            $file->nik_jaminan = $request->nik_jaminan || $request->nik_jaminan != 'null' ? $request->nik_jaminan : null;
+
             $file->address = $request->address;
             $file->no_hp = $request->no_hp;
             $file->save();
@@ -1818,6 +1924,7 @@ class FileController extends Controller
                 'nik_pemohon' => 'required',
                 'address' => 'required',
                 'no_hp' => 'required',
+                'order_source' => 'required',
                 'file1'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
                 'file2'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
                 'file3'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
@@ -1838,6 +1945,7 @@ class FileController extends Controller
             $file->plafon = $request->plafon;
             $file->type_bussiness = $request->type_bussiness;
             $file->desc_bussiness = $request->desc_bussiness;
+            $file->order_source = $request->order_source;
             $file->nik_pemohon = $request->nik_pemohon;
             $file->address = $request->address;
             $file->no_hp = $request->no_hp;
@@ -2000,22 +2108,6 @@ class FileController extends Controller
 
             $userPosNow = User::where('id', Auth::user()->id)->first();
             $userAccess = [];
-
-            // foreach ($notifPositions as $notifPosition) {
-            //     if ($notifPosition->position_id == $userPosNow->position_id) {
-            //         $userAccess = [
-            //             'canAppeal' => $notifPosition->canAppeal,
-            //             'canApprove' => $notifPosition->canApprove,
-            //             'canInsertData' => $notifPosition->canInsertData,
-            //             'canUpdateData' => $notifPosition->canUpdateData,
-            //             'canDeleteData' => $notifPosition->canDeleteData,
-            //             'isSecret' => $notifPosition->isSecret,
-            //             'phase' => $notifPosition->phase,
-            //         ];
-
-            //         break;
-            //     }
-            // }
 
             $userAccessByPhase = [
                 1 => [],
