@@ -18,7 +18,7 @@
         Back
       </span>
       <VCardTitle class="text-2xl font-weight-bold">
-        List Credit {{ monthYear }}
+        List Kredit {{ monthYear }}
       </VCardTitle>
     </VCardItem>
     <v-tabs v-model="tab" class="v-tabs-pill" bg-color="secondary">
@@ -35,10 +35,10 @@
             <v-row class="d-flex justify-end pa-3">
               <v-btn color="primary" size="small" class="my-3 mx-3"
                 v-if="userAccess && parseInt(userAccess.canInsertData)" @click="openModal(1)">
-                Tambah Data
+                <v-icon icon="mdi-plus"></v-icon> Tambah Data
               </v-btn>
               <v-btn color="primary" size="small" class="my-3 mx-3" @click="openModal(2)">
-                Rekap Data
+                <v-icon icon="mdi-download"></v-icon> Rekap Data
               </v-btn>
               <v-spacer></v-spacer>
               <v-text-field prepend-inner-icon="mdi-magnify" density="compact" label="Search" single-line flat

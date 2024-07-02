@@ -295,6 +295,16 @@
                 <VTextField class="my-3" v-model="generalInfo.plafon" type="text" @input="formatInputPlafon" />
               </VCol>
               <VCol md="12" cols="12">
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih sumber order: </span>
+                <v-select :items="orderList" v-model="generalInfo.order_source"
+                  prepend-icon="mdi-help-rhombus"></v-select>
+              </VCol>
+              <VCol md="12" cols="12">
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih status kredit: </span>
+                <v-select :items="statusCreditList" v-model="generalInfo.status_kredit"
+                  prepend-icon="mdi-help-rhombus"></v-select>
+              </VCol>
+              <VCol md="12" cols="12">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">Jenis Usaha: </span>
 
                 <VTextField class="my-3" v-model="generalInfo.type_bussiness" :rules="[rules.required]" />
@@ -522,6 +532,23 @@ export default {
         { value: 'Notaris', title: 'Notaris' },
         { value: 'Lain-lain', title: 'Lain-lain' },
       ],
+      orderList: [
+        { value: 'AO SENDIRI', title: 'AO SENDIRI' },
+        { value: 'C. SERVIS / KANTOR', title: 'C. SERVIS / KANTOR' },
+        { value: 'NASABAH', title: 'NASABAH' },
+        { value: 'CROSS SALING DIVISI', title: 'CROSS SALING DIVISI' },
+        { value: 'AGEN MGM / LAINNYA', title: 'AGEN MGM / LAINNYA' },
+        { value: 'WEBSITE / WA / SOSMED', title: 'WEBSITE / WA/ SOSMED' },
+        { value: 'TEAM BUSSINES', title: 'TEAM BUSSINES' },
+        { value: 'PROGRAM KKB NEW', title: 'PROGRAM KKB NEW' },
+        { value: 'PROGRAM KKB SECOND', title: 'PROGRAM KKB SECOND' },
+        { value: 'CENTRO', title: 'CENTRO' },
+      ],
+      statusCreditList :[
+        { value: 'FRESH', title: 'FRESH' },
+        { value: 'REPEAT ORDER', title: 'REPEAT ORDER' },
+        { value: 'TOPUP', title: 'TOPUP' },
+      ],
 
       //=>paksa langsung ganti status kredit
       changeStatus: {
@@ -538,6 +565,8 @@ export default {
         name: null,
         type_bussiness: null,
         desc_bussiness: null,
+        order_source: null,
+        status_kredit: null,
         plafon: null,
         nik_pemohon: null,
         nik_pasangan: null,
@@ -553,6 +582,8 @@ export default {
         name: "",
         type_bussiness: "",
         desc_bussiness: "",
+        order_source: "",
+        status_kredit: "",
         nik_pemohon: null,
         nik_pasangan: null,
         nik_jaminan: null,
@@ -901,6 +932,8 @@ export default {
           this.generalInfo.name = this.dataFile.name;
           this.generalInfo.type_bussiness = this.dataFile.type_bussiness;
           this.generalInfo.desc_bussiness = this.dataFile.desc_bussiness;
+          this.generalInfo.order_source = this.dataFile.order_source;
+          this.generalInfo.status_kredit = this.dataFile.status_kredit;
           this.generalInfo.plafon = this.dataFile.plafon;
           this.generalInfo.nik_pemohon = this.dataFile.nik_pemohon;
           this.generalInfo.nik_pasangan = this.dataFile.nik_pasangan;
@@ -994,6 +1027,8 @@ export default {
         formData.append("plafon", this.generalInfo.plafon.replace(/\D/g, ""));
         formData.append("type_bussiness", this.generalInfo.type_bussiness);
         formData.append("desc_bussiness", this.generalInfo.desc_bussiness);
+        formData.append("order_source", this.generalInfo.order_source);
+        formData.append("status_kredit", this.generalInfo.status_kredit);
         if (this.generalInfo.nik_pemohon != "") {
           formData.append("nik_pemohon", this.generalInfo.nik_pemohon);
         }

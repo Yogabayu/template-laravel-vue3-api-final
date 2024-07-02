@@ -27,6 +27,7 @@ class File extends Model
         'desc_bussiness',
         'reasonRejected',
         'order_source',
+        'status_kredit',
         // 'file2',
         // 'file3',
         // 'file4',

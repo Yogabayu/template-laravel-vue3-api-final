@@ -25,7 +25,7 @@
                         <div class="operation-wrapper">
                             <div class="d-flex justify-space-between">
                                 <v-tooltip location="top" text="Lihat File"
-                                    v-if="(attachment.path !== 'null' || attachment.link !== null) &&parseInt(attachment.isSecret)">
+                                    v-if="(attachment.path !== 'null' || attachment.link !== null) && parseInt(attachment.isSecret)">
                                     <template v-slot:activator="{ props }">
                                         <a v-bind="props" :href="`${filePath}/${fileId}/${attachment.path}`"
                                             target="_blank" rel="noopener noreferrer" v-if="attachment.path !== 'null' &&
@@ -45,8 +45,7 @@
                                         </a>
                                     </template>
                                 </v-tooltip>
-                                <v-tooltip location="top" text="Lihat File"
-                                    v-else>
+                                <v-tooltip location="top" text="Lihat File" v-else>
                                     <template v-slot:activator="{ props }">
                                         <a v-bind="props" :href="`${filePath}/${fileId}/${attachment.path}`"
                                             target="_blank" rel="noopener noreferrer" v-if="attachment.path !== 'null'">
@@ -55,7 +54,7 @@
                                             </button>
                                         </a>
                                         <a v-bind="props" :href="`${attachment.link}`" target="_blank"
-                                            rel="noopener noreferrer" v-if="attachment.link !== null ">
+                                            rel="noopener noreferrer" v-if="attachment.link !== null">
                                             <button>
                                                 <VIcon size="20" icon="bx-link-external" color="blue" />
                                             </button>
@@ -74,7 +73,7 @@
                                     </template>
                                 </v-tooltip>
                                 <v-tooltip location="top" text="Edit File"
-                                    v-if="userAccessPhase2 && parseInt(userAccessPhase2.canUpdateData)  && phase < 3">
+                                    v-if="userAccessPhase2 && parseInt(userAccessPhase2.canUpdateData) && phase < 3">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="openModal(1, attachment)">
                                             <VIcon size="20" icon="bx-edit" color="blue" />
@@ -82,7 +81,7 @@
                                     </template>
                                 </v-tooltip>
                                 <v-tooltip location="top" text="Hapus File"
-                                    v-if="userAccessPhase2 && parseInt(userAccessPhase2.canDeleteData)  && phase < 3">
+                                    v-if="userAccessPhase2 && parseInt(userAccessPhase2.canDeleteData) && phase < 3">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="deleteAttachment(attachment.id)">
                                             <VIcon size="20" icon="bx-trash" color="red" />
@@ -108,10 +107,8 @@
                     <template v-slot:append>
                         <div class="operation-wrapper">
                             <div class="d-flex justify-space-between">
-                                <!-- {{ formAnalytic.path }}
-                                {{ formAnalytic.link }} -->
                                 <v-tooltip location="top" text="Lihat File"
-                                    v-if="(formAnalytic.path !== 'null' || formAnalytic.link !== null)">
+                                    v-if="((formAnalytic.path !== 'null' && formAnalytic.path !== null) || formAnalytic.link !== null  )">
                                     <template v-slot:activator="{ props }">
                                         <a v-bind="props" :href="`${filePath}/${fileId}/${formAnalytic.path}`"
                                             target="_blank" rel="noopener noreferrer"
@@ -140,7 +137,7 @@
                                     </template>
                                 </v-tooltip>
                                 <v-tooltip location="top" text="Edit File"
-                                    v-if="userAccessPhase2 && parseInt(userAccessPhase2.canAppeal) == 1  && phase < 3">
+                                    v-if="userAccessPhase2 && parseInt(userAccessPhase2.canAppeal) == 1 && phase < 3">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="openModal(2, formAnalytic)">
                                             <VIcon size="20" icon="bx-edit" color="blue" />
@@ -148,7 +145,7 @@
                                     </template>
                                 </v-tooltip>
                                 <v-tooltip location="top" text="Hapus File"
-                                    v-if="userAccessPhase2 && parseInt(userAccessPhase2.canDeleteData) == 1  && phase < 3">
+                                    v-if="userAccessPhase2 && parseInt(userAccessPhase2.canDeleteData) == 1 && phase < 3">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="deleteAttachment(formAnalytic.id)">
                                             <VIcon size="20" icon="bx-trash" color="red" />
@@ -170,22 +167,10 @@
                     </template>
                     <v-list-item-title> {{ formAppeal.name }} </v-list-item-title>
                     <template v-slot:append>
-                        <!-- {{ formAnalytic }} -->
                         <div class="operation-wrapper">
                             <div class="d-flex justify-space-between">
-                                <!-- <v-tooltip location="top" text="Lihat File"
-                                    v-if="formAppeal.path != null && formAppeal.path != 'null'">
-                                    <template v-slot:activator="{ props }">
-                                        <a v-bind="props" :href="`${filePath}/${fileId}/${formAppeal.path}`"
-                                            target="_blank" rel="noopener noreferrer">
-                                            <button>
-                                                <VIcon size="20" icon="bx-link-external" color="blue" />
-                                            </button>
-                                        </a>
-                                    </template>
-            </v-tooltip> -->
                                 <v-tooltip location="top" text="Lihat File"
-                                    v-if="(formAppeal.path !== 'null' || formAppeal.link !== null)">
+                                    v-if="((formAppeal.path !== 'null' && formAppeal.path !== null) || formAppeal.link !== null)">
                                     <template v-slot:activator="{ props }">
                                         <a v-bind="props" :href="`${filePath}/${fileId}/${formAppeal.path}`"
                                             target="_blank" rel="noopener noreferrer" v-if="formAppeal.path !== 'null'">
@@ -439,22 +424,6 @@
                                 hint="Pastikan menggunakan https://" :rules="[rules.required]" />
                         </VCol>
 
-                        <!-- <VCol md="12" cols="12">
-                            <span style="color: red">*</span>
-                            <span class="subtitle-1 text-center"> Upload File: </span>
-
-                            <v-file-input class="my-3"
-                                accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                                placeholder="Pick an image" :rules="[rules.required]"
-                                @change="(event) => handleAnalyticChange(event)"></v-file-input>
-                        </VCol> -->
-                        <!-- <VCol md="12" cols="12">
-                            <v-select label="Apakah Termasuk File Rahasia ? (Detail SLIK, dll)" :items="[
-                                { value: 1, title: 'Ya' },
-                                { value: 0, title: 'Tidak' },
-                            ]" v-model="formAnalytic.isSecret" prepend-icon="mdi-help-rhombus"></v-select>
-                        </VCol> -->
-
                         <VCol md="12" cols="12">
                             <v-select label="Apakah Anda menyetujui file ini ?" :items="[
                                 { value: 1, title: 'Setuju' },
@@ -462,8 +431,8 @@
                             ]" v-model="formAnalytic.isApprove" prepend-icon="mdi-help-rhombus"></v-select>
                         </VCol>
                         <VCol cols="12" class="d-flex flex-wrap gap-4">
-                            <!-- <VBtn type="submit" :disabled="(formDetailSlik.name && formDetailSlik.path && formDetailSlik.isApprove!=1) == null"> -->
-                            <VBtn type="submit">
+                            <!-- <VBtn type="submit" :disabled="isSaveDisabled"> -->
+                            <VBtn type="submit" >
                                 Simpan
                             </VBtn>
                             <button type="button" class="btn btn-blue" @click="closeModal(3)">
@@ -519,14 +488,15 @@
                                 hint="Pastikan menggunakan https://" :rules="[rules.required]"
                                 @change="formAppeal.path = null" />
                         </VCol>
-                        <VCol md="12" cols="12" v-if="userAccessPhase2 && parseInt(userAccessPhase2.canApproveAppeal) == 1">
+                        <VCol md="12" cols="12"
+                            v-if="userAccessPhase2 && parseInt(userAccessPhase2.canApproveAppeal) == 1">
                             <v-select label="Apakah Anda menyetujui file ini ?" :items="[
                                 { value: 1, title: 'Setuju' },
                                 { value: 0, title: 'Tidak Setuju' },
                             ]" v-model="formAppeal.isApprove" prepend-icon="mdi-help-rhombus"></v-select>
                         </VCol>
                         <VCol cols="12" class="d-flex flex-wrap gap-4">
-                            <!-- <VBtn type="submit" :disabled="(formDetailSlik.name && formDetailSlik.path && formDetailSlik.isApprove!=1) == null"> -->
+                            <!-- <VBtn type="submit" :disabled="isFormAppealDisabled"> -->
                             <VBtn type="submit">
                                 Simpan
                             </VBtn>
@@ -579,7 +549,7 @@ export default {
             type: Function,
             required: true,
         },
-        phase : {
+        phase: {
             type: Number,
             required: true,
         },
@@ -591,6 +561,16 @@ export default {
             } else if (newVal === 'link') {
                 this.formDetailSlik.path = null;
             }
+        }
+    },
+    computed: {
+        isSaveDisabled() {
+            return (!this.formAnalytic.path || this.formAnalytic.path == 'null') &&
+                (!this.formAnalytic.link || this.formAnalytic.link == null);
+        },
+        isFormAppealDisabled() {
+            return (!this.formAppeal.path || this.formAppeal.path == 'null') &&
+                (!this.formAppeal.link || this.formAppeal.link == null);
         }
     },
     data() {
@@ -655,14 +635,7 @@ export default {
         };
     },
     methods: {
-        // handleFileInputChange(formName) {
-        //     console.log('formName', formName);
-        //     // this[formName].link = null; // Clear link if file is uploaded
-        // },
-        // handleLinkInputChange(formName) {
-        //     // console.log(formName);
-        //     formName.file = null; // Clear file if link is entered
-        // },
+
         shouldDisplay(attachment) {
             if (
                 attachment.name === "Analisa Awal Kredit AO"
@@ -847,6 +820,7 @@ export default {
                 this.formAppeal.isSecret = 0;
                 this.formAppeal.isApprove = 0;
                 this.formAppeal.link = null;
+                this.formAppeal.path = null;
                 this.isAppeal = false;
             }
         },
@@ -964,6 +938,7 @@ export default {
                     this.$showToast("error", "Sorry", response.data.message);
                 }
             } catch (error) {
+                this.overlay = false;
                 this.closeModal(3);
                 this.getDetailFile(this.fileId);
                 this.$showToast("error", "Sorry", error.response.data.message);

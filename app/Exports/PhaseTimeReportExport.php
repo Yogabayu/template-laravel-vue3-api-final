@@ -23,7 +23,13 @@ class PhaseTimeReportExport implements FromArray, WithHeadings
     {
         return [
             'No',
+            'AO / RO',
             'Nama Kredit',
+            'Plafon',
+            'Alamat',
+            'No HP',
+            'Sumber Order',
+            'Status Kredit',
             'NIK Pemohon',
             'NIK Pasangan',
             'NIK Atas Nama Jaminan',

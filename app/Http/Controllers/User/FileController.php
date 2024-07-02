@@ -59,10 +59,16 @@ class FileController extends Controller
                         'phase_times.phase',
                         'phase_times.startTime',
                         'phase_times.endTime',
+                        'users.name as nameAO',
                         'files.name as fileName',
                         'files.nik_pemohon as nikPemohon',
                         'files.nik_pasangan as nikPasangan',
                         'files.nik_jaminan as nikJaminan',
+                        'files.plafon as plafon',
+                        'files.address as address',
+                        'files.no_hp as no_hp',
+                        'files.order_source as sumberOrder',
+                        'files.status_kredit as statusKredit',
                     )
                     ->whereMonth('files.created_at', $month)
                     ->whereYear('files.created_at', $year)
@@ -79,7 +85,13 @@ class FileController extends Controller
                 foreach ($groupedData as $fileId => $phases) {
                     $row = ['no' => count($reportData) + 1];
                     $fileName = $phases->first()->fileName;
+                    $row['namaAO'] = $phases->first()->nameAO;
                     $row['nameFile'] = $fileName;
+                    $row['plafon'] = $phases->first()->plafon;
+                    $row['alamat'] = $phases->first()->address;
+                    $row['noHp'] = $phases->first()->no_hp;
+                    $row['order_source'] = $phases->first()->sumberOrder;
+                    $row['status_kredit'] = $phases->first()->statusKredit;
                     $row['nikPemohon'] = $phases->first()->nikPemohon;
                     $row['nikPasangan'] = $phases->first()->nikPasangan;
                     $row['nikJaminan'] = $phases->first()->nikJaminan;
@@ -435,8 +447,8 @@ class FileController extends Controller
                 'link.url' => ':attribute harus berupa URL yang valid atau tambahkan https://',
                 'path.file' => ':attribute harus berupa file',
                 'path.mimes' => ':attribute harus berupa file dengan tipe: jpeg, jpg, png, pdf, doc, docx, xls, atau xlsx',
-                'path.required_without' => ':attribute harus diisi jika link kosong',
-                'link.required_without' => ':attribute harus diisi jika path kosong',
+                'path.required_without' => 'file harus diisi jika tidak memasukkan link ',
+                'link.required_without' => 'link harus diisi jika tidak memasukkan file ',
             ]);
 
             $attachment = Attachment::findOrFail($id);
@@ -585,6 +597,7 @@ class FileController extends Controller
             $file->type_bussiness = $request->type_bussiness;
             $file->desc_bussiness = $request->desc_bussiness;
             $file->order_source = $request->order_source;
+            $file->status_kredit = $request->status_kredit;
             $file->nik_pemohon = $request->nik_pemohon;
 
             $file->nik_pasangan = $request->nik_pasangan || $request->nik_pasangan != 'null' ? $request->nik_pasangan : null;
@@ -1925,6 +1938,7 @@ class FileController extends Controller
                 'address' => 'required',
                 'no_hp' => 'required',
                 'order_source' => 'required',
+                'status_kredit' => 'required',
                 'file1'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
                 'file2'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
                 'file3'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
@@ -1946,6 +1960,7 @@ class FileController extends Controller
             $file->type_bussiness = $request->type_bussiness;
             $file->desc_bussiness = $request->desc_bussiness;
             $file->order_source = $request->order_source;
+            $file->status_kredit = $request->status_kredit;
             $file->nik_pemohon = $request->nik_pemohon;
             $file->address = $request->address;
             $file->no_hp = $request->no_hp;

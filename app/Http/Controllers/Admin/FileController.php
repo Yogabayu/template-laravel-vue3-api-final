@@ -428,6 +428,8 @@ class FileController extends Controller
             $file->name = $request->name;
             $file->type_bussiness = $request->type_bussiness;
             $file->desc_bussiness = $request->desc_bussiness;
+            $file->order_source = $request->order_source;
+            $file->status_kredit = $request->status_kredit;
             $file->nik_pemohon = $request->nik_pemohon;
 
             $file->nik_pasangan = $request->nik_pasangan || $request->nik_pasangan != 'null' ? $request->nik_pasangan : null;
@@ -1595,6 +1597,7 @@ class FileController extends Controller
                 'address' => 'required',
                 'no_hp' => 'required',
                 'order_source' => 'required',
+                'status_kredit' => 'required',
                 'file1'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
                 'file2'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
                 'file3'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
@@ -1616,6 +1619,7 @@ class FileController extends Controller
             $file->type_bussiness = $request->type_bussiness;
             $file->desc_bussiness = $request->desc_bussiness;
             $file->order_source = $request->order_source;
+            $file->status_kredit = $request->status_kredit;
             $file->nik_pemohon = $request->nik_pemohon;
             $file->address = $request->address;
             $file->no_hp = $request->no_hp;

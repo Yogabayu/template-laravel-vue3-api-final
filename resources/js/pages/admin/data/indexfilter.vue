@@ -31,10 +31,10 @@
           <v-window-item :value="phase.value">
             <v-row class="d-flex justify-end pa-3">
               <v-btn color="primary" size="small" class="my-3 mx-3" @click="openModal(1)">
-                Tambah Data
+                <v-icon icon="mdi-plus"></v-icon> Tambah Data
               </v-btn>
               <v-btn color="primary" size="small" class="my-3 mx-3" @click="openModal(2)">
-                Rekap Data
+                <v-icon icon="mdi-download"></v-icon> Rekap Data
               </v-btn>
               <v-spacer></v-spacer>
               <v-text-field prepend-inner-icon="mdi-magnify" density="compact" label="Search" single-line flat
@@ -134,9 +134,16 @@
 
                 <VTextField class="my-3" v-model="dataForm.no_hp" :rules="[rules.required]" />
               </VCol>
+
               <VCol md="12" cols="12">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih sumber order: </span>
                 <v-select :items="orderList" autofocus v-model="dataForm.order_source"
+                  prepend-icon="mdi-help-rhombus"></v-select>
+              </VCol>
+              
+              <VCol md="12" cols="12">
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih status order: </span>
+                <v-select :items="statusCreditList" autofocus v-model="dataForm.status_kredit"
                   prepend-icon="mdi-help-rhombus"></v-select>
               </VCol>
 
@@ -373,6 +380,7 @@ export default {
         address: null,
         no_hp: null,
         order_source: null,
+        status_kredit: null,
         file1: null, //ktp pemohon
         hasFile2: false,
         file2: null, //ktp pasangan
@@ -402,6 +410,11 @@ export default {
         { value: 'PROGRAM KKB NEW', title: 'PROGRAM KKB NEW' },
         { value: 'PROGRAM KKB SECOND', title: 'PROGRAM KKB SECOND' },
         { value: 'CENTRO', title: 'CENTRO' },
+      ],
+      statusCreditList :[
+        { value: 'FRESH', title: 'FRESH' },
+        { value: 'REPEAT ORDER', title: 'REPEAT ORDER' },
+        { value: 'TOPUP', title: 'TOPUP' },
       ],
     };
   },
@@ -561,6 +574,7 @@ export default {
         name: "",
         plafon: null,
         order_source: null,
+        status_kredit: null,
         file1: null, //ktp pemohon
         hasFile2: false,
         file2: null, //ktp pasangan
@@ -640,6 +654,7 @@ export default {
         formData.append("address", this.dataForm.address);
         formData.append("no_hp", this.dataForm.no_hp);
         formData.append("order_source", this.dataForm.order_source);
+        formData.append("status_kredit", this.dataForm.status_kredit);
         formData.append("plafon", this.dataForm.plafon.replace(/\D/g, ""));
         formData.append("type_bussiness", this.dataForm.type_bussiness);
         formData.append("desc_bussiness", this.dataForm.desc_bussiness);

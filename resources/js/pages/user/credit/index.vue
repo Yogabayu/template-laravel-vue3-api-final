@@ -10,7 +10,14 @@
 
   <v-card>
     <VCardTitle class="text-2xl font-weight-bold d-flex justify-left">
-      List Credit <v-icon icon="mdi-view-comfy" class="ml-2" @click="toPage"></v-icon>
+      List Kredit <v-spacer></v-spacer>
+      <v-tooltip location="top" text="Lihat Per-Bulan">
+        <template v-slot:activator="{ props }">
+          <button v-bind="props" @click="toPage">
+            <v-icon icon="mdi-view-comfy" class="ml-2" @click="toPage"></v-icon>
+          </button>
+        </template>
+      </v-tooltip>
     </VCardTitle>
     <v-tabs v-model="tab" class="v-tabs-pill" bg-color="secondary">
       <v-tab value="0">Semua</v-tab>
@@ -26,7 +33,7 @@
             <v-row class="d-flex justify-end pa-3">
               <v-btn color="primary" size="small" class="my-3 mx-3"
                 v-if="userAccess && parseInt(userAccess.canInsertData)" @click="openModal(1)">
-                Tambah Data
+                <v-icon icon="mdi-plus"></v-icon>Tambah Data
               </v-btn>
               <v-spacer></v-spacer>
               <v-text-field prepend-inner-icon="mdi-magnify" density="compact" label="Search" single-line flat
@@ -55,14 +62,6 @@
                 </template>
                 <template #item-operation="item">
                   <div class="operation-wrapper">
-                    <!-- <button>
-                    <VIcon size="20" icon="bx-file-find" color="blue" @click="toDetail(item)" />
-                  </button>
-                  &nbsp;
-                  <button v-if="userData && item.user_id == userData.id" @click="deleteFile(item)">
-                    <VIcon size="20" icon="bx-trash" color="red" />
-                  </button> -->
-
                     <div class="d-flex justify-space-between">
                       <v-tooltip location="top" text="Detail Kredit">
                         <template v-slot:activator="{ props }">
@@ -127,12 +126,18 @@
               </VCol>
               <VCol md="12" cols="12">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">No. HP Pemohon: </span>
-                
+
                 <VTextField class="my-3" v-model="dataForm.no_hp" :rules="[rules.required]" />
               </VCol>
               <VCol md="12" cols="12">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih sumber order: </span>
                 <v-select :items="orderList" autofocus v-model="dataForm.order_source"
+                  prepend-icon="mdi-help-rhombus"></v-select>
+              </VCol>
+
+              <VCol md="12" cols="12">
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih status order: </span>
+                <v-select :items="statusCreditList" autofocus v-model="dataForm.status_kredit"
                   prepend-icon="mdi-help-rhombus"></v-select>
               </VCol>
 
@@ -215,7 +220,7 @@
                 </v-radio-group>
               </VCol> -->
 
-              <VCol md="12" cols="12" >
+              <VCol md="12" cols="12">
                 <span class="subtitle-1 text-center">Buku Nikah:</span>
                 <v-file-input class="my-3"
                   accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -279,7 +284,7 @@
 
               <VCol cols="12" class="d-flex flex-wrap gap-4">
                 <VBtn type="submit"
-                  :disabled="(dataForm.name == null || dataForm.plafon == null || dataForm.type_bussiness == null || dataForm.desc_bussiness == null || dataForm.order_source == null) || (dataForm.file1 == null || dataForm.file4 == null) || (dataForm.file10 == null && dataForm.file11 == null)">
+                  :disabled="(dataForm.name == null || dataForm.plafon == null || dataForm.type_bussiness == null || dataForm.desc_bussiness == null || dataForm.order_source == null || dataForm.status_kredit == null) || (dataForm.file1 == null || dataForm.file4 == null) || (dataForm.file10 == null && dataForm.file11 == null)">
                   Simpan
                 </VBtn>
 
@@ -381,6 +386,11 @@ export default {
         { value: 'PROGRAM KKB SECOND', title: 'PROGRAM KKB SECOND' },
         { value: 'CENTRO', title: 'CENTRO' },
       ],
+      statusCreditList :[
+        { value: 'FRESH', title: 'FRESH' },
+        { value: 'REPEAT ORDER', title: 'REPEAT ORDER' },
+        { value: 'TOPUP', title: 'TOPUP' },
+      ],
       dataForm: {
         id: null,
         name: "",
@@ -393,6 +403,7 @@ export default {
         address: null,
         no_hp: null,
         order_source: null,
+        status_kredit: null,
         file1: null, //ktp pemohon
         hasFile2: false,
         file2: null, //ktp pasangan
@@ -571,6 +582,7 @@ export default {
         name: "",
         plafon: null,
         order_source: null,
+        status_kredit: null,
         file1: null, //ktp pemohon
         hasFile2: false,
         file2: null, //ktp pasangan
@@ -640,6 +652,7 @@ export default {
         formData.append("address", this.dataForm.address);
         formData.append("no_hp", this.dataForm.no_hp);
         formData.append("order_source", this.dataForm.order_source);
+        formData.append("status_kredit", this.dataForm.status_kredit);
         formData.append("plafon", this.dataForm.plafon.replace(/\D/g, ""));
         formData.append("type_bussiness", this.dataForm.type_bussiness);
         formData.append("desc_bussiness", this.dataForm.desc_bussiness);

@@ -166,6 +166,14 @@
                             <th>Deskripsi Usaha:</th>
                             <td>{{ $file->desc_bussiness }}</td>
                         </tr>
+                        <tr>
+                            <th>Sumber Order:</th>
+                            <td>{{ $file->order_source }}</td>
+                        </tr>
+                        <tr>
+                            <th>Status Kredit:</th>
+                            <td>{{ $file->status_kredit }}</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
