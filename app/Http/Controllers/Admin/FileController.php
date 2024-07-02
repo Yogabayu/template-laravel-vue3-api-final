@@ -1978,7 +1978,23 @@ class FileController extends Controller
 
             $data = DB::table('phase_times')
                 ->join('files', 'phase_times.file_id', '=', 'files.id')
-                ->select('phase_times.file_id', 'phase_times.phase', 'phase_times.startTime', 'phase_times.endTime', 'files.name as fileName')
+                ->join('users', 'files.user_id', '=', 'users.id')
+                ->select(
+                    'phase_times.file_id',
+                    'phase_times.phase',
+                    'phase_times.startTime',
+                    'phase_times.endTime',
+                    'users.name as nameAO',
+                    'files.name as fileName',
+                    'files.nik_pemohon as nikPemohon',
+                    'files.nik_pasangan as nikPasangan',
+                    'files.nik_jaminan as nikJaminan',
+                    'files.plafon as plafon',
+                    'files.address as address',
+                    'files.no_hp as no_hp',
+                    'files.order_source as sumberOrder',
+                    'files.status_kredit as statusKredit',
+                )
                 ->whereMonth('files.created_at', $month)
                 ->whereYear('files.created_at', $year)
                 ->orderBy('phase_times.file_id')
@@ -1992,8 +2008,17 @@ class FileController extends Controller
             $reportData = [];
             foreach ($groupedData as $fileId => $phases) {
                 $row = ['no' => count($reportData) + 1];
-                $fileName = 'Kredit_' . $phases->first()->fileName; // Gantilah dengan logika penamaan file yang sesuai
+                $fileName = $phases->first()->fileName;
+                $row['namaAO'] = $phases->first()->nameAO;
                 $row['nameFile'] = $fileName;
+                $row['plafon'] = $phases->first()->plafon;
+                $row['alamat'] = $phases->first()->address;
+                $row['noHp'] = $phases->first()->no_hp;
+                $row['order_source'] = $phases->first()->sumberOrder;
+                $row['status_kredit'] = $phases->first()->statusKredit;
+                $row['nikPemohon'] = $phases->first()->nikPemohon;
+                $row['nikPasangan'] = $phases->first()->nikPasangan;
+                $row['nikJaminan'] = $phases->first()->nikJaminan;
 
                 for ($i = 1; $i <= 5; $i++) {
                     $phase = $phases->firstWhere('phase', $i);

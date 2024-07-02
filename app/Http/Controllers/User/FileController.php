@@ -154,10 +154,16 @@ class FileController extends Controller
                         'phase_times.phase',
                         'phase_times.startTime',
                         'phase_times.endTime',
+                        'users.name as nameAO',
                         'files.name as fileName',
                         'files.nik_pemohon as nikPemohon',
                         'files.nik_pasangan as nikPasangan',
                         'files.nik_jaminan as nikJaminan',
+                        'files.plafon as plafon',
+                        'files.address as address',
+                        'files.no_hp as no_hp',
+                        'files.order_source as sumberOrder',
+                        'files.status_kredit as statusKredit',
                     )
                     ->whereMonth('files.created_at', $month)
                     ->whereYear('files.created_at', $year)
@@ -174,7 +180,13 @@ class FileController extends Controller
                 foreach ($groupedData as $fileId => $phases) {
                     $row = ['no' => count($reportData) + 1];
                     $fileName = $phases->first()->fileName;
+                    $row['namaAO'] = $phases->first()->nameAO;
                     $row['nameFile'] = $fileName;
+                    $row['plafon'] = $phases->first()->plafon;
+                    $row['alamat'] = $phases->first()->address;
+                    $row['noHp'] = $phases->first()->no_hp;
+                    $row['order_source'] = $phases->first()->sumberOrder;
+                    $row['status_kredit'] = $phases->first()->statusKredit;
                     $row['nikPemohon'] = $phases->first()->nikPemohon;
                     $row['nikPasangan'] = $phases->first()->nikPasangan;
                     $row['nikJaminan'] = $phases->first()->nikJaminan;
