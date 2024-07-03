@@ -99,7 +99,7 @@
             <v-list density="compact">
                 <v-list-item>
                     <v-list-item-title> {{ sub.name }} </v-list-item-title>
-                    <v-list-item-subtitle v-if="sub.type == 1"> Dokumen Penunjang Kredit </v-list-item-subtitle>
+                    <v-list-item-subtitle v-if="sub.type == 1"> Dokumen Penunjang Analisa </v-list-item-subtitle>
                     <v-list-item-subtitle v-if="sub.type == 2"> Dokumen Jaminan </v-list-item-subtitle>
                     <template v-slot:append>
                         <div class="operation-wrapper">
@@ -269,7 +269,7 @@
                             <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih Jenis Dokumen :
                             </span>
                             <v-radio-group v-model="formSubmission.type" :mandatory="true" row>
-                                <v-radio label="Dokumen Penunjang Kredit" value=1></v-radio>
+                                <v-radio label="Dokumen Penunjang Analisa" value=1></v-radio>
                                 <v-radio label="Dokumen Jaminan" value=2></v-radio>
                             </v-radio-group>
                         </VCol>
