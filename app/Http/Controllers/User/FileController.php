@@ -18,6 +18,7 @@ use App\Models\PhaseTime;
 use App\Models\Position;
 use App\Models\PositionToOffice;
 use App\Models\Role;
+use App\Models\Office;
 use App\Models\User;
 use App\Notifications\TelegramNotification;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -1943,153 +1944,196 @@ class FileController extends Controller
     public function store(Request $request)
     {
         try {
-            // $request->validate([
-            //     'name'   => 'required',
-            //     'plafon' => 'required',
-            //     'type_bussiness' => 'required',
-            //     'desc_bussiness' => 'required',
-            //     'nik_pemohon' => 'required',
-            //     'address' => 'required',
-            //     'no_hp' => 'required',
-            //     'order_source' => 'required',
-            //     'status_kredit' => 'required',
-            //     'file1'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
-            //     'file2'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
-            //     'file3'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
-            //     'file4'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
-            //     'file5'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
-            //     'file7'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
-            //     'file8'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
-            //     'file9'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
-            //     'file10' => 'mimes:jpeg,jpg,png,pdf,doc,docx',
-            // ], [
-            //     'required' => ':attribute harus diisi',
-            //     'mimes' => ':attribute harus berupa jpeg, jpg, png,pdf,xls,xlsx',
-            // ]);
-
-            // $file = new File();
-            // $file->user_id = Auth::user()->id;
-            // $file->name = $request->name;
-            // $file->plafon = $request->plafon;
-            // $file->type_bussiness = $request->type_bussiness;
-            // $file->desc_bussiness = $request->desc_bussiness;
-            // $file->order_source = $request->order_source;
-            // $file->status_kredit = $request->status_kredit;
-            // $file->nik_pemohon = $request->nik_pemohon;
-            // $file->address = $request->address;
-            // $file->no_hp = $request->no_hp;
-            // $file->isApproved = 2;
-            // $file->phase = 1;
-            // if ($request->hasFile('file2')) {
-            //     $file->nik_pasangan = $request->nik_pasangan;
-            // }
-
-            // if ($request->hasFile('file3')) {
-            //     $file->nik_jaminan = $request->nik_jaminan;
-            // }
-            // $file->save();
-
-            // for ($i = 1; $i <= 11; $i++) {
-
-            //     // Skip file6 as it's not in the validation rules
-            //     if ($i == 6) continue;
-
-            //     $fileKey = 'file' . $i;
-            //     $noteFile = 'noteFile' . $i;
-            //     if ($request->hasFile($fileKey)) {
-            //         $fileObject = $request->file($fileKey);
-            //         // Check for upload errors
-            //         if (!$fileObject->isValid()) {
-            //             return ResponseHelper::errorRes('File upload error: ' . $fileObject->getErrorMessage());
-            //         }
-            //         //upload file
-            //         $rand = Str::random(10);
-            //         $imageEXT = $fileObject->getClientOriginalName();
-            //         $filename = pathinfo($imageEXT, PATHINFO_FILENAME);
-            //         $EXT = $fileObject->getClientOriginalExtension();
-            //         $fileimage = $filename . '-' . $rand . '_' . time() . '.' . $EXT;
-            //         $path = $fileObject->move(public_path('file/' . $file->id), $fileimage);
-
-            //         $attch = new Attachment();
-            //         $attch->phase = 1;
-            //         $attch->file_id = $file->id;
-            //         $attch->name =  $request->{$noteFile};
-            //         $attch->path = $fileimage;
-            //         $attch->isSecret = 0;
-            //         $attch->isApprove = 1;
-            //         $attch->startTime = Carbon::now();
-            //         $attch->endTime = Carbon::now();
-            //         $attch->save();
-            //     }
-            // }
-
-            // $attch = new Attachment();
-            // $attch->phase = 1;
-            // $attch->file_id = $file->id;
-            // $attch->name =  'Form Permohonan SLIK';
-            // $attch->path = 'null';
-            // $attch->isSecret = 0;
-            // $attch->isApprove = 0;
-            // $attch->startTime = Carbon::now();
-            // $attch->endTime = Carbon::now();
-            // $attch->save();
-
-            // // //add user to approval
-            // Approval::firstOrCreate(
-            //     ['file_id' => $file->id, 'user_id' => $file->user_id, 'phase' => $file->phase],
-            //     ['approved' => 0]
-            // );
-            // //add count time
-            // PhaseTime::firstOrCreate(['file_id' => $file->id, 'phase' => $file->phase, 'startTime' => Carbon::now()]);
-
-
-            // ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Menambahkan Data Kredit');
-            // ActivityHelper::userActivity(Auth::user()->id, 'Menambahkan Data Kredit' . $file->name);
-
-            // EmailHelper::AddUpdate($file->id);
-            // TelegramHelper::AddFile($file->id);
-
-            // return ResponseHelper::successRes('Berhasil menambahkan data', $file);
-            $this->sendDataGoogle();
-            return response()->json([
-                'success' => true,
-                'message' => 'berhasil',
+            $request->validate([
+                'name'   => 'required',
+                'plafon' => 'required',
+                'type_bussiness' => 'required',
+                'desc_bussiness' => 'required',
+                'nik_pemohon' => 'required',
+                'address' => 'required',
+                'no_hp' => 'required',
+                'order_source' => 'required',
+                'status_kredit' => 'required',
+                'file1'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
+                'file2'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
+                'file3'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
+                'file4'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
+                'file5'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
+                'file7'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
+                'file8'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
+                'file9'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
+                'file10' => 'mimes:jpeg,jpg,png,pdf,doc,docx',
+            ], [
+                'required' => ':attribute harus diisi',
+                'mimes' => ':attribute harus berupa jpeg, jpg, png,pdf,xls,xlsx',
             ]);
+
+            $file = new File();
+            $file->user_id = Auth::user()->id;
+            $file->name = $request->name;
+            $file->plafon = $request->plafon;
+            $file->type_bussiness = $request->type_bussiness;
+            $file->desc_bussiness = $request->desc_bussiness;
+            $file->order_source = $request->order_source;
+            $file->status_kredit = $request->status_kredit;
+            $file->nik_pemohon = $request->nik_pemohon;
+            $file->address = $request->address;
+            $file->no_hp = $request->no_hp;
+            $file->isApproved = 2;
+            $file->phase = 1;
+            if ($request->hasFile('file2')) {
+                $file->nik_pasangan = $request->nik_pasangan;
+            }
+
+            if ($request->hasFile('file3')) {
+                $file->nik_jaminan = $request->nik_jaminan;
+            }
+            $file->save();
+
+            for ($i = 1; $i <= 11; $i++) {
+
+                // Skip file6 as it's not in the validation rules
+                if ($i == 6) continue;
+
+                $fileKey = 'file' . $i;
+                $noteFile = 'noteFile' . $i;
+                if ($request->hasFile($fileKey)) {
+                    $fileObject = $request->file($fileKey);
+                    // Check for upload errors
+                    if (!$fileObject->isValid()) {
+                        return ResponseHelper::errorRes('File upload error: ' . $fileObject->getErrorMessage());
+                    }
+                    //upload file
+                    $rand = Str::random(10);
+                    $imageEXT = $fileObject->getClientOriginalName();
+                    $filename = pathinfo($imageEXT, PATHINFO_FILENAME);
+                    $EXT = $fileObject->getClientOriginalExtension();
+                    $fileimage = $filename . '-' . $rand . '_' . time() . '.' . $EXT;
+                    $path = $fileObject->move(public_path('file/' . $file->id), $fileimage);
+
+                    $attch = new Attachment();
+                    $attch->phase = 1;
+                    $attch->file_id = $file->id;
+                    $attch->name =  $request->{$noteFile};
+                    $attch->path = $fileimage;
+                    $attch->isSecret = 0;
+                    $attch->isApprove = 1;
+                    $attch->startTime = Carbon::now();
+                    $attch->endTime = Carbon::now();
+                    $attch->save();
+                }
+            }
+
+            $attch = new Attachment();
+            $attch->phase = 1;
+            $attch->file_id = $file->id;
+            $attch->name =  'Form Permohonan SLIK';
+            $attch->path = 'null';
+            $attch->isSecret = 0;
+            $attch->isApprove = 0;
+            $attch->startTime = Carbon::now();
+            $attch->endTime = Carbon::now();
+            $attch->save();
+
+            // //add user to approval
+            Approval::firstOrCreate(
+                ['file_id' => $file->id, 'user_id' => $file->user_id, 'phase' => $file->phase],
+                ['approved' => 0]
+            );
+            //add count time
+            PhaseTime::firstOrCreate(['file_id' => $file->id, 'phase' => $file->phase, 'startTime' => Carbon::now()]);
+
+            ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Menambahkan Data Kredit');
+            ActivityHelper::userActivity(Auth::user()->id, 'Menambahkan Data Kredit' . $file->name);
+
+            EmailHelper::AddUpdate($file->id);
+            TelegramHelper::AddFile($file->id);
+
+            // send data to spreadsheet
+            $user = User::where('id', Auth::user()->id)->first();
+            $position = Position::where('id', $user->position_id)->first();
+            $positiontooffice = PositionToOffice::where('position_id', $position->id)->first();
+            $office = Office::where('id', $positiontooffice->office_id)->first();
+
+            $spreadsheetResult = $this->sendDataGoogle(
+                $office->code,
+                $user->name,
+                $request->name,
+                $request->nik_pemohon,
+                $request->nik_pasangan,
+                $request->nik_jaminan,
+                $request->address,
+                $request->no_hp,
+                $request->order_source,
+                $request->plafon,
+                $request->status_kredit
+            );
+
+            if (!$spreadsheetResult['success']) {
+                Log::error('Gagal mengirim data ke spreadsheet: ' . $spreadsheetResult['message']);
+                // Atau jika Anda ingin mengembalikan error ke client:
+                // return ResponseHelper::errorRes('Berhasil menyimpan data, tapi gagal mengirim ke spreadsheet: ' . $spreadsheetResult['message']);
+            }
+            return ResponseHelper::successRes('Berhasil menambahkan data', $file);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
     }
 
-    public function sendDataGoogle()
+    private function sendDataGoogle($cab, $namaAo, $namePemohon, $nikPemohon, $nikPasangan, $nikJaminan, $address, $noHp, $orderSource, $plafon, $statusKredit)
     {
         $client = new Client();
         $client->setAuthConfig(config_path('ecar-1718180275435-ad654180d5da.json'));
         $client->addScope(Sheets::SPREADSHEETS);
-
         $service = new Sheets($client);
         $spreadsheetId = '1xESEu1Tt8uSq-krwwhla0-LvID0_t8yrCAjk5VX2Vbk';
-        // Ambil semua data yang ada
-        // Pertama, cari baris terakhir yang berisi data
-        $range = 'Sheet1!A:B';
+
+        // Pilih sheet berdasarkan $cab
+        $sheetName = match ($cab) {
+            '201' => 'POLING DAN SLIK PONOROGO',
+            '401' => 'POLING DAN SLIK MAGETAN',
+            '301' => 'POLING DAN SLIK MADIUN',
+            '101' => 'POLING DAN SLIK CARUBAN',
+            default => throw new \Exception("Invalid cab code: $cab"),
+        };
+
+        // Cari baris terakhir yang berisi data
+        $range = $sheetName . '!A:AD'; // Perluas range untuk mencakup semua kolom yang digunakan
         $response = $service->spreadsheets_values->get($spreadsheetId, $range);
         $values = $response->getValues();
         $nextRow = count($values) + 1;
 
-        // Kemudian, append data ke baris berikutnya
-        $range = 'Sheet1!A' . $nextRow;
-        $values = [
-            ['John d', 'john@example.com']
-        ];
+        // Siapkan data untuk ditulis
+        $rowData = array_fill(0, 30, ""); // Inisialisasi array kosong untuk 30 kolom (A sampai AD)
+        $rowData[0] = $cab;           // Kolom A
+        $rowData[1] = $namaAo;        // Kolom B
+        $rowData[15] = $namePemohon;  // Kolom P
+        $rowData[12] = $nikPemohon;   // Kolom M
+        $rowData[13] = $nikPasangan ?? '-';  // Kolom N
+        $rowData[14] = $nikJaminan ?? '-';   // Kolom O
+        $rowData[18] = $address;      // Kolom S
+        $rowData[20] = $noHp;         // Kolom U
+        $rowData[26] = $plafon;       // Kolom AA
+        $rowData[29] = $orderSource;  // Kolom AD
+        $rowData[21] = $statusKredit; // Kolom V
 
+        // Append data ke baris berikutnya
+        $range = $sheetName . '!A' . $nextRow . ':AD' . $nextRow;
         $body = new \Google\Service\Sheets\ValueRange([
-            'values' => $values
+            'values' => [$rowData]
         ]);
 
         $params = [
             'valueInputOption' => 'RAW'
         ];
 
-        $result = $service->spreadsheets_values->append($spreadsheetId, $range, $body, $params);
+        try {
+            $result = $service->spreadsheets_values->append($spreadsheetId, $range, $body, $params);
+            return ['success' => true, 'message' => 'Data berhasil dikirim ke spreadsheet'];
+        } catch (\Exception $e) {
+            error_log('Error appending to Google Sheet: ' . $e->getMessage());
+            return ['success' => false, 'message' => 'Gagal mengirim data ke spreadsheet: ' . $e->getMessage()];
+        }
     }
 
     public function destroy($id)
