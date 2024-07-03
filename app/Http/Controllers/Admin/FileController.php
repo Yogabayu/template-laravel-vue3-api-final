@@ -1791,8 +1791,8 @@ class FileController extends Controller
             $approv->save();
 
             $file = File::find($approv->file_id);
-            ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Menghapus Data Kredit ');
-            ActivityHelper::userActivity(Auth::user()->id, 'Menghapus Data Kredit: ' . $file->name);
+            ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Merubah approval Data Kredit ');
+            ActivityHelper::userActivity(Auth::user()->id, 'Merubah approval Data Kredit: ' . $file->name);
             TelegramHelper::AddUpdatePhase($approv->file_id, "User merubah Status menjadi " . ($approv->approved ? "Disetujui" : "Ditolak"), $approv->user_id);
 
             return ResponseHelper::successRes('Berhasill mengubah status', $approv);
