@@ -24,6 +24,8 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Carbon\Carbon;
+use Google\Client;
+use Google\Service\Sheets;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -1941,115 +1943,153 @@ class FileController extends Controller
     public function store(Request $request)
     {
         try {
-            $request->validate([
-                'name'   => 'required',
-                'plafon' => 'required',
-                'type_bussiness' => 'required',
-                'desc_bussiness' => 'required',
-                'nik_pemohon' => 'required',
-                'address' => 'required',
-                'no_hp' => 'required',
-                'order_source' => 'required',
-                'status_kredit' => 'required',
-                'file1'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
-                'file2'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
-                'file3'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
-                'file4'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
-                'file5'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
-                'file7'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
-                'file8'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
-                'file9'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
-                'file10' => 'mimes:jpeg,jpg,png,pdf,doc,docx',
-            ], [
-                'required' => ':attribute harus diisi',
-                'mimes' => ':attribute harus berupa jpeg, jpg, png,pdf,xls,xlsx',
+            // $request->validate([
+            //     'name'   => 'required',
+            //     'plafon' => 'required',
+            //     'type_bussiness' => 'required',
+            //     'desc_bussiness' => 'required',
+            //     'nik_pemohon' => 'required',
+            //     'address' => 'required',
+            //     'no_hp' => 'required',
+            //     'order_source' => 'required',
+            //     'status_kredit' => 'required',
+            //     'file1'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
+            //     'file2'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
+            //     'file3'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
+            //     'file4'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
+            //     'file5'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
+            //     'file7'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
+            //     'file8'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
+            //     'file9'  => 'mimes:jpeg,jpg,png,pdf,doc,docx',
+            //     'file10' => 'mimes:jpeg,jpg,png,pdf,doc,docx',
+            // ], [
+            //     'required' => ':attribute harus diisi',
+            //     'mimes' => ':attribute harus berupa jpeg, jpg, png,pdf,xls,xlsx',
+            // ]);
+
+            // $file = new File();
+            // $file->user_id = Auth::user()->id;
+            // $file->name = $request->name;
+            // $file->plafon = $request->plafon;
+            // $file->type_bussiness = $request->type_bussiness;
+            // $file->desc_bussiness = $request->desc_bussiness;
+            // $file->order_source = $request->order_source;
+            // $file->status_kredit = $request->status_kredit;
+            // $file->nik_pemohon = $request->nik_pemohon;
+            // $file->address = $request->address;
+            // $file->no_hp = $request->no_hp;
+            // $file->isApproved = 2;
+            // $file->phase = 1;
+            // if ($request->hasFile('file2')) {
+            //     $file->nik_pasangan = $request->nik_pasangan;
+            // }
+
+            // if ($request->hasFile('file3')) {
+            //     $file->nik_jaminan = $request->nik_jaminan;
+            // }
+            // $file->save();
+
+            // for ($i = 1; $i <= 11; $i++) {
+
+            //     // Skip file6 as it's not in the validation rules
+            //     if ($i == 6) continue;
+
+            //     $fileKey = 'file' . $i;
+            //     $noteFile = 'noteFile' . $i;
+            //     if ($request->hasFile($fileKey)) {
+            //         $fileObject = $request->file($fileKey);
+            //         // Check for upload errors
+            //         if (!$fileObject->isValid()) {
+            //             return ResponseHelper::errorRes('File upload error: ' . $fileObject->getErrorMessage());
+            //         }
+            //         //upload file
+            //         $rand = Str::random(10);
+            //         $imageEXT = $fileObject->getClientOriginalName();
+            //         $filename = pathinfo($imageEXT, PATHINFO_FILENAME);
+            //         $EXT = $fileObject->getClientOriginalExtension();
+            //         $fileimage = $filename . '-' . $rand . '_' . time() . '.' . $EXT;
+            //         $path = $fileObject->move(public_path('file/' . $file->id), $fileimage);
+
+            //         $attch = new Attachment();
+            //         $attch->phase = 1;
+            //         $attch->file_id = $file->id;
+            //         $attch->name =  $request->{$noteFile};
+            //         $attch->path = $fileimage;
+            //         $attch->isSecret = 0;
+            //         $attch->isApprove = 1;
+            //         $attch->startTime = Carbon::now();
+            //         $attch->endTime = Carbon::now();
+            //         $attch->save();
+            //     }
+            // }
+
+            // $attch = new Attachment();
+            // $attch->phase = 1;
+            // $attch->file_id = $file->id;
+            // $attch->name =  'Form Permohonan SLIK';
+            // $attch->path = 'null';
+            // $attch->isSecret = 0;
+            // $attch->isApprove = 0;
+            // $attch->startTime = Carbon::now();
+            // $attch->endTime = Carbon::now();
+            // $attch->save();
+
+            // // //add user to approval
+            // Approval::firstOrCreate(
+            //     ['file_id' => $file->id, 'user_id' => $file->user_id, 'phase' => $file->phase],
+            //     ['approved' => 0]
+            // );
+            // //add count time
+            // PhaseTime::firstOrCreate(['file_id' => $file->id, 'phase' => $file->phase, 'startTime' => Carbon::now()]);
+
+
+            // ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Menambahkan Data Kredit');
+            // ActivityHelper::userActivity(Auth::user()->id, 'Menambahkan Data Kredit' . $file->name);
+
+            // EmailHelper::AddUpdate($file->id);
+            // TelegramHelper::AddFile($file->id);
+
+            // return ResponseHelper::successRes('Berhasil menambahkan data', $file);
+            $this->sendDataGoogle();
+            return response()->json([
+                'success' => true,
+                'message' => 'berhasil',
             ]);
-
-            $file = new File();
-            $file->user_id = Auth::user()->id;
-            $file->name = $request->name;
-            $file->plafon = $request->plafon;
-            $file->type_bussiness = $request->type_bussiness;
-            $file->desc_bussiness = $request->desc_bussiness;
-            $file->order_source = $request->order_source;
-            $file->status_kredit = $request->status_kredit;
-            $file->nik_pemohon = $request->nik_pemohon;
-            $file->address = $request->address;
-            $file->no_hp = $request->no_hp;
-            $file->isApproved = 2;
-            $file->phase = 1;
-            if ($request->hasFile('file2')) {
-                $file->nik_pasangan = $request->nik_pasangan;
-            }
-
-            if ($request->hasFile('file3')) {
-                $file->nik_jaminan = $request->nik_jaminan;
-            }
-            $file->save();
-
-            for ($i = 1; $i <= 11; $i++) {
-
-                // Skip file6 as it's not in the validation rules
-                if ($i == 6) continue;
-
-                $fileKey = 'file' . $i;
-                $noteFile = 'noteFile' . $i;
-                if ($request->hasFile($fileKey)) {
-                    $fileObject = $request->file($fileKey);
-                    // Check for upload errors
-                    if (!$fileObject->isValid()) {
-                        return ResponseHelper::errorRes('File upload error: ' . $fileObject->getErrorMessage());
-                    }
-                    //upload file
-                    $rand = Str::random(10);
-                    $imageEXT = $fileObject->getClientOriginalName();
-                    $filename = pathinfo($imageEXT, PATHINFO_FILENAME);
-                    $EXT = $fileObject->getClientOriginalExtension();
-                    $fileimage = $filename . '-' . $rand . '_' . time() . '.' . $EXT;
-                    $path = $fileObject->move(public_path('file/' . $file->id), $fileimage);
-
-                    $attch = new Attachment();
-                    $attch->phase = 1;
-                    $attch->file_id = $file->id;
-                    $attch->name =  $request->{$noteFile};
-                    $attch->path = $fileimage;
-                    $attch->isSecret = 0;
-                    $attch->isApprove = 1;
-                    $attch->startTime = Carbon::now();
-                    $attch->endTime = Carbon::now();
-                    $attch->save();
-                }
-            }
-
-            $attch = new Attachment();
-            $attch->phase = 1;
-            $attch->file_id = $file->id;
-            $attch->name =  'Form Permohonan SLIK';
-            $attch->path = 'null';
-            $attch->isSecret = 0;
-            $attch->isApprove = 0;
-            $attch->startTime = Carbon::now();
-            $attch->endTime = Carbon::now();
-            $attch->save();
-
-            // //add user to approval
-            Approval::firstOrCreate(
-                ['file_id' => $file->id, 'user_id' => $file->user_id, 'phase' => $file->phase],
-                ['approved' => 0]
-            );
-            //add count time
-            PhaseTime::firstOrCreate(['file_id' => $file->id, 'phase' => $file->phase, 'startTime' => Carbon::now()]);
-
-            ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Menambahkan Data Kredit');
-            ActivityHelper::userActivity(Auth::user()->id, 'Menambahkan Data Kredit' . $file->name);
-
-            EmailHelper::AddUpdate($file->id);
-            TelegramHelper::AddFile($file->id);
-
-            return ResponseHelper::successRes('Berhasil menambahkan data', $file);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
+    }
+
+    public function sendDataGoogle()
+    {
+        $client = new Client();
+        $client->setAuthConfig(config_path('ecar-1718180275435-ad654180d5da.json'));
+        $client->addScope(Sheets::SPREADSHEETS);
+
+        $service = new Sheets($client);
+        $spreadsheetId = '1xESEu1Tt8uSq-krwwhla0-LvID0_t8yrCAjk5VX2Vbk';
+        // Ambil semua data yang ada
+        // Pertama, cari baris terakhir yang berisi data
+        $range = 'Sheet1!A:B';
+        $response = $service->spreadsheets_values->get($spreadsheetId, $range);
+        $values = $response->getValues();
+        $nextRow = count($values) + 1;
+
+        // Kemudian, append data ke baris berikutnya
+        $range = 'Sheet1!A' . $nextRow;
+        $values = [
+            ['John d', 'john@example.com']
+        ];
+
+        $body = new \Google\Service\Sheets\ValueRange([
+            'values' => $values
+        ]);
+
+        $params = [
+            'valueInputOption' => 'RAW'
+        ];
+
+        $result = $service->spreadsheets_values->append($spreadsheetId, $range, $body, $params);
     }
 
     public function destroy($id)

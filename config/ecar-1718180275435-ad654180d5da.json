@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "ecar-1718180275435",
+  "private_key_id": "ad654180d5dacb32fac715ffa5568ecc006021ac",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDNI+v6QZYWRkN7\nctiV6CmorGImgSUDZgnjkVmp0YS4mWhrry7sKYZWqBCoPXcM36h8xQ7+546AVCiZ\nzmRJXdYmMui6T780HDMZJJ6HZB64DT7GJC7zOFG0U/MOpg45C5hVN2cq79yq3PMn\nqTXaQLNzxyDkG/t2Ji5W9T+yoTG6X1Igrr9EDN81ebIuLa1cdYXmROzaCKXDtm23\n34EleSUuFFzR/TIfzCNYAJzTLtpq2uk1D2qfB0Fy3pxHIzyCuz4We5GSUWD8ZEFw\n87uAot9m30a52js9Zzag2b7IKKFYcd62wme2suStMvMF1Y6haoAIyz9tzq2P5KiS\nY15ZozMfAgMBAAECggEAJvzOQwRHCZm2BpbHqgnzLO8CQm4mAjTY6Uq9H0TGNC1X\nxquHP/QOZ5bOf6Ma5rP1Oi1bkb+heitEgiLTNYxjgGQJjitM3BMF9R/cD0BMhE9k\nIFVNJQWNpbeUyLJvnpDhFUUP0v2+Uyzl+6IxrXbBhF4SlrfovUY5ZWZ8Ai+Xm2Nd\nwgN+7AM2753VAenWDXOv7nSOmRaUJSamFRF1ndCV+R9aGvTUgQgEjULKn/mC8IRJ\nQv/nRUoJM767ypkUFdMQhfh8QNOkyKXG+gEDczGCdzQ+Fe9VsFhdigvOpADb9U+o\nd3IYVazAj9FBRISJP15GCERvqbn+qPsH+BhOHNckCQKBgQD/bbR0m8/eKCc1QbMc\nD4YzfqxDRgwwp4s66s1npGq7W2Qxs1xNxSbrtUxDlYuSHREZSSxMKw22g7mU9Ahn\nRSjLkJ0pu+KY6ycLxhl8Wph90C/FJrc+1IBUTPidNmuGPYmhx9ODXEkgof4EVLiF\n/DEFvFKq8TEH82biJ6f2HiZZBwKBgQDNmWokr14Qn+Ggw2/z23n3N7UrJwz82UW8\n8dmIk/3sfurCxm+oX1ykctbhWUIrpFKjoj3lkXO1/19ovWXw1cvIlq5bpKezhLnh\n8tR2P1UBqZ78WHA+J9mZTdcGgTGCcWR8ixMHa+7VGfpdSGjJjJSx2mQsEsYmNoXq\nR5Sb2UJHKQKBgFLpME89mF67V+bAmbv9CgnDD3WS0jgk2lvYha4jv4VrZ/1+A/M2\nkKioI8Y4T6KxDrDPgLKEsyHQZjgEcona+CADpBA87ZPHmNgIiJNF8QO9xRPQumCJ\np9I1XeniFUrwxLEf5PdZyF7wVjzfpznOn7cF5yuXuNuk1XuJdcq9BKOXAoGAM3fS\nQHi+HX9IpkwGfI9WyvJhIfpWn/1sHc6VXEFf8ZIcBsJSNV4Z/PjanfMQQ4iRP3Ff\n+VYeF1NkeP3gxRdgOkiuQTbI3IG/XrbBRRC5oP7rU9R31Ld5G42G5JP25uan9x2B\nl/wG/8XPDQcRZFMS7irzpKzWeb5wa6ObqiALHXECgYAqtJDSu4PshWsISY1GghDV\nqJey6Jp0kAmbHMgVT4vKBxgYIfJkXO/5P5/DVEjzHlxzHSeN0AX24sZwJCY7P/Ir\nBpv6MPV9W1aGj43NSV+JAATTZhDuiWYXj7lLiMpm481XPDHivUx407qQirqJGJ6D\nAU/KhaiRuh1yv3kyuONACQ==\n-----END PRIVATE KEY-----\n",
+  "client_email": "ecar-system@ecar-1718180275435.iam.gserviceaccount.com",
+  "client_id": "113440510657999003857",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/ecar-system%40ecar-1718180275435.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
