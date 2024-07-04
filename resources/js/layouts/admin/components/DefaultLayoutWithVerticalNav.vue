@@ -91,6 +91,13 @@ const upgradeBanner = computed(() => {
           to: '/notifconf',
         }"
       />
+      <VerticalNavLink
+        :item="{
+          title: 'Riwayat User',
+          icon: 'bx-user',
+          to: '/a-history',
+        }"
+      />
 
       <VerticalNavSectionTitle
         :item="{
