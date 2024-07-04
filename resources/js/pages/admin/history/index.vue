@@ -47,44 +47,11 @@
         </VCard>
     </div>
 
-    <!-- <v-dialog v-model="isDetail" width="auto" fullscreen transition="dialog-top-transition">
-        <v-card>
-            <template v-slot:title> Detail Riwayat User </template>
-            <template v-slot:text>
-                <div class="d-flex justify-end mb-6">
-                    <div class="d-flex align-center pe-2 w-25">
-                        <v-text-field prepend-inner-icon="mdi-magnify" density="compact" label="Search" single-line flat
-                            hide-details variant="solo-filled" v-model="itemSearchDetails"></v-text-field>
-                    </div>
-                </div>
-                <EasyDataTable show-index :headers="headerDetails" :items="itemDetails"
-                    :search-value="itemSearchDetails">
-                    <template #empty-message>
-                        <p>Data Kantor Kosong</p>
-                    </template>
-                    <template #loading>
-                        <p>loading data .....</p>
-                    </template>
-                    <template #item-created_at="item">
-                        {{ formatDate(item.created_at) }}
-                    </template>
-
-                </EasyDataTable>
-            </template>
-        </v-card>
-    </v-dialog> -->
-
     <v-dialog v-model="isDetail" transition="dialog-bottom-transition" fullscreen>
-        <template v-slot:activator="{ props: activatorProps }">
-            <v-btn prepend-icon="mdi-cog" size="small" text="Settings" v-bind="activatorProps"></v-btn>
-        </template>
-
         <v-card>
             <v-toolbar>
                 <v-btn icon="mdi-close" @click="isDetail = false, itemSearchDetails = '', itemDetails = []"></v-btn>
-
                 <v-toolbar-title>Riwayat User</v-toolbar-title>
-
                 <v-spacer></v-spacer>
             </v-toolbar>
 
@@ -104,7 +71,6 @@
                 <template #item-created_at="item">
                     {{ formatDate(item.created_at) }}
                 </template>
-
             </EasyDataTable>
         </v-card>
     </v-dialog>
