@@ -84,13 +84,13 @@
                         </template>
                       </v-tooltip>
 
-                      <v-tooltip location="top" text="Hapus Kredit" v-if="userData && item.user_id == userData.id">
+                      <!-- <v-tooltip location="top" text="Hapus Kredit" v-if="userData && item.user_id == userData.id">
                         <template v-slot:activator="{ props }">
                           <button v-bind="props" @click="deleteFile(item)">
                             <VIcon size="20" icon="bx-trash" color="red" />
                           </button>
                         </template>
-                      </v-tooltip>
+                      </v-tooltip> -->
 
                       <v-tooltip location="top" text="Download Semua File Kredit" v-if="role && role.canDownload == 1">
                         <template v-slot:activator="{ props }">
