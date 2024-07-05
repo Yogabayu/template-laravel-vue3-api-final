@@ -600,6 +600,8 @@ class FileController extends Controller
                         return ResponseHelper::successRes('File Status Telah diubah menjadi disetujui', $file);
                     }
                     if ($file->phase == 4) {
+                        $plafon = $file->plafon; // Assuming $file->plafon is already an integer
+
                         $lembarPengesahanApproved = Attachment::where('file_id', $file->id)
                             ->where('phase', 4)
                             ->whereRaw('LOWER(name) = ?', [Str::lower('Lembar Pengesahan')])
@@ -609,18 +611,25 @@ class FileController extends Controller
                             })
                             ->where('isApprove', '!=', 0)
                             ->count();
-                        $rekomendasiKepatuhanApproved = Attachment::where('file_id', $file->id)
-                            ->where('phase', 4)
-                            ->whereRaw('LOWER(name) = ?', [Str::lower('Rekomendasi Kepatuhan')])
-                            ->where(function ($query) {
-                                $query->where('link', '!=', 'null')
-                                    ->orWhere('path', '!=', 'null');
-                            })
-                            ->where('isApprove', '!=', 0)
-                            ->count();
 
-                        if ($lembarPengesahanApproved == 0 || $rekomendasiKepatuhanApproved == 0) {
-                            return ResponseHelper::errorRes('File mandatory kosong / belum disetujui');
+                        if ($plafon > 25000000) {
+                            $rekomendasiKepatuhanApproved = Attachment::where('file_id', $file->id)
+                                ->where('phase', 4)
+                                ->whereRaw('LOWER(name) = ?', [Str::lower('Rekomendasi Kepatuhan')])
+                                ->where(function ($query) {
+                                    $query->where('link', '!=', 'null')
+                                        ->orWhere('path', '!=', 'null');
+                                })
+                                ->where('isApprove', '!=', 0)
+                                ->count();
+
+                            if ($lembarPengesahanApproved == 0 || $rekomendasiKepatuhanApproved == 0) {
+                                return ResponseHelper::errorRes('File Lembar Pengesahan dan Rekomendasi Kepatuhan wajib ada dan harus disetujui');
+                            }
+                        } else {
+                            if ($lembarPengesahanApproved == 0) {
+                                return ResponseHelper::errorRes('File Lembar Pengesahan wajib ada dan harus disetujui');
+                            }
                         }
 
                         $file->phase = 5;
