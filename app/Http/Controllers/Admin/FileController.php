@@ -896,8 +896,12 @@ class FileController extends Controller
                         if ($file->phase == 4) {
                             $attachments = [
                                 ['name' => 'Lembar Pengesahan', 'path' => 'null', 'isSecret' => 0, 'isApprove' => 0, 'phase' => 4, 'file_id' => $file->id,],
-                                ['name' => 'Rekomendasi Kepatuhan', 'path' => 'null', 'isSecret' => 0, 'isApprove' => 0, 'phase' => 4, 'file_id' => $file->id,],
                             ];
+
+                            // Direct comparison since $file->plafon is already an integer
+                            if ($file->plafon > 25000000) {
+                                $attachments[] = ['name' => 'Rekomendasi Kepatuhan', 'path' => 'null', 'isSecret' => 0, 'isApprove' => 0, 'phase' => 4, 'file_id' => $file->id,];
+                            }
 
                             foreach ($attachments as $data) {
                                 $existingAttachment = Attachment::where('file_id', $data['file_id'])
@@ -906,7 +910,6 @@ class FileController extends Controller
                                     ->first();
 
                                 if (!$existingAttachment) {
-                                    // Only create a new attachment if it doesn't already exist
                                     $attachment = new Attachment();
                                     $attachment->phase = $data['phase'];
                                     $attachment->file_id = $data['file_id'];
