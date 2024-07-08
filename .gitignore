@@ -9,6 +9,7 @@
 /public/user
 /public/draft
 /vendor
+/config/ecar-1718180275435-78e57795c318.json
 .env
 .env.backup
 .env.production

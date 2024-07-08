@@ -2058,7 +2058,7 @@ class FileController extends Controller
             ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Menambahkan Data Kredit');
             ActivityHelper::userActivity(Auth::user()->id, 'Menambahkan Data Kredit' . $file->name);
 
-            EmailHelper::AddUpdate($file->id);
+            // EmailHelper::AddUpdate($file->id);
             TelegramHelper::AddFile($file->id);
 
             // send data to spreadsheet
@@ -2095,7 +2095,7 @@ class FileController extends Controller
     private function sendDataGoogle($cab, $namaAo, $namePemohon, $nikPemohon, $nikPasangan, $nikJaminan, $address, $noHp, $orderSource, $plafon, $statusKredit)
     {
         $client = new Client();
-        $client->setAuthConfig(config_path('ecar-1718180275435-ad654180d5da.json'));
+        $client->setAuthConfig(config_path('ecar-1718180275435-78e57795c318.json'));
         $client->addScope(Sheets::SPREADSHEETS);
         $service = new Sheets($client);
         $spreadsheetId = '1xESEu1Tt8uSq-krwwhla0-LvID0_t8yrCAjk5VX2Vbk';
