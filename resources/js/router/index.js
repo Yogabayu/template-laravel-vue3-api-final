@@ -190,6 +190,19 @@ const router = createRouter({
         },
       ],
     },
+    {
+      path: "/a-history",
+      component: () => import("../layouts/admin/default.vue"),
+      children: [
+        {
+          path: "",
+          component: () => import("../pages/admin/history/index.vue"),
+          beforeEnter: (to, from, next) => {
+            checkLogin(next);
+          },
+        },
+      ],
+    },
     
 
     // //user

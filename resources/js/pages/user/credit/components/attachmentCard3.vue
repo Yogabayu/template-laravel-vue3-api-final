@@ -4,10 +4,28 @@
         Loading...
     </v-overlay>
     <v-card color="warning">
-        <v-card-title>
-            <v-row class="d-flex justify-space-between">
-                <v-col cols="12" sm="6" md="8">
-                    <span>Phase 3 (Analisa Kredit) 📄</span>
+        <v-card-title class="py-2">
+            <v-row align="center" no-gutters>
+                <v-col cols="auto">
+                    <span class="text-h6 font-weight-medium">Phase 3 (Analisa Kredit) 📄</span>
+                </v-col>
+                <v-spacer></v-spacer>
+                <v-col cols="auto">
+                    <v-bottom-sheet max-width="400">
+                        <template v-slot:activator="{ props }">
+                            <v-btn icon v-bind="props" color="on-primary" variant="text">
+                                <v-icon color="on-primary">mdi-help-circle-outline</v-icon>
+                            </v-btn>
+                        </template>
+                        <v-card>
+                            <v-card-title class="text-h6 py-2 px-4">
+                                Penjelasan Phase Analisa Kredit
+                            </v-card-title>
+                            <v-card-text class="py-2 px-4">
+                                Tahap ini merupakan proses evaluasi mendalam terhadap kelayakan nasabah untuk menerima kredit. Analisa kredit mencakup penilaian aspek 5C: Character (karakter), Capacity (kapasitas), Capital (modal), Collateral (jaminan), dan Condition (kondisi). Tim analis kredit akan mengevaluasi data finansial, riwayat kredit, dan informasi lainnya untuk menentukan tingkat risiko dan kemampuan nasabah dalam memenuhi kewajiban kreditnya.
+                            </v-card-text>
+                        </v-card>
+                    </v-bottom-sheet>
                 </v-col>
             </v-row>
         </v-card-title>
@@ -99,7 +117,7 @@
             <v-list density="compact">
                 <v-list-item>
                     <v-list-item-title> {{ sub.name }} </v-list-item-title>
-                    <v-list-item-subtitle v-if="sub.type == 1"> Dokumen Penunjang Kredit </v-list-item-subtitle>
+                    <v-list-item-subtitle v-if="sub.type == 1"> Dokumen Penunjang Analisa </v-list-item-subtitle>
                     <v-list-item-subtitle v-if="sub.type == 2"> Dokumen Jaminan </v-list-item-subtitle>
                     <template v-slot:append>
                         <div class="operation-wrapper">
@@ -269,7 +287,7 @@
                             <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih Jenis Dokumen :
                             </span>
                             <v-radio-group v-model="formSubmission.type" :mandatory="true" row>
-                                <v-radio label="Dokumen Penunjang Kredit" value=1></v-radio>
+                                <v-radio label="Dokumen Penunjang Analisa" value=1></v-radio>
                                 <v-radio label="Dokumen Jaminan" value=2></v-radio>
                             </v-radio-group>
                         </VCol>

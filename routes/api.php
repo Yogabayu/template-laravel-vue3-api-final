@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\FileController as AdminFileController;
 use App\Http\Controllers\Admin\HelperController;
+use App\Http\Controllers\Admin\HistoryController;
 use App\Http\Controllers\Admin\NotificationConfigController;
 use App\Http\Controllers\Admin\OfficeController;
 use App\Http\Controllers\Admin\PositionController;
@@ -33,6 +34,10 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1', 'throttle:60,1'], function
     Route::middleware('auth:api')->group(function () {
         Route::get('generatereport/{id}', [FileController::class, 'generateReport']);
         Route::get('generatemonthly/{monthYear}', [AdminFileController::class, 'generateMonthlyReport']);
+
+        //history
+        Route::get('history/{id}', [HistoryController::class, 'getHistorybyUser']);
+
         //all
         /////=>download all
         Route::get('download-all/{id}', [ZipController::class, 'downloadAll']);

@@ -4,10 +4,35 @@
         Loading...
     </v-overlay>
     <v-card color="warning">
-        <v-card-title>
-            <v-row class="d-flex justify-space-between">
-                <v-col cols="12" sm="6" md="8">
-                    <span>Phase 4 (KOMITE) 📄</span>
+        <v-card-title class="py-2">
+            <v-row align="center" no-gutters>
+                <v-col cols="auto">
+                    <span class="text-h6 font-weight-medium">Phase 4 (KOMITE) 📄</span>
+                </v-col>
+                <v-spacer></v-spacer>
+                <v-col cols="auto">
+                    <v-bottom-sheet max-width="400">
+                        <template v-slot:activator="{ props }">
+                            <v-btn icon v-bind="props" color="on-primary" variant="text">
+                                <v-icon color="on-primary">mdi-help-circle-outline</v-icon>
+                            </v-btn>
+                        </template>
+                        <v-card>
+                            <v-card-title class="text-h6 py-2 px-4">
+                                Penjelasan Phase Komite
+                            </v-card-title>
+                            <v-card-text class="py-2 px-4">
+                                Tahap ini merupakan proses pengambilan keputusan akhir terkait pengajuan kredit. Komite
+                                Kredit akan memberikan keputusan
+                                apakah pengajuan kredit
+                                disetujui, ditolak, atau memerlukan informasi tambahan. Keputusan diambil berdasarkan
+                                pertimbangan risiko,
+                                kebijakan kredit bank, dan potensi keuntungan. Komite juga dapat memberikan rekomendasi
+                                terkait syarat dan
+                                ketentuan kredit jika disetujui.
+                            </v-card-text>
+                        </v-card>
+                    </v-bottom-sheet>
                 </v-col>
             </v-row>
         </v-card-title>
@@ -24,10 +49,12 @@
                     <template v-slot:append>
                         <div class="operation-wrapper">
                             <div class="d-flex justify-space-between">
-                                <v-tooltip location="top" text="Lihat File" v-if="(attachment.path !== 'null' || attachment.link !== null)">
+                                <v-tooltip location="top" text="Lihat File"
+                                    v-if="(attachment.path !== 'null' || attachment.link !== null)">
                                     <template v-slot:activator="{ props }">
-                                        <a v-if="attachment.path !== 'null'" v-bind="props" :href="`${filePath}/${fileId}/${attachment.path}`"
-                                            target="_blank" rel="noopener noreferrer">
+                                        <a v-if="attachment.path !== 'null'" v-bind="props"
+                                            :href="`${filePath}/${fileId}/${attachment.path}`" target="_blank"
+                                            rel="noopener noreferrer">
                                             <button>
                                                 <VIcon size="20" icon="bx-link-external" color="blue" />
                                             </button>
@@ -41,7 +68,7 @@
                                     </template>
                                 </v-tooltip>
                                 <v-tooltip location="top" text="Upload File / Link" v-if="
-                                    (attachment.path == 'null' && attachment.link == null ) &&
+                                    (attachment.path == 'null' && attachment.link == null) &&
                                     userAccess &&
                                     parseInt(userAccess.canInsertData) == 1
                                 ">
@@ -59,7 +86,8 @@
                                         </button>
                                     </template>
                                 </v-tooltip>
-                                <v-tooltip location="top" text="Tanda Tangan File" v-if="userAccess && parseInt(userAccess.canUpdateData) && phase < 5">
+                                <v-tooltip location="top" text="Tanda Tangan File"
+                                    v-if="userAccess && parseInt(userAccess.canUpdateData) && phase < 5">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="toSignature(attachment)">
                                             <VIcon size="20" icon="bx-pen" color="blue" />
@@ -172,7 +200,7 @@ export default {
             type: Function,
             required: true,
         },
-        phase : {
+        phase: {
             type: Number,
             required: true,
         },
@@ -213,7 +241,7 @@ export default {
                 alert('Silahkan upload file terlebih dahulu');
                 return;
             }
-            
+
             this.$router.push(`/u-pdfeditor/${attach.id}`);
         },
         openModal(type, item = null) {

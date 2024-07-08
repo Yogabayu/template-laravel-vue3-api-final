@@ -1,9 +1,31 @@
 <template>
     <v-card color="warning">
-        <v-card-title>
-            <v-row class="d-flex justify-space-between">
-                <v-col cols="12" sm="6" md="8">
-                    <span>Phase 1 (Pooling) 📄</span>
+        <v-card-title class="py-2">
+            <v-row align="center" no-gutters>
+                <v-col cols="auto">
+                    <span class="text-h6 font-weight-medium">Phase 1 (Pooling) 📄</span>
+                </v-col>
+                <v-spacer></v-spacer>
+                <v-col cols="auto">
+                    <v-bottom-sheet max-width="400">
+                        <template v-slot:activator="{ props }">
+                            <v-btn icon v-bind="props" color="on-primary" variant="text">
+                                <v-icon color="on-primary">mdi-help-circle-outline</v-icon>
+                            </v-btn>
+                        </template>
+                        <v-card>
+                            <v-card-title class="text-h6 py-2 px-4">
+                                Penjelasan Phase 1: Pooling
+                            </v-card-title>
+                            <v-card-text class="py-2 px-4">
+                                Tahap ini meliputi pengumpulan dan verifikasi berkas kredit nasabah. Proses ini
+                                dilaksanakan setelah Account
+                                Officer (AO) melakukan survei lapangan. Dokumentasi yang terkumpul akan digunakan untuk
+                                analisis SLIK (Sistem
+                                Layanan Informasi Keuangan) guna menilai kelayakan kredit.
+                            </v-card-text>
+                        </v-card>
+                    </v-bottom-sheet>
                 </v-col>
             </v-row>
         </v-card-title>
@@ -141,7 +163,7 @@ export default {
             type: Function,
             required: true,
         },
-        phase : {
+        phase: {
             type: Number,
             required: true,
         },

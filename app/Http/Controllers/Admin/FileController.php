@@ -600,6 +600,8 @@ class FileController extends Controller
                         return ResponseHelper::successRes('File Status Telah diubah menjadi disetujui', $file);
                     }
                     if ($file->phase == 4) {
+                        $plafon = $file->plafon; // Assuming $file->plafon is already an integer
+
                         $lembarPengesahanApproved = Attachment::where('file_id', $file->id)
                             ->where('phase', 4)
                             ->whereRaw('LOWER(name) = ?', [Str::lower('Lembar Pengesahan')])
@@ -609,18 +611,25 @@ class FileController extends Controller
                             })
                             ->where('isApprove', '!=', 0)
                             ->count();
-                        $rekomendasiKepatuhanApproved = Attachment::where('file_id', $file->id)
-                            ->where('phase', 4)
-                            ->whereRaw('LOWER(name) = ?', [Str::lower('Rekomendasi Kepatuhan')])
-                            ->where(function ($query) {
-                                $query->where('link', '!=', 'null')
-                                    ->orWhere('path', '!=', 'null');
-                            })
-                            ->where('isApprove', '!=', 0)
-                            ->count();
 
-                        if ($lembarPengesahanApproved == 0 || $rekomendasiKepatuhanApproved == 0) {
-                            return ResponseHelper::errorRes('File mandatory kosong / belum disetujui');
+                        if ($plafon > 25000000) {
+                            $rekomendasiKepatuhanApproved = Attachment::where('file_id', $file->id)
+                                ->where('phase', 4)
+                                ->whereRaw('LOWER(name) = ?', [Str::lower('Rekomendasi Kepatuhan')])
+                                ->where(function ($query) {
+                                    $query->where('link', '!=', 'null')
+                                        ->orWhere('path', '!=', 'null');
+                                })
+                                ->where('isApprove', '!=', 0)
+                                ->count();
+
+                            if ($lembarPengesahanApproved == 0 || $rekomendasiKepatuhanApproved == 0) {
+                                return ResponseHelper::errorRes('File Lembar Pengesahan dan Rekomendasi Kepatuhan wajib ada dan harus disetujui');
+                            }
+                        } else {
+                            if ($lembarPengesahanApproved == 0) {
+                                return ResponseHelper::errorRes('File Lembar Pengesahan wajib ada dan harus disetujui');
+                            }
                         }
 
                         $file->phase = 5;
@@ -720,7 +729,7 @@ class FileController extends Controller
 
                         ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Merubah Phase Kredit ');
                         ActivityHelper::userActivity(Auth::user()->id, 'Merubah Phase Kredit: ' . $file->name);
-                        // TelegramHelper::AddUpdatePhase($file->id, "User mengubah Phase menjadi " . ($filephase), $file->user_id);
+                        TelegramHelper::AddUpdatePhase($file->id, "User mengubah Phase menjadi " . ($filephase), $file->user_id);
                         // EmailHelper::AddUpdate($file->id);
 
                         return ResponseHelper::successRes('Berhasill Melakukan Perubahan Tahapan Kredit', $file);
@@ -896,8 +905,12 @@ class FileController extends Controller
                         if ($file->phase == 4) {
                             $attachments = [
                                 ['name' => 'Lembar Pengesahan', 'path' => 'null', 'isSecret' => 0, 'isApprove' => 0, 'phase' => 4, 'file_id' => $file->id,],
-                                ['name' => 'Rekomendasi Kepatuhan', 'path' => 'null', 'isSecret' => 0, 'isApprove' => 0, 'phase' => 4, 'file_id' => $file->id,],
                             ];
+
+                            // Direct comparison since $file->plafon is already an integer
+                            if ($file->plafon > 25000000) {
+                                $attachments[] = ['name' => 'Rekomendasi Kepatuhan', 'path' => 'null', 'isSecret' => 0, 'isApprove' => 0, 'phase' => 4, 'file_id' => $file->id,];
+                            }
 
                             foreach ($attachments as $data) {
                                 $existingAttachment = Attachment::where('file_id', $data['file_id'])
@@ -906,7 +919,6 @@ class FileController extends Controller
                                     ->first();
 
                                 if (!$existingAttachment) {
-                                    // Only create a new attachment if it doesn't already exist
                                     $attachment = new Attachment();
                                     $attachment->phase = $data['phase'];
                                     $attachment->file_id = $data['file_id'];
@@ -961,7 +973,7 @@ class FileController extends Controller
                         ActivityHelper::userActivity(Auth::user()->id, 'Merubah Phase Kredit: ' . $file->name);
 
                         // EmailHelper::AddUpdate($file->id);
-                        // TelegramHelper::AddUpdatePhase($file->id, "User mengubah Phase menjadi " . ($filephase), $file->user_id);
+                        TelegramHelper::AddUpdatePhase($file->id, "User mengubah Phase menjadi " . ($filephase), $file->user_id);
 
                         return ResponseHelper::successRes('Berhasill Melakukan Perubahan Tahapan Kredit', $file);
                     }

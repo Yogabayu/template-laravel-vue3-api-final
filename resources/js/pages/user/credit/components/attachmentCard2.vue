@@ -4,13 +4,32 @@
         Loading...
     </v-overlay>
     <v-card color="warning">
-        <v-card-title>
-            <v-row class="d-flex justify-space-between">
-                <v-col cols="12" sm="6" md="8">
-                    <span>Phase 2 (SLIK) 📄</span>
+        <v-card-title class="py-2">
+            <v-row align="center" no-gutters>
+                <v-col cols="auto">
+                    <span class="text-h6 font-weight-medium">Phase 2 (SLIK) 📄</span>
+                </v-col>
+                <v-spacer></v-spacer>
+                <v-col cols="auto">
+                    <v-bottom-sheet max-width="400">
+                        <template v-slot:activator="{ props }">
+                            <v-btn icon v-bind="props" color="on-primary" variant="text">
+                                <v-icon color="on-primary">mdi-help-circle-outline</v-icon>
+                            </v-btn>
+                        </template>
+                        <v-card>
+                            <v-card-title class="text-h6 py-2 px-4">
+                                Penjelasan Phase SLIK
+                            </v-card-title>
+                            <v-card-text class="py-2 px-4">
+                                Tahap ini melibatkan proses pengecekan riwayat kredit nasabah melalui Sistem Layanan Informasi Keuangan (SLIK). SLIK merupakan sistem yang dikelola oleh Otoritas Jasa Keuangan (OJK) untuk menyediakan informasi pinjaman debitur. Hasil analisis SLIK digunakan untuk menilai kelayakan kredit dan risiko nasabah berdasarkan catatan keuangan sebelumnya.
+                            </v-card-text>
+                        </v-card>
+                    </v-bottom-sheet>
                 </v-col>
             </v-row>
         </v-card-title>
+
         <div v-for="(attachment, index) in data" :key="index">
             <v-list density="compact">
                 <v-list-item v-if="shouldDisplay(attachment)">
