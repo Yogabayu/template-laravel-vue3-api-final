@@ -4,10 +4,35 @@
         Loading...
     </v-overlay>
     <v-card color="warning">
-        <v-card-title>
-            <v-row class="d-flex justify-space-between">
-                <v-col cols="12" sm="6" md="8">
-                    <span>Phase 4 (KOMITE) 📄</span>
+        <v-card-title class="py-2">
+            <v-row align="center" no-gutters>
+                <v-col cols="auto">
+                    <span class="text-h6 font-weight-medium">Phase 4 (KOMITE) 📄</span>
+                </v-col>
+                <v-spacer></v-spacer>
+                <v-col cols="auto">
+                    <v-bottom-sheet max-width="400">
+                        <template v-slot:activator="{ props }">
+                            <v-btn icon v-bind="props" color="on-primary" variant="text">
+                                <v-icon color="on-primary">mdi-help-circle-outline</v-icon>
+                            </v-btn>
+                        </template>
+                        <v-card>
+                            <v-card-title class="text-h6 py-2 px-4">
+                                Penjelasan Phase Komite
+                            </v-card-title>
+                            <v-card-text class="py-2 px-4">
+                                Tahap ini merupakan proses pengambilan keputusan akhir terkait pengajuan kredit. Komite
+                                Kredit akan memberikan keputusan
+                                apakah pengajuan kredit
+                                disetujui, ditolak, atau memerlukan informasi tambahan. Keputusan diambil berdasarkan
+                                pertimbangan risiko,
+                                kebijakan kredit bank, dan potensi keuntungan. Komite juga dapat memberikan rekomendasi
+                                terkait syarat dan
+                                ketentuan kredit jika disetujui.
+                            </v-card-text>
+                        </v-card>
+                    </v-bottom-sheet>
                 </v-col>
             </v-row>
         </v-card-title>
@@ -175,8 +200,8 @@ export default {
             type: Function,
             required: true,
         },
-        
-        phase : {
+
+        phase: {
             type: Number,
             required: true,
         },
@@ -192,7 +217,7 @@ export default {
     },
     data() {
         return {
-            userAccessPhase4:null,
+            userAccessPhase4: null,
             selectedOption: "",
             overlay: false,
             uploadProgress: null,
