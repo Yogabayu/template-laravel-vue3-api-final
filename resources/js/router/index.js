@@ -203,6 +203,19 @@ const router = createRouter({
         },
       ],
     },
+    {
+      path: "/a-perkantor",
+      component: () => import("../layouts/admin/default.vue"),
+      children: [
+        {
+          path: "",
+          component: () => import("../pages/admin/data/perkantor.vue"),
+          beforeEnter: (to, from, next) => {
+            checkLogin(next);
+          },
+        },
+      ],
+    },
     
 
     // //user
@@ -291,6 +304,19 @@ const router = createRouter({
         {
           path: "",
           component: () => import("../pages/user/credit/indexfiltermonth.vue"),
+          beforeEnter: (to, from, next) => {
+            checkLogin(next);
+          },
+        },
+      ],
+    },
+    {
+      path: "/u-perkantor",
+      component: () => import("../layouts/user/default.vue"),
+      children: [
+        {
+          path: "",
+          component: () => import("../pages/user/credit/perkantor.vue"),
           beforeEnter: (to, from, next) => {
             checkLogin(next);
           },

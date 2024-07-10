@@ -1979,6 +1979,16 @@ class FileController extends Controller
         }
     }
 
+    public function getAllUser()
+    {
+        try {
+            $user = User::all();
+            return ResponseHelper::successRes('Berhasil mengambil data user', $user);
+        } catch (\Exception $e) {
+            return ResponseHelper::errorRes($e->getMessage());
+        }
+    }
+
     public function generateMonthlyReport($monthYear)
     {
         try {
@@ -2048,6 +2058,162 @@ class FileController extends Controller
 
             $date = \Carbon\Carbon::create($year, $month, 1);
             $fileName = 'phase_time_report_' . $date->format('Y-m') . '.xlsx';
+
+            return Excel::download(new PhaseTimeReportExport($reportData), $fileName);
+        } catch (\Exception $e) {
+            return ResponseHelper::errorRes($e->getMessage());
+        }
+    }
+
+    public function userAccess()
+    {
+        try {
+            $userAccess = [
+                'canAppeal' => 1,
+                'canApprove' => 1,
+                'canInsertData' => 1,
+                'isSecret' => 1,
+            ];
+
+            return ResponseHelper::successRes('Data retrieved successfully', $userAccess);
+        } catch (\Exception $e) {
+            return ResponseHelper::errorRes($e->getMessage());
+        }
+    }
+
+    public function filterData(Request $request)
+    {
+        try {
+            $request->validate([
+                'month' => 'between:1,12',
+                'year' => 'digits:4',
+                'office_id' => 'exists:offices,id',
+            ]);
+
+            $user = Auth::user();
+            $position_id = $user->position_id;
+            $user_id = $user->id;
+            $month = $request->input('month');
+            $year = $request->input('year');
+            $office_id = $request->input('office_id');
+
+            // Get position data of the user
+            $getPositionData = Position::find($position_id);
+
+            // Initialize file query
+            $filesQuery = File::with('user')
+                ->orderBy('created_at', 'desc')
+                ->whereMonth('created_at', $month)
+                ->whereYear('created_at', $year);
+
+            // Apply office_id filter for other positions
+            $filesQuery->whereHas('user.position.positionToOffices', function ($query) use ($office_id) {
+                $query->where('office_id', $office_id);
+            });
+
+            // Execute query and get files
+            $files = $filesQuery->get();
+
+            // Return success response with files
+            return ResponseHelper::successRes('Data retrieved successfully', $files);
+        } catch (ValidationException $e) {
+            return ResponseHelper::errorRes($e->errors(), 422);
+        } catch (\Exception $e) {
+            return ResponseHelper::errorRes($e->getMessage());
+        }
+    }
+    public function filterDataReport(Request $request)
+    {
+        try {
+            $request->validate([
+                'month' => 'between:1,12',
+                'year' => 'digits:4',
+                'office_id' => 'exists:offices,id',
+            ]);
+            // Retrieve authenticated user's information
+            $user = Auth::user();
+            $position_id = $user->position_id;
+            $user_id = $user->id;
+            $month = $request->input('month');
+            $year = $request->input('year');
+            $office_id = $request->input('office_id');
+
+            // Get position data of the user
+            $getPositionData = Position::find($position_id);
+
+            // Initialize data export query
+            $dataEksportQuery = DB::table('phase_times')
+                ->join('files', 'phase_times.file_id', '=', 'files.id')
+                ->join('users', 'files.user_id', '=', 'users.id')
+                ->select(
+                    'phase_times.file_id',
+                    'phase_times.phase',
+                    'phase_times.startTime',
+                    'phase_times.endTime',
+                    'users.name as nameAO',
+                    'files.name as fileName',
+                    'files.nik_pemohon as nikPemohon',
+                    'files.nik_pasangan as nikPasangan',
+                    'files.nik_jaminan as nikJaminan',
+                    'files.plafon as plafon',
+                    'files.address as address',
+                    'files.no_hp as no_hp',
+                    'files.order_source as sumberOrder',
+                    'files.status_kredit as statusKredit',
+                )
+                ->whereMonth('files.created_at', $month)
+                ->whereYear('files.created_at', $year)
+                ->orderBy('phase_times.file_id')
+                ->orderBy('phase_times.phase');
+
+
+            // Apply office_id filter for other positions
+            $dataEksportQuery->whereExists(function ($query) use ($office_id) {
+                $query->select(DB::raw(1))
+                    ->from('positiontooffices')
+                    ->whereColumn('positiontooffices.position_id', 'users.position_id')
+                    ->where('positiontooffices.office_id', $office_id);
+            });
+
+            // Execute query and get data export
+            $dataEksport = $dataEksportQuery->get();
+
+            $groupedData = $dataEksport->groupBy('file_id');
+
+            // Format data untuk laporan
+            $reportData = [];
+            foreach ($groupedData as $fileId => $phases) {
+                $row = ['no' => count($reportData) + 1];
+                $fileName = $phases->first()->fileName;
+                $row['namaAO'] = $phases->first()->nameAO;
+                $row['nameFile'] = $fileName;
+                $row['plafon'] = $phases->first()->plafon;
+                $row['alamat'] = $phases->first()->address;
+                $row['noHp'] = $phases->first()->no_hp;
+                $row['order_source'] = $phases->first()->sumberOrder;
+                $row['status_kredit'] = $phases->first()->statusKredit;
+                $row['nikPemohon'] = $phases->first()->nikPemohon;
+                $row['nikPasangan'] = $phases->first()->nikPasangan;
+                $row['nikJaminan'] = $phases->first()->nikJaminan;
+
+                for ($i = 1; $i <= 5; $i++) {
+                    $phase = $phases->firstWhere('phase', $i);
+                    if ($phase) {
+                        $startTime = strtotime($phase->startTime);
+                        $endTime = $phase->endTime ? strtotime($phase->endTime) : time();
+                        $duration = $endTime - $startTime;
+                        $row['phase' . $i . 'Time'] = gmdate('H:i:s', $duration);
+                    } else {
+                        $row['phase' . $i . 'Time'] = 'N/A';
+                    }
+                }
+                $reportData[] = $row;
+            }
+
+            $date = \Carbon\Carbon::create($year, $month, 1);
+            $fileName = 'phase_time_report_' . $date->format('Y-m') . '.xlsx';
+
+            ActivityHelper::userActivity(Auth::user()->id, 'USER MENDOWNLOAD REKAP DATA FILE KREDIT');
 
             return Excel::download(new PhaseTimeReportExport($reportData), $fileName);
         } catch (\Exception $e) {

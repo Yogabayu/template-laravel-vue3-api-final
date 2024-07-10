@@ -1,4 +1,6 @@
 <script setup>
+
+import VerticalNavSectionTitle from "@/@layouts/components/VerticalNavSectionTitle.vue";
 import VerticalNavLayout from '@layouts/components/VerticalNavLayout.vue';
 import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
 import { useTheme } from 'vuetify';
@@ -22,7 +24,7 @@ const userData = JSON.parse(localStorage.getItem("userData"));
     <template #navbar="{ toggleVerticalOverlayNavActive }">
       <div class="d-flex h-100 align-center">
         <!-- 👉 Vertical nav toggle in overlay mode -->
-        <IconBtn v-if="!isPhone" class="ms-n3 d-lg-none" @click="toggleVerticalOverlayNavActive(true)">
+        <IconBtn class="ms-n3 d-lg-none" @click="toggleVerticalOverlayNavActive(true)">
           <VIcon icon="bx-menu"/>
         </IconBtn>
 
@@ -34,36 +36,29 @@ const userData = JSON.parse(localStorage.getItem("userData"));
       </div>
     </template>
 
-    <template #vertical-nav-content v-if="!isPhone">
+    <template #vertical-nav-content>
       <VerticalNavLink :item="{
         title: 'Dashboard',
         icon: 'bx-home',
         to: '/user-dashboard',
       }" />
+      <VerticalNavSectionTitle v-if="userData.position.approval_level_id!=1"
+        :item="{
+          heading: 'Pengajuan Kredit',
+        }"
+      />
       <VerticalNavLink :item="{
-        title: 'Kredit',
+        title: 'Semua Data Kredit',
         icon: 'bx-file',
         to:'/u-credit'
       }" />
-      
-      <!-- <VerticalNavLink :item="{
-        title: 'Cari File',
-        icon: 'bx-file-find',
-        to:'/u-search'
-      }" />
-
       <VerticalNavLink :item="{
-        title: 'Favorite',
-        icon: 'bx-heart',
-        to: '/u-favorite'
-      }" />
-
-      <VerticalNavLink :item="{
-        title: 'Riwayat',
-        icon: 'bx-show',
-        to: '/u-read'
+        title: 'Data Kredit per Bulan',
+        icon: 'bx-file',
+        to: '/u-perkantor'
       }" />
       
+      <!--       
       <VerticalNavSectionTitle v-if="userData.position.approval_level_id!=1"
         :item="{
           heading: 'Pengajuan Draft',
@@ -83,8 +78,7 @@ const userData = JSON.parse(localStorage.getItem("userData"));
     <slot />
 
     <!-- 👉 Footer -->
-    <template #footer>
-      <!-- <Footer /> -->
+    <!-- <template #footer>
       <v-bottom-navigation :elevation="0" mode="shift" v-if="isPhone">
         <v-btn value="home" :to="'/user-dashboard'">
           <v-icon>mdi-home</v-icon>
@@ -96,27 +90,8 @@ const userData = JSON.parse(localStorage.getItem("userData"));
 
           <span>Kredit</span>
         </v-btn>
-
-        <!-- <v-btn value="search" :to="'/u-search'">
-          <v-icon>mdi-text-box-search</v-icon>
-
-          <span>Cari File</span>
-        </v-btn>
-
-        <v-btn value="favorite" :to="'/u-favorite'">
-          <v-icon>mdi-heart</v-icon>
-
-          <span>Favorite</span>
-        </v-btn>
-
-        <v-btn value="nearby" :to="'/u-read'">
-          <v-icon>mdi-eye-outline</v-icon>
-
-          <span>Riwayat</span>
-        </v-btn> -->
-
       </v-bottom-navigation>
-    </template>
+    </template> -->
   </VerticalNavLayout>
 </template>
 

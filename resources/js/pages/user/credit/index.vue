@@ -656,7 +656,6 @@ export default {
         formData.append("plafon", this.dataForm.plafon.replace(/\D/g, ""));
         formData.append("type_bussiness", this.dataForm.type_bussiness);
         formData.append("desc_bussiness", this.dataForm.desc_bussiness);
-        formData.append("order_source", this.dataForm.order_source);
 
         if (this.dataForm.file2 != null) {
           formData.append('nik_pasangan', this.dataForm.nik_pasangan);

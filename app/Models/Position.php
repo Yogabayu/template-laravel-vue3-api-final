@@ -42,4 +42,9 @@ class Position extends Model
     {
         return $this->hasMany(PhaseDuration::class);
     }
+
+    public function positionToOffices()
+    {
+        return $this->hasMany(PositionToOffice::class);
+    }
 }

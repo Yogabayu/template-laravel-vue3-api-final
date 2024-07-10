@@ -9,9 +9,6 @@
   </v-overlay>
 
   <v-card>
-    <!-- <VCardTitle class="text-2xl font-weight-bold d-flex justify-left">
-      List Credit {{ monthYear }}
-    </VCardTitle> -->
     <VCardItem class="align-left">
       <span color="primary" @click="goBack" style="cursor: pointer">
         <VIcon icon="bx-arrow-back" color="primary" tag="back" start />
@@ -308,17 +305,6 @@
         </template>
       </v-card>
     </v-dialog>
-
-    <!-- <v-dialog
-      v-model="isStatusPhase"
-      width="auto"
-      persistent
-      transition="dialog-top-transition"
-    >
-      <v-card>
-        <template v-slot:title> Ubah Status </template>
-      </v-card>
-    </v-dialog> -->
   </v-card>
 </template>
 
