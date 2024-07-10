@@ -93,6 +93,12 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1', 'throttle:60,1'], function
         Route::put('survey-credit/{id}', [FileController::class, 'editSurveiResult']);
         Route::post('change-status', [FileController::class, 'changeStatus']);
 
+        ////filter
+        Route::get('userAccess', [AdminFileController::class, 'userAccess']);
+        Route::post('filterData', [AdminFileController::class, 'filterData']);
+        Route::post('filterDataReport', [AdminFileController::class, 'filterDataReport']);
+        Route::get('getAllUser', [AdminFileController::class, 'getAllUser']);
+
         //dashboard-Credit
         Route::get('dashboardCredit', [HelperController::class, 'getYears']);
 
@@ -138,6 +144,11 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1', 'throttle:60,1'], function
             Route::post('change-status', [FileController::class, 'changeStatus']);
             Route::get('dashboardCredit', [UserHelperController::class, 'getYears']);
             Route::post('getCredit', [FileController::class, 'getFile']);
+
+            ////filter
+            Route::get('userAccess', [FileController::class, 'userAccess']);
+            Route::post('filterData', [FileController::class, 'filterData']);
+            Route::post('filterDataReport', [FileController::class, 'filterDataReport']);
 
             //=>note
             Route::post('note', [FileController::class, 'addNote']);

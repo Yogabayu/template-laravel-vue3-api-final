@@ -9,9 +9,6 @@
   </v-overlay>
 
   <v-card>
-    <!-- <VCardTitle class="text-2xl font-weight-bold d-flex justify-left">
-      List Credit {{ monthYear }}
-    </VCardTitle> -->
     <VCardItem class="align-left">
       <span color="primary" @click="goBack" style="cursor: pointer">
         <VIcon icon="bx-arrow-back" color="primary" tag="back" start />
@@ -46,7 +43,7 @@
             </v-row>
 
             <div class="table-container" @touchstart.stop @touchmove.stop>
-              <EasyDataTable show-index :headers="headers" :items="items" :search-value="searchValue">
+              <EasyDataTable show-index :headers="headers" :items="searchableItems" :search-value="searchValue" :search-field="searchField">
                 <template #empty-message>
                   <p>Data Kosong</p>
                 </template>
@@ -308,17 +305,6 @@
         </template>
       </v-card>
     </v-dialog>
-
-    <!-- <v-dialog
-      v-model="isStatusPhase"
-      width="auto"
-      persistent
-      transition="dialog-top-transition"
-    >
-      <v-card>
-        <template v-slot:title> Ubah Status </template>
-      </v-card>
-    </v-dialog> -->
   </v-card>
 </template>
 
@@ -341,6 +327,12 @@ export default {
       set(value) {
         this.dataForm.plafon = value.replace(/\D/g, '');
       }
+    },
+    searchableItems() {
+      return this.items.map(item => ({
+        ...item,
+        office_names: item.user.position.offices.map(office => office.name).join(', ')
+      }));
     }
   },
   data() {
@@ -374,6 +366,24 @@ export default {
         { text: "AO/RO", value: "aoro", sortable: true },
         { text: "Tanggal", value: "created_at", sortable: true },
         { text: "Operation", value: "operation", width: 100 },
+      ],
+      searchField: [
+        "name",
+        "plafon",
+        "phase",
+        "type_bussiness",
+        "desc_bussiness",
+        "reasonRejected",
+        "nik_pemohon",
+        "nik_pasangan",
+        "nik_jaminan",
+        "address",
+        "no_hp",
+        "order_source",
+        "status_kredit",
+        "user.name",
+        "user.position.name",
+        "office_names",
       ],
       phases: [
         { value: 0 },

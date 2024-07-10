@@ -26,10 +26,7 @@ const upgradeBanner = computed(() => {
     <template #navbar="{ toggleVerticalOverlayNavActive }">
       <div class="d-flex h-100 align-center">
         <!-- 👉 Vertical nav toggle in overlay mode -->
-        <IconBtn
-          class="ms-n3 d-lg-none"
-          @click="toggleVerticalOverlayNavActive(true)"
-        >
+        <IconBtn class="ms-n3 d-lg-none" @click="toggleVerticalOverlayNavActive(true)">
           <VIcon icon="bx-menu" />
         </IconBtn>
 
@@ -42,75 +39,60 @@ const upgradeBanner = computed(() => {
     </template>
 
     <template #vertical-nav-content>
-      <VerticalNavLink
-        :item="{
-          title: 'Dashboard',
-          icon: 'bx-home',
-          to: '/dashboard',
-        }"
-      />
+      <VerticalNavLink :item="{
+        title: 'Dashboard',
+        icon: 'bx-home',
+        to: '/dashboard',
+      }" />
 
       <!-- 👉 konfigurasi -->
-      <VerticalNavSectionTitle
-        :item="{
-          heading: 'Konfigurasi Dasar',
-        }"
-      />
-      <VerticalNavLink
-        :item="{
-          title: 'Kantor',
-          icon: 'bx-building',
-          to: '/office',
-        }"
-      />
-      <VerticalNavLink
-        :item="{
-          title: 'Permission',
-          icon: 'bx-shield',
-          to: '/permission',
-        }"
-      />
-      <VerticalNavLink
-        :item="{
-          title: 'Jabatan',
-          icon: 'bx-area',
-          to: '/position',
-        }"
-      />
-      <VerticalNavLink
-        :item="{
-          title: 'User',
-          icon: 'bx-user',
-          to: '/users',
-        }"
-      />
-      <VerticalNavLink
-        :item="{
-          title: 'Konfigurasi Fase Kredit',
-          icon: 'bx-bell',
-          to: '/notifconf',
-        }"
-      />
-      <VerticalNavLink
-        :item="{
-          title: 'Riwayat User',
-          icon: 'bx-user',
-          to: '/a-history',
-        }"
-      />
+      <VerticalNavSectionTitle :item="{
+        heading: 'Konfigurasi Dasar',
+      }" />
+      <VerticalNavLink :item="{
+        title: 'Kantor',
+        icon: 'bx-building',
+        to: '/office',
+      }" />
+      <VerticalNavLink :item="{
+        title: 'Permission',
+        icon: 'bx-shield',
+        to: '/permission',
+      }" />
+      <VerticalNavLink :item="{
+        title: 'Jabatan',
+        icon: 'bx-area',
+        to: '/position',
+      }" />
+      <VerticalNavLink :item="{
+        title: 'User',
+        icon: 'bx-user',
+        to: '/users',
+      }" />
+      <VerticalNavLink :item="{
+        title: 'Konfigurasi Fase Kredit',
+        icon: 'bx-bell',
+        to: '/notifconf',
+      }" />
+      <VerticalNavLink :item="{
+        title: 'Riwayat User',
+        icon: 'bx-user',
+        to: '/a-history',
+      }" />
 
-      <VerticalNavSectionTitle
-        :item="{
-          heading: 'Data Kredit',
-        }"
-      />
-      <VerticalNavLink
-        :item="{
-          title: 'Data Master',
-          icon: 'bx-file-blank',
-          to: '/data-master',
-        }"
-      />
+      <VerticalNavSectionTitle :item="{
+        heading: 'Data Kredit',
+      }" />
+      <VerticalNavLink :item="{
+        title: 'Data Master',
+        icon: 'bx-file-blank',
+        to: '/data-master',
+      }" />
+      <VerticalNavLink :item="{
+        title: 'Data Kredit per Bulan',
+        icon: 'bx-file',
+        to: '/a-perkantor'
+      }" />
 
       <!-- <VerticalNavLink
         :item="{

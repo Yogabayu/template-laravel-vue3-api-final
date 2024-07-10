@@ -24,7 +24,7 @@ const userData = JSON.parse(localStorage.getItem("userData"));
       <div class="d-flex h-100 align-center">
         <!-- 👉 Vertical nav toggle in overlay mode -->
         <IconBtn class="ms-n3 d-lg-none" @click="toggleVerticalOverlayNavActive(true)">
-          <VIcon icon="bx-menu" />
+          <VIcon icon="bx-menu"/>
         </IconBtn>
 
         <VSpacer />
@@ -41,20 +41,32 @@ const userData = JSON.parse(localStorage.getItem("userData"));
         icon: 'bx-home',
         to: '/user-dashboard',
       }" />
-
-      <VerticalNavSectionTitle :item="{
-        heading: 'Pengajuan Kredit',
-      }" />
-
+      <VerticalNavSectionTitle v-if="userData.position.approval_level_id!=1"
+        :item="{
+          heading: 'Pengajuan Kredit',
+        }"
+      />
       <VerticalNavLink :item="{
-        title: 'Semua Kredit',
+        title: 'Semua Data Kredit',
         icon: 'bx-file',
         to: '/u-credit'
       }" />
       <VerticalNavLink :item="{
-        title: 'Data Kantor per Bulan',
+        title: 'Data Kredit per Bulan',
         icon: 'bx-file',
+        to: '/u-perkantor'
       }" />
+      
+      <!--       
+      <VerticalNavSectionTitle v-if="userData.position.approval_level_id!=1"
+        :item="{
+          heading: 'Pengajuan Draft',
+        }"
+      />
+      <VerticalNavLink v-if="userData.position.approval_level_id!=1" :item="{
+        title: 'Draft',
+        icon: 'bx-file',
+      }" />-->
 
     </template>
 
@@ -75,7 +87,6 @@ const userData = JSON.parse(localStorage.getItem("userData"));
 
           <span>Kredit</span>
         </v-btn>
-
       </v-bottom-navigation>
     </template> -->
   </VerticalNavLayout>

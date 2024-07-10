@@ -10,7 +10,7 @@
 
   <v-card>
     <VCardTitle class="text-2xl font-weight-bold d-flex justify-left">
-      List Kredit <v-spacer></v-spacer>
+      List Kredit <v-spacer></v-spacer><span class="text-sm mt-2">(Tampilan bulanan)</span>
       <v-tooltip location="top" text="Lihat Per-Bulan">
         <template v-slot:activator="{ props }">
           <button v-bind="props" @click="toPage">
@@ -41,7 +41,8 @@
             </v-row>
 
             <div class="table-container" @touchstart.stop @touchmove.stop>
-              <EasyDataTable show-index :headers="headers" :items="items" :search-value="searchValue">
+              <EasyDataTable show-index :headers="headers" :items="searchableItems" :search-value="searchValue"
+                :search-field="searchField">
                 <template #empty-message>
                   <p>Data Kosong</p>
                 </template>
@@ -334,6 +335,12 @@ export default {
       set(value) {
         this.dataForm.plafon = value.replace(/\D/g, '');
       }
+    },
+    searchableItems() {
+      return this.items.map(item => ({
+        ...item,
+        office_names: item.user.position.offices.map(office => office.name).join(', ')
+      }));
     }
   },
   data() {
@@ -374,6 +381,24 @@ export default {
         { value: 3 },
         { value: 4 },
       ],
+      searchField: [
+        "name",
+        "plafon",
+        "phase",
+        "type_bussiness",
+        "desc_bussiness",
+        "reasonRejected",
+        "nik_pemohon",
+        "nik_pasangan",
+        "nik_jaminan",
+        "address",
+        "no_hp",
+        "order_source",
+        "status_kredit",
+        "user.name",
+        "user.position.name",
+        "office_names",
+      ],
       orderList: [
         { value: 'AO SENDIRI', title: 'AO SENDIRI' },
         { value: 'C. SERVIS / KANTOR', title: 'C. SERVIS / KANTOR' },
@@ -386,11 +411,12 @@ export default {
         { value: 'PROGRAM KKB SECOND', title: 'PROGRAM KKB SECOND' },
         { value: 'CENTRO', title: 'CENTRO' },
       ],
-      statusCreditList :[
+      statusCreditList: [
         { value: 'FRESH', title: 'FRESH' },
         { value: 'REPEAT ORDER', title: 'REPEAT ORDER' },
         { value: 'TOPUP', title: 'TOPUP' },
       ],
+
       dataForm: {
         id: null,
         name: "",
@@ -443,6 +469,27 @@ export default {
     },
   },
   methods: {
+    customSearch(items, search, searchField) {
+      if (!search) return items;
+
+      return items.filter(item => {
+        return searchField.some(field => {
+          if (field === 'user.position.offices.name') {
+            return item.user.position.offices.some(office =>
+              office.name.toLowerCase().includes(search.toLowerCase())
+            );
+          }
+          // untuk field lainnya, gunakan pencarian default
+          return String(this.getNestedValue(item, field))
+            .toLowerCase()
+            .includes(search.toLowerCase());
+        });
+      });
+    },
+
+    getNestedValue(obj, path) {
+      return path.split('.').reduce((o, key) => (o && o[key] !== undefined) ? o[key] : null, obj);
+    },
     toPage() {
       this.$router.push(`/u-indexfilter`);
     },
@@ -656,7 +703,6 @@ export default {
         formData.append("plafon", this.dataForm.plafon.replace(/\D/g, ""));
         formData.append("type_bussiness", this.dataForm.type_bussiness);
         formData.append("desc_bussiness", this.dataForm.desc_bussiness);
-        formData.append("order_source", this.dataForm.order_source);
 
         if (this.dataForm.file2 != null) {
           formData.append('nik_pasangan', this.dataForm.nik_pasangan);
