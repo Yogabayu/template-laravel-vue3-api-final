@@ -10,7 +10,7 @@
 
   <v-card>
     <VCardTitle class="text-2xl font-weight-bold d-flex justify-left">
-      List Kredit <v-spacer></v-spacer>
+      List Kredit <v-spacer></v-spacer><span class="text-sm mt-2">(Tampilan bulanan)</span>
       <v-tooltip location="top" text="Lihat Per-Bulan">
         <template v-slot:activator="{ props }">
           <button v-bind="props" @click="toPage">
