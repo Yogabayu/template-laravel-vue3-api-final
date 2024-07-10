@@ -73,7 +73,7 @@
                             </v-row>
 
                             <div class="table-container" @touchstart.stop @touchmove.stop>
-                                <EasyDataTable show-index :headers="headers" :items="items" :search-value="searchValue">
+                                <EasyDataTable show-index :headers="headers" :items="searchableItems" :search-value="searchValue" :search-field="searchField">
                                     <template #empty-message>
                                         <p>Data Kosong</p>
                                     </template>
@@ -379,6 +379,12 @@ export default {
             set(value) {
                 this.dataForm.plafon = value.replace(/\D/g, '');
             }
+        },
+        searchableItems() {
+            return this.items.map(item => ({
+                ...item,
+                office_names: item.user.position.offices.map(office => office.name).join(', ')
+            }));
         }
     },
     data() {
@@ -440,6 +446,24 @@ export default {
                 { value: 'FRESH', title: 'FRESH' },
                 { value: 'REPEAT ORDER', title: 'REPEAT ORDER' },
                 { value: 'TOPUP', title: 'TOPUP' },
+            ],
+            searchField: [
+                "name",
+                "plafon",
+                "phase",
+                "type_bussiness",
+                "desc_bussiness",
+                "reasonRejected",
+                "nik_pemohon",
+                "nik_pasangan",
+                "nik_jaminan",
+                "address",
+                "no_hp",
+                "order_source",
+                "status_kredit",
+                "user.name",
+                "user.position.name",
+                "office_names",
             ],
             dataForm: {
                 id: null,
@@ -637,9 +661,9 @@ export default {
             }
         },
         async getRecaptData(monthYear: any) {
-            try {                
+            try {
                 this.overlay = true;
-                if (this.selectedOffice==null) {
+                if (this.selectedOffice == null) {
                     alert('Pilih Kantor terlebih dahulu');
                     this.overlay = false;
                     return;
@@ -650,7 +674,7 @@ export default {
                 formData.append("month", month);
                 formData.append("office_id", this.selectedOffice);
 
-                const response = await mainURL.post(`/user/filterDataReport`,formData, {
+                const response = await mainURL.post(`/user/filterDataReport`, formData, {
                     responseType: 'blob' // tambahkan ini untuk mengunduh file sebagai Blob
                 });
 
