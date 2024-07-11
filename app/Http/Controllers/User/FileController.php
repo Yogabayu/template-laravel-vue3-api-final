@@ -85,7 +85,7 @@ class FileController extends Controller
             $getPositionData = Position::find($position_id);
 
             // Initialize file query
-            $filesQuery = File::with('user', 'user.position.offices')
+            $filesQuery = File::with('user', 'user.position.offices', 'attachments')
                 ->orderBy('created_at', 'desc')
                 ->whereMonth('created_at', $month)
                 ->whereYear('created_at', $year);
@@ -1939,7 +1939,7 @@ class FileController extends Controller
                         break;
                     }
                 }
-                $files = File::where('user_id', Auth::user()->id)->with('user', 'user.position.offices')->orderBy('created_at', 'desc')->get();
+                $files = File::where('user_id', Auth::user()->id)->with('user', 'user.position.offices', 'attachments')->orderBy('created_at', 'desc')->get();
 
                 ActivityHelper::userActivity(Auth::user()->id, 'Mengakses halaman File Credit');
 
@@ -1979,7 +1979,7 @@ class FileController extends Controller
                 // Inisialisasi array untuk menampung semua file yang terkait
                 $files = [];
 
-                $fileAll = File::with('user', 'user.position.offices')->orderBy('created_at', 'desc')->get();
+                $fileAll = File::with('user', 'user.position.offices', 'attachments')->orderBy('created_at', 'desc')->get();
                 foreach ($fileAll as $eachFile) {
                     // Periksa posisi pengguna yang mengunggah file
                     $uploaderPositionId = DB::table('users')
@@ -2054,7 +2054,7 @@ class FileController extends Controller
                     }
                 }
                 $files = File::where('user_id', Auth::user()->id)
-                    ->with('user', 'user.position.offices')
+                    ->with('user', 'user.position.offices', 'attachments')
                     ->whereMonth('created_at', $month)
                     ->whereYear('created_at', $year)
                     ->orderBy('created_at', 'desc')
@@ -2098,7 +2098,7 @@ class FileController extends Controller
                 // Inisialisasi array untuk menampung semua file yang terkait
                 $files = [];
 
-                $fileAll = File::with('user', 'user.position.offices')
+                $fileAll = File::with('user', 'user.position.offices', 'attachments')
                     ->whereMonth('created_at', $month)
                     ->whereYear('created_at', $year)
                     ->orderBy('created_at', 'desc')
