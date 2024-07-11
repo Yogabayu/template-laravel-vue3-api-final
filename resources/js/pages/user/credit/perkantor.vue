@@ -75,7 +75,8 @@
 
                             <div class="table-container" @touchstart.stop @touchmove.stop>
                                 <EasyDataTable show-index :headers="headers" :items="searchableItems"
-                                    :search-value="searchValue" :search-field="searchField">
+                                    :search-value="searchValue" :search-field="searchField" border-cell
+                                    buttons-pagination>
                                     <template #empty-message>
                                         <p>Data Kosong</p>
                                     </template>
@@ -92,28 +93,27 @@
                                         <span>{{ item.user.name }}</span>
                                     </template>
                                     <template #item-slik="item">
-                                        <span>
-                                            <template v-if="hasSlikAttachment(item.attachments)">
-                                                <v-icon color="success">mdi-check-circle</v-icon>
+                                        <v-tooltip location="top" text="Kondisi SLIK Sudah Terupload"
+                                            v-if="hasSlikAttachment(item.attachments)">
+                                            <template v-slot:activator="{ props }">
+                                                <span v-bind="props">
+                                                    <v-icon color="success">mdi-check-circle</v-icon>
+                                                </span>
                                             </template>
-                                            <template v-else>
-                                                <v-icon color="error">mdi-close-circle</v-icon>
+                                        </v-tooltip>
+                                        <v-tooltip location="top" text="Kondisi SLIK Belum Terupload" v-else>
+                                            <template v-slot:activator="{ props }">
+                                                <span v-bind="props">
+                                                    <v-icon color="error">mdi-close-circle</v-icon>
+                                                </span>
                                             </template>
-                                        </span>
+                                        </v-tooltip>
                                     </template>
                                     <template #item-created_at="item">
                                         <span>{{ formatDate(item.created_at) }} WIB</span>
                                     </template>
                                     <template #item-operation="item">
                                         <div class="operation-wrapper">
-                                            <!-- <button>
-                    <VIcon size="20" icon="bx-file-find" color="blue" @click="toDetail(item)" />
-                  </button>
-                  &nbsp;
-                  <button v-if="userData && item.user_id == userData.id" @click="deleteFile(item)">
-                    <VIcon size="20" icon="bx-trash" color="red" />
-                  </button> -->
-
                                             <div class="d-flex justify-space-between">
                                                 <v-tooltip location="top" text="Detail Kredit">
                                                     <template v-slot:activator="{ props }">
