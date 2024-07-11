@@ -490,7 +490,7 @@ export default {
   methods: {
     hasSlikAttachment(attachments) {
       return attachments.some(attachment =>
-        attachment.name.includes('SLIK') && parseInt(attachment.phase) == 2
+        attachment.name.includes('SLIK') && parseInt(attachment.phase) == 2 && (attachment.path != 'null' || attachment.link != null)
       );
     },
     customSearch(items, search, searchField) {
