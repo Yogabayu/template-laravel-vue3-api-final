@@ -565,7 +565,12 @@ class FileController extends Controller
                 'link.required_without' => ':attribute harus diisi jika path kosong',
                 'file' => ':attribute harus berupa file yang diunggah',
             ]);
-            $cekAttach = Attachment::where('name', $request->name)->where('file_id', $request->file_id)->count();
+            $cekAttach = Attachment::where('file_id', $request->file_id)
+                ->where(function ($query) use ($request) {
+                    $query->where('name', $request->name)
+                        ->where('name', '!=', 'Lain-lain');
+                })
+                ->count();
 
             if ($cekAttach > 0) {
                 return ResponseHelper::errorRes('File sudah ada');
