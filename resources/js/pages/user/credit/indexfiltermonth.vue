@@ -364,6 +364,7 @@ export default {
         { text: "Plafon", value: "plafon", sortable: true },
         { text: "Status", value: "isApproved", sortable: true },
         { text: "AO/RO", value: "aoro", sortable: true },
+        { text: "Kantor", value: "office_names", sortable: true },
         { text: "Tanggal", value: "created_at", sortable: true },
         { text: "Operation", value: "operation", width: 100 },
       ],

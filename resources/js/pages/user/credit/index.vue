@@ -372,6 +372,7 @@ export default {
         { text: "Status", value: "isApproved", sortable: true },
         { text: "AO/RO", value: "aoro", sortable: true },
         { text: "Tanggal", value: "created_at", sortable: true },
+        { text: "Kantor", value: "office_names", sortable: true },
         { text: "Operation", value: "operation", width: 100 },
       ],
       phases: [
