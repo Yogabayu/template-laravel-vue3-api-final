@@ -44,7 +44,7 @@
             </v-row>
 
             <div class="table-container" @touchstart.stop @touchmove.stop>
-              <EasyDataTable show-index :headers="headers" :items="searchableItems" :search-value="searchValue" :search-field="searchField">
+              <EasyDataTable show-index :headers="headers" :items="searchableItems" :search-value="searchValue" :search-field="searchField" rows-per-page="500" border-cell buttons-pagination>
                 <template #empty-message>
                   <p>Data Kosong</p>
                 </template>
@@ -64,14 +64,36 @@
                   <span>{{ formatDate(item.created_at) }} WIB</span>
                 </template>
                 <template #item-slik="item">
-                  <span>
-                    <template v-if="hasSlikAttachment(item.attachments)">
-                      <v-icon color="success">mdi-check-circle</v-icon>
+                  <v-tooltip location="top" text="Kondisi SLIK Sudah Terupload" v-if="hasSlikAttachment(item.attachments)">
+                    <template v-slot:activator="{ props }">
+                      <span v-bind="props">
+                        <v-icon color="success">mdi-check-circle</v-icon>
+                      </span>
                     </template>
-                    <template v-else>
-                      <v-icon color="error">mdi-close-circle</v-icon>
+                  </v-tooltip>
+                  <v-tooltip location="top" text="Kondisi SLIK Belum Terupload" v-else>
+                    <template v-slot:activator="{ props }">
+                      <span v-bind="props">
+                        <v-icon color="error">mdi-close-circle</v-icon>
+                      </span>
                     </template>
-                  </span>
+                  </v-tooltip>
+                </template>
+                <template #item-analisaAO="item">
+                  <v-tooltip location="top" text="Analisa AO Sudah Terupload" v-if="hasAnalisaAoAttachment(item.attachments)">
+                    <template v-slot:activator="{ props }">
+                      <span v-bind="props">
+                        <v-icon color="success">mdi-check-circle</v-icon>
+                      </span>
+                    </template>
+                  </v-tooltip>
+                  <v-tooltip location="top" text="Analisa AO Belum Terupload" v-else>
+                    <template v-slot:activator="{ props }">
+                      <span v-bind="props">
+                        <v-icon color="error">mdi-close-circle</v-icon>
+                      </span>
+                    </template>
+                  </v-tooltip>
                 </template>
                 <template #item-operation="item">
                   <div class="operation-wrapper">
@@ -361,7 +383,8 @@ export default {
         { text: "AO/RO", value: "aoro", sortable: true },
         { text: "Kantor", value: "office_names", sortable: true },
         { text: "Tanggal", value: "created_at", sortable: true },
-        { text: "SLIK", value: "slik", sortable: true },
+        { text: "SLIK", value: "slik", sortable: false },
+        { text: "Analisa AO/RO", value: "analisaAO", sortable: false },
         { text: "Operation", value: "operation", width: 100 },
       ],
       searchField: [
@@ -441,7 +464,12 @@ export default {
   methods: {
     hasSlikAttachment(attachments) {      
       return attachments.some(attachment =>
-        attachment.name.includes('SLIK') && parseInt(attachment.phase) == 2
+        attachment.name.includes('SLIK') && parseInt(attachment.phase) == 2 && (attachment.path != 'null' || attachment.link != null)
+      );
+    },
+    hasAnalisaAoAttachment(attachments) {
+      return attachments.some(attachment =>
+        attachment.name.includes('Analisa Awal Kredit AO') && parseInt(attachment.phase) == 2 && (attachment.path != 'null' || attachment.link != null)
       );
     },
     goBack() {
