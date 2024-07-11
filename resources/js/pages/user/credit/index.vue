@@ -24,6 +24,7 @@
       <v-tab value="1">Approved</v-tab>
       <v-tab value="2">Pending</v-tab>
       <v-tab value="3">Rejected</v-tab>
+      <v-tab value="4">SLIK</v-tab>
     </v-tabs>
 
     <v-card-text>
@@ -60,6 +61,16 @@
                 </template>
                 <template #item-created_at="item">
                   <span>{{ formatDate(item.created_at) }} WIB</span>
+                </template>
+                <template #item-slik="item">
+                  <span>
+                    <template v-if="hasSlikAttachment(item.attachments)">
+                      <v-icon color="success">mdi-check-circle</v-icon>
+                    </template>
+                    <template v-else>
+                      <v-icon color="error">mdi-close-circle</v-icon>
+                    </template>
+                  </span>
                 </template>
                 <template #item-operation="item">
                   <div class="operation-wrapper">
@@ -371,8 +382,9 @@ export default {
         { text: "Plafon", value: "plafon", sortable: true },
         { text: "Status", value: "isApproved", sortable: true },
         { text: "AO/RO", value: "aoro", sortable: true },
-        { text: "Tanggal", value: "created_at", sortable: true },
         { text: "Kantor", value: "office_names", sortable: true },
+        { text: "Tanggal", value: "created_at", sortable: true },
+        { text: "SLIK", value: "slik", sortable: true },
         { text: "Operation", value: "operation", width: 100 },
       ],
       phases: [
@@ -461,15 +473,20 @@ export default {
         this.filterDataStatus(2);
       } else if (newVal == 3) {
         this.filterDataStatus(3);
-        // } else if (newVal == 4) {
-        //   this.filterDataStatus(4);
-        // } else {
-      } else {
+      } else if (newVal == 4) {
+        this.filterDataStatus(4);
+      }
+      else {
         this.items = [...this.originalItems];
       }
     },
   },
   methods: {
+    hasSlikAttachment(attachments) {
+      return attachments.some(attachment =>
+        attachment.name.includes('SLIK') && parseInt(attachment.phase) == 2
+      );
+    },
     customSearch(items, search, searchField) {
       if (!search) return items;
 
@@ -659,9 +676,18 @@ export default {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     },
     filterDataStatus(phase: any) {
-      this.items = this.originalItems.filter(
-        (item: { isApproved: any }) => item.isApproved == phase
-      );
+      if (phase != 4) {
+        this.items = this.originalItems.filter(
+          (item: { isApproved: any }) => item.isApproved == phase
+        );
+      } else {
+        this.items = this.originalItems.filter(
+          (item: { isApproved: any, attachments: any[] }) =>
+            item.attachments.some(attachment =>
+              attachment.name.includes('SLIK') && parseInt(attachment.phase) == 2
+            )
+        );
+      }
     },
     getUserData() {
       const savedUserData = localStorage.getItem("userData");
