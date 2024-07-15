@@ -71,7 +71,7 @@ class FileController extends Controller
             $request->validate([
                 'month' => 'between:1,12',
                 'year' => 'digits:4',
-                'office_id' => 'exists:offices,id',
+                // 'office_id' => 'exists:offices,id',
             ]);
 
             $user = Auth::user();
@@ -90,16 +90,17 @@ class FileController extends Controller
                 ->whereMonth('created_at', $month)
                 ->whereYear('created_at', $year);
 
-            // Apply user_id filter if position is 'AO / RO'
-            if ($getPositionData->name == 'AO / RO') {
-                $filesQuery->where('user_id', $user_id);
-            } else {
-                // Apply office_id filter for other positions
-                $filesQuery->whereHas('user.position.positionToOffices', function ($query) use ($office_id) {
-                    $query->where('office_id', $office_id);
-                });
+            if ($office_id != 0) {
+                // Apply user_id filter if position is 'AO / RO'
+                if ($getPositionData->name == 'AO / RO') {
+                    $filesQuery->where('user_id', $user_id);
+                } else {
+                    // Apply office_id filter for other positions
+                    $filesQuery->whereHas('user.position.positionToOffices', function ($query) use ($office_id) {
+                        $query->where('office_id', $office_id);
+                    });
+                }
             }
-
             // Execute query and get files
             $files = $filesQuery->get();
 
@@ -115,17 +116,19 @@ class FileController extends Controller
     {
         try {
             $request->validate([
-                'month' => 'between:1,12',
-                'year' => 'digits:4',
-                'office_id' => 'exists:offices,id',
+                'month' => 'required | between:1,12',
+                'year' => 'required | digits:4',
+                'office_id' => 'required',
+                'type' => 'required',
             ]);
             // Retrieve authenticated user's information
-            $user = Auth::user();
-            $position_id = $user->position_id;
-            $user_id = $user->id;
-            $month = $request->input('month');
-            $year = $request->input('year');
-            $office_id = $request->input('office_id');
+            $user           = Auth::user();
+            $position_id    = $user->position_id;
+            $user_id        = $user->id;
+            $month          = $request->input('month');
+            $year           = $request->input('year');
+            $office_id      = $request->input('office_id');
+            $type           = $request->input('type');
 
             // Get position data of the user
             $getPositionData = Position::find($position_id);
@@ -141,6 +144,7 @@ class FileController extends Controller
                     'phase_times.endTime',
                     'users.name as nameAO',
                     'files.name as fileName',
+                    'files.isApproved as isApproved',
                     'files.nik_pemohon as nikPemohon',
                     'files.nik_pasangan as nikPasangan',
                     'files.nik_jaminan as nikJaminan',
@@ -155,18 +159,37 @@ class FileController extends Controller
                 ->orderBy('phase_times.file_id')
                 ->orderBy('phase_times.phase');
 
-            // Apply user_id filter if position is 'AO / RO'
-            if ($getPositionData->name == 'AO / RO') {
-                $dataEksportQuery->where('users.id', $user_id);
-            } else {
-                // Apply office_id filter for other positions
-                $dataEksportQuery->whereExists(function ($query) use ($office_id) {
-                    $query->select(DB::raw(1))
-                        ->from('positiontooffices')
-                        ->whereColumn('positiontooffices.position_id', 'users.position_id')
-                        ->where('positiontooffices.office_id', $office_id);
-                });
+            if ($type != 0) {
+                if ($type == 1) {
+                    $dataEksportQuery->where('files.isApproved', 1);
+                } else if ($type == 2) {
+                    $dataEksportQuery->where('files.isApproved', 2);
+                } else if ($type == 3) {
+                    $dataEksportQuery->where('files.isApproved', 3);
+                } else if ($type == 4) {
+                    $dataEksportQuery->where('files.phase', 1);
+                } else if ($type == 5) {
+                    $dataEksportQuery->where('files.phase', 2)->orWhere('files.phase', 3);
+                } else if ($type == 6) {
+                    $dataEksportQuery->where('files.phase', 4);
+                }
             }
+
+            if ($office_id != 0) {
+                // Apply user_id filter if position is 'AO / RO'
+                if ($getPositionData->name == 'AO / RO') {
+                    $dataEksportQuery->where('users.id', $user_id);
+                } else {
+                    // Apply office_id filter for other positions
+                    $dataEksportQuery->whereExists(function ($query) use ($office_id) {
+                        $query->select(DB::raw(1))
+                            ->from('positiontooffices')
+                            ->whereColumn('positiontooffices.position_id', 'users.position_id')
+                            ->where('positiontooffices.office_id', $office_id);
+                    });
+                }
+            }
+
 
             // Execute query and get data export
             $dataEksport = $dataEksportQuery->get();
@@ -180,6 +203,11 @@ class FileController extends Controller
                 $fileName = $phases->first()->fileName;
                 $row['namaAO'] = $phases->first()->nameAO;
                 $row['nameFile'] = $fileName;
+                $row['status'] =  match ($phases->first()->isApproved) {
+                    1 => 'Approved',
+                    2 => 'Pending',
+                    default => 'Rejected',
+                };
                 $row['plafon'] = $phases->first()->plafon;
                 $row['alamat'] = $phases->first()->address;
                 $row['noHp'] = $phases->first()->no_hp;

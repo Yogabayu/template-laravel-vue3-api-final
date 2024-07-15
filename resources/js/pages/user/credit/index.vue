@@ -10,14 +10,16 @@
 
   <v-card>
     <VCardTitle class="text-2xl font-weight-bold d-flex justify-left">
-      List Kredit <v-spacer></v-spacer><span class="text-sm mt-2">(Tampilan bulanan)</span>
+      List Kredit 
+      <v-spacer></v-spacer>
+      <!-- <span class="text-sm mt-2">(Tampilan bulanan)</span>
       <v-tooltip location="top" text="Lihat Per-Bulan">
         <template v-slot:activator="{ props }">
           <button v-bind="props" @click="toPage">
             <v-icon icon="mdi-view-comfy" class="ml-2" @click="toPage"></v-icon>
           </button>
         </template>
-      </v-tooltip>
+      </v-tooltip> -->
     </VCardTitle>
     <v-tabs v-model="tab" class="v-tabs-pill" bg-color="secondary">
       <v-tab value="0">Semua</v-tab>
@@ -46,7 +48,7 @@
 
             <div class="table-container" @touchstart.stop @touchmove.stop>
               <EasyDataTable show-index :headers="headers" :items="searchableItems" :search-value="searchValue"
-                :search-field="searchField" border-cell buttons-pagination rows-per-page=500>
+                :search-field="searchField" border-cell buttons-pagination :rows-per-page=500>
                 <template #empty-message>
                   <p>Data Kosong</p>
                 </template>
