@@ -2461,13 +2461,15 @@ class FileController extends Controller
     {
         try {
             $request->validate([
-                'link' => 'nullable|url|required_without:path',
-                'path' => 'nullable|file|mimes:jpeg,jpg,png,pdf,doc,docx,xls,xlsx|required_without:link',
+                'link' => 'nullable|url',
+                'path' => 'nullable|file|mimes:jpeg,jpg,png,pdf,doc,docx,xls,xlsx',
+                // 'link' => 'nullable|url|required_without:path',
+                // 'path' => 'nullable|file|mimes:jpeg,jpg,png,pdf,doc,docx,xls,xlsx|required_without:link',
             ], [
                 'mimes' => ':attribute harus berupa file dengan tipe: jpeg, jpg, png, pdf, doc, docx, xls, atau xlsx',
                 'url' => ':attribute harus berupa URL yang valid atau tambahkan https://',
-                'path.required_without' => ':attribute harus diisi jika link kosong',
-                'link.required_without' => ':attribute harus diisi jika path kosong',
+                // 'path.required_without' => ':attribute harus diisi jika link kosong',
+                // 'link.required_without' => ':attribute harus diisi jika path kosong',
                 'file' => ':attribute harus berupa file yang diunggah',
             ]);
 
