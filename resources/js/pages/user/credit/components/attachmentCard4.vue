@@ -250,8 +250,8 @@ export default {
             if (type == 1) {
                 this.formKomite.id = item.id;
                 this.formKomite.name = item.name;
-                this.formKomite.link = item.link;
-                this.formKomite.path = item.path;
+                // this.formKomite.link = item.link;
+                // this.formKomite.path = item.path;
                 this.formKomite.isSecret = parseInt(item.isSecret);
                 this.formKomite.isApprove = parseInt(item.isApprove);
 
