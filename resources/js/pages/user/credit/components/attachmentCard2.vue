@@ -671,16 +671,15 @@ export default {
                 (att) => att.name.includes("SLIK") && att.isApprove == 1 && (att.path != 'null' || att.link != null)
             );
             if (containsApprovedSLIK.length > 0) {
-                let analytic = this.data.find((att) => att.name == "Analisa Awal Kredit AO");
-                if (analytic) {
+                let analytic = this.data.find((att) => att.name === "Analisa Awal Kredit AO");
+                if (analytic!=null) {
                     this.formAnalytic.id = analytic.id;
                     this.formAnalytic.isApprove = parseInt(analytic.isApprove);
                     this.formAnalytic.isSecret = parseInt(analytic.isSecret);
                     this.formAnalytic.path = analytic.path;
                     this.formAnalytic.link = analytic.link;
+                    return true
                 }
-
-                return true
             }
             return false;
         },
@@ -694,13 +693,13 @@ export default {
             );
             if (containsUnapprovedSLIK.length > 0 || cekFileBanding.length > 0) {
                 let appeal = this.data.find((att) => att.name === "File Banding");
-                if (appeal) {
+                if (appeal!=null) {
                     this.formAppeal.id = appeal.id;
                     this.formAppeal.isApprove = parseInt(appeal.isApprove);
                     this.formAppeal.isSecret = parseInt(appeal.isSecret);
                     this.formAppeal.path = appeal.path;
+                    return true;
                 }
-                return true;
             }
 
             return false;
