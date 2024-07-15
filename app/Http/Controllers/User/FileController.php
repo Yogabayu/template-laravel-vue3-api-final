@@ -633,14 +633,16 @@ class FileController extends Controller
     {
         try {
             $request->validate([
-                'link' => 'nullable|url|required_without:path',
-                'path' => 'nullable|file|mimes:jpeg,jpg,png,pdf,doc,docx,xls,xlsx|required_without:link',
+                'link' => 'nullable|url',
+                'path' => 'nullable|file|mimes:jpeg,jpg,png,pdf,doc,docx,xls,xlsx',
+                // 'link' => 'nullable|url|required_without:path',
+                // 'path' => 'nullable|file|mimes:jpeg,jpg,png,pdf,doc,docx,xls,xlsx|required_without:link',
             ], [
                 'link.url' => ':attribute harus berupa URL yang valid atau tambahkan https://',
                 'path.file' => ':attribute harus berupa file',
                 'path.mimes' => ':attribute harus berupa file dengan tipe: jpeg, jpg, png, pdf, doc, docx, xls, atau xlsx',
-                'path.required_without' => 'file harus diisi jika tidak memasukkan link ',
-                'link.required_without' => 'link harus diisi jika tidak memasukkan file ',
+                // 'path.required_without' => 'file harus diisi jika tidak memasukkan link ',
+                // 'link.required_without' => 'link harus diisi jika tidak memasukkan file ',
             ]);
 
             $attachment = Attachment::findOrFail($id);
