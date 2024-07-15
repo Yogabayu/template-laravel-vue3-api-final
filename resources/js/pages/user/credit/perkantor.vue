@@ -52,7 +52,10 @@
                 <v-tab value="1">Approved</v-tab>
                 <v-tab value="2">Pending</v-tab>
                 <v-tab value="3">Rejected</v-tab>
-                <v-tab value="4">SLIK</v-tab>
+                |
+                <v-tab value="4">Pooling</v-tab>
+                <v-tab value="5">SLIK</v-tab>
+                <v-tab value="6">Komite</v-tab>
             </v-tabs>
 
             <v-card-text>
@@ -75,7 +78,7 @@
 
                             <div class="table-container" @touchstart.stop @touchmove.stop>
                                 <EasyDataTable show-index :headers="headers" :items="searchableItems"
-                                    :search-value="searchValue" :search-field="searchField" rows-per-page="500"
+                                    :search-value="searchValue" :search-field="searchField" :rows-per-page="500"
                                     border-cell buttons-pagination>
                                     <template #empty-message>
                                         <p>Data Kosong</p>
@@ -461,6 +464,8 @@ export default {
                 { value: 2 },
                 { value: 3 },
                 { value: 4 },
+                { value: 5 },
+                { value: 6 },
             ],
             orderList: [
                 { value: 'AO SENDIRI', title: 'AO SENDIRI' },
@@ -541,7 +546,11 @@ export default {
             } else if (newVal == 3) {
                 this.filterDataStatus(3);
             } else if (newVal == 4) {
-                this.filterDataStatus(4);
+                this.filterDataStatus(4); //pooling
+            } else if (newVal == 5) {
+                this.filterDataStatus(5); // slik
+            } else if (newVal == 6) {
+                this.filterDataStatus(6); // komite
             }
             else {
                 this.items = [...this.originalItems];
@@ -577,6 +586,7 @@ export default {
                     this.items = response.data.data;
                     this.originalItems = [...this.items];
                     this.overlay = false;
+                    this.tab = 0;
                 } else {
                     this.overlay = false;
                     console.log(response.data.data.message);
@@ -705,7 +715,7 @@ export default {
                 event.target.value = null;
             }
         },
-        async getRecaptData(monthYear: any) {
+        async getRecaptData() {
             try {
                 this.overlay = true;
                 if (this.selectedOffice == null) {
@@ -718,6 +728,7 @@ export default {
                 formData.append("year", year);
                 formData.append("month", month);
                 formData.append("office_id", this.selectedOffice);
+                formData.append("type", this.tab);
 
                 const response = await mainURL.post(`/user/filterDataReport`, formData, {
                     responseType: 'blob' // tambahkan ini untuk mengunduh file sebagai Blob
@@ -807,18 +818,24 @@ export default {
             return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         },
         filterDataStatus(phase: any) {
-            if (phase != 4) {
-                this.items = this.originalItems.filter(
-                    (item: { isApproved: any }) => item.isApproved == phase
-                );
-            } else {
-                this.items = this.originalItems.filter(
-                    (item: { isApproved: any, attachments: any[] }) =>
-                        item.attachments.some(attachment =>
-                            attachment.name.includes('SLIK') && parseInt(attachment.phase) == 2
-                        )
-                );
-            }
+            const filters = {
+                1: (item: any) => item.isApproved == 1,
+                2: (item: any) => item.isApproved == 2,
+                3: (item: any) => item.isApproved == 3,
+                4: (item: any) => parseInt(item.phase) == 1,
+                5: (item: any) => item.attachments.some(attachment =>
+                    attachment.name.includes('SLIK') &&
+                    parseInt(attachment.phase) == 2 &&
+                    (attachment.path != 'null' || attachment.link != null)
+                ),
+                6: (item: any) => {
+                    return parseInt(item.phase) == 4;
+                }
+            };
+
+            this.items = phase in filters
+                ? this.originalItems.filter(filters[phase as keyof typeof filters])
+                : [...this.originalItems];
         },
         getUserData() {
             const savedUserData = localStorage.getItem("userData");
@@ -830,6 +847,13 @@ export default {
                         title: item.name,
                     })
                 );
+                const aoRoVariation = 'ao/ro';
+                const positionName = this.userData.position.name.toLowerCase().replace(/\s/g, '');
+                if (positionName !== aoRoVariation) {
+                    const newValue = { value: 0, title: "Semua Kantor" };
+                    this.offices.unshift(newValue);
+                }
+
             }
         },
         formatInputPlafon(event: { target: { value: any } }) {
