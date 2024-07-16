@@ -769,6 +769,14 @@ export default {
                 this.$showToast("error", "Sorry", error.response.data.message);
             }
         },
+        /**
+         * Opens a modal based on the provided type.
+         *
+         * @param {number} type - The type of modal to open.
+         *                       1: Opens the insert modal.
+         *                       2: Retrieves recapt data for the selected month.
+         * @param {any} [item=null] - The item to pass to the modal (optional).
+         */
         async openModal(type: number, item = null) {
             if (type === 1) {
                 this.insert = true;
@@ -776,6 +784,13 @@ export default {
                 this.getRecaptData(this.selectedMonth);
             }
         },
+        /**
+         * Closes the modal based on the provided type.
+         *
+         * @param {number} type - The type of modal to close.
+         *                       1: Resets the form and hides the insert modal.
+         *                       2: Resets the form and hides the edit modal.
+         */
         closeModal(type: number) {
             if (type === 1) {
                 this.resetForm();
@@ -807,6 +822,12 @@ export default {
                 file10: null, // foto kunjungan
             };
         },
+        /**
+         * A function to format the input value by removing non-digit characters and adding commas as thousand separators.
+         *
+         * @param {Object} event - The event object containing the target element with the value to be formatted.
+         * @return {void} This function does not return a value.
+         */
         formatInputIn(event: { target: { value: any } }) {
             let value = event.target.value;
             value = value.replace(/\D/g, ""); // Remove non-digit characters

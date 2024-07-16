@@ -423,7 +423,7 @@ class FileController extends Controller
     public function changeStatus(Request $request)
     {
         try {
-            $request->validate([
+            $validated = $request->validate([
                 'id' => 'required',
                 'status' => 'required',
                 'reasonRejected' => 'required_if:status,3',
@@ -433,32 +433,50 @@ class FileController extends Controller
                 'reasonRejected.required_if' => 'Alasan penolakan harus diisi ketika status adalah ditolak',
             ]);
 
-            $file = File::findOrFail($request->id);
+            $file = File::findOrFail($validated['id']);
+            $oldStatus = $file->isApproved;
+            $file->isApproved = $validated['status'];
 
-            // Check if the previous status was 3 and the new status is not 3
-            if ($file->isApproved == 3 && $request->status != 3) {
-                $file->reasonRejected = null;
+            switch ($validated['status']) {
+                case 1: // Approved
+                    $file->creditScoring = $file->phase;
+                    $file->phase = 6;
+                    $message = 'Disetujui';
+                    break;
+                case 2: // Pending
+                    if ($oldStatus != 2) {
+                        $file->phase = $file->creditScoring ?? $file->phase;
+                        $file->creditScoring = null;
+                    }
+                    $message = 'Pending (kembali ke phase terakhir sebelumnya)';
+                    break;
+                case 3: // Rejected
+                    $file->creditScoring = $file->phase;
+                    $file->reasonRejected = $validated['reasonRejected'];
+                    $message = 'Ditolak';
+                    break;
+                default:
+                    $message = 'Status diubah';
             }
 
-            $file->isApproved = $request->status;
-
-            if ($request->status == 3) {
-                $file->reasonRejected = $request->reasonRejected;
+            // Clear reasonRejected if status changed from 3 to another
+            if ($oldStatus == 3 && $validated['status'] != 3) {
+                $file->reasonRejected = null;
             }
 
             $file->save();
 
-            ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Mengganti status kredit');
-            ActivityHelper::userActivity(Auth::user()->id, 'Mengganti status kredit ' . $file->name);
-            TelegramHelper::changeStatus($file->id, $request->status, $file->user_id);
+            ActivityHelper::fileActivity($file->id, Auth::id(), 'Mengganti status kredit');
+            ActivityHelper::userActivity(Auth::id(), "Mengganti status kredit {$file->name}");
+            TelegramHelper::changeStatus($file->id, $validated['status'], $file->user_id);
 
-            return ResponseHelper::successRes('File updated successfully', $file);
+            return ResponseHelper::successRes("Update berhasil dan status diubah menjadi $message", $file);
         } catch (ModelNotFoundException $e) {
             return ResponseHelper::errorRes('File not found');
         } catch (ValidationException $e) {
             return ResponseHelper::errorRes($e->errors());
         } catch (\Exception $e) {
-            return ResponseHelper::errorRes('An error occurred while updating the file | ' . $e->getMessage());
+            return ResponseHelper::errorRes('An error occurred while updating the file: ' . $e->getMessage());
         }
     }
 

@@ -33,7 +33,7 @@
             <!-- khusus approved -->
             <v-divider></v-divider>
 
-            <v-stepper-item title="Approved" value="6" :complete="stepperModel > 6"></v-stepper-item>
+            <v-stepper-item title="Pencairan" value="6" :complete="stepperModel > 6"></v-stepper-item>
           </v-stepper-header>
 
           <v-stepper-window>
