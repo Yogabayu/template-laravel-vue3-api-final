@@ -440,7 +440,7 @@ class FileController extends Controller
             switch ($validated['status']) {
                 case 1: // Approved
                     $file->creditScoring = $file->phase;
-                    $file->phase = 6;
+                    $file->phase = 5;
                     $message = 'Disetujui';
                     break;
                 case 2: // Pending
