@@ -469,9 +469,10 @@
                   { value: 1, title: 'Approved' },
                   { value: 2, title: 'Pending' },
                   { value: 3, title: 'Rejected' },
+                  { value: 4, title: 'Cancel by Debitur' },
                 ]" v-model="changeStatus.status"></v-select>
               </VCol>
-              <VCol md="12" cols="12" v-if="changeStatus.status == 3">
+              <VCol md="12" cols="12" v-if="changeStatus.status == 3 || changeStatus.status == 4">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">Alasan: </span>
                 <v-textarea bg-color="grey-lighten-2" color="cyan" v-model="changeStatus.reasonRejected"
                   rows="2"></v-textarea>
@@ -718,7 +719,7 @@ export default {
         formData.append("id", this.fileId);
         formData.append("status", this.changeStatus.status);
 
-        if (this.changeStatus.status == '3') {
+        if (this.changeStatus.status == '3' || this.changeStatus.status == '4') {
           if (this.changeStatus.reasonRejected == null) {
             this.overlay = false;
             this.closeModal(9);

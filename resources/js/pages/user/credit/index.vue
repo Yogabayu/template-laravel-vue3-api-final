@@ -18,6 +18,7 @@
       <v-tab value="1">Approved</v-tab>
       <v-tab value="2">Pending</v-tab>
       <v-tab value="3">Rejected</v-tab>
+      <v-tab value="7">Cancel by User</v-tab>
       |
       <v-tab value="4">Pooling</v-tab>
       <v-tab value="5">SLIK</v-tab>
@@ -52,6 +53,7 @@
                   <span v-if="parseInt(item.isApproved) == 1"> Approved</span>
                   <span v-if="parseInt(item.isApproved) == 2"> Pending</span>
                   <span v-if="parseInt(item.isApproved) == 3"> Rejected</span>
+                  <span v-if="parseInt(item.isApproved) == 4"> Cancel by User</span>
                 </template>
                 <template #item-aoro="item">
                   <span>{{ item.user.name }}</span>
@@ -444,6 +446,7 @@ export default {
         { value: 4 },
         { value: 5 },
         { value: 6 },
+        { value: 7 },
       ],
       searchField: [
         "name",
@@ -530,6 +533,8 @@ export default {
         this.filterDataStatus(5); // slik
       } else if (newVal == 6) {
         this.filterDataStatus(6); // komite
+      } else if (newVal == 7) {
+        this.filterDataStatus(7); // cancel
       }
       else {
         this.items = [...this.originalItems];
@@ -550,7 +555,8 @@ export default {
         ),
         6: (item: any) => {
           return parseInt(item.phase) == 4;
-        }
+        },
+        7: (item: any) => item.isApproved == 4,
       };
 
       this.items = phase in filters

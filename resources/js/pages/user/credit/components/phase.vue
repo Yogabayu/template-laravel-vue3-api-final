@@ -521,6 +521,7 @@ export default {
         1: "success",
         2: "warning",
         3: "error",
+        4: "error",
       };
       return colors[status] || "default";
     },
@@ -529,6 +530,7 @@ export default {
         1: "Approved",
         2: "Pending",
         3: "Rejected",
+        4: "Cancel by debitur",
       };
       return texts[status] || "Unknown";
     },

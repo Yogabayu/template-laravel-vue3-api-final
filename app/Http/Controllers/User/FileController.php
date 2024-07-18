@@ -226,6 +226,8 @@ class FileController extends Controller
                     $dataEksportQuery->where('files.isApproved', 2);
                 } else if ($type == 3) {
                     $dataEksportQuery->where('files.isApproved', 3);
+                } else if ($type == 7) {
+                    $dataEksportQuery->where('files.isApproved', 4);
                 } else if ($type == 4) {
                     $dataEksportQuery->where('files.phase', 1);
                 } else if ($type == 5) {
@@ -263,12 +265,13 @@ class FileController extends Controller
                 $fileName = $phases->first()->fileName;
                 $row['namaAO'] = $phases->first()->nameAO;
                 $row['nameFile'] = $fileName;
+                $row['plafon'] = $phases->first()->plafon;
                 $row['status'] =  match ($phases->first()->isApproved) {
                     1 => 'Approved',
                     2 => 'Pending',
+                    4 => 'Cancel by User',
                     default => 'Rejected',
                 };
-                $row['plafon'] = $phases->first()->plafon;
                 $row['alamat'] = $phases->first()->address;
                 $row['noHp'] = $phases->first()->no_hp;
                 $row['order_source'] = $phases->first()->sumberOrder;
@@ -352,6 +355,12 @@ class FileController extends Controller
                     $row['namaAO'] = $phases->first()->nameAO;
                     $row['nameFile'] = $fileName;
                     $row['plafon'] = $phases->first()->plafon;
+                    $row['status'] =  match ($phases->first()->isApproved) {
+                        1 => 'Approved',
+                        2 => 'Pending',
+                        4 => 'Cancel by User',
+                        default => 'Rejected',
+                    };
                     $row['alamat'] = $phases->first()->address;
                     $row['noHp'] = $phases->first()->no_hp;
                     $row['order_source'] = $phases->first()->sumberOrder;
@@ -447,6 +456,12 @@ class FileController extends Controller
                     $row['namaAO'] = $phases->first()->nameAO;
                     $row['nameFile'] = $fileName;
                     $row['plafon'] = $phases->first()->plafon;
+                    $row['status'] =  match ($phases->first()->isApproved) {
+                        1 => 'Approved',
+                        2 => 'Pending',
+                        4 => 'Cancel by User',
+                        default => 'Rejected',
+                    };
                     $row['alamat'] = $phases->first()->address;
                     $row['noHp'] = $phases->first()->no_hp;
                     $row['order_source'] = $phases->first()->sumberOrder;
@@ -486,7 +501,7 @@ class FileController extends Controller
             $validated = $request->validate([
                 'id' => 'required',
                 'status' => 'required',
-                'reasonRejected' => 'required_if:status,3',
+                'reasonRejected' => 'required_if:status,3,4',
             ], [
                 'id.required' => 'ID harus diisi',
                 'status.required' => 'Status harus diisi',
@@ -515,12 +530,17 @@ class FileController extends Controller
                     $file->reasonRejected = $validated['reasonRejected'];
                     $message = 'Ditolak';
                     break;
+                case 4: // cancel
+                    $file->creditScoring = $file->phase;
+                    $file->reasonRejected = $validated['reasonRejected'];
+                    $message = 'Cancel by User';
+                    break;
                 default:
                     $message = 'Status diubah';
             }
 
-            // Clear reasonRejected if status changed from 3 to another
-            if ($oldStatus == 3 && $validated['status'] != 3) {
+            // Clear reasonRejected if status changed from 3/4 to 1/2
+            if (($oldStatus == 3 && $validated['status'] != 3) || ($oldStatus == 4 && $validated['status'] != 4)) {
                 $file->reasonRejected = null;
             }
 

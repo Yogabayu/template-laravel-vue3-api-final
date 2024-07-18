@@ -22,7 +22,8 @@
       <v-tab value="0">Semua</v-tab>
       <v-tab value="1">Approved</v-tab>
       <v-tab value="2">Pending</v-tab>
-      <v-tab value="3">Rejected</v-tab>
+      <v-tab value="3">Rejected</v-tab>      
+      <v-tab value="7">Cancel by User</v-tab>
       |
       <v-tab value="4">Pooling</v-tab>
       <v-tab value="5">SLIK</v-tab>
@@ -56,9 +57,10 @@
                 </template>
                 <template #item-plafon="item">Rp. {{ formatInput(item.plafon) }},-</template>
                 <template #item-isApproved="item">
-                  {{
-                    parseInt(item.isApproved) == 1 ? "Approved" : parseInt(item.isApproved) == 2 ? "Pending" : "Rejected"
-                  }}
+                  <span v-if="parseInt(item.isApproved) == 1"> Approved</span>
+                  <span v-if="parseInt(item.isApproved) == 2"> Pending</span>
+                  <span v-if="parseInt(item.isApproved) == 3"> Rejected</span>
+                  <span v-if="parseInt(item.isApproved) == 4"> Cancel by User</span>
                 </template>
                 <template #item-aoro="item">
                   <span>{{ item.user.name }}</span>
@@ -416,6 +418,7 @@ export default {
         { value: 4 },
         { value: 5 },
         { value: 6 },
+        { value: 7 },
       ],
       searchField: [
         "name",
@@ -500,6 +503,8 @@ export default {
         this.filterDataStatus(5); // slik
       } else if (newVal == 6) {
         this.filterDataStatus(6); // komite
+      }else if (newVal == 7) {
+        this.filterDataStatus(7); // cancel
       }
       else {
         this.items = [...this.originalItems];
@@ -512,6 +517,7 @@ export default {
         1: (item: any) => item.isApproved == 1,
         2: (item: any) => item.isApproved == 2,
         3: (item: any) => item.isApproved == 3,
+        7: (item: any) => item.isApproved == 4,
         4: (item: any) => parseInt(item.phase) == 1,
         5: (item: any) => item.attachments.some(attachment =>
           attachment.name.includes('SLIK') &&

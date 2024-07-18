@@ -111,36 +111,59 @@ class FileController extends Controller
     public function changeStatus(Request $request)
     {
         try {
-            $request->validate([
+            $$validated = $request->validate([
                 'id' => 'required',
                 'status' => 'required',
-                'reasonRejected' => 'required_if:status,3',
+                'reasonRejected' => 'required_if:status,3,4',
             ], [
                 'id.required' => 'ID harus diisi',
                 'status.required' => 'Status harus diisi',
                 'reasonRejected.required_if' => 'Alasan penolakan harus diisi ketika status adalah ditolak',
             ]);
 
-            $file = File::findOrFail($request->id);
+            $file = File::findOrFail($validated['id']);
+            $oldStatus = $file->isApproved;
+            $file->isApproved = $validated['status'];
 
-            // Check if the previous status was 3 and the new status is not 3
-            if ($file->isApproved == 3 && $request->status != 3) {
-                $file->reasonRejected = null;
+            switch ($validated['status']) {
+                case 1: // Approved
+                    $file->creditScoring = $file->phase;
+                    $file->phase = 5;
+                    $message = 'Disetujui';
+                    break;
+                case 2: // Pending
+                    if ($oldStatus != 2) {
+                        $file->phase = $file->creditScoring ?? $file->phase;
+                        $file->creditScoring = null;
+                    }
+                    $message = 'Pending (kembali ke phase terakhir sebelumnya)';
+                    break;
+                case 3: // Rejected
+                    $file->creditScoring = $file->phase;
+                    $file->reasonRejected = $validated['reasonRejected'];
+                    $message = 'Ditolak';
+                    break;
+                case 4: // cancel
+                    $file->creditScoring = $file->phase;
+                    $file->reasonRejected = $validated['reasonRejected'];
+                    $message = 'Cancel by User';
+                    break;
+                default:
+                    $message = 'Status diubah';
             }
 
-            $file->isApproved = $request->status;
-
-            if ($request->status == 3) {
-                $file->reasonRejected = $request->reasonRejected;
+            // Clear reasonRejected if status changed from 3/4 to 1/2
+            if (($oldStatus == 3 && $validated['status'] != 3) || ($oldStatus == 4 && $validated['status'] != 4)) {
+                $file->reasonRejected = null;
             }
 
             $file->save();
 
-            ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Mengganti status kredit');
-            ActivityHelper::userActivity(Auth::user()->id, 'Mengganti status kredit ' . $file->name);
-            TelegramHelper::changeStatus($file->id, $request->status, $file->user_id);
+            ActivityHelper::fileActivity($file->id, Auth::id(), 'Mengganti status kredit');
+            ActivityHelper::userActivity(Auth::id(), "Mengganti status kredit {$file->name}");
+            TelegramHelper::changeStatus($file->id, $validated['status'], $file->user_id);
 
-            return ResponseHelper::successRes('File updated successfully', $file);
+            return ResponseHelper::successRes("Update berhasil dan status diubah menjadi $message", $file);
         } catch (ModelNotFoundException $e) {
             return ResponseHelper::errorRes('File not found');
         } catch (ValidationException $e) {
@@ -2260,6 +2283,8 @@ class FileController extends Controller
                     $dataEksportQuery->where('files.isApproved', 2);
                 } else if ($type == 3) {
                     $dataEksportQuery->where('files.isApproved', 3);
+                } else if ($type == 7) {
+                    $dataEksportQuery->where('files.isApproved', 4);
                 } else if ($type == 4) {
                     $dataEksportQuery->where('files.phase', 1);
                 } else if ($type == 5) {
@@ -2284,6 +2309,7 @@ class FileController extends Controller
                 $row['status'] =  match ($phases->first()->isApproved) {
                     1 => 'Approved',
                     2 => 'Pending',
+                    4 => 'Cancel by User',
                     default => 'Rejected',
                 };
                 $row['plafon'] = $phases->first()->plafon;
