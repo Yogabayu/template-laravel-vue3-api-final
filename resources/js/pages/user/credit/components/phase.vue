@@ -1,4 +1,8 @@
 <template>
+  <v-overlay :model-value="overlay" class="align-center justify-center">
+    <v-progress-circular color="blue-lighten-3" indeterminate :size="41" :width="5"></v-progress-circular>
+    Loading...
+  </v-overlay>
   <v-card color="backgroundCard" min-width="100%" class="v-card-custom">
     <!-- <v-card-title class="text-2xl font-weight-bold d-flex justify-center"
       v-if="!['Account Officer', 'AO', 'ao', 'account officer', 'Account Officer Executive', 'account officer executive', 'Account Officer / Executive AO', 'AO / RO'].includes(userData.position.name)">
@@ -16,12 +20,13 @@
     <v-card-title class="text-2xl font-weight-bold d-flex flex-column align-center">
       <span>Detail</span>
       <v-chip :color="getStatusColor(dataFile.isApproved)" @click="!isAccountOfficer && openModal(9)"
-        :class="{ 'mt-2': true, 'clickable': !isAccountOfficer }" small>
+        :class="{ 'mt-2': true, clickable: !isAccountOfficer }" small>
         {{ getStatusText(dataFile.isApproved) }}
       </v-chip>
     </v-card-title>
 
-    <v-card-text class="font-weight-bold d-flex justify-end" v-if="dataFile && parseInt(dataFile.phase) == 6">
+    <v-card-text class="text-2xl font-weight-bold d-flex flex-column align-center"
+      v-if="dataFile && parseInt(dataFile.phase) == 6">
       <v-btn color="primary" @click="generateReport(fileId)" size="x-small">
         Generate Laporan
       </v-btn>
@@ -40,35 +45,47 @@
           <v-col cols="12" md="6">
             <v-card class="mb-5">
               <v-card-title>
-                <span>Informasi Umum ℹ️</span>
-                <v-spacer></v-spacer>
-                <v-btn v-if="userAccessNow && parseInt(userAccessNow.canUpdateData) == 1" color="primary" size="small"
-                  class="my-3 mx-3" @click="openModal(4)">
-                  Edit Data
-                </v-btn>
+                <v-row class="pa-2">
+                  <span>Informasi Umum ℹ️</span>
+                  <v-spacer></v-spacer>
+
+                  <v-btn v-if="parseInt(dataFile.phase) < 5 &&
+                    ((userAccessPhase1 && parseInt(userAccessPhase1.canUpdateData) == 1) ||
+                      (userAccessNow && parseInt(userAccessNow.canUpdateData) == 1))
+                  " color="primary" size="x-small" class="mt-2" @click="openModal(4)">
+                    Edit Data
+                  </v-btn>
+                </v-row>
               </v-card-title>
               <v-card-text>
                 <v-list density="compact" lines="two">
                   <v-list-item>
-                    <v-list-item-title> Nama Pemohon </v-list-item-title>
+                    <v-list-item-title>
+                      <v-icon icon="mdi-arrow-right-drop-circle-outline" size="small">
+                      </v-icon>
+                      Nama Pemohon
+                    </v-list-item-title>
                     <v-list-item>
                       <strong> {{ dataFile.name }} </strong>
                     </v-list-item>
                   </v-list-item>
                   <v-list-item>
-                    <v-list-item-title> NIK Pemohon </v-list-item-title>
+                    <v-list-item-title> <v-icon icon="mdi-arrow-right-drop-circle-outline" size="small">
+                      </v-icon> NIK Pemohon </v-list-item-title>
                     <v-list-item>
                       <strong> {{ dataFile.nik_pemohon }} </strong>
                     </v-list-item>
                   </v-list-item>
                   <v-list-item>
-                    <v-list-item-title> Alamat Pemohon </v-list-item-title>
+                    <v-list-item-title> <v-icon icon="mdi-arrow-right-drop-circle-outline" size="small">
+                      </v-icon> Alamat Pemohon </v-list-item-title>
                     <v-list-item>
                       <strong> {{ dataFile.address }} </strong>
                     </v-list-item>
                   </v-list-item>
                   <v-list-item>
-                    <v-list-item-title> No. HP Pemohon</v-list-item-title>
+                    <v-list-item-title> <v-icon icon="mdi-arrow-right-drop-circle-outline" size="small">
+                      </v-icon> No. HP Pemohon</v-list-item-title>
                     <v-list-item>
                       <strong>
                         {{ dataFile.no_hp }}
@@ -76,15 +93,15 @@
                     </v-list-item>
                   </v-list-item>
                   <v-list-item>
-                    <v-list-item-title> Jumlah Plafon</v-list-item-title>
+                    <v-list-item-title><v-icon icon="mdi-arrow-right-drop-circle-outline" size="small">
+                      </v-icon> Jumlah Plafon</v-list-item-title>
                     <v-list-item>
-                      <strong>
-                        Rp {{ formatInput(dataFile.plafon) }}
-                      </strong>
+                      <strong> Rp {{ formatInput(dataFile.plafon) }} </strong>
                     </v-list-item>
                   </v-list-item>
                   <v-list-item v-if="dataFile.nik_pasangan">
-                    <v-list-item-title> NIK Pasangan</v-list-item-title>
+                    <v-list-item-title><v-icon icon="mdi-arrow-right-drop-circle-outline" size="small">
+                      </v-icon> NIK Pasangan</v-list-item-title>
                     <v-list-item>
                       <strong>
                         {{ dataFile.nik_pasangan }}
@@ -92,7 +109,9 @@
                     </v-list-item>
                   </v-list-item>
                   <v-list-item v-if="dataFile.nik_jaminan">
-                    <v-list-item-title> NIK atas nama Jaminan</v-list-item-title>
+                    <v-list-item-title>
+                      <v-icon icon="mdi-arrow-right-drop-circle-outline" size="small">
+                      </v-icon> NIK atas nama Jaminan</v-list-item-title>
                     <v-list-item>
                       <strong>
                         {{ dataFile.nik_jaminan }}
@@ -100,7 +119,8 @@
                     </v-list-item>
                   </v-list-item>
                   <v-list-item>
-                    <v-list-item-title> Jenis Usaha</v-list-item-title>
+                    <v-list-item-title><v-icon icon="mdi-arrow-right-drop-circle-outline" size="small">
+                      </v-icon> Jenis Usaha</v-list-item-title>
                     <v-list-item>
                       <strong>
                         {{ dataFile.type_bussiness }}
@@ -108,7 +128,8 @@
                     </v-list-item>
                   </v-list-item>
                   <v-list-item>
-                    <v-list-item-title> Deskripsi Usaha</v-list-item-title>
+                    <v-list-item-title><v-icon icon="mdi-arrow-right-drop-circle-outline" size="small">
+                      </v-icon> Deskripsi Usaha</v-list-item-title>
                     <v-list-item>
                       <strong>
                         {{ dataFile.desc_bussiness }}
@@ -116,7 +137,8 @@
                     </v-list-item>
                   </v-list-item>
                   <v-list-item v-if="dataFile.order_source">
-                    <v-list-item-title> Sumber Order</v-list-item-title>
+                    <v-list-item-title><v-icon icon="mdi-arrow-right-drop-circle-outline" size="small">
+                      </v-icon> Sumber Order</v-list-item-title>
                     <v-list-item>
                       <strong>
                         {{ dataFile.order_source }}
@@ -124,7 +146,8 @@
                     </v-list-item>
                   </v-list-item>
                   <v-list-item v-if="dataFile.status_kredit">
-                    <v-list-item-title> Status Kredit</v-list-item-title>
+                    <v-list-item-title><v-icon icon="mdi-arrow-right-drop-circle-outline" size="small">
+                      </v-icon> Status Kredit</v-list-item-title>
                     <v-list-item>
                       <strong>
                         {{ dataFile.status_kredit }}
@@ -138,12 +161,13 @@
           <v-col cols="12" md="6">
             <v-card>
               <v-card-title>
-                <span>Dokumen Pendukung 📄</span>
-                <v-spacer></v-spacer>
-                <v-btn v-if="userAccessNow && parseInt(userAccessNow.canInsertData) == 1" color="primary" size="small"
-                  class="my-3 mx-3" @click="openModal(1)">
-                  Tambah Data Lain
-                </v-btn>
+                <v-row class="pa-2 mb-1">
+                  <span>Dokumen Pendukung 📄</span>
+                  <v-spacer></v-spacer>
+                  <v-btn v-if="parseInt(dataFile.phase) < 5 && (userAccessNow && parseInt(userAccessNow.canInsertData) == 1)" color="primary" size="x-small" class="mt-2" @click="openModal(1)">
+                    Tambah Data Lain
+                  </v-btn>
+                </v-row>
               </v-card-title>
               <v-card-text>
                 <div class="mb-5">
@@ -210,7 +234,9 @@
     <!-- others -->
     <v-card-text>
       <v-card outlined class="p-2">
-        <v-card-title class="d-flex justify-center"> Lain - lain 🔹 </v-card-title>
+        <v-card-title class="d-flex justify-center">
+          Lain - lain 🔹
+        </v-card-title>
         <v-card-text class="d-flex flex-wrap justify-center">
           <v-btn v-for="(button, index) in otherButtons" :key="index" variant="outlined" class="ma-2 mobile-btn"
             @click="openModal(button.id)">
@@ -240,8 +266,9 @@
 
       <v-card outlined class="my-4">
         <v-card-text class="d-flex justify-center text-center pa-3 font-weight-bold">
-          Catatan Berdasarkan Fase
+          Catatan
         </v-card-text>
+        <v-divider class="border-opacity-100"></v-divider>
         <v-card-text v-if="paginatedNotes.length > 0">
           <div v-for="(comment, index) in paginatedNotes" :key="index" class="user-comment">
             <div class="comment-content">
@@ -252,7 +279,8 @@
                     {{ comment.user.name }} - {{ comment.user.position.name }}
                   </strong>
                 </small>
-                <small>{{ formatDate(comment.created_at) }}</small>
+                --
+                <small> {{ formatDate(comment.created_at) }}</small>
                 <v-spacer></v-spacer>
                 <v-menu v-if="userData.id == comment.user_id" transition="scale-transition" bottom left>
                   <template v-slot:activator="{ props }">
@@ -262,15 +290,15 @@
                   </template>
                   <v-list>
                     <v-list-item color="primary" @click="openModal(3, comment)">
-                      <v-list-item-icon>
+                      <v-list-item>
                         <v-icon>mdi-pencil</v-icon>
-                      </v-list-item-icon>
+                      </v-list-item>
                       <v-list-item-title>Edit</v-list-item-title>
                     </v-list-item>
                     <v-list-item color="error" @click="deleteNote(comment.id)">
-                      <v-list-item-icon>
+                      <v-list-item>
                         <v-icon>mdi-delete</v-icon>
-                      </v-list-item-icon>
+                      </v-list-item>
                       <v-list-item-title>Hapus</v-list-item-title>
                     </v-list-item>
                   </v-list>
@@ -282,13 +310,17 @@
             @input="onPageChange" />
         </v-card-text>
         <v-card-text v-else>
-          Kosong
+          <p class="text-center">Tidak ada catatan</p>
         </v-card-text>
       </v-card>
     </v-card-text>
 
     <!-- prev/next btn -->
-    <v-card-actions v-if="userAccessNow && parseInt(userAccessNow.canApprove) && parseInt(dataFile.isApproved) != 3">
+    <v-card-actions v-if="
+      userAccessNow &&
+      parseInt(userAccessNow.canApprove) &&
+      parseInt(dataFile.isApproved) != 3
+    ">
       <v-col class="d-flex justify-space-beetwen">
         <v-btn color="info" text="Prev Phase" variant="tonal" @click="step(fileId, '-')"
           v-if="dataFile && parseInt(dataFile.phase) > 1"></v-btn>
@@ -313,11 +345,23 @@
 import mainURL from "@/axios";
 import { default as AttachmentCard1 } from "./attachmentCard1.vue";
 import { default as AttachmentCard2 } from "./attachmentCard2.vue";
-import attachmentCard3, { default as AttachmentCard3 } from './attachmentCard3.vue';
-import attachmentCard4, { default as AttachmentCard4 } from './attachmentCard4.vue';
-import attachmentOperation from './attachmentOperation.vue';
+import attachmentCard3, {
+  default as AttachmentCard3,
+} from "./attachmentCard3.vue";
+import attachmentCard4, {
+  default as AttachmentCard4,
+} from "./attachmentCard4.vue";
+import attachmentOperation from "./attachmentOperation.vue";
 export default {
-  components: { AttachmentCard1, AttachmentCard2, AttachmentCard3, attachmentCard3, AttachmentCard4, attachmentCard4, attachmentOperation },
+  components: {
+    AttachmentCard1,
+    AttachmentCard2,
+    AttachmentCard3,
+    attachmentCard3,
+    AttachmentCard4,
+    attachmentCard4,
+    attachmentOperation,
+  },
   name: "Phase",
   props: {
     phase1Attachments: {
@@ -423,11 +467,13 @@ export default {
     submissions: {
       type: Object,
       required: true,
-    }
+    },
   },
   data() {
     return {
+      overlay: false,
       userAccessNow: null,
+      userAccessPhase1: null,
       filePath: this.$filePath,
 
       //=>note
@@ -442,11 +488,11 @@ export default {
       currentPage: 1,
       itemsPerPage: 10,
       otherButtons: [
-        { id: 6, name: 'Data Durasi Waktu' },
-        { id: 7, name: 'Data Aktivitas' },
-        { id: 8, name: 'Data Riwayat Persetujuan' },
-        { id: 10, name: 'Data Riwayat Dokumen' },
-      ]
+        { id: 6, name: "Data Durasi Waktu" },
+        { id: 7, name: "Data Aktivitas" },
+        { id: 8, name: "Data Riwayat Persetujuan" },
+        { id: 10, name: "Data Riwayat Dokumen" },
+      ],
     };
   },
   computed: {
@@ -456,40 +502,49 @@ export default {
       return this.dataFile.notes.slice(startIndex, endIndex);
     },
     isAccountOfficer() {
-      const aoPositions = ['Account Officer', 'AO', 'ao', 'account officer', 'Account Officer Executive', 'account officer executive', 'Account Officer / Executive AO', 'AO / RO'];
+      const aoPositions = [
+        "Account Officer",
+        "AO",
+        "ao",
+        "account officer",
+        "Account Officer Executive",
+        "account officer executive",
+        "Account Officer / Executive AO",
+        "AO / RO",
+      ];
       return aoPositions.includes(this.userData.position.name);
-    }
+    },
   },
   methods: {
     getStatusColor(status) {
       const colors = {
-        1: 'success',
-        2: 'warning',
-        3: 'error'
+        1: "success",
+        2: "warning",
+        3: "error",
       };
-      return colors[status] || 'default';
+      return colors[status] || "default";
     },
     getStatusText(status) {
       const texts = {
-        1: 'Approved',
-        2: 'Pending',
-        3: 'Rejected'
+        1: "Approved",
+        2: "Pending",
+        3: "Rejected",
       };
-      return texts[status] || 'Unknown';
+      return texts[status] || "Unknown";
     },
     async generateReport(id) {
       try {
         this.overlay = true;
         const response = await mainURL.get(`/user/generatereport/${id}`, {
-          responseType: 'blob' // tambahkan ini untuk mengunduh file sebagai Blob
+          responseType: "blob", // tambahkan ini untuk mengunduh file sebagai Blob
         });
 
         if (response.status == 200) {
           this.overlay = false;
           const url = window.URL.createObjectURL(new Blob([response.data]));
-          const link = document.createElement('a');
+          const link = document.createElement("a");
           link.href = url;
-          link.setAttribute('download', `${this.dataFile.name}.pdf`); // Nama file ZIP yang akan diunduh
+          link.setAttribute("download", `${this.dataFile.name}.pdf`); // Nama file ZIP yang akan diunduh
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
@@ -502,7 +557,11 @@ export default {
       } catch (error) {
         console.log(error);
         this.overlay = false;
-        this.$showToast("error", "Error", "Terjadi kesalahan saat mengunduh file");
+        this.$showToast(
+          "error",
+          "Error",
+          "Terjadi kesalahan saat mengunduh file"
+        );
       }
     },
 
@@ -519,6 +578,7 @@ export default {
 
   mounted() {
     this.userAccessNow = this.userAccess[this.dataFile.phase];
+    this.userAccessPhase1 = this.userAccess[1];
   },
 };
 </script>
@@ -555,7 +615,6 @@ export default {
   line-height: 1.2em;
   max-height: 2.4em;
 }
-
 
 .user-comment {
   background-color: #e6f7ff;

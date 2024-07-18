@@ -36,6 +36,66 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class FileController extends Controller
 {
+    public function signaturefile(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'doc' => 'required | mimes:pdf',
+            ]);
+            // cek Approval
+            $attchment = Attachment::findOrFail($id);
+
+            $canApprov = Approval::where('file_id', $attchment->file_id)
+                ->where('user_id', Auth::user()->id)
+                ->where('phase', 4)
+                ->count();
+
+            if ($canApprov == 0) {
+                return ResponseHelper::errorRes('Anda tidak diizinkan untuk menandatangani file ini');
+            }
+
+
+            $fileObject = $request->file('doc');
+            if ($fileObject === null) {
+                throw new \Exception('File not found');
+            }
+
+            $imageEXT = $fileObject->getClientOriginalName();
+            $filename = pathinfo($imageEXT, PATHINFO_FILENAME);
+            $EXT = $fileObject->getClientOriginalExtension();
+            $fileimage = $filename . '-' . Str::random(10) . '_' . time() . '.' . $EXT;
+
+            $path = $fileObject->move(public_path('file/' . $attchment->file_id . '/'), $fileimage);
+            if ($path === false) {
+                throw new \Exception('Failed to move file');
+            }
+
+            $attchment->link = null;
+            $attchment->path = $fileimage;
+
+            $attchment->save();
+
+            //update approval
+            $userId = Auth::user()->id;
+            $approval = Approval::where('file_id', $attchment->file_id)
+                ->where('user_id', $userId)
+                ->where('phase', 4)
+                ->first();
+            $approval->approved = 1;
+            $approval->save();
+
+            $file = File::findOrFail($attchment->file_id);
+
+            ActivityHelper::fileActivity($attchment->file_id, Auth::user()->id, 'Menambahkan tanda tangan di file ' . $file->name);
+            ActivityHelper::userActivity(Auth::user()->id, 'Menambahkan tanda tangan di file ' . $file->name);
+            TelegramHelper::AddUpdate($file->id, 'Menambahkan Tanda Tangan di file ' . $attchment->name . ' ', Auth::user()->id);
+
+            return ResponseHelper::successRes('berhasil melakukan penandatanganan', $attchment);
+        } catch (\Throwable $th) {
+            return ResponseHelper::errorRes($th->getMessage());
+        }
+    }
+
     public function userAccess()
     {
         try {
@@ -678,6 +738,7 @@ class FileController extends Controller
     public function editAttachment(Request $request, $id)
     {
         try {
+            $message = '';
             $request->validate([
                 'link' => 'nullable|url',
                 'path' => 'nullable|file|mimes:jpeg,jpg,png,pdf,doc,docx,xls,xlsx',
@@ -738,6 +799,10 @@ class FileController extends Controller
 
             $attachment->save();
 
+            if ($attachment->name == "File Banding" && $attachment->isApprove != 1) {
+                $message = 'Silahkan Hubungi Uplevel untuk mendapatkan persetujuan file banding';
+            }
+
             $file = File::where('id', $attachment->file_id)->first();
 
             ActivityHelper::fileActivity($attachment->file_id, Auth::user()->id, 'Mengedit Lampiran');
@@ -745,7 +810,7 @@ class FileController extends Controller
 
             TelegramHelper::AddUpdate($attachment->file_id, 'Merubah Lampiran : ' . $request->name, Auth::user()->id);
 
-            return ResponseHelper::successRes('Attachment updated successfully', $attachment);
+            return ResponseHelper::successRes('Berhasil melakukan edit file ' . $message, $attachment);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             // If the attachment is not found, create a new one
             $attachment = new Attachment();
@@ -2286,7 +2351,7 @@ class FileController extends Controller
             EmailHelper::AddUpdate($file->id);
             TelegramHelper::AddFile($file->id);
 
-            return ResponseHelper::successRes('Berhasil menambahkan data', $file);
+            return ResponseHelper::successRes('Berhasil menambahkan data, Silahkan menambahkan data form permohonan SLIK dengan membuka data yang baru diinput', $file);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }

@@ -3,24 +3,23 @@
         <v-progress-circular color="blue-lighten-3" indeterminate :size="41" :width="5"></v-progress-circular>
         Loading...
     </v-overlay>
-    <v-card color="warning">
-        <v-card-title class="py-2">
+    <v-card>
+        <v-card-text class="py-1 header-color">
             <v-row align="center" no-gutters>
-                <v-col cols="auto">
-                    <span class="text-h6 font-weight-medium">Phase 4 (KOMITE) 📄</span>
+                <v-col cols="auto" class="mr-auto">
+                    <span class="text-subtitle-1 font-weight-bold ml-2">Phase 4 (KOMITE) 📄</span>
                 </v-col>
-                <v-spacer></v-spacer>
                 <v-col cols="auto">
                     <v-bottom-sheet max-width="400">
                         <template v-slot:activator="{ props }">
                             <v-btn icon v-bind="props" color="on-primary" variant="text">
-                                <v-icon color="on-primary">mdi-help-circle-outline</v-icon>
+                                <v-icon color="white">mdi-help-circle-outline</v-icon>
                             </v-btn>
                         </template>
                         <v-card>
-                            <v-card-title class="text-h6 py-2 px-4">
+                            <v-card-text class="text-h6 py-2 px-4">
                                 Penjelasan Phase Komite
-                            </v-card-title>
+                            </v-card-text>
                             <v-card-text class="py-2 px-4">
                                 Tahap ini merupakan proses pengambilan keputusan akhir terkait pengajuan kredit. Komite
                                 Kredit akan memberikan keputusan
@@ -35,9 +34,10 @@
                     </v-bottom-sheet>
                 </v-col>
             </v-row>
-        </v-card-title>
+            <span>Tutorial tanda tangan file ( <a href="https://youtu.be/d3fcmpIqNeo" target="_blank">disini</a> )</span>
+        </v-card-text>
 
-        <div v-for="(attachment, index) in data" :key="index">
+        <!-- <div v-for="(attachment, index) in data" :key="index">
             <v-list density="compact">
                 <v-list-item>
                     <template v-slot:prepend>
@@ -107,6 +107,71 @@
                     </template>
                 </v-list-item>
             </v-list>
+        </div> -->
+
+        <div v-for="(attachment, index) in data" :key="index" class="pa-1">
+            <v-row no-gutters align="center" :class="parseInt(attachment.isSecret) ? 'bg-grey-lighten-4' : ''">
+                <v-col cols="auto" class="mr-2">
+                    <v-icon :color="parseInt(attachment.isApprove) ? 'success' : 'error'" size="small">
+                        {{ parseInt(attachment.isApprove) ? 'mdi-check-circle' : 'mdi-close-circle' }}
+                    </v-icon>
+                    <!-- <v-icon icon="mdi-file" size="small" class="ml-1"></v-icon> -->
+                </v-col>
+
+                <v-col>
+                    <div class="text-subtitle-2 font-weight-medium">{{ attachment.name }}</div>
+                    <div v-if="attachment.note !== 'null'" class="text-caption text-grey-darken-1">{{ attachment.note }}
+                    </div>
+                </v-col>
+
+                <v-col cols="auto">
+                    <div class="d-flex">
+                        <v-tooltip location="top" text="Lihat File" v-if="canViewFile(attachment)">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-link-external" size="small" color="primary"
+                                    variant="text" class="mr-2" :href="getFileUrl(attachment)" target="_blank"
+                                    rel="noopener noreferrer">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+
+                        <v-tooltip location="top" text="Upload File" v-if="canUploadFile(attachment)">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-upload" size="small" color="primary" variant="text"
+                                    class="mr-2" @click="openModal(1, attachment)">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+
+                        <v-tooltip location="top" text="Edit File" v-if="canEditFile(attachment)">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-edit" size="small" color="info" variant="text"
+                                    class="mr-2" @click="openModal(1, attachment)">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+
+                        <v-tooltip location="top" text="Tanda Tangan File"
+                            v-if="userAccessPhase4 && parseInt(userAccessPhase4.canApprove) && phase < 5">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-pen" size="small" color="info" variant="text"
+                                    class="mr-2" @click="toSignature(attachment)">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+
+                        <v-tooltip location="top" text="Hapus File" v-if="canDeleteFile(attachment)">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-trash" size="small" color="error" variant="text"
+                                    @click="deleteAttachment(attachment.id)">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+                    </div>
+                </v-col>
+            </v-row>
+
+            <v-divider v-if="index < data.length - 1" class="mt-3"></v-divider>
         </div>
     </v-card>
 
@@ -140,7 +205,7 @@
 
                         <v-divider :thickness="5" class="border-opacity-75" color="info"></v-divider>
                         <VCol md="12" cols="12">
-                            <v-select label="Apakah Anda menyetujui file ini ?" :items="[
+                            <v-select label="Apakah Anda menyetujui file ini ? (ubah jika semua sudah menandatangani)" :items="[
                                 { value: 1, title: 'Setuju' },
                                 { value: 0, title: 'Tidak Setuju' },
                             ]" v-model="formKomite.isApprove" prepend-icon="mdi-help-rhombus"></v-select>
@@ -160,6 +225,19 @@
             <template v-slot:actions>
                 <v-progress-linear v-model="uploadProgress" color="amber" height="25"></v-progress-linear>
             </template>
+        </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="showDesktopDialog" max-width="400">
+        <v-card>
+            <v-card-title class="headline">Perhatian</v-card-title>
+            <v-card-text>
+                Maaf, fitur ini hanya dapat digunakan pada komputer desktop untuk pengalaman terbaik.
+            </v-card-text>
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="primary" text @click="closeDesktopDialog">OK</v-btn>
+            </v-card-actions>
         </v-card>
     </v-dialog>
 </template>
@@ -217,6 +295,7 @@ export default {
     },
     data() {
         return {
+            showDesktopDialog: false,
             userAccessPhase4: null,
             selectedOption: "",
             overlay: false,
@@ -238,9 +317,53 @@ export default {
         }
     },
     methods: {
+        canViewFile(attachment) {
+            if (parseInt(attachment.isSecret)) {
+                return (attachment.path !== 'null' || attachment.link !== null) &&
+                    this.userAccessPhase4 &&
+                    parseInt(this.userAccessPhase4.isSecret) === 1;
+            } else {
+                return attachment.path !== 'null' || attachment.link !== null;
+            }
+        },
+
+        canUploadFile(attachment) {
+            return this.phase < 5 && (attachment.path === 'null' && attachment.link === null) &&
+                this.userAccessPhase4 &&
+                parseInt(this.userAccessPhase4.canInsertData) == 1;
+        },
+
+        canEditFile(attachment) {
+            return this.phase < 5 && (attachment.path != 'null' || attachment.link != null) && this.userAccessPhase4 &&
+                parseInt(this.userAccessPhase4.canUpdateData) == 1 && this.phase != 6;
+        },
+
+        canDeleteFile(attachment) {
+            return this.phase < 5 && this.userAccessPhase4 &&
+                parseInt(this.userAccessPhase4.canDeleteData) == 1 && this.phase != 6;
+        },
+
+        getFileUrl(attachment) {
+            if (attachment.path !== 'null') {
+                return `${this.filePath}/${this.fileId}/${attachment.path}`;
+            } else if (attachment.link !== null) {
+                return attachment.link;
+            }
+            return '#'; // Atau URL default jika tidak ada yang cocok
+        },
         toSignature(attach) {
             if (attach.path == 'null' && attach.link == null) {
-                alert('Silahkan upload file terlebih dahulu');
+                this.$showToast('info', 'Perhatian', 'File harus di upload terlebih dahulu');
+                return;
+            }
+            const isMobile = () => {
+                return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+                    || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+                    || window.innerWidth <= 800;
+            };
+
+            if (isMobile()) {
+                this.$showToast('info', 'Perhatian', 'Disarankan menggunakan komputer untuk tampilan dan pengalaman terbaik');
                 return;
             }
 
@@ -353,3 +476,8 @@ export default {
     },
 }
 </script>
+<style scoped>
+.header-color {
+    background-color: #FFAB00;
+}
+</style>

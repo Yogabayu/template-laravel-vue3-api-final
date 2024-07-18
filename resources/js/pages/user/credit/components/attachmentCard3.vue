@@ -3,34 +3,40 @@
         <v-progress-circular color="blue-lighten-3" indeterminate :size="41" :width="5"></v-progress-circular>
         Loading...
     </v-overlay>
-    <v-card color="warning">
-        <v-card-title class="py-2">
+    <v-card>
+        <v-card-text class="py-1 header-color">
             <v-row align="center" no-gutters>
-                <v-col cols="auto">
-                    <span class="text-h6 font-weight-medium">Phase 3 (Analisa Kredit) 📄</span>
+                <v-col cols="auto" class="mr-auto">
+                    <span class="text-subtitle-1 font-weight-bold ml-2">Phase 3 (Analisa Kredit) 📄</span>
                 </v-col>
-                <v-spacer></v-spacer>
                 <v-col cols="auto">
                     <v-bottom-sheet max-width="400">
                         <template v-slot:activator="{ props }">
                             <v-btn icon v-bind="props" color="on-primary" variant="text">
-                                <v-icon color="on-primary">mdi-help-circle-outline</v-icon>
+                                <v-icon color="white">mdi-help-circle-outline</v-icon>
                             </v-btn>
                         </template>
                         <v-card>
-                            <v-card-title class="text-h6 py-2 px-4">
+                            <v-card-text class="text-h6 py-2 px-4">
                                 Penjelasan Phase Analisa Kredit
-                            </v-card-title>
+                            </v-card-text>
                             <v-card-text class="py-2 px-4">
-                                Tahap ini merupakan proses evaluasi mendalam terhadap kelayakan nasabah untuk menerima kredit. Analisa kredit mencakup penilaian aspek 5C: Character (karakter), Capacity (kapasitas), Capital (modal), Collateral (jaminan), dan Condition (kondisi). Tim analis kredit akan mengevaluasi data finansial, riwayat kredit, dan informasi lainnya untuk menentukan tingkat risiko dan kemampuan nasabah dalam memenuhi kewajiban kreditnya.
+                                Tahap ini merupakan proses evaluasi mendalam terhadap kelayakan nasabah untuk menerima
+                                kredit. Analisa kredit
+                                mencakup penilaian aspek 5C: Character (karakter), Capacity (kapasitas), Capital
+                                (modal), Collateral (jaminan),
+                                dan Condition (kondisi). Tim analis kredit akan mengevaluasi data finansial, riwayat
+                                kredit, dan informasi
+                                lainnya untuk menentukan tingkat risiko dan kemampuan nasabah dalam memenuhi kewajiban
+                                kreditnya.
                             </v-card-text>
                         </v-card>
                     </v-bottom-sheet>
                 </v-col>
             </v-row>
-        </v-card-title>
+        </v-card-text>
 
-        <div v-for="(attachment, index) in data" :key="index">
+        <!-- <div v-for="(attachment, index) in data" :key="index">
             <v-list density="compact">
                 <v-list-item>
                     <template v-slot:prepend>
@@ -92,29 +98,87 @@
                     </template>
                 </v-list-item>
             </v-list>
+        </div> -->
+
+        <div v-for="(attachment, index) in data" :key="index" class="pa-1">
+            <v-row no-gutters align="center"
+                :class="parseInt(attachment.isSecret) ? 'bg-grey-lighten-4' : ''">
+                <v-col cols="auto" class="mr-2">
+                    <v-icon :color="parseInt(attachment.isApprove) ? 'success' : 'error'" size="small">
+                        {{ parseInt(attachment.isApprove) ? 'mdi-check-circle' : 'mdi-close-circle' }}
+                    </v-icon>
+                    <v-icon icon="mdi-file" size="small" class="ml-1"></v-icon>
+                </v-col>
+
+                <v-col>
+                    <div class="text-subtitle-2 font-weight-medium">{{ attachment.name }}</div>
+                    <div v-if="attachment.note !== 'null'" class="text-caption text-grey-darken-1">{{ attachment.note }}
+                    </div>
+                </v-col>
+
+                <v-col cols="auto">
+                    <div class="d-flex">
+                        <v-tooltip location="top" text="Lihat File" v-if="canViewFile(attachment)">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-link-external" size="small" color="primary"
+                                    variant="text" class="mr-2" :href="getFileUrl(attachment)" target="_blank"
+                                    rel="noopener noreferrer">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+
+                        <v-tooltip location="top" text="Upload File" v-if="canUploadFile(attachment)">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-upload" size="small" color="primary" variant="text"
+                                    class="mr-2" @click="openModal(1, attachment)">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+
+                        <v-tooltip location="top" text="Edit File" v-if="canEditFile(attachment)">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-edit" size="small" color="info" variant="text"
+                                    class="mr-2" @click="openModal(1, attachment)">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+
+                        <v-tooltip location="top" text="Hapus File" v-if="canDeleteFile(attachment)">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-trash" size="small" color="error" variant="text"
+                                    @click="deleteAttachment(attachment.id)">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+                    </div>
+                </v-col>
+            </v-row>
+
+            <v-divider v-if="index < data.length - 1" class="mt-3"></v-divider>
         </div>
     </v-card>
-    <v-card color="warning" class="mt-2">
-        <v-card-title>
-            <v-row class="d-flex justify-space-between">
-                <v-col cols="12" sm="6" md="8">
-                    <span>Dokumen Penunjang Kredit / Jaminan 📄</span>
+    <v-card class="mt-2">
+        <v-card-text class="py-1 header-color">
+            <v-row align="center" no-gutters>
+                <v-col cols="auto" class="mr-auto">
+                    <span class="text-subtitle-1 font-weight-bold ml-2">Dokumen Penunjang Kredit / Jaminan 📄</span>
                 </v-col>
-                <v-col cols="12" sm="6" md="4" class="text-sm-right text-md-right"
-                    v-if="userAccessPhase3 && parseInt(userAccessPhase3.canAppeal)==1 && phase < 5"> <!-- canAppeal karena hanya AO/RO yang bisa input daya jaminan lain -->
+                <v-col cols="auto">
                     <span>
-                        <v-btn color="primary" size="small" class="my-3 mx-3" @click="openModal(2)">
+                        <v-btn color="primary" size="x-small" class="my-3 mx-3" @click="openModal(2)">
                             Tambah Data Lain
                         </v-btn>
                     </span>
                 </v-col>
             </v-row>
-        </v-card-title>
+        </v-card-text>
+
+
         <div v-if="submission.length == 0">
             <v-list><v-list-item>Belum ada file</v-list-item></v-list>
         </div>
         <div v-for="(sub, index) in sortedSubmission" :key="index" v-if="sortedSubmission.length > 0">
-            <v-list density="compact">
+            <!-- <v-list density="compact">
                 <v-list-item>
                     <v-list-item-title> {{ sub.name }} </v-list-item-title>
                     <v-list-item-subtitle v-if="sub.type == 1"> Dokumen Penunjang Analisa </v-list-item-subtitle>
@@ -160,7 +224,49 @@
                         </div>
                     </template>
                 </v-list-item>
-            </v-list>
+            </v-list> -->
+            
+            <v-row no-gutters align="center" class="pa-2">
+                <v-col cols="auto" class="mr-2">
+                    <v-icon color="success" size="small" icon="mdi-check-circle">
+                    </v-icon>
+                </v-col>
+
+                <v-col>
+                    <div class="text-subtitle-2 font-weight-medium">{{ sub.name }}</div>
+                    <div v-if="sub.type == 1" class="text-caption text-grey-darken-1">Dokumen Penunjang Analisa
+                    </div>
+                </v-col>
+
+                <v-col cols="auto">
+                    <div class="d-flex">
+                        <v-tooltip location="top" text="Lihat File" v-if="(sub.path !== 'null' || sub.link !== null)">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-link-external" size="small" color="primary"
+                                    variant="text" class="mr-2" :href="`${filePath}/${fileId}/${sub.path}`" target="_blank"
+                                    rel="noopener noreferrer">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+
+                        <v-tooltip location="top" text="Edit File" v-if="userAccessPhase3 && parseInt(userAccessPhase3.canAppeal) && phase < 4">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-edit" size="small" color="info" variant="text"
+                                    class="mr-2" @click="openModal(3, sub)">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+
+                        <v-tooltip location="top" text="Hapus File" v-if="userAccessPhase3 && parseInt(userAccessPhase3.canAppeal) && phase < 4">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-trash" size="small" color="error" variant="text"
+                                    @click="deleteSubmission(sub.id)">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+                    </div>
+                </v-col>
+            </v-row>
         </div>
     </v-card>
 
@@ -416,7 +522,7 @@ export default {
             type: Function,
             required: true,
         },
-        phase : {
+        phase: {
             type: Number,
             required: true,
         },
@@ -442,7 +548,7 @@ export default {
     },
     data() {
         return {
-            userAccessPhase3:null,
+            userAccessPhase3: null,
             selectedOption: "",
             overlay: false,
             uploadProgress: null,
@@ -476,6 +582,40 @@ export default {
         }
     },
     methods: {
+        canViewFile(attachment) {
+            if (parseInt(attachment.isSecret)) {
+                return (attachment.path !== 'null' || attachment.link !== null) &&
+                    this.userAccessPhase3 &&
+                    parseInt(this.userAccessPhase3.isSecret) === 1;
+            } else {
+                return attachment.path !== 'null' || attachment.link !== null;
+            }
+        },
+
+        canUploadFile(attachment) {
+            return (attachment.path === 'null' && attachment.link === null) &&
+                this.userAccessPhase3 &&
+                parseInt(this.userAccessPhase3.canInsertData) == 1 && this.phase != 6;
+        },
+
+        canEditFile(attachment) {
+            return  this.phase < 5 && this.userAccessPhase3 &&
+                parseInt(this.userAccessPhase3.canUpdateData)==1 && this.phase != 6;
+        },
+
+        canDeleteFile(attachment) {
+            return this.phase < 5 && this.userAccessPhase3 &&
+                parseInt(this.userAccessPhase3.canDeleteData)==1 && this.phase != 6;
+        },
+
+        getFileUrl(attachment) {
+            if (attachment.path !== 'null') {
+                return `${this.filePath}/${this.fileId}/${attachment.path}`;
+            } else if (attachment.link !== null) {
+                return attachment.link;
+            }
+            return '#'; // Atau URL default jika tidak ada yang cocok
+        },
         openModal(type, item = null) {
             if (type == 1) {
                 this.formAnalisaKredit.id = item.id;
@@ -771,3 +911,8 @@ export default {
     },
 }
 </script>
+<style scoped>
+.header-color {
+    background-color: #FFAB00;
+}
+</style>

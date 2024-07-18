@@ -160,6 +160,7 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1', 'throttle:60,1'], function
             Route::put('edit-attach/{id}', [FileController::class, 'editAttachment']);
             Route::delete('delete-attach/{id}', [FileController::class, 'deleteAttachment']);
             Route::get('get-attach/{id}', [FileController::class, 'getAttachment']);
+            Route::put('signature/{id}', [FileController::class, 'signaturefile']);
 
             //=>filepenunjang [file-submission]
             Route::post('file-submission', [FileController::class, 'addFileSubmission']);

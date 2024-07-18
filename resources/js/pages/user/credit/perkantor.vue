@@ -456,7 +456,7 @@ export default {
                 { text: "Tanggal", value: "created_at", sortable: true },
                 { text: "SLIK", value: "slik", sortable: false },
                 { text: "Analisa AO/RO", value: "analisaAO", sortable: false },
-                { text: "Operation", value: "operation", width: 100 },
+                { text: "Aksi", value: "operation", width: 100 },
             ],
             phases: [
                 { value: 0 },
