@@ -325,14 +325,14 @@
                 <VTextField class="my-3" v-model="generalInfo.address" :rules="[rules.required]" />
               </VCol>
               <VCol md="12" cols="12">
-                <span class="subtitle-1 text-center">NIK Pasangan: </span>
+                <span class="subtitle-1 text-center">NIK Pasangan (kosongkan jika tidak ada): </span>
 
-                <VTextField class="my-3" v-model="generalInfo.nik_pasangan" />
+                <VTextField class="my-3" v-model="generalInfo.nik_pasangan" hint="Kosongkan jika tidak ada" />
               </VCol>
               <VCol md="12" cols="12">
-                <span class="subtitle-1 text-center">NIK Pemilik Jaminan: </span>
+                <span class="subtitle-1 text-center">NIK Pemilik Jaminan (kosongkan jika tidak ada): </span>
 
-                <VTextField class="my-3" v-model="generalInfo.nik_jaminan" />
+                <VTextField class="my-3" v-model="generalInfo.nik_jaminan" hint="Kosongkan jika tidak ada" />
               </VCol>
               <VCol md="12" cols="12">
                 <span class="subtitle-1 text-center">No. HP: </span>
@@ -404,7 +404,7 @@
           <EasyDataTable :headers="timerHeaders" :items="dataFile.phase_times">
             <template #item-timeDiff="item">{{
               calculateTimeDiff(item.startTime, item.endTime)
-            }}</template>
+              }}</template>
           </EasyDataTable>
         </template>
       </v-card>
@@ -544,7 +544,7 @@ export default {
         { value: 'PROGRAM KKB SECOND', title: 'PROGRAM KKB SECOND' },
         { value: 'CENTRO', title: 'CENTRO' },
       ],
-      statusCreditList :[
+      statusCreditList: [
         { value: 'FRESH', title: 'FRESH' },
         { value: 'REPEAT ORDER', title: 'REPEAT ORDER' },
         { value: 'TOPUP', title: 'TOPUP' },
@@ -1032,10 +1032,10 @@ export default {
         if (this.generalInfo.nik_pemohon != "") {
           formData.append("nik_pemohon", this.generalInfo.nik_pemohon);
         }
-        if (this.generalInfo.nik_pasangan != "") {
+        if (this.generalInfo.nik_pasangan !== "" && this.generalInfo.nik_pasangan !== null && this.generalInfo.nik_pasangan !== "null" && this.generalInfo.nik_pasangan != '-') {
           formData.append("nik_pasangan", this.generalInfo.nik_pasangan);
         }
-        if (this.generalInfo.nik_jaminan != "") {
+        if (this.generalInfo.nik_jaminan !== "" && this.generalInfo.nik_jaminan !== null && this.generalInfo.nik_jaminan !== "null" && this.generalInfo.nik_jaminan != '-') {
           formData.append("nik_jaminan", this.generalInfo.nik_jaminan);
         }
         if (this.generalInfo.address != "") {

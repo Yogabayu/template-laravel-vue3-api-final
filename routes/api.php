@@ -92,6 +92,8 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1', 'throttle:60,1'], function
         Route::put('edit-general-info/{id}', [AdminFileController::class, 'editGeneralInfo']);
         Route::put('survey-credit/{id}', [FileController::class, 'editSurveiResult']);
         Route::post('change-status', [FileController::class, 'changeStatus']);
+        Route::get('list-approval/{id}', [AdminFileController::class, 'getSignatureUser']);
+        Route::put('signature/{id}', [AdminFileController::class, 'signaturefile']);
 
         ////filter
         Route::get('userAccess', [AdminFileController::class, 'userAccess']);

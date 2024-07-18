@@ -12,14 +12,6 @@
     <VCardTitle class="text-2xl font-weight-bold d-flex justify-left">
       List Kredit
       <v-spacer></v-spacer>
-      <!-- <span class="text-sm mt-2">(Tampilan bulanan)</span>
-      <v-tooltip location="top" text="Lihat Per-Bulan">
-        <template v-slot:activator="{ props }">
-          <button v-bind="props" @click="toPage">
-            <v-icon icon="mdi-view-comfy" class="ml-2" @click="toPage"></v-icon>
-          </button>
-        </template>
-</v-tooltip> -->
     </VCardTitle>
     <v-tabs v-model="tab" class="v-tabs-pill" bg-color="secondary">
       <v-tab value="0">Semua</v-tab>
@@ -183,7 +175,7 @@
               <!-- <VCol md="12" cols="12" v-if="dataForm.hasFile2"> -->
               <VCol md="12" cols="12">
                 <!-- <span style="color: red">*</span> -->
-                <span class="subtitle-1 text-center">NIK Pasangan/Pendamping Pemohon: </span>
+                <span class="subtitle-1 text-center">NIK Pasangan / Pendamping : </span>
 
                 <!-- <VTextField class="my-3" type="number" v-model="dataForm.nik_pasangan" :rules="[rules.required]" /> -->
                 <VTextField class="my-3" type="number" v-model="dataForm.nik_pasangan" />
@@ -191,7 +183,7 @@
 
               <VCol md="12" cols="12">
                 <!-- <span style="color: red">*</span> -->
-                <span class="subtitle-1 text-center">KTP Pasangan Pemohon :
+                <span class="subtitle-1 text-center">KTP Pasangan / Pendamping Pemohon :
                 </span>
 
                 <v-file-input class="my-3"

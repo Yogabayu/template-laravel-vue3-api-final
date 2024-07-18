@@ -34,6 +34,79 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class FileController extends Controller
 {
+    public function getSignatureUser($idAttchment)
+    {
+        try {
+            $attachment = Attachment::findOrFail($idAttchment);
+            $approvals = Approval::with('user')
+                ->where('file_id', $attachment->file_id)
+                ->where('phase', 4)
+                ->get();
+            return ResponseHelper::successRes('Berhasil mendapatkan user', $approvals);
+        } catch (\Exception $e) {
+            return ResponseHelper::errorRes($e->getMessage());
+        }
+    }
+    public function signaturefile(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'user_id' => 'required',
+                'doc' => 'required | mimes:pdf',
+            ]);
+            // cek Approval
+            $attchment = Attachment::findOrFail($id);
+
+            $canApprov = Approval::where('file_id', $attchment->file_id)
+                ->where('user_id', $request->user_id)
+                ->where('phase', 4)
+                ->count();
+
+            if ($canApprov == 0) {
+                return ResponseHelper::errorRes('Anda tidak diizinkan untuk menandatangani file ini');
+            }
+
+
+            $fileObject = $request->file('doc');
+            if ($fileObject === null) {
+                throw new \Exception('File not found');
+            }
+
+            $imageEXT = $fileObject->getClientOriginalName();
+            $filename = pathinfo($imageEXT, PATHINFO_FILENAME);
+            $EXT = $fileObject->getClientOriginalExtension();
+            $fileimage = $filename . '-' . Str::random(10) . '_' . time() . '.' . $EXT;
+
+            $path = $fileObject->move(public_path('file/' . $attchment->file_id . '/'), $fileimage);
+            if ($path === false) {
+                throw new \Exception('Failed to move file');
+            }
+
+            $attchment->link = null;
+            $attchment->path = $fileimage;
+
+            $attchment->save();
+
+            //update approval
+            $userId = $request->user_id;
+            $approval = Approval::where('file_id', $attchment->file_id)
+                ->where('user_id', $userId)
+                ->where('phase', 4)
+                ->first();
+            $approval->approved = 1;
+            $approval->save();
+
+            $file = File::findOrFail($attchment->file_id);
+
+            ActivityHelper::fileActivity($attchment->file_id, Auth::user()->id, 'Menambahkan tanda tangan di file ' . $file->name);
+            ActivityHelper::userActivity(Auth::user()->id, 'Menambahkan tanda tangan di file ' . $file->name);
+            TelegramHelper::AddUpdate($file->id, 'Menambahkan Tanda Tangan di file ' . $attchment->name . ' ', $request->user_id);
+
+            return ResponseHelper::successRes('berhasil melakukan penandatanganan', $attchment);
+        } catch (\Throwable $th) {
+            return ResponseHelper::errorRes($th->getMessage());
+        }
+    }
     //=> change file status
     public function changeStatus(Request $request)
     {
@@ -272,14 +345,16 @@ class FileController extends Controller
     {
         try {
             $request->validate([
-                'link' => 'nullable|url|required_without:path',
-                'path' => 'nullable|file|mimes:jpeg,jpg,png,pdf,doc,docx,xls,xlsx|required_without:link',
+                // 'link' => 'nullable|url|required_without:path',
+                // 'path' => 'nullable|file|mimes:jpeg,jpg,png,pdf,doc,docx,xls,xlsx|required_without:link',
+                'link' => 'nullable|url',
+                'path' => 'nullable|file|mimes:jpeg,jpg,png,pdf,doc,docx,xls,xlsx',
             ], [
                 'link.url' => ':attribute harus berupa URL yang valid atau tambahkan https://',
                 'path.file' => ':attribute harus berupa file',
                 'path.mimes' => ':attribute harus berupa file dengan tipe: jpeg, jpg, png, pdf, doc, docx, xls, atau xlsx',
-                'path.required_without' => ':attribute harus diisi jika link kosong',
-                'link.required_without' => ':attribute harus diisi jika path kosong',
+                // 'path.required_without' => ':attribute harus diisi jika link kosong',
+                // 'link.required_without' => ':attribute harus diisi jika path kosong',
             ]);
 
             $attachment = Attachment::findOrFail($id);
@@ -1581,7 +1656,7 @@ class FileController extends Controller
             $year = $monthYear[1];
 
             // Query untuk mengambil file berdasarkan bulan dan tahun
-            $files = File::with('user')
+            $files = File::with('user', 'user.position.offices', 'attachments')
                 ->whereMonth('created_at', $month)
                 ->whereYear('created_at', $year)
                 ->orderBy('created_at', 'desc')
@@ -2101,7 +2176,7 @@ class FileController extends Controller
             $getPositionData = Position::find($position_id);
 
             // Initialize file query
-            $filesQuery = File::with('user')
+            $filesQuery = File::with('user', 'user.position.offices', 'attachments')
                 ->orderBy('created_at', 'desc')
                 ->whereMonth('created_at', $month)
                 ->whereYear('created_at', $year);
@@ -2128,7 +2203,8 @@ class FileController extends Controller
             $request->validate([
                 'month' => 'between:1,12',
                 'year' => 'digits:4',
-                'office_id' => 'exists:offices,id',
+                'office_id' => 'required',
+                'type' => 'required',
             ]);
             // Retrieve authenticated user's information
             $user = Auth::user();
@@ -2137,6 +2213,7 @@ class FileController extends Controller
             $month = $request->input('month');
             $year = $request->input('year');
             $office_id = $request->input('office_id');
+            $type           = $request->input('type');
 
             // Get position data of the user
             $getPositionData = Position::find($position_id);
@@ -2152,6 +2229,7 @@ class FileController extends Controller
                     'phase_times.endTime',
                     'users.name as nameAO',
                     'files.name as fileName',
+                    'files.isApproved as isApproved',
                     'files.nik_pemohon as nikPemohon',
                     'files.nik_pasangan as nikPasangan',
                     'files.nik_jaminan as nikJaminan',
@@ -2175,6 +2253,22 @@ class FileController extends Controller
                     ->where('positiontooffices.office_id', $office_id);
             });
 
+            if ($type != 0) {
+                if ($type == 1) {
+                    $dataEksportQuery->where('files.isApproved', 1);
+                } else if ($type == 2) {
+                    $dataEksportQuery->where('files.isApproved', 2);
+                } else if ($type == 3) {
+                    $dataEksportQuery->where('files.isApproved', 3);
+                } else if ($type == 4) {
+                    $dataEksportQuery->where('files.phase', 1);
+                } else if ($type == 5) {
+                    $dataEksportQuery->where('files.phase', 2)->orWhere('files.phase', 3);
+                } else if ($type == 6) {
+                    $dataEksportQuery->where('files.phase', 4);
+                }
+            }
+
             // Execute query and get data export
             $dataEksport = $dataEksportQuery->get();
 
@@ -2187,6 +2281,11 @@ class FileController extends Controller
                 $fileName = $phases->first()->fileName;
                 $row['namaAO'] = $phases->first()->nameAO;
                 $row['nameFile'] = $fileName;
+                $row['status'] =  match ($phases->first()->isApproved) {
+                    1 => 'Approved',
+                    2 => 'Pending',
+                    default => 'Rejected',
+                };
                 $row['plafon'] = $phases->first()->plafon;
                 $row['alamat'] = $phases->first()->address;
                 $row['noHp'] = $phases->first()->no_hp;

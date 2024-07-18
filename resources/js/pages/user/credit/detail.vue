@@ -332,13 +332,13 @@
               </VCol>
 
               <VCol md="12" cols="12">
-                <span class="subtitle-1 text-center">NIK Pasangan: </span>
+                <span class="subtitle-1 text-center">NIK Pasangan (kosongkan jika tidak ada): </span>
 
                 <VTextField type="number" class="my-3" v-model="generalInfo.nik_pasangan" hint="kosongkan jika tidak ada" />
               </VCol>
 
               <VCol md="12" cols="12">
-                <span class="subtitle-1 text-center">NIK Pemilik Jaminan: </span>
+                <span class="subtitle-1 text-center">NIK Pemilik Jaminan (kosongkan jika tidak ada): </span>
 
                 <VTextField type="number" class="my-3" v-model="generalInfo.nik_jaminan" hint="kosongkan jika tidak ada" />
               </VCol>

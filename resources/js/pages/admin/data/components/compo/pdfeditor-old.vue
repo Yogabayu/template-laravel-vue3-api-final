@@ -3,7 +3,7 @@
         <v-progress-circular color="blue-lighten-3" indeterminate :size="41" :width="5"></v-progress-circular>
         Loading...
     </v-overlay>
-    <v-card class="pa-2">
+    <v-card>
         <VCardItem class="align-left">
             <span color="primary" @click="goBack" style="cursor: pointer">
                 <VIcon icon="bx-arrow-back" color="primary" tag="back" start />
@@ -15,17 +15,12 @@
         </VCardItem>
         <v-card-text>
             <v-row class="mt-4 mb-4">
-                <VCol md="12" cols="12">
-                    <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih User: </span>
-                    <v-select :items="users" autofocus v-model="selectedUser"
-                        prepend-icon="mdi-help-rhombus"></v-select>
-                </VCol>
                 <v-col md="12" cols="6">
                     <span class="subtitle-1 text-center">
                         <span style="color: red">*</span> File Tanda Tangan (format png):
                     </span>
-                    <v-file-input label="Upload Tanda Tangan" accept="image/png" prepend-icon="mdi-image" outlined dense
-                        @change="handleFileUpload"></v-file-input>
+                    <v-file-input label="Upload Tanda Tangan" accept="image/png" prepend-icon="mdi-image"
+                        outlined dense @change="handleFileUpload"></v-file-input>
                 </v-col>
                 <v-col md="12" cols="6" class="d-flex justify-end">
                     <v-btn color="primary" @click="savePDF">
@@ -57,8 +52,6 @@ export default {
             signature: null, // Untuk menyimpan URL gambar tanda tangan
             pdf: null, // Objek PDF
             interactable: null,
-            users: [],
-            selectedUser: null,
 
             filePath: this.$filePath,
             detailAttach: null,
@@ -130,7 +123,6 @@ export default {
                 this.signature = URL.createObjectURL(file);
             }
         },
-
         initSignaturePosition() {
             const img = this.$refs.signatureImage;
             this.interactable = interact(img)
@@ -158,7 +150,6 @@ export default {
                     },
                 });
         },
-
         dragMoveListener(event) {
             const target = event.target;
             const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
@@ -177,7 +168,7 @@ export default {
             const arrayBuffer = await response.arrayBuffer();
             return arrayBuffer;
         },
-
+        
         async savePDF() {
             if (!this.signature) {
                 alert('Upload tanda tangan terlebih dahulu');
@@ -244,64 +235,30 @@ export default {
                 height: scaledHeight,
             });
 
-            // // Save the modified PDF
-            // const pdfBytes = await pdfDoc.save();
-
-            // // Create a blob from PDF bytes
-            // const modifiedPdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
-
-            // // Create object URL for modified PDF
-            // const modifiedPdfUrl = URL.createObjectURL(modifiedPdfBlob);
-
-            // // Trigger download of modified PDF
-            // const link = document.createElement('a');
-            // link.href = modifiedPdfUrl;
-            // link.download = this.detailAttach.path;
-            // link.click();
-
-            // //update file pdf 
-            // this.goBack();
-
             // Save the modified PDF
             const pdfBytes = await pdfDoc.save();
 
             // Create a blob from PDF bytes
             const modifiedPdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
 
-            // Update file PDF
-            try {
-                this.overlay = true;
-                const id = this.$route.params.idAttach;
+            // Create object URL for modified PDF
+            const modifiedPdfUrl = URL.createObjectURL(modifiedPdfBlob);
 
-                const formData = new FormData();
-                formData.append('user_id', this.selectedUser);
-                formData.append("doc", new File([modifiedPdfBlob], this.detailAttach.path, { type: 'application/pdf' }));
-                formData.append("_method", "PUT");
+            // Trigger download of modified PDF
+            const link = document.createElement('a');
+            link.href = modifiedPdfUrl;
+            link.download = this.detailAttach.path;
+            link.click();
 
-                const response = await mainURL.post(
-                    `signature/${id}`,
-                    formData
-                );
-                if (response.status === 200) {
-                    this.overlay = false;
-                    this.$showToast("success", "Success", response.data.message);
-                    this.goBack();
-                } else {
-                    this.overlay = false;
-                    this.$showToast("error", "Sorry", response.data.data.message);
-                }
-            } catch (error) {
-                this.overlay = false;
-                window.location.reload();
-                this.$showToast("error", "Error", "Failed to update the signed document");
-            }
+            // this.getDetailAttach();
+            this.goBack();
         },
 
         async getDetailAttach() {
             try {
                 this.overlay = true;
                 const id = this.$route.params.idAttach;
-                const response = await mainURL.get(`/user/get-attach/${id}`);
+                const response = await mainURL.get(`/get-attach/${id}`);
 
                 if (response.status == 200) {
                     this.detailAttach = response.data.data;
@@ -315,26 +272,11 @@ export default {
                 this.$showToast("error", "Sorry", error.response.data.message);
                 this.overlay = false;
             }
-        },
-
-        async getUser() {
-            try {
-                const id = this.$route.params.idAttach;
-                const response = await mainURL.get(`/list-approval/${id}`);
-                if (response.status === 200) {
-                    this.users = response.data.data.map(item => ({
-                        value: item.user.id,   // Mengambil nilai dari 'id'
-                        title: item.user.name  // Mengambil nilai dari 'name'
-                    }));
-                }
-            } catch (error) {
-                console.log(error);
-            }
         }
     },
     async mounted() {
         await this.getDetailAttach();
-        await this.getUser();
+        // await this.renderPDF(this.filePath + this.file);
     },
 };
 </script>

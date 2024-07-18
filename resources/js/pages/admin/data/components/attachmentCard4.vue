@@ -238,18 +238,27 @@ export default {
     methods: {
         toSignature(attach) {
             if (attach.path == 'null' && attach.link == null) {
-                alert('Silahkan upload file terlebih dahulu');
+                this.$showToast('info', 'Perhatian', 'File harus di upload terlebih dahulu');
+                return;
+            }
+            const isMobile = () => {
+                return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+                    || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+                    || window.innerWidth <= 800;
+            };
+
+            if (isMobile()) {
+                this.$showToast('info', 'Perhatian', 'Disarankan menggunakan komputer untuk tampilan dan pengalaman terbaik');
                 return;
             }
 
-            this.$router.push(`/u-pdfeditor/${attach.id}`);
+            this.$router.push(`/a-pdfeditor/${attach.id}`);
         },
         openModal(type, item = null) {
             if (type == 1) {
                 this.formKomite.id = item.id;
                 this.formKomite.name = item.name;
                 this.formKomite.link = item.link;
-                this.formKomite.path = item.path;
                 this.formKomite.isSecret = parseInt(item.isSecret);
                 this.formKomite.isApprove = parseInt(item.isApprove);
 
