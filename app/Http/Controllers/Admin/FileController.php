@@ -1822,8 +1822,8 @@ class FileController extends Controller
             $attachments = Attachment::where('file_id', $file->id)->get();
 
             // Log the activity before deleting the file
-            ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Menghapus Data Kredit');
-            ActivityHelper::userActivity(Auth::user()->id, 'Menghapus Data Kredit: ' . $file->name);
+            ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Menghapus semua Data Kredit');
+            ActivityHelper::userActivity(Auth::user()->id, 'Menghapus semua Data Kredit: ' . $file->name);
 
             // Delete related records
             $file->phaseTimes()->delete();

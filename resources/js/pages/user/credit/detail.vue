@@ -1383,7 +1383,7 @@ export default {
     async deleteAttachment(id: any) {
       try {
         const confirmDelete = window.confirm(
-          "Apakah Anda yakin ingin menghapus data? Data akan terhapus secara permanen."
+          "Apakah Anda yakin ingin menghapus data ? Data akan terhapus secara permanen."
         );
         if (!confirmDelete) return;
 

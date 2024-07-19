@@ -2026,7 +2026,9 @@ class FileController extends Controller
             }
             $attch->delete();
 
-            ActivityHelper::fileActivity($attch->file_id, Auth::user()->id, 'Menghapus File Kredit: ' . $attchName);
+            $file = File::find($attch->file_id);
+
+            ActivityHelper::fileActivity($attch->file_id, Auth::user()->id, 'Menghapus File lampiran : ' . $attchName . ' | Nama kredit : ' . $file->name);
             ActivityHelper::userActivity(Auth::user()->id, 'Menghapus File Kredit: ' . $attchName);
 
             TelegramHelper::AddUpdate($attch->file_id, 'Menghapus Lampiran : ' . $attchName, Auth::user()->id);
@@ -2393,8 +2395,8 @@ class FileController extends Controller
             $attachments = Attachment::where('file_id', $file->id)->get();
 
             // Log the activity before deleting the file
-            ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Menghapus Data Kredit');
-            ActivityHelper::userActivity(Auth::user()->id, 'Menghapus Data Kredit: ' . $file->name);
+            ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Menghapus semua Data Kredit');
+            ActivityHelper::userActivity(Auth::user()->id, 'Menghapus semua Data Kredit: ' . $file->name);
 
             // Delete related records
             $file->phaseTimes()->delete();
