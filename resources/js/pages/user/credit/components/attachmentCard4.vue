@@ -34,7 +34,7 @@
                     </v-bottom-sheet>
                 </v-col>
             </v-row>
-            <span>Tutorial tanda tangan file ( <a href="https://youtu.be/d3fcmpIqNeo" target="_blank">disini</a> )</span>
+            <span>Tutorial tanda tangan file ( <a href="https://file.yogabayuap.com/index.php/s/6YSRSgcEwaeRAip" target="_blank">disini</a> )</span>
         </v-card-text>
 
         <!-- <div v-for="(attachment, index) in data" :key="index">
