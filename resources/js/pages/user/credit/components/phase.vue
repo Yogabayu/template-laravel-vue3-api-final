@@ -319,7 +319,7 @@
     <v-card-actions v-if="
       userAccessNow &&
       parseInt(userAccessNow.canApprove) &&
-      parseInt(dataFile.isApproved) != 3
+      (parseInt(dataFile.isApproved) != 3 && parseInt(dataFile.isApproved) != 4)
     ">
       <v-col class="d-flex justify-space-beetwen">
         <v-btn color="info" text="Prev Phase" variant="tonal" @click="step(fileId, '-')"

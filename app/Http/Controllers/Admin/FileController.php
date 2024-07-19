@@ -146,7 +146,7 @@ class FileController extends Controller
                 case 4: // cancel
                     $file->creditScoring = $file->phase;
                     $file->reasonRejected = $validated['reasonRejected'];
-                    $message = 'Cancel by User';
+                    $message = 'Cancel by Debitur';
                     break;
                 default:
                     $message = 'Status diubah';
@@ -2309,7 +2309,7 @@ class FileController extends Controller
                 $row['status'] =  match ($phases->first()->isApproved) {
                     1 => 'Approved',
                     2 => 'Pending',
-                    4 => 'Cancel by User',
+                    4 => 'Cancel by Debitur',
                     default => 'Rejected',
                 };
                 $row['plafon'] = $phases->first()->plafon;

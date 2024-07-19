@@ -671,7 +671,7 @@ class TelegramHelper
                             $message = "📣 *Ada Update Baru*\n\n"
                                 . str_pad("*AO*", 25) . ": " . $ao->name . "\n"
                                 . str_pad("*Pemohon Kredit*", 18) . ": " . $file->name . "\n\n"
-                                . str_pad("*Status Kredit*", 18) . ": " . "Cancel by User" . "\n"
+                                . str_pad("*Status Kredit*", 18) . ": " . "Cancel by Debitur" . "\n"
                                 . str_pad("*Alasan Ditolak*", 18) . ": " . $file->reasonRejected . "\n"
                                 . str_pad("*Plafon*", 25) . ": Rp. " . number_format($file->plafon, 0, ',', '.') . "\n"
                                 . "\nSilakan cek detailnya di Website ECAR.\n";
@@ -731,7 +731,7 @@ class TelegramHelper
                 $message = "📣 *Ada Update Baru*\n\n"
                     . str_pad("*AO*", 25) . ": " . $ao->name . "\n"
                     . str_pad("*Pemohon Kredit*", 18) . ": " . $file->name . "\n\n"
-                    . str_pad("*Status Kredit*", 18) . ": " . "Cancel by User" . "\n"
+                    . str_pad("*Status Kredit*", 18) . ": " . "Cancel by Debitur" . "\n"
                     . str_pad("*Alasan Ditolak*", 18) . ": " . $file->reasonRejected . "\n"
                     . str_pad("*Plafon*", 25) . ": Rp. " . number_format($file->plafon, 0, ',', '.') . "\n"
                     . "\nSilakan cek detailnya di Website ECAR.\n";

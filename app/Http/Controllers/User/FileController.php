@@ -269,7 +269,7 @@ class FileController extends Controller
                 $row['status'] =  match ($phases->first()->isApproved) {
                     1 => 'Approved',
                     2 => 'Pending',
-                    4 => 'Cancel by User',
+                    4 => 'Cancel by Debitur',
                     default => 'Rejected',
                 };
                 $row['alamat'] = $phases->first()->address;
@@ -358,7 +358,7 @@ class FileController extends Controller
                     $row['status'] =  match ($phases->first()->isApproved) {
                         1 => 'Approved',
                         2 => 'Pending',
-                        4 => 'Cancel by User',
+                        4 => 'Cancel by Debitur',
                         default => 'Rejected',
                     };
                     $row['alamat'] = $phases->first()->address;
@@ -459,7 +459,7 @@ class FileController extends Controller
                     $row['status'] =  match ($phases->first()->isApproved) {
                         1 => 'Approved',
                         2 => 'Pending',
-                        4 => 'Cancel by User',
+                        4 => 'Cancel by Debitur',
                         default => 'Rejected',
                     };
                     $row['alamat'] = $phases->first()->address;
@@ -533,7 +533,7 @@ class FileController extends Controller
                 case 4: // cancel
                     $file->creditScoring = $file->phase;
                     $file->reasonRejected = $validated['reasonRejected'];
-                    $message = 'Cancel by User';
+                    $message = 'Cancel by Debitur';
                     break;
                 default:
                     $message = 'Status diubah';
@@ -951,6 +951,10 @@ class FileController extends Controller
                 'required' => ':attribute harus diisi',
             ]);
             $file = File::findOrFail($request->id);
+
+            if ($file->isApproved == 3 || $file->isApproved == 4) {
+                return ResponseHelper::errorRes('Maaf, Data Kredit dalam keadaan di reject atau di cancel oleh debitur');
+            }
 
             if ($request->type == 'next') {
                 $cekAllApprove = Approval::where('file_id', $file->id)

@@ -7,14 +7,14 @@
       <v-chip color="success" v-if="parseInt(dataFile.isApproved) == 1" @click="openModal(9)">Approved</v-chip>
       <v-chip color="warning" v-if="parseInt(dataFile.isApproved) == 2" @click="openModal(9)">Pending</v-chip>
       <v-chip color="error" v-if="parseInt(dataFile.isApproved) == 3" @click="openModal(9)">Rejected</v-chip>
-      <v-chip color="error" v-if="parseInt(dataFile.isApproved) == 4" @click="openModal(9)">Cancel by User</v-chip>
+      <v-chip color="error" v-if="parseInt(dataFile.isApproved) == 4" @click="openModal(9)">Cancel by Debitur</v-chip>
     </v-card-title>
     <v-card-title class="text-2xl font-weight-bold d-flex justify-center" v-else>
       Detail
       <v-chip color="success" v-if="parseInt(dataFile.isApproved) == 1">Approved</v-chip>
       <v-chip color="warning" v-if="parseInt(dataFile.isApproved) == 2">Pending</v-chip>
       <v-chip color="error" v-if="parseInt(dataFile.isApproved) == 3">Rejected</v-chip>
-      <v-chip color="error" v-if="parseInt(dataFile.isApproved) == 4">Cancel by User</v-chip>
+      <v-chip color="error" v-if="parseInt(dataFile.isApproved) == 4">Cancel by Debitur</v-chip>
     </v-card-title>
     <v-card-text class="font-weight-bold d-flex justify-end" v-if="dataFile && parseInt(dataFile.phase) == 6">
       <v-btn color="primary" @click="generateReport(fileId)" size="x-small">
