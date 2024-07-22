@@ -337,7 +337,9 @@ export default {
       }
     },
   },
+  inject:['loading'],
   mounted() {
+    this.loading.hide();
     this.getRekapCredit();
   },
 };
