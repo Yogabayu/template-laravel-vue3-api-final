@@ -160,7 +160,10 @@
                 <v-row class="pa-2 mb-1">
                   <span>Dokumen Pendukung 📄</span>
                   <v-spacer></v-spacer>
-                  <v-btn v-if="parseInt(dataFile.phase) < 5 && (userAccessNow && parseInt(userAccessNow.canInsertData) == 1)" color="primary" size="x-small" class="mt-2" @click="openModal(1)">
+                  <!-- <v-btn v-if="parseInt(dataFile.phase) < 5 && (userAccessNow && parseInt(userAccessNow.canInsertData) == 1)" color="primary" size="x-small" class="mt-2" @click="openModal(1)">
+                    Tambah Data Lain
+                  </v-btn> -->
+                  <v-btn v-if="parseInt(dataFile.phase) < 5" color="primary" size="x-small" class="mt-2" @click="openModal(1)">
                     Tambah Data Lain
                   </v-btn>
                 </v-row>
