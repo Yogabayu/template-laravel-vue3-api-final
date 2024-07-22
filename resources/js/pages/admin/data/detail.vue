@@ -325,14 +325,14 @@
                 <VTextField class="my-3" v-model="generalInfo.address" :rules="[rules.required]" />
               </VCol>
               <VCol md="12" cols="12">
-                <span class="subtitle-1 text-center">NIK Pasangan: </span>
+                <span class="subtitle-1 text-center">NIK Pasangan (kosongkan jika tidak ada): </span>
 
-                <VTextField class="my-3" v-model="generalInfo.nik_pasangan" />
+                <VTextField class="my-3" v-model="generalInfo.nik_pasangan" hint="Kosongkan jika tidak ada" />
               </VCol>
               <VCol md="12" cols="12">
-                <span class="subtitle-1 text-center">NIK Pemilik Jaminan: </span>
+                <span class="subtitle-1 text-center">NIK Pemilik Jaminan (kosongkan jika tidak ada): </span>
 
-                <VTextField class="my-3" v-model="generalInfo.nik_jaminan" />
+                <VTextField class="my-3" v-model="generalInfo.nik_jaminan" hint="Kosongkan jika tidak ada" />
               </VCol>
               <VCol md="12" cols="12">
                 <span class="subtitle-1 text-center">No. HP: </span>
@@ -481,6 +481,68 @@
         </template>
       </v-card>
     </v-dialog>
+
+    <v-dialog v-model="isInsertNewApproval" width="auto" persistent transition="dialog-top-transition">
+      <v-card>
+        <template v-slot:title> Tambah Approval </template>
+
+        <template v-slot:text>
+          <v-form @submit.prevent="insertNewApproval">
+            <v-row>
+              <VCol md="12" cols="12">
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih karyawan:
+                </span>
+                <v-select :items="listUser" autofocus v-model="dataApproval.user_id"
+                  prepend-icon="mdi-help-rhombus"></v-select>
+              </VCol>
+              <VCol md="12" cols="12">
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih Phase:
+                </span>
+                <v-select :items="listPhase" autofocus v-model="dataApproval.phase"
+                  prepend-icon="mdi-help-rhombus"></v-select>
+              </VCol>
+              <VCol md="12" cols="12">
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih Status:
+                  <v-select :items="listApproval" autofocus v-model="dataApproval.approved"
+                    prepend-icon="mdi-help-rhombus"></v-select>
+                </span>
+              </VCol>
+              <VCol cols="12" class="d-flex flex-wrap gap-4">
+                <VBtn type="submit"> Tambah </VBtn>
+                <button type="button" class="btn btn-blue" @click="closeModal(10)">
+                  Batal
+                </button>
+              </VCol>
+            </v-row>
+          </v-form>
+        </template>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="isDeleteApproval" width="auto" persistent transition="dialog-top-transition">
+      <v-card>
+        <template v-slot:title> Hapus Approval </template>
+
+        <template v-slot:text>
+          <v-form @submit.prevent="deleteApproval">
+            <v-row>
+              <VCol md="12" cols="12">
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih karyawan:
+                </span>
+                <v-select :items="listedApproval" autofocus v-model="idDeleteApproval"
+                  prepend-icon="mdi-help-rhombus"></v-select>
+              </VCol>
+              <VCol cols="12" class="d-flex flex-wrap gap-4">
+                <VBtn type="submit"> Hapus </VBtn>
+                <button type="button" class="btn btn-blue" @click="closeModal(11)">
+                  Batal
+                </button>
+              </VCol>
+            </v-row>
+          </v-form>
+        </template>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -505,6 +567,32 @@ export default {
       isShowApprovals: false,
       isChangeStatusCredit: false,
       isShowAttachment: false,
+
+      //newApproval
+      listUser: [],
+      isInsertNewApproval: false,
+      dataApproval: {
+        file_id: null,
+        user_id: null,
+        phase: null,
+        approved: null,
+      },
+      listPhase: [
+        { title: "1. Pooling", value: 1 },
+        { title: "2. SLIK", value: 2 },
+        { title: "3. Survei", value: 3 },
+        { title: "4. Komite", value: 4 },
+        { title: "5. Operation", value: 5 },
+      ],
+      listApproval: [
+        { title: "Approved", value: 1 },
+        { title: "Pending", value: 0 },
+      ],
+
+      //deleteApproval
+      listedApproval: [],
+      isDeleteApproval: false,
+      idDeleteApproval: null,
 
       //=>list nama File
       nameFileList: [
@@ -544,7 +632,7 @@ export default {
         { value: 'PROGRAM KKB SECOND', title: 'PROGRAM KKB SECOND' },
         { value: 'CENTRO', title: 'CENTRO' },
       ],
-      statusCreditList :[
+      statusCreditList: [
         { value: 'FRESH', title: 'FRESH' },
         { value: 'REPEAT ORDER', title: 'REPEAT ORDER' },
         { value: 'TOPUP', title: 'TOPUP' },
@@ -945,6 +1033,11 @@ export default {
             this.separateNotesByPhase(this.dataFile, index);
           }
 
+          //approval
+          this.listedApproval = this.dataFile.approvals.map(item => ({
+            value: item.id,
+            title: `${item.user.name} - fase ${item.phase}`
+          }));
           this.overlay = false;
         } else {
           this.$showToast("error", "Sorry", response.data.data.message);
@@ -993,6 +1086,10 @@ export default {
         this.isChangeStatusCredit = true;
       } else if (type == 10) {
         this.isShowAttachment = true;
+      } else if (type == 11) {
+        this.isInsertNewApproval = true;
+      } else if (type == 12) {
+        this.isDeleteApproval = true;
       }
     },
     closeModal(type: number) {
@@ -1014,6 +1111,15 @@ export default {
         this.changeStatus.id = null;
         this.changeStatus.status = null;
         this.changeStatus.reasonRejected = null;
+      } else if (type == 10) {
+        this.dataApproval.file_id = null;
+        this.dataApproval.user_id = null;
+        this.dataApproval.phase = null;
+        this.dataApproval.approved = null;
+        this.isInsertNewApproval = false;
+      } else if (type == 11) {
+        this.isDeleteApproval = false;
+        this.idDeleteApproval = null;
       }
     },
 
@@ -1032,10 +1138,10 @@ export default {
         if (this.generalInfo.nik_pemohon != "") {
           formData.append("nik_pemohon", this.generalInfo.nik_pemohon);
         }
-        if (this.generalInfo.nik_pasangan != "") {
+        if (this.generalInfo.nik_pasangan !== "" && this.generalInfo.nik_pasangan !== null && this.generalInfo.nik_pasangan !== "null" && this.generalInfo.nik_pasangan != '-') {
           formData.append("nik_pasangan", this.generalInfo.nik_pasangan);
         }
-        if (this.generalInfo.nik_jaminan != "") {
+        if (this.generalInfo.nik_jaminan !== "" && this.generalInfo.nik_jaminan !== null && this.generalInfo.nik_jaminan !== "null" && this.generalInfo.nik_jaminan != '-') {
           formData.append("nik_jaminan", this.generalInfo.nik_jaminan);
         }
         if (this.generalInfo.address != "") {
@@ -1397,10 +1503,104 @@ export default {
       }
     },
     ///////////////////////////////////////////////////////////////////////////////////
+
+    async getUser() {
+      try {
+        this.overlay = true;
+        const response = await mainURL.get(`/getAllUser`);
+
+        if (response.status === 200) {
+          this.listUser = response.data.data.map(item => ({
+            value: item.id,   // Mengambil nilai dari 'id'
+            title: item.name  // Mengambil nilai dari 'name'
+          }));
+
+          this.overlay = false;
+        } else {
+          this.$showToast("error", "Sorry", response.data.data.message);
+          this.overlay = false;
+        }
+      } catch (error) {
+        this.overlay = false;
+        this.$showToast("error", "Sorry", error.response.data.message);
+      }
+    },
+
+    async insertNewApproval() {
+      try {
+        this.overlay = true;
+        const formData = new FormData();
+        formData.append("file_id", this.dataFile.id);
+        formData.append("user_id", this.dataApproval.user_id);
+        formData.append("phase", this.dataApproval.phase);
+        formData.append("approved", this.dataApproval.approved);
+        formData.append("_method", "POST");
+
+        const response = await mainURL.post(
+          "/add-approval",
+          formData,
+        );
+        if (response.status === 200) {
+          this.overlay = false;
+          this.closeModal(10);
+          this.getDetailFile(this.fileId);
+          this.uploadProgress = null;
+          this.$showToast("success", "Success", response.data.message);
+        } else {
+          this.overlay = false;
+          this.closeModal(10);
+          this.uploadProgress = null;
+          this.getDetailFile(this.fileId);
+          this.$showToast("error", "Sorry", response.data.message);
+        }
+      } catch (error) {
+        this.overlay = false;
+        this.closeModal(10);
+        this.getDetailFile(this.fileId);
+        this.$showToast("error", "Sorry", error.response.data.message);
+      }
+    },
+    async deleteApproval() {
+      try {
+        const confirmDelete = window.confirm(
+          "Apakah Anda yakin ingin menghapus data? Data akan terhapus secara permanen."
+        );
+        if (!confirmDelete) return;
+
+        this.overlay = true;
+        const formData = new FormData();
+        formData.append("idApproval", this.idDeleteApproval);
+        formData.append("_method", "POST");
+
+        const response = await mainURL.post(
+          "/delete-approval",
+          formData,
+        );
+        if (response.status === 200) {
+          this.overlay = false;
+          this.closeModal(11);
+          this.getDetailFile(this.fileId);
+          this.uploadProgress = null;
+          this.$showToast("success", "Success", response.data.message);
+        } else {
+          this.overlay = false;
+          this.closeModal(11);
+          this.uploadProgress = null;
+          this.getDetailFile(this.fileId);
+          this.$showToast("error", "Sorry", response.data.message);
+        }
+      } catch (error) {
+        this.overlay = false;
+        this.closeModal(11);
+        this.getDetailFile(this.fileId);
+        this.$showToast("error", "Sorry", error.response.data.message);
+      }
+    }
   },
   mounted() {
     this.checkMobile();
     this.getUserData();
+    this.getUser();
     this.getDetailFile(this.fileId);
   },
 };

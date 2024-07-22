@@ -78,6 +78,7 @@ export default {
       logo: logo,
     };
   },
+  inject: ['loading'],
   methods: {
     saveUserDataAndToken(data) {
       localStorage.setItem("userData", JSON.stringify(data.user));
@@ -90,6 +91,7 @@ export default {
 
     async login() {
       try {
+        this.loading.show()
         const userAgent = navigator.userAgent;
         const response = await mainURL.post("/login", {
           nik: this.form.nik,
@@ -99,14 +101,15 @@ export default {
 
         if (response.status === 200) {
           this.saveUserDataAndToken(response.data);
-          if (response.data.user.position.name=="administrator") {
+          if (response.data.user.position.name == "administrator") {
             await this.$router.push("/dashboard");
           } else {
-            await this.$router.push("/user-dashboard");     
+            await this.$router.push("/user-dashboard");
           }
 
           this.$showToast("success", "Yeay", "Selamat anda Berhasill login, mengarahkan ke dashboard.....");
         } else {
+          this.loading.hide();
           const errorMessage =
             response && response.data && response.data.message
               ? response.data.message

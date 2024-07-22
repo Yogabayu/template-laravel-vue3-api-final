@@ -39,6 +39,66 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class FileController extends Controller
 {
+    public function signaturefile(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'doc' => 'required | mimes:pdf',
+            ]);
+            // cek Approval
+            $attchment = Attachment::findOrFail($id);
+
+            $canApprov = Approval::where('file_id', $attchment->file_id)
+                ->where('user_id', Auth::user()->id)
+                ->where('phase', 4)
+                ->count();
+
+            if ($canApprov == 0) {
+                return ResponseHelper::errorRes('Anda tidak diizinkan untuk menandatangani file ini');
+            }
+
+
+            $fileObject = $request->file('doc');
+            if ($fileObject === null) {
+                throw new \Exception('File not found');
+            }
+
+            $imageEXT = $fileObject->getClientOriginalName();
+            $filename = pathinfo($imageEXT, PATHINFO_FILENAME);
+            $EXT = $fileObject->getClientOriginalExtension();
+            $fileimage = $filename . '-' . Str::random(10) . '_' . time() . '.' . $EXT;
+
+            $path = $fileObject->move(public_path('file/' . $attchment->file_id . '/'), $fileimage);
+            if ($path === false) {
+                throw new \Exception('Failed to move file');
+            }
+
+            $attchment->link = null;
+            $attchment->path = $fileimage;
+
+            $attchment->save();
+
+            //update approval
+            $userId = Auth::user()->id;
+            $approval = Approval::where('file_id', $attchment->file_id)
+                ->where('user_id', $userId)
+                ->where('phase', 4)
+                ->first();
+            $approval->approved = 1;
+            $approval->save();
+
+            $file = File::findOrFail($attchment->file_id);
+
+            ActivityHelper::fileActivity($attchment->file_id, Auth::user()->id, 'Menambahkan tanda tangan di file ' . $file->name);
+            ActivityHelper::userActivity(Auth::user()->id, 'Menambahkan tanda tangan di file ' . $file->name);
+            TelegramHelper::AddUpdate($file->id, 'Menambahkan Tanda Tangan di file ' . $attchment->name . ' ', Auth::user()->id);
+
+            return ResponseHelper::successRes('berhasil melakukan penandatanganan', $attchment);
+        } catch (\Throwable $th) {
+            return ResponseHelper::errorRes($th->getMessage());
+        }
+    }
+
     public function userAccess()
     {
         try {
@@ -169,6 +229,8 @@ class FileController extends Controller
                     $dataEksportQuery->where('files.isApproved', 2);
                 } else if ($type == 3) {
                     $dataEksportQuery->where('files.isApproved', 3);
+                } else if ($type == 7) {
+                    $dataEksportQuery->where('files.isApproved', 4);
                 } else if ($type == 4) {
                     $dataEksportQuery->where('files.phase', 1);
                 } else if ($type == 5) {
@@ -206,12 +268,13 @@ class FileController extends Controller
                 $fileName = $phases->first()->fileName;
                 $row['namaAO'] = $phases->first()->nameAO;
                 $row['nameFile'] = $fileName;
+                $row['plafon'] = $phases->first()->plafon;
                 $row['status'] =  match ($phases->first()->isApproved) {
                     1 => 'Approved',
                     2 => 'Pending',
+                    4 => 'Cancel by Debitur',
                     default => 'Rejected',
                 };
-                $row['plafon'] = $phases->first()->plafon;
                 $row['alamat'] = $phases->first()->address;
                 $row['noHp'] = $phases->first()->no_hp;
                 $row['order_source'] = $phases->first()->sumberOrder;
@@ -295,6 +358,12 @@ class FileController extends Controller
                     $row['namaAO'] = $phases->first()->nameAO;
                     $row['nameFile'] = $fileName;
                     $row['plafon'] = $phases->first()->plafon;
+                    $row['status'] =  match ($phases->first()->isApproved) {
+                        1 => 'Approved',
+                        2 => 'Pending',
+                        4 => 'Cancel by Debitur',
+                        default => 'Rejected',
+                    };
                     $row['alamat'] = $phases->first()->address;
                     $row['noHp'] = $phases->first()->no_hp;
                     $row['order_source'] = $phases->first()->sumberOrder;
@@ -390,6 +459,12 @@ class FileController extends Controller
                     $row['namaAO'] = $phases->first()->nameAO;
                     $row['nameFile'] = $fileName;
                     $row['plafon'] = $phases->first()->plafon;
+                    $row['status'] =  match ($phases->first()->isApproved) {
+                        1 => 'Approved',
+                        2 => 'Pending',
+                        4 => 'Cancel by Debitur',
+                        default => 'Rejected',
+                    };
                     $row['alamat'] = $phases->first()->address;
                     $row['noHp'] = $phases->first()->no_hp;
                     $row['order_source'] = $phases->first()->sumberOrder;
@@ -426,42 +501,65 @@ class FileController extends Controller
     public function changeStatus(Request $request)
     {
         try {
-            $request->validate([
+            $validated = $request->validate([
                 'id' => 'required',
                 'status' => 'required',
-                'reasonRejected' => 'required_if:status,3',
+                'reasonRejected' => 'required_if:status,3,4',
             ], [
                 'id.required' => 'ID harus diisi',
                 'status.required' => 'Status harus diisi',
                 'reasonRejected.required_if' => 'Alasan penolakan harus diisi ketika status adalah ditolak',
             ]);
 
-            $file = File::findOrFail($request->id);
+            $file = File::findOrFail($validated['id']);
+            $oldStatus = $file->isApproved;
+            $file->isApproved = $validated['status'];
 
-            // Check if the previous status was 3 and the new status is not 3
-            if ($file->isApproved == 3 && $request->status != 3) {
-                $file->reasonRejected = null;
+            switch ($validated['status']) {
+                case 1: // Approved
+                    $file->creditScoring = $file->phase;
+                    // $file->phase = 5;
+                    $message = 'Disetujui';
+                    break;
+                case 2: // Pending
+                    if ($oldStatus != 2) {
+                        $file->phase = $file->creditScoring ?? $file->phase;
+                        $file->creditScoring = null;
+                    }
+                    $message = 'Pending (kembali ke phase terakhir sebelumnya)';
+                    break;
+                case 3: // Rejected
+                    $file->creditScoring = $file->phase;
+                    $file->reasonRejected = $validated['reasonRejected'];
+                    $message = 'Ditolak';
+                    break;
+                case 4: // cancel
+                    $file->creditScoring = $file->phase;
+                    $file->reasonRejected = $validated['reasonRejected'];
+                    $message = 'Cancel by Debitur';
+                    break;
+                default:
+                    $message = 'Status diubah';
             }
 
-            $file->isApproved = $request->status;
-
-            if ($request->status == 3) {
-                $file->reasonRejected = $request->reasonRejected;
+            // Clear reasonRejected if status changed from 3/4 to 1/2
+            if (($oldStatus == 3 && $validated['status'] != 3) || ($oldStatus == 4 && $validated['status'] != 4)) {
+                $file->reasonRejected = null;
             }
 
             $file->save();
 
-            ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Mengganti status kredit');
-            ActivityHelper::userActivity(Auth::user()->id, 'Mengganti status kredit ' . $file->name);
-            TelegramHelper::changeStatus($file->id, $request->status, $file->user_id);
+            ActivityHelper::fileActivity($file->id, Auth::id(), 'Mengganti status kredit');
+            ActivityHelper::userActivity(Auth::id(), "Mengganti status kredit {$file->name}");
+            TelegramHelper::changeStatus($file->id, $validated['status'], $file->user_id);
 
-            return ResponseHelper::successRes('File updated successfully', $file);
+            return ResponseHelper::successRes("Update berhasil dan status diubah menjadi $message", $file);
         } catch (ModelNotFoundException $e) {
             return ResponseHelper::errorRes('File not found');
         } catch (ValidationException $e) {
             return ResponseHelper::errorRes($e->errors());
         } catch (\Exception $e) {
-            return ResponseHelper::errorRes('An error occurred while updating the file | ' . $e->getMessage());
+            return ResponseHelper::errorRes('An error occurred while updating the file: ' . $e->getMessage());
         }
     }
 
@@ -663,6 +761,7 @@ class FileController extends Controller
     public function editAttachment(Request $request, $id)
     {
         try {
+            $message = '';
             $request->validate([
                 'link' => 'nullable|url',
                 'path' => 'nullable|file|mimes:jpeg,jpg,png,pdf,doc,docx,xls,xlsx',
@@ -723,6 +822,10 @@ class FileController extends Controller
 
             $attachment->save();
 
+            if ($attachment->name == "File Banding" && $attachment->isApprove != 1) {
+                $message = 'Silahkan Hubungi Uplevel untuk mendapatkan persetujuan file banding';
+            }
+
             $file = File::where('id', $attachment->file_id)->first();
 
             ActivityHelper::fileActivity($attachment->file_id, Auth::user()->id, 'Mengedit Lampiran');
@@ -730,7 +833,7 @@ class FileController extends Controller
 
             TelegramHelper::AddUpdate($attachment->file_id, 'Merubah Lampiran : ' . $request->name, Auth::user()->id);
 
-            return ResponseHelper::successRes('Attachment updated successfully', $attachment);
+            return ResponseHelper::successRes('Berhasil melakukan edit file ' . $message, $attachment);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             // If the attachment is not found, create a new one
             $attachment = new Attachment();
@@ -851,6 +954,10 @@ class FileController extends Controller
                 'required' => ':attribute harus diisi',
             ]);
             $file = File::findOrFail($request->id);
+
+            if ($file->isApproved == 3 || $file->isApproved == 4) {
+                return ResponseHelper::errorRes('Maaf, Data Kredit dalam keadaan di reject atau di cancel oleh debitur');
+            }
 
             if ($request->type == 'next') {
                 $cekAllApprove = Approval::where('file_id', $file->id)
@@ -1922,7 +2029,9 @@ class FileController extends Controller
             }
             $attch->delete();
 
-            ActivityHelper::fileActivity($attch->file_id, Auth::user()->id, 'Menghapus File Kredit: ' . $attchName);
+            $file = File::find($attch->file_id);
+
+            ActivityHelper::fileActivity($attch->file_id, Auth::user()->id, 'Menghapus File lampiran : ' . $attchName . ' | Nama kredit : ' . $file->name);
             ActivityHelper::userActivity(Auth::user()->id, 'Menghapus File Kredit: ' . $attchName);
 
             TelegramHelper::AddUpdate($attch->file_id, 'Menghapus Lampiran : ' . $attchName, Auth::user()->id);
@@ -1939,6 +2048,7 @@ class FileController extends Controller
             $userPos = User::where('id', Auth::user()->id)->first();
             $getPostionData = Position::where('id', $userPos->position_id)->first();
             $role = Role::where('id', $getPostionData->role_id)->first();
+            $currentDate = Carbon::now();
 
             if ($userNow->position->name == 'Account Officer' || $userNow->position->name == 'AO' || $userNow->position->name == 'ao' || $userNow->position->name == 'account officer' || $userNow->position->name == 'Account Officer Executive' || $userNow->position->name == 'account officer executive' || $userNow->position->name == 'Account Officer / Executive AO' || $userNow->position->name == 'AO / RO') {
 
@@ -1972,7 +2082,12 @@ class FileController extends Controller
                         break;
                     }
                 }
-                $files = File::where('user_id', Auth::user()->id)->with('user', 'user.position.offices', 'attachments')->orderBy('created_at', 'desc')->get();
+                $files = File::where('user_id', Auth::user()->id)
+                    ->with('user', 'user.position.offices', 'attachments')
+                    ->whereMonth('created_at', $currentDate->month)
+                    ->whereYear('created_at', $currentDate->year)
+                    ->orderBy('created_at', 'desc')
+                    ->get();
 
                 ActivityHelper::userActivity(Auth::user()->id, 'Mengakses halaman File Credit');
 
@@ -2012,7 +2127,12 @@ class FileController extends Controller
                 // Inisialisasi array untuk menampung semua file yang terkait
                 $files = [];
 
-                $fileAll = File::with('user', 'user.position.offices', 'attachments')->orderBy('created_at', 'desc')->get();
+                $fileAll = File::with('user', 'user.position.offices', 'attachments')
+                    ->orderBy('created_at', 'desc')
+                    ->whereMonth('created_at', $currentDate->month)
+                    ->whereYear('created_at', $currentDate->year)
+                    ->get();
+
                 foreach ($fileAll as $eachFile) {
                     // Periksa posisi pengguna yang mengunggah file
                     $uploaderPositionId = DB::table('users')
@@ -2370,8 +2490,8 @@ class FileController extends Controller
             $attachments = Attachment::where('file_id', $file->id)->get();
 
             // Log the activity before deleting the file
-            ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Menghapus Data Kredit');
-            ActivityHelper::userActivity(Auth::user()->id, 'Menghapus Data Kredit: ' . $file->name);
+            ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Menghapus semua Data Kredit');
+            ActivityHelper::userActivity(Auth::user()->id, 'Menghapus semua Data Kredit: ' . $file->name);
 
             // Delete related records
             $file->phaseTimes()->delete();

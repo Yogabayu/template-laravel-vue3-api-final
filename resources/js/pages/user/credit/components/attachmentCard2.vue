@@ -1,36 +1,37 @@
 <template>
-    <v-overlay :model-value="overlay" class="align-center justify-center">
-        <v-progress-circular color="blue-lighten-3" indeterminate :size="41" :width="5"></v-progress-circular>
-        Loading...
-    </v-overlay>
-    <v-card color="warning">
-        <v-card-title class="py-2">
+    <v-card>
+        <v-card-text class="py-1 header-color">
             <v-row align="center" no-gutters>
-                <v-col cols="auto">
-                    <span class="text-h6 font-weight-medium">Phase 2 (SLIK) 📄</span>
+                <v-col cols="auto" class="mr-auto">
+                    <span class="text-subtitle-1 font-weight-bold ml-2">Phase 2 (SLIK) 📄</span>
                 </v-col>
-                <v-spacer></v-spacer>
                 <v-col cols="auto">
                     <v-bottom-sheet max-width="400">
                         <template v-slot:activator="{ props }">
                             <v-btn icon v-bind="props" color="on-primary" variant="text">
-                                <v-icon color="on-primary">mdi-help-circle-outline</v-icon>
+                                <v-icon color="white">mdi-help-circle-outline</v-icon>
                             </v-btn>
                         </template>
                         <v-card>
-                            <v-card-title class="text-h6 py-2 px-4">
+                            <v-card-text class="text-h6 py-2 px-4">
                                 Penjelasan Phase SLIK
-                            </v-card-title>
+                            </v-card-text>
                             <v-card-text class="py-2 px-4">
-                                Tahap ini melibatkan proses pengecekan riwayat kredit nasabah melalui Sistem Layanan Informasi Keuangan (SLIK). SLIK merupakan sistem yang dikelola oleh Otoritas Jasa Keuangan (OJK) untuk menyediakan informasi pinjaman debitur. Hasil analisis SLIK digunakan untuk menilai kelayakan kredit dan risiko nasabah berdasarkan catatan keuangan sebelumnya.
+                                Tahap ini melibatkan proses pengecekan riwayat kredit nasabah melalui Sistem Layanan
+                                Informasi Keuangan (SLIK).
+                                SLIK merupakan sistem yang dikelola oleh Otoritas Jasa Keuangan (OJK) untuk menyediakan
+                                informasi pinjaman
+                                debitur. Hasil analisis SLIK digunakan untuk menilai kelayakan kredit dan risiko nasabah
+                                berdasarkan catatan
+                                keuangan sebelumnya.
                             </v-card-text>
                         </v-card>
                     </v-bottom-sheet>
                 </v-col>
             </v-row>
-        </v-card-title>
+        </v-card-text>
 
-        <div v-for="(attachment, index) in data" :key="index">
+        <!-- <div v-for="(attachment, index) in data" :key="index">
             <v-list density="compact">
                 <v-list-item v-if="shouldDisplay(attachment)">
                     <template v-slot:prepend>
@@ -112,8 +113,66 @@
                     </template>
                 </v-list-item>
             </v-list>
+        </div> -->
+
+        <div v-for="(attachment, index) in data" :key="index" class="pa-1">
+            <v-row no-gutters align="center" v-if="shouldDisplay(attachment)"
+                :class="parseInt(attachment.isSecret) ? 'bg-grey-lighten-4' : ''">
+                <v-col cols="auto" class="mr-2">
+                    <v-icon :color="parseInt(attachment.isApprove) ? 'success' : 'error'" size="small">
+                        {{ parseInt(attachment.isApprove) ? 'mdi-check-circle' : 'mdi-close-circle' }}
+                    </v-icon>
+                </v-col>
+
+                <v-col>
+                    <div class="text-subtitle-2 font-weight-medium">{{ attachment.name }}</div>
+                    <div v-if="attachment.note !== 'null'" class="text-caption text-grey-darken-1">{{ attachment.note }}
+                    </div>
+                </v-col>
+
+                <v-col cols="auto">
+                    <div class="d-flex">
+                        <v-tooltip location="top" text="Lihat File" v-if="canViewFile(attachment)">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-link-external" size="small" color="primary"
+                                    variant="text" class="mr-2" :href="getFileUrl(attachment)" target="_blank"
+                                    rel="noopener noreferrer">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+
+                        <v-tooltip location="top" text="Upload File" v-if="canUploadFile(attachment)">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-upload" size="small" color="primary" variant="text"
+                                    class="mr-2" @click="openModal(1, attachment)">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+
+                        <v-tooltip location="top" text="Edit File" v-if="canEditFile(attachment)">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-edit" size="small" color="info" variant="text"
+                                    class="mr-2" @click="openModal(1, attachment)">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+
+                        <v-tooltip location="top" text="Hapus File" v-if="canDeleteFile(attachment)">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-trash" size="small" color="error" variant="text"
+                                    @click="deleteAttachment(attachment.id)">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+                    </div>
+                </v-col>
+                <v-divider v-if="index < data.length - 1"></v-divider>
+            </v-row>
         </div>
-        <div v-if="showAnalisaAwalCredit()">
+
+        <v-divider :thickness="7"></v-divider>
+
+        <!-- <div v-if="showAnalisaAwalCredit()">
             <v-list density="compact">
                 <v-list-item>
                     <template v-slot:prepend>
@@ -127,7 +186,7 @@
                         <div class="operation-wrapper">
                             <div class="d-flex justify-space-between">
                                 <v-tooltip location="top" text="Lihat File"
-                                    v-if="((formAnalytic.path !== 'null' && formAnalytic.path !== null) || formAnalytic.link !== null  )">
+                                    v-if="((formAnalytic.path !== 'null' && formAnalytic.path !== null) || formAnalytic.link !== null)">
                                     <template v-slot:activator="{ props }">
                                         <a v-bind="props" :href="`${filePath}/${fileId}/${formAnalytic.path}`"
                                             target="_blank" rel="noopener noreferrer"
@@ -176,8 +235,62 @@
                     </template>
                 </v-list-item>
             </v-list>
+        </div> -->
+
+        <div v-if="showAnalisaAwalCredit()" class="pa-1">
+            <v-row no-gutters align="center" :class="parseInt(formAnalytic.isSecret) ? 'bg-grey-lighten-4' : ''">
+                <v-col cols="auto" class="mr-2">
+                    <v-icon :color="parseInt(formAnalytic.isApprove) ? 'success' : 'error'" size="small">
+                        {{ parseInt(formAnalytic.isApprove) ? 'mdi-check-circle' : 'mdi-close-circle' }}
+                    </v-icon>
+                </v-col>
+
+                <v-col>
+                    <div class="text-subtitle-2 font-weight-medium">{{ formAnalytic.name }}</div>
+                    <div v-if="formAnalytic.note != null" class="text-caption text-grey-darken-1">{{ formAnalytic.note
+                        }}</div>
+                </v-col>
+
+                <v-col cols="auto">
+                    <div class="d-flex">
+                        <v-tooltip location="top" text="Lihat File" v-if="canViewFile(formAnalytic)">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-link-external" size="small" color="primary"
+                                    variant="text" class="mr-2" :href="getFileUrl(formAnalytic)" target="_blank"
+                                    rel="noopener noreferrer">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+
+                        <v-tooltip location="top" text="Upload File / Link" v-if="canAppealFile(formAnalytic)">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-upload" size="small" color="primary" variant="text"
+                                    class="mr-2" @click="openModal(2, formAnalytic)">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+
+                        <v-tooltip location="top" text="Edit File" v-if="canAppealFile(formAnalytic)">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-edit" size="small" color="info" variant="text"
+                                    class="mr-2" @click="openModal(2, formAnalytic)">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+
+                        <!-- <v-tooltip location="top" text="Hapus File" v-if="canAppealFile(formAnalytic)">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-trash" size="small" color="error" variant="text"
+                                    @click="deleteAttachment(formAnalytic.id)">
+                                </v-btn>
+                            </template>
+                        </v-tooltip> -->
+                    </div>
+                </v-col>
+            </v-row>
         </div>
-        <div v-if="showFileBanding()">
+        <v-divider></v-divider>
+        <!-- <div v-if="showFileBanding()">
             <v-list density="compact">
                 <v-list-item>
                     <template v-slot:prepend>
@@ -237,6 +350,56 @@
                     </template>
                 </v-list-item>
             </v-list>
+        </div> -->
+        <div v-if="showFileBanding()" class="pa-1">
+            <v-row no-gutters align="center" :class="parseInt(formAppeal.isSecret) ? 'bg-grey-lighten-4' : ''">
+                <v-col cols="auto" class="mr-2">
+                    <v-icon :color="parseInt(formAppeal.isApprove) ? 'success' : 'error'" size="small">
+                        {{ parseInt(formAppeal.isApprove) ? 'mdi-check-circle' : 'mdi-close-circle' }}
+                    </v-icon>
+                </v-col>
+
+                <v-col>
+                    <div class="text-subtitle-2 font-weight-medium">{{ formAppeal.name }}</div>
+                </v-col>
+
+                <v-col cols="auto">
+                    <div class="d-flex">
+                        <v-tooltip location="top" text="Lihat File" v-if="canViewFile(formAppeal)">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-link-external" size="small" color="primary"
+                                    variant="text" class="mr-2" :href="getFileUrl(formAppeal)" target="_blank"
+                                    rel="noopener noreferrer">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+
+                        <v-tooltip location="top" text="Upload File / Link" v-if="canAppealFile(formAppeal)">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-upload" size="small" color="primary" variant="text"
+                                    class="mr-2" @click="openModal(3)">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+
+                        <v-tooltip location="top" text="Edit File" v-if="canAppealFile(formAppeal)">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-edit" size="small" color="info" variant="text"
+                                    class="mr-2" @click="openModal(3)">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+
+                        <!-- <v-tooltip location="top" text="Hapus File" v-if="canAppealFile(formAppeal)">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-trash" size="small" color="error" variant="text"
+                                    @click="deleteAttachment(formAppeal.id)">
+                                </v-btn>
+                            </template>
+                        </v-tooltip> -->
+                    </div>
+                </v-col>
+            </v-row>
         </div>
     </v-card>
 
@@ -451,7 +614,7 @@
                         </VCol>
                         <VCol cols="12" class="d-flex flex-wrap gap-4">
                             <!-- <VBtn type="submit" :disabled="isSaveDisabled"> -->
-                            <VBtn type="submit" >
+                            <VBtn type="submit">
                                 Simpan
                             </VBtn>
                             <button type="button" class="btn btn-blue" @click="closeModal(3)">
@@ -591,11 +754,11 @@ export default {
             return (!this.formAppeal.path || this.formAppeal.path == 'null') &&
                 (!this.formAppeal.link || this.formAppeal.link == null);
         }
-    },
+    },    
+    inject: ['loading'],
     data() {
         return {
             userAccessPhase2: null,
-            overlay: false,
             selectedOption: "",
             uploadProgress: null,
             rules: {
@@ -654,7 +817,49 @@ export default {
         };
     },
     methods: {
+        canViewFile(attachment) {
+            if (parseInt(attachment.isSecret)) {
+                return (attachment.path !== 'null' || attachment.link !== null) &&
+                    this.userAccessPhase2 &&
+                    parseInt(this.userAccessPhase2.isSecret) === 1;
+            } else {
+                return attachment.path !== 'null' || attachment.link !== null;
+            }
+        },
 
+        canUploadFile(attachment) {
+            return (attachment.path === 'null' && attachment.link === null) &&
+                this.userAccessPhase2 &&
+                parseInt(this.userAccessPhase2.canInsertData) === 1;
+        },
+
+        canAppealFile(attachment) {
+            let result = false;
+            result = this.userAccessPhase2 &&
+                (parseInt(this.userAccessPhase2.canAppeal) == 1 || parseInt(this.userAccessPhase2.canApproveAppeal) == 1);
+            return result;
+        },
+
+        canEditFile(attachment) {
+            return this.userAccessPhase2 &&
+                parseInt(this.userAccessPhase2.canUpdateData) &&
+                this.phase < 3;
+        },
+
+        canDeleteFile(attachment) {
+            return this.userAccessPhase2 &&
+                parseInt(this.userAccessPhase2.canDeleteData) &&
+                this.phase < 3;
+        },
+
+        getFileUrl(attachment) {
+            if (attachment.path !== 'null') {
+                return `${this.filePath}/${this.fileId}/${attachment.path}`;
+            } else if (attachment.link !== null) {
+                return attachment.link;
+            }
+            return '#'; // Atau URL default jika tidak ada yang cocok
+        },
         shouldDisplay(attachment) {
             if (
                 attachment.name === "Analisa Awal Kredit AO"
@@ -672,7 +877,7 @@ export default {
             );
             if (containsApprovedSLIK.length > 0) {
                 let analytic = this.data.find((att) => att.name === "Analisa Awal Kredit AO");
-                if (analytic!=null) {
+                if (analytic != null) {
                     this.formAnalytic.id = analytic.id;
                     this.formAnalytic.isApprove = parseInt(analytic.isApprove);
                     this.formAnalytic.isSecret = parseInt(analytic.isSecret);
@@ -693,7 +898,7 @@ export default {
             );
             if (containsUnapprovedSLIK.length > 0 || cekFileBanding.length > 0) {
                 let appeal = this.data.find((att) => att.name === "File Banding");
-                if (appeal!=null) {
+                if (appeal != null) {
                     this.formAppeal.id = appeal.id;
                     this.formAppeal.isApprove = parseInt(appeal.isApprove);
                     this.formAppeal.isSecret = parseInt(appeal.isSecret);
@@ -844,7 +1049,7 @@ export default {
         },
         async insertSlik() {
             try {
-                this.overlay = true;
+                this.loading.show();
                 const formData = new FormData();
                 formData.append("name", this.formDetailSlik.name);
                 if (this.formDetailSlik.note != null) {
@@ -882,14 +1087,14 @@ export default {
                     config
                 );
                 if (response.status === 200) {
-                    this.overlay = false;
+                    this.loading.hide();
                     this.closeModal(1);
                     this.closeModal(2);
                     this.getDetailFile(this.fileId);
                     this.uploadProgress = null;
                     this.$showToast("success", "Success", response.data.message);
                 } else {
-                    this.overlay = false;
+                    this.loading.hide();
                     this.closeModal(1);
                     this.closeModal(2);
                     this.uploadProgress = null;
@@ -897,7 +1102,7 @@ export default {
                     this.$showToast("error", "Sorry", response.data.message);
                 }
             } catch (error) {
-                this.overlay = false;
+                this.loading.hide();
                 this.closeModal(1);
                 this.closeModal(2);
                 this.getDetailFile(this.fileId);
@@ -906,7 +1111,7 @@ export default {
         },
         async insertAnalytic() {
             try {
-                this.overlay = true;
+                this.loading.show();
                 const formData = new FormData();
                 formData.append("name", this.formAnalytic.name);
                 formData.append("note", this.formAnalytic.note);
@@ -943,20 +1148,20 @@ export default {
                     config
                 );
                 if (response.status === 200) {
-                    this.overlay = false;
+                    this.loading.hide();
                     this.closeModal(3);
                     this.getDetailFile(this.fileId);
                     this.uploadProgress = null;
                     this.$showToast("success", "Success", response.data.message);
                 } else {
-                    this.overlay = false;
+                    this.loading.hide();
                     this.closeModal(3);
                     this.uploadProgress = null;
                     this.getDetailFile(this.fileId);
                     this.$showToast("error", "Sorry", response.data.message);
                 }
             } catch (error) {
-                this.overlay = false;
+                this.loading.hide();
                 this.closeModal(3);
                 this.getDetailFile(this.fileId);
                 this.$showToast("error", "Sorry", error.response.data.message);
@@ -964,7 +1169,7 @@ export default {
         },
         async insertAppeal() {
             try {
-                this.overlay = true;
+                this.loading.show();
                 const formData = new FormData();
                 formData.append("name", this.formAppeal.name);
                 formData.append("note", this.formAppeal.note);
@@ -999,20 +1204,20 @@ export default {
                     config
                 );
                 if (response.status === 200) {
-                    this.overlay = false;
+                    this.loading.hide();
                     this.closeModal(4);
                     this.getDetailFile(this.fileId);
                     this.uploadProgress = null;
                     this.$showToast("success", "Success", response.data.message);
                 } else {
-                    this.overlay = false;
+                    this.loading.hide();
                     this.closeModal(4);
                     this.uploadProgress = null;
                     this.getDetailFile(this.fileId);
                     this.$showToast("error", "Sorry", response.data.message);
                 }
             } catch (error) {
-                this.overlay = false;
+                this.loading.hide();
                 this.closeModal(4);
                 this.getDetailFile(this.fileId);
                 this.$showToast("error", "Sorry", error.response.data.message);
@@ -1024,3 +1229,8 @@ export default {
     },
 };
 </script>
+<style scoped>
+.header-color {
+    background-color: #FFAB00;
+}
+</style>

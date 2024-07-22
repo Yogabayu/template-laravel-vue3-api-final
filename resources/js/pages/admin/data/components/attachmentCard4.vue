@@ -68,9 +68,7 @@
                                     </template>
                                 </v-tooltip>
                                 <v-tooltip location="top" text="Upload File / Link" v-if="
-                                    (attachment.path == 'null' && attachment.link == null) &&
-                                    userAccess &&
-                                    parseInt(userAccess.canInsertData) == 1
+                                    (attachment.path == 'null' && attachment.link == null)
                                 ">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="openModal(1, attachment)">
@@ -78,24 +76,21 @@
                                         </button>
                                     </template>
                                 </v-tooltip>
-                                <v-tooltip location="top" text="Edit File"
-                                    v-if="userAccess && parseInt(userAccess.canUpdateData) && phase < 5">
+                                <v-tooltip location="top" text="Edit File">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="openModal(1, attachment)">
                                             <VIcon size="20" icon="bx-edit" color="blue" />
                                         </button>
                                     </template>
                                 </v-tooltip>
-                                <v-tooltip location="top" text="Tanda Tangan File"
-                                    v-if="userAccess && parseInt(userAccess.canUpdateData) && phase < 5">
+                                <v-tooltip location="top" text="Tanda Tangan File">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="toSignature(attachment)">
                                             <VIcon size="20" icon="bx-pen" color="blue" />
                                         </button>
                                     </template>
                                 </v-tooltip>
-                                <v-tooltip location="top" text="Hapus File"
-                                    v-if="userAccess && parseInt(userAccess.canDeleteData) && phase < 5">
+                                <v-tooltip location="top" text="Hapus File">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="deleteAttachment(attachment.id)">
                                             <VIcon size="20" icon="bx-trash" color="red" />
@@ -238,18 +233,27 @@ export default {
     methods: {
         toSignature(attach) {
             if (attach.path == 'null' && attach.link == null) {
-                alert('Silahkan upload file terlebih dahulu');
+                this.$showToast('info', 'Perhatian', 'File harus di upload terlebih dahulu');
+                return;
+            }
+            const isMobile = () => {
+                return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+                    || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+                    || window.innerWidth <= 800;
+            };
+
+            if (isMobile()) {
+                this.$showToast('info', 'Perhatian', 'Disarankan menggunakan komputer untuk tampilan dan pengalaman terbaik');
                 return;
             }
 
-            this.$router.push(`/u-pdfeditor/${attach.id}`);
+            this.$router.push(`/a-pdfeditor/${attach.id}`);
         },
         openModal(type, item = null) {
             if (type == 1) {
                 this.formKomite.id = item.id;
                 this.formKomite.name = item.name;
                 this.formKomite.link = item.link;
-                this.formKomite.path = item.path;
                 this.formKomite.isSecret = parseInt(item.isSecret);
                 this.formKomite.isApprove = parseInt(item.isApprove);
 

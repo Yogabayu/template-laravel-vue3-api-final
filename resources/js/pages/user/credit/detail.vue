@@ -1,9 +1,9 @@
 <template>
   <div>
-    <v-overlay :model-value="overlay" class="align-center justify-center">
+    <!-- <v-overlay :model-value="overlay" class="align-center justify-center">
       <v-progress-circular color="blue-lighten-3" indeterminate :size="41" :width="5"></v-progress-circular>
       Loading...
-    </v-overlay>
+    </v-overlay> -->
 
     <v-card v-if="dataLoaded">
       <VCardTitle class="text-2xl font-weight-bold d-flex justify-left">
@@ -33,7 +33,7 @@
             <!-- khusus approved -->
             <v-divider></v-divider>
 
-            <v-stepper-item title="Approved" value="6" :complete="stepperModel > 6"></v-stepper-item>
+            <v-stepper-item title="Pencairan" value="6" :complete="stepperModel > 6"></v-stepper-item>
           </v-stepper-header>
 
           <v-stepper-window>
@@ -332,15 +332,17 @@
               </VCol>
 
               <VCol md="12" cols="12">
-                <span class="subtitle-1 text-center">NIK Pasangan: </span>
+                <span class="subtitle-1 text-center">NIK Pasangan (kosongkan jika tidak ada): </span>
 
-                <VTextField type="number" class="my-3" v-model="generalInfo.nik_pasangan" hint="kosongkan jika tidak ada" />
+                <VTextField type="number" class="my-3" v-model="generalInfo.nik_pasangan"
+                  hint="kosongkan jika tidak ada" />
               </VCol>
 
               <VCol md="12" cols="12">
-                <span class="subtitle-1 text-center">NIK Pemilik Jaminan: </span>
+                <span class="subtitle-1 text-center">NIK Pemilik Jaminan (kosongkan jika tidak ada): </span>
 
-                <VTextField type="number" class="my-3" v-model="generalInfo.nik_jaminan" hint="kosongkan jika tidak ada" />
+                <VTextField type="number" class="my-3" v-model="generalInfo.nik_jaminan"
+                  hint="kosongkan jika tidak ada" />
               </VCol>
 
               <VCol md="12" cols="12">
@@ -460,8 +462,11 @@
 
     <v-dialog v-model="isChangeStatusCredit" width="auto" transition="dialog-top-transition">
       <v-card>
-        <template v-slot:title> Ubah Status File </template>
+        <template v-slot:title> Ubah Status Kredit </template>
         <template v-slot:text>
+          <v-alert
+            text="Merubah status data lewat fitur ini dapat menyebabkan ketidaksesuaian alur proses. Harap pastikan data yang diubah sesuai dengan kebutuhan. Jika ada kesalahan, silahkan hubungi Admin. Terima kasih"
+            title="Perhatian" type="warning" class="mb-2"></v-alert>
           <v-form @submit.prevent="updateStatusCredit">
             <v-row>
               <VCol md="12" cols="12">
@@ -469,9 +474,10 @@
                   { value: 1, title: 'Approved' },
                   { value: 2, title: 'Pending' },
                   { value: 3, title: 'Rejected' },
+                  { value: 4, title: 'Cancel by Debitur' },
                 ]" v-model="changeStatus.status"></v-select>
               </VCol>
-              <VCol md="12" cols="12" v-if="changeStatus.status == 3">
+              <VCol md="12" cols="12" v-if="changeStatus.status == 3 || changeStatus.status == 4">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">Alasan: </span>
                 <v-textarea bg-color="grey-lighten-2" color="cyan" v-model="changeStatus.reasonRejected"
                   rows="2"></v-textarea>
@@ -516,7 +522,7 @@ export default {
       isChangeStatusCredit: false,
       isShowAttachment: false,
 
-      statusCreditList :[
+      statusCreditList: [
         { value: 'FRESH', title: 'FRESH' },
         { value: 'REPEAT ORDER', title: 'REPEAT ORDER' },
         { value: 'TOPUP', title: 'TOPUP' },
@@ -710,17 +716,19 @@ export default {
       return this.dataFile.notes.slice(startIndex, endIndex);
     },
   },
+
+  inject: ['loading'],
   methods: {
     async updateStatusCredit() {
       try {
-        this.overlay = true;
+        this.loading.show();
         const formData = new FormData();
         formData.append("id", this.fileId);
         formData.append("status", this.changeStatus.status);
 
-        if (this.changeStatus.status == '3') {
+        if (this.changeStatus.status == '3' || this.changeStatus.status == '4') {
           if (this.changeStatus.reasonRejected == null) {
-            this.overlay = false;
+            this.loading.hide();
             this.closeModal(9);
             this.$showToast("error", "Sorry", "Alasan Penolakan wajib diisi");
             return; // Tambahkan return di sini untuk menghentikan eksekusi
@@ -731,20 +739,20 @@ export default {
         const response = await mainURL.post(`/user/change-status`, formData);
 
         if (response.status === 200) {
-          this.overlay = false;
+          this.loading.hide();
           this.getDetailFile(this.fileId);
           this.isDataPhase3 = false;
           this.closeModal(9);
           this.$showToast("success", "Success", response.data.message);
         } else {
-          this.overlay = false;
+          this.loading.hide();
           this.getDetailFile(this.fileId);
           this.isDataPhase3 = false;
           this.closeModal(9);
           this.$showToast("error", "Sorry", response.data.message);
         }
       } catch (error) {
-        this.overlay = false;
+        this.loading.hide();
         this.closeModal(9);
         this.$showToast("error", "Sorry", error.response.data.message);
       }
@@ -774,7 +782,7 @@ export default {
     //=>phase3
     async updatePhase3() {
       try {
-        this.overlay = true;
+        this.loading.show();
         const formData = new FormData();
         formData.append("surveyResult", this.dataPhase3.surveyResult);
         formData.append("_method", "PUT");
@@ -784,12 +792,12 @@ export default {
           formData
         );
         if (response.status === 200) {
-          this.overlay = false;
+          this.loading.hide();
           this.getDetailFile(this.fileId);
           this.isDataPhase3 = false;
           this.$showToast("success", "Success", response.data.message);
         } else {
-          this.overlay = false;
+          this.loading.hide();
           this.getDetailFile(this.fileId);
           this.isDataPhase3 = false;
           this.$showToast("error", "Sorry", response.data.message);
@@ -848,7 +856,7 @@ export default {
             if (!confirmNext) return;
           }
 
-          this.overlay = true;
+          this.loading.show();
           const formData = new FormData();
           formData.append("id", id);
           formData.append("type", type);
@@ -859,11 +867,11 @@ export default {
             formData
           );
           if (response.status === 200) {
-            this.overlay = false;
+            this.loading.hide();
             this.getDetailFile(this.fileId);
             this.$showToast("success", "Success", response.data.message);
           } else {
-            this.overlay = false;
+            this.loading.hide();
             this.getDetailFile(this.fileId);
             this.$showToast("error", "Sorry", response.data.data.message);
           }
@@ -872,7 +880,7 @@ export default {
             `Apakah Anda yakin Kembali ke phase sebelumnya`
           );
           if (!confirmNext) return;
-          this.overlay = true;
+          this.loading.show();
           const formData = new FormData();
           formData.append("id", id);
           formData.append("type", type);
@@ -882,17 +890,17 @@ export default {
             formData
           );
           if (response.status === 200) {
-            this.overlay = false;
+            this.loading.hide();
             this.getDetailFile(this.fileId);
             this.$showToast("success", "Success", response.data.message);
           } else {
-            this.overlay = false;
+            this.loading.hide();
             this.getDetailFile(this.fileId);
             this.$showToast("error", "Sorry", response.data.message);
           }
         }
       } catch (error) {
-        this.overlay = false;
+        this.loading.hide();
         this.getDetailFile(this.fileId);
         this.$showToast("error", "Sorry", error.response.data.message);
       }
@@ -900,10 +908,10 @@ export default {
 
     async getDetailFile(id: any) {
       try {
-        this.overlay = true;
+        this.loading.show();
         const response = await mainURL.get(`/user/credit/${id}`);
 
-        if (response.status === 200) {                
+        if (response.status === 200) {
           this.dataFile = response.data.data.file;
           this.attachments = this.dataFile.attachments.filter(item => item.path && item.path !== 'null' || item.link && item.link !== 'null');
           this.fileSubmissions = this.dataFile.filesubmissions;
@@ -960,13 +968,13 @@ export default {
             this.separateNotesByPhase(this.dataFile, index);
           }
           this.dataLoaded = true;
-          this.overlay = false;
+          this.loading.hide();
         } else {
           this.$showToast("error", "Sorry", response.data.data.message);
-          this.overlay = false;
+          this.loading.hide();
         }
       } catch (error) {
-        this.overlay = false;
+        this.loading.hide();
         this.$showToast("error", "Sorry", error.response.data.message);
       }
     },
@@ -1035,7 +1043,7 @@ export default {
     //=>edit general info
     async updateGeneralInfo() {
       try {
-        this.overlay = true;
+        this.loading.show();
         const formData = new FormData();
         formData.append("name", this.generalInfo.name);
         formData.append("plafon", this.generalInfo.plafon.replace(/\D/g, ""));
@@ -1059,25 +1067,25 @@ export default {
           formData.append("no_hp", this.generalInfo.no_hp);
         }
         formData.append("_method", "PUT");
-        
+
         const response = await mainURL.post(
           `/user/edit-general-info/${this.generalInfo.id}`,
           formData
         );
         if (response.status === 200) {
-          this.overlay = false;
+          this.loading.hide();
           this.getDetailFile(this.fileId);
           this.isUpdateGeneralInfo = false;
           this.$showToast("success", "Success", response.data.message);
         } else {
-          this.overlay = false;
+          this.loading.hide();
           this.getDetailFile(this.fileId);
           this.isUpdateGeneralInfo = false;
           this.$showToast("error", "Sorry", response.data.message);
         }
       } catch (error) {
         this.isUpdateGeneralInfo = false;
-        this.overlay = false;
+        this.loading.hide();
         this.getDetailFile(this.fileId);
         this.$showToast("error", "Sorry", error.response.data.message);
       }
@@ -1086,11 +1094,11 @@ export default {
     //=>NOTE section
     async insertNote() {
       try {
-        this.overlay = true;
+        this.loading.show();
 
         if (this.dataNote.note == null) {
           this.$showToast("error", "Sorry", "Note cannot be empty");
-          this.overlay = false;
+          this.loading.hide();
           return;
         }
 
@@ -1102,25 +1110,25 @@ export default {
         const response = await mainURL.post("/user/note", formData);
         if (response.status === 200) {
           this.resetNote();
-          this.overlay = false;
+          this.loading.hide();
           this.getDetailFile(this.fileId);
           this.$showToast("success", "Success", response.data.message);
         } else {
           this.resetNote();
-          this.overlay = false;
+          this.loading.hide();
           this.getDetailFile(this.fileId);
           this.$showToast("error", "Sorry", response.data.message);
         }
       } catch (error) {
         this.resetNote();
-        this.overlay = false;
+        this.loading.hide();
         this.getDetailFile(this.fileId);
         this.$showToast("error", "Sorry", error.response.data.message);
       }
     },
     async updateNote() {
       try {
-        this.overlay = true;
+        this.loading.show();
         const formData = new FormData();
         formData.append("file_id", this.updateDataNote.file_id);
         formData.append("note", this.updateDataNote.note);
@@ -1131,26 +1139,26 @@ export default {
           formData
         );
         if (response.status === 200) {
-          this.overlay = false;
+          this.loading.hide();
           this.getDetailFile(this.fileId);
           this.isUpdateNote = false;
           this.$showToast("success", "Success", response.data.message);
         } else {
-          this.overlay = false;
+          this.loading.hide();
           this.getDetailFile(this.fileId);
           this.isUpdateNote = false;
           this.$showToast("error", "Sorry", response.data.message);
         }
       } catch (error) {
         this.isUpdateNote = false;
-        this.overlay = false;
+        this.loading.hide();
         this.getDetailFile(this.fileId);
         this.$showToast("error", "Sorry", error.response.data.message);
       }
     },
     async deleteNote(id: any) {
       try {
-        this.overlay = true;
+        this.loading.show();
         const confirmDelete = window.confirm(
           "Apakah Anda yakin ingin menghapus data? Data akan terhapus secara permanen."
         );
@@ -1159,16 +1167,16 @@ export default {
         const response = await mainURL.delete(`/user/note/${id}`);
 
         if (response.status === 200) {
-          this.overlay = false;
+          this.loading.hide();
           this.getDetailFile(this.fileId);
           this.$showToast("success", "Berhasill", response.data.message);
         } else {
-          this.overlay = false;
+          this.loading.hide();
           this.getDetailFile(this.fileId);
           this.$showToast("error", "Sorry", response.data.message);
         }
       } catch (error) {
-        this.overlay = false;
+        this.loading.hide();
         this.getDetailFile(this.fileId);
         this.$showToast("error", "Sorry", error.response.data.message);
       }
@@ -1202,20 +1210,20 @@ export default {
     //=>approval section
     async changeApproval(id: any) {
       try {
-        this.overlay = true;
+        this.loading.show();
         const response = await mainURL.get(`/user/change-phase-approve/${id}`);
 
         if (response.status === 200) {
-          this.overlay = false;
+          this.loading.hide();
           this.getDetailFile(this.fileId);
           this.$showToast("success", "Berhasill", response.data.message);
         } else {
-          this.overlay = false;
+          this.loading.hide();
           this.getDetailFile(this.fileId);
           this.$showToast("error", "Sorry", response.data.message);
         }
       } catch (error) {
-        this.overlay = false;
+        this.loading.hide();
         this.getDetailFile(this.fileId);
         this.$showToast("error", "Sorry", error.response.data.message);
       }
@@ -1260,7 +1268,7 @@ export default {
     },
     async insertAttachment() {
       try {
-        this.overlay = true;
+        this.loading.show();
         const formData = new FormData();
         formData.append("file_id", this.attachFile.file_id);
         formData.append("phase", this.dataFile.phase);
@@ -1305,13 +1313,13 @@ export default {
           config
         );
         if (response.status === 200) {
-          this.overlay = false;
+          this.loading.hide();
           this.closeModal(1);
           this.getDetailFile(this.fileId);
           this.uploadProgress = null;
           this.$showToast("success", "Success", response.data.message);
         } else {
-          this.overlay = false;
+          this.loading.hide();
           this.closeModal(1);
           this.uploadProgress = null;
           this.getDetailFile(this.fileId);
@@ -1325,7 +1333,7 @@ export default {
     },
     async editAttachment() {
       try {
-        this.overlay = true;
+        this.loading.show();
         const formData = new FormData();
         formData.append("file_id", this.attachFile.file_id);
         formData.append("name", this.attachFile.name);
@@ -1361,13 +1369,13 @@ export default {
           config
         );
         if (response.status === 200) {
-          this.overlay = false;
+          this.loading.hide();
           this.closeModal(2);
           this.getDetailFile(this.fileId);
           this.uploadProgress = null;
           this.$showToast("success", "Success", response.data.message);
         } else {
-          this.overlay = false;
+          this.loading.hide();
           this.closeModal(2);
           this.uploadProgress = null;
           this.getDetailFile(this.fileId);
@@ -1382,21 +1390,21 @@ export default {
     async deleteAttachment(id: any) {
       try {
         const confirmDelete = window.confirm(
-          "Apakah Anda yakin ingin menghapus data? Data akan terhapus secara permanen."
+          "Apakah Anda yakin ingin menghapus data ? Data akan terhapus secara permanen."
         );
         if (!confirmDelete) return;
 
-        this.overlay = true;
+        this.loading.show();
         const response = await mainURL.delete(`/user/delete-attach/${id}`);
 
         if (response.status === 200) {
-          this.overlay = false;
+          this.loading.hide();
           this.getDetailFile(this.fileId);
           // this.$showToast("success", "Berhasill", response.data.message);
           this.$showToast("success", "Berhasill", response.data.message);
           // window.location.reload();
         } else {
-          this.overlay = false;
+          this.loading.hide();
           this.getDetailFile(this.fileId);
           // this.$showToast("error", "Sorry", response.data.message);
           this.$showToast("error", "Sorry", "Terjadi Kesalahan Silahkan Coba Lagi");
@@ -1404,7 +1412,7 @@ export default {
         }
 
       } catch (error) {
-        this.overlay = false;
+        this.loading.hide();
         this.getDetailFile(this.fileId);
         // this.$showToast("error", "Sorry", error.response.data.message);
         this.$showToast("error", "Sorry", "Terjadi Kesalahan Silahkan Coba Lagi");
@@ -1413,11 +1421,25 @@ export default {
     },
     ///////////////////////////////////////////////////////////////////////////////////
   },
-  mounted() {
-    this.checkMobile();
-    this.getUserData();
-    this.getDetailFile(this.fileId);
-  },
+  // mounted() {
+  //   this.checkMobile();
+  //   this.getUserData();
+  //   this.getDetailFile(this.fileId);
+  // },
+  async mounted() {
+    try {
+      this.loading.show();
+      await Promise.all([
+        this.checkMobile(),
+        this.getUserData(),
+        this.getDetailFile(this.fileId)
+      ]);
+    } catch (error) {
+      console.error('Error in mounted:', error);
+    } finally {
+      this.loading.hide();
+    }
+  }
 };
 </script>
 

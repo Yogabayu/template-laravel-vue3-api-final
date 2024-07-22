@@ -7,12 +7,14 @@
       <v-chip color="success" v-if="parseInt(dataFile.isApproved) == 1" @click="openModal(9)">Approved</v-chip>
       <v-chip color="warning" v-if="parseInt(dataFile.isApproved) == 2" @click="openModal(9)">Pending</v-chip>
       <v-chip color="error" v-if="parseInt(dataFile.isApproved) == 3" @click="openModal(9)">Rejected</v-chip>
+      <v-chip color="error" v-if="parseInt(dataFile.isApproved) == 4" @click="openModal(9)">Cancel by Debitur</v-chip>
     </v-card-title>
     <v-card-title class="text-2xl font-weight-bold d-flex justify-center" v-else>
       Detail
       <v-chip color="success" v-if="parseInt(dataFile.isApproved) == 1">Approved</v-chip>
       <v-chip color="warning" v-if="parseInt(dataFile.isApproved) == 2">Pending</v-chip>
       <v-chip color="error" v-if="parseInt(dataFile.isApproved) == 3">Rejected</v-chip>
+      <v-chip color="error" v-if="parseInt(dataFile.isApproved) == 4">Cancel by Debitur</v-chip>
     </v-card-title>
     <v-card-text class="font-weight-bold d-flex justify-end" v-if="dataFile && parseInt(dataFile.phase) == 6">
       <v-btn color="primary" @click="generateReport(fileId)" size="x-small">
@@ -37,8 +39,7 @@
             <v-col cols="12" sm="6" md="8">
               <span>Informasi Umum ℹ️</span>
             </v-col>
-            <v-col cols="12" sm="6" md="4" class="text-sm-right text-md-right"
-              v-if="userAccess && userAccess.canUpdateData">
+            <v-col cols="12" sm="6" md="4" class="text-sm-right text-md-right">
               <span>
                 <v-btn color="primary" size="small" class="my-3 mx-3" @click="openModal(4)">
                   Edit Data
@@ -250,7 +251,8 @@
     <!-- Approval -->
     <v-card-text v-if="dataFile && parseInt(dataFile.phase) < 6">
       <v-card>
-        <v-card-title> Status Approval Phase ✅ </v-card-title>
+        <v-card-title> Status Approval Phase ✅ <v-chip @click="openModal(11)"> <v-icon>mdi-plus</v-icon> Approval</v-chip><v-chip @click="openModal(12)" class="ml-2"><v-icon>mdi-minus-box</v-icon> Approval</v-chip>
+        </v-card-title>
         <v-card-text>
           <div v-if="dataFile && dataFile.approvals && dataFile.approvals.length">
             <template v-for="(app, index) in dataFile.approvals" :key="index">
@@ -372,6 +374,7 @@
           v-if="dataFile && parseInt(dataFile.phase) < 4"></v-btn>
       </v-col> -->
     </v-card-actions>
+
   </v-card>
 </template>
 

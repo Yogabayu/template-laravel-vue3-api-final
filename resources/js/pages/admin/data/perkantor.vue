@@ -52,6 +52,11 @@
                 <v-tab value="1">Approved</v-tab>
                 <v-tab value="2">Pending</v-tab>
                 <v-tab value="3">Rejected</v-tab>
+                <v-tab value="7">Cancel by Debitur</v-tab>
+                |
+                <v-tab value="4">Pooling</v-tab>
+                <v-tab value="5">SLIK</v-tab>
+                <v-tab value="6">Komite</v-tab>
             </v-tabs>
 
             <v-card-text>
@@ -73,7 +78,9 @@
                             </v-row>
 
                             <div class="table-container" @touchstart.stop @touchmove.stop>
-                                <EasyDataTable show-index :headers="headers" :items="items" :search-value="searchValue">
+                                <EasyDataTable show-index :headers="headers" :items="searchableItems"
+                                    :search-value="searchValue" :search-field="searchField" :rows-per-page="500"
+                                    border-cell buttons-pagination>
                                     <template #empty-message>
                                         <p>Data Kosong</p>
                                     </template>
@@ -85,9 +92,44 @@
                                         <span v-if="parseInt(item.isApproved) == 1"> Approved</span>
                                         <span v-if="parseInt(item.isApproved) == 2"> Pending</span>
                                         <span v-if="parseInt(item.isApproved) == 3"> Rejected</span>
+                                        <span v-if="parseInt(item.isApproved) == 4"> Cancel by Debitur</span>
                                     </template>
                                     <template #item-aoro="item">
                                         <span>{{ item.user.name }}</span>
+                                    </template>
+                                    <template #item-slik="item">
+                                        <v-tooltip location="top" text="Kondisi SLIK Sudah Terupload"
+                                            v-if="hasSlikAttachment(item.attachments)">
+                                            <template v-slot:activator="{ props }">
+                                                <span v-bind="props">
+                                                    <v-icon color="success">mdi-check-circle</v-icon>
+                                                </span>
+                                            </template>
+                                        </v-tooltip>
+                                        <v-tooltip location="top" text="Kondisi SLIK Belum Terupload" v-else>
+                                            <template v-slot:activator="{ props }">
+                                                <span v-bind="props">
+                                                    <v-icon color="error">mdi-close-circle</v-icon>
+                                                </span>
+                                            </template>
+                                        </v-tooltip>
+                                    </template>
+                                    <template #item-analisaAO="item">
+                                        <v-tooltip location="top" text="Analisa AO Sudah Terupload"
+                                            v-if="hasAnalisaAoAttachment(item.attachments)">
+                                            <template v-slot:activator="{ props }">
+                                                <span v-bind="props">
+                                                    <v-icon color="success">mdi-check-circle</v-icon>
+                                                </span>
+                                            </template>
+                                        </v-tooltip>
+                                        <v-tooltip location="top" text="Analisa AO Belum Terupload" v-else>
+                                            <template v-slot:activator="{ props }">
+                                                <span v-bind="props">
+                                                    <v-icon color="error">mdi-close-circle</v-icon>
+                                                </span>
+                                            </template>
+                                        </v-tooltip>
                                     </template>
                                     <template #item-created_at="item">
                                         <span>{{ formatDate(item.created_at) }} WIB</span>
@@ -385,6 +427,12 @@ export default {
             set(value) {
                 this.dataForm.plafon = value.replace(/\D/g, '');
             }
+        },
+        searchableItems() {
+            return this.items.map(item => ({
+                ...item,
+                office_names: item.user.position.offices.map(office => office.name).join(', ')
+            }));
         }
     },
     data() {
@@ -422,6 +470,8 @@ export default {
                 { text: "Status", value: "isApproved", sortable: true },
                 { text: "AO/RO", value: "aoro", sortable: true },
                 { text: "Tanggal", value: "created_at", sortable: true },
+                { text: "SLIK", value: "slik", sortable: false },
+                { text: "Analisa AO/RO", value: "analisaAO", sortable: false },
                 { text: "Operation", value: "operation", width: 100 },
             ],
             phases: [
@@ -430,6 +480,9 @@ export default {
                 { value: 2 },
                 { value: 3 },
                 { value: 4 },
+                { value: 5 },
+                { value: 6 },
+                { value: 7 },
             ],
             orderList: [
                 { value: 'AO SENDIRI', title: 'AO SENDIRI' },
@@ -447,6 +500,24 @@ export default {
                 { value: 'FRESH', title: 'FRESH' },
                 { value: 'REPEAT ORDER', title: 'REPEAT ORDER' },
                 { value: 'TOPUP', title: 'TOPUP' },
+            ],
+            searchField: [
+                "name",
+                "plafon",
+                "phase",
+                "type_bussiness",
+                "desc_bussiness",
+                "reasonRejected",
+                "nik_pemohon",
+                "nik_pasangan",
+                "nik_jaminan",
+                "address",
+                "no_hp",
+                "order_source",
+                "status_kredit",
+                "user.name",
+                "user.position.name",
+                "office_names",
             ],
             dataForm: {
                 id: null,
@@ -492,12 +563,31 @@ export default {
                 this.filterDataStatus(2);
             } else if (newVal == 3) {
                 this.filterDataStatus(3);
-            } else {
+            } else if (newVal == 4) {
+                this.filterDataStatus(4); //pooling
+            } else if (newVal == 5) {
+                this.filterDataStatus(5); // slik
+            } else if (newVal == 6) {
+                this.filterDataStatus(6); // komite
+            } else if (newVal == 7) {
+                this.filterDataStatus(7); // cancel
+            }
+            else {
                 this.items = [...this.originalItems];
             }
         },
     },
     methods: {
+        hasSlikAttachment(attachments) {
+            return attachments.some(attachment =>
+                attachment.name.includes('SLIK') && parseInt(attachment.phase) == 2 && (attachment.path != 'null' || attachment.link != null)
+            );
+        },
+        hasAnalisaAoAttachment(attachments) {
+            return attachments.some(attachment =>
+                attachment.name.includes('Analisa Awal Kredit AO') && parseInt(attachment.phase) == 2 && (attachment.path != 'null' || attachment.link != null)
+            );
+        },
         goBack() {
             this.$router.go(-1);
         },
@@ -747,9 +837,25 @@ export default {
             return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         },
         filterDataStatus(phase: any) {
-            this.items = this.originalItems.filter(
-                (item: { isApproved: any }) => item.isApproved == phase
-            );
+            const filters = {
+                1: (item: any) => item.isApproved == 1,
+                2: (item: any) => item.isApproved == 2,
+                3: (item: any) => item.isApproved == 3,
+                4: (item: any) => parseInt(item.phase) == 1,
+                5: (item: any) => item.attachments.some(attachment =>
+                    attachment.name.includes('SLIK') &&
+                    parseInt(attachment.phase) == 2 &&
+                    (attachment.path != 'null' || attachment.link != null)
+                ),
+                6: (item: any) => {
+                    return parseInt(item.phase) == 4;
+                },
+                7: (item: any) => item.isApproved == 4,
+            };
+
+            this.items = phase in filters
+                ? this.originalItems.filter(filters[phase as keyof typeof filters])
+                : [...this.originalItems];
         },
         getUserData() {
             const savedUserData = localStorage.getItem("userData");

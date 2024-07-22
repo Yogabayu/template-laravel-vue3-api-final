@@ -92,6 +92,10 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1', 'throttle:60,1'], function
         Route::put('edit-general-info/{id}', [AdminFileController::class, 'editGeneralInfo']);
         Route::put('survey-credit/{id}', [FileController::class, 'editSurveiResult']);
         Route::post('change-status', [FileController::class, 'changeStatus']);
+        Route::get('list-approval/{id}', [AdminFileController::class, 'getSignatureUser']);
+        Route::put('signature/{id}', [AdminFileController::class, 'signaturefile']);
+        Route::post('add-approval', [AdminFileController::class, 'addNewApproval']);
+        Route::post('delete-approval', [AdminFileController::class, 'deleteApproval']);
 
         ////filter
         Route::get('userAccess', [AdminFileController::class, 'userAccess']);
@@ -160,6 +164,7 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1', 'throttle:60,1'], function
             Route::put('edit-attach/{id}', [FileController::class, 'editAttachment']);
             Route::delete('delete-attach/{id}', [FileController::class, 'deleteAttachment']);
             Route::get('get-attach/{id}', [FileController::class, 'getAttachment']);
+            Route::put('signature/{id}', [FileController::class, 'signaturefile']);
 
             //=>filepenunjang [file-submission]
             Route::post('file-submission', [FileController::class, 'addFileSubmission']);

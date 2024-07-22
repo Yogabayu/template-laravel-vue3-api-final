@@ -1,12 +1,4 @@
 <template>
-  <v-overlay :absolute="true" v-model="overlay" contained persistent class="align-center justify-center">
-    <v-col>
-      <v-progress-circular color="primary" size="32" indeterminate>
-      </v-progress-circular>
-      <br />
-      <span class="font-weight-bold text-lg">Loading....</span>
-    </v-col>
-  </v-overlay>
   <div>
     <VCard class="auth-card pa-4 pt-5">
       <VCardItem class="align-left">
@@ -115,13 +107,12 @@ export default {
       displayPhoto:
         "https://bankarthaya.com/wp-content/uploads/2023/07/arthayann.png",
       isPasswordVisible: false,
-      overlay: false,
     };
   },
   methods: {
     async connectTelegram(type) {
       try {
-        this.overlay = true;
+        this.loading.show();
 
         if (type == 2) {
           this.dataForm.type = 2;
@@ -134,24 +125,25 @@ export default {
 
         const response = await mainURL.post("/user/update-user-telegram", formData);
         if (response.status === 200) {
-          this.overlay = false;
+          this.loading.hide();
           this.getUserProfile();
           this.$showToast("success", "Success", response.data.message);
 
           window.location.reload();
         } else {
-          this.overlay = false;
+          this.loading.hide();
           this.getUserProfile();
           this.$showToast("error", "Sorry", response.data.message);
         }
       } catch (error) {
-        this.overlay = false;
+        this.loading.hide();
         this.$showToast("error", "Sorry", error.response.data.message);
         this.getUserProfile();
       }
     },
     async updateUserProfile() {
       try {
+        this.loading.show();
         const formData = new FormData();
         formData.append("name", this.dataForm.name);
         formData.append("email", this.dataForm.email);
@@ -164,6 +156,7 @@ export default {
         const response = await mainURL.post("/user/update-user-profile", formData);
 
         if (response.status === 200) {
+          this.loading.hide();
           if (this.dataForm.password == null) {
             this.getUserProfile();
             localStorage.setItem(
@@ -173,28 +166,35 @@ export default {
             window.location.reload();
             this.$showToast("success", "Success", response.data.message);
           } else {
+            this.loading.hide();
             this.logout();
           }
         } else {
+          this.loading.hide();
           this.$showToast("error", "Sorry", response.data.message);
         }
       } catch (error) {
+        this.loading.hide();
         this.$showToast("error", "Sorry", error.response.data.message);
       }
     },
     async getUserProfile() {
       try {
+        this.loading.show();
         const response = await mainURL.get("/user/user-profile");
 
         if (response.status === 200) {
+          this.loading.hide();
           this.dataForm.name = response.data.data.name;
           this.dataForm.email = response.data.data.email;
           this.dataForm.nik = response.data.data.nik;
           this.dataForm.telegram_username = response.data.data.telegram_username;
         } else {
+          this.loading.hide();
           this.$showToast("error", "Sorry", response.data.data.message);
         }
       } catch (error) {
+        this.loading.hide();
         this.$showToast("error", "Sorry", error.data.data.message);
       }
     },

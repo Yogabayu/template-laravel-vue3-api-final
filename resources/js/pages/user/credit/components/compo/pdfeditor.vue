@@ -19,8 +19,8 @@
                     <span class="subtitle-1 text-center">
                         <span style="color: red">*</span> File Tanda Tangan (format png):
                     </span>
-                    <v-file-input label="Upload Tanda Tangan" accept="image/png" prepend-icon="mdi-image"
-                        outlined dense @change="handleFileUpload"></v-file-input>
+                    <v-file-input label="Upload Tanda Tangan" accept="image/png" prepend-icon="mdi-image" outlined dense
+                        @change="handleFileUpload"></v-file-input>
                 </v-col>
                 <v-col md="12" cols="6" class="d-flex justify-end">
                     <v-btn color="primary" @click="savePDF">
@@ -61,59 +61,6 @@ export default {
         goBack() {
             this.$router.go(-1);
         },
-        // async renderPDF(url) {
-        //     // Import PDF.js library
-        //     const pdfjsLib = await import('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.mjs');
-        //     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.mjs';
-
-        //     if (!url) return;
-
-        //     try {
-        //         // Fetch the PDF file from the URL
-        //         const response = await fetch(url);
-        //         if (!response.ok) {
-        //             throw new Error(`Failed to fetch PDF: ${response.statusText}`);
-        //         }
-
-        //         const arrayBuffer = await response.arrayBuffer();
-        //         const loadingTask = pdfjsLib.getDocument(arrayBuffer);
-
-        //         // Load and render the PDF
-        //         loadingTask.promise.then(pdf => {
-        //             // Merender semua halaman PDF
-        //             for (let i = 1; i <= pdf.numPages; i++) {
-        //                 pdf.getPage(i).then(page => {
-        //                     const scale = 1;
-        //                     const viewport = page.getViewport({ scale });
-
-        //                     const canvas = document.createElement('canvas');
-        //                     const context = canvas.getContext('2d');
-        //                     canvas.height = viewport.height;
-        //                     canvas.width = viewport.width;
-
-        //                     // Render PDF page into canvas context
-        //                     const renderContext = {
-        //                         canvasContext: context,
-        //                         viewport: viewport
-        //                     };
-        //                     page.render(renderContext);
-
-        //                     // Dapatkan elemen div yang baru ditambahkan
-        //                     const container = this.$refs.pdfContainer;
-
-        //                     // Tambahkan canvas ke dalam elemen div
-        //                     container.appendChild(canvas);
-        //                 });
-        //             }
-        //         }, reason => {
-        //             // PDF loading error
-        //             console.error(reason);
-        //         });
-
-        //     } catch (error) {
-        //         console.error('Error rendering PDF:', error);
-        //     }
-        // },
         async renderPDF(url) {
             // Import PDF.js library
             const pdfjsLib = await import('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.mjs');
@@ -176,6 +123,7 @@ export default {
                 this.signature = URL.createObjectURL(file);
             }
         },
+
         initSignaturePosition() {
             const img = this.$refs.signatureImage;
             this.interactable = interact(img)
@@ -203,6 +151,7 @@ export default {
                     },
                 });
         },
+
         dragMoveListener(event) {
             const target = event.target;
             const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
@@ -221,142 +170,6 @@ export default {
             const arrayBuffer = await response.arrayBuffer();
             return arrayBuffer;
         },
-        // async savePDF() {
-        //     if (!this.signature) {
-        //         alert('Upload a signature image first!');
-        //         return;
-        //     }
-
-        //     const img = this.$refs.signatureImage;
-        //     const signatureX = parseFloat(img.getAttribute('data-x')) || 0;
-        //     const signatureY = parseFloat(img.getAttribute('data-y')) || 0;
-
-        //     // Load the PDF file
-        //     // const pdfBlob = await this.getPdfArrayBuffer(this.pdfUrl);
-        //     const pdfBlob = await this.getPdfArrayBuffer(this.filePath + '/' + this.detailAttach.file_id + '/' + this.detailAttach.path);
-        //     const pdfDoc = await PDFDocument.load(pdfBlob);
-
-        //     // Embed the signature image
-        //     const signatureBlob = await this.getPdfArrayBuffer(this.signature);
-        //     const signatureImage = await pdfDoc.embedPng(signatureBlob);
-
-        //     // Get the height of the signature image
-        //     const signatureHeight = img.height;
-
-        //     // Find the page where the signature image should be placed
-        //     let targetPage;
-        //     let remainingHeight = signatureY; // remainingHeight will keep track of the Y coordinate to help us determine the page
-        //     for (const page of pdfDoc.getPages()) {
-        //         const pageHeight = page.getHeight();
-        //         if (remainingHeight <= pageHeight) {
-        //             targetPage = page;
-        //             break;
-        //         }
-        //         remainingHeight -= pageHeight;
-        //     }
-
-        //     // If targetPage is still not assigned, it means the signature image is below the last page
-        //     if (!targetPage) {
-        //         alert('The signature image is placed below the last page.');
-        //         return;
-        //     }
-
-        //     // Draw the signature image on the target page
-        //     targetPage.drawImage(signatureImage, {
-        //         x: signatureX,
-        //         y: targetPage.getHeight() - remainingHeight - signatureHeight, 
-        //         width: img.width,
-        //         height: signatureHeight,
-        //     });
-
-        //     // Save the modified PDF
-        //     const pdfBytes = await pdfDoc.save();
-
-        //     // Create a blob from PDF bytes
-        //     const modifiedPdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
-
-        //     // Create object URL for modified PDF
-        //     const modifiedPdfUrl = URL.createObjectURL(modifiedPdfBlob);
-
-        //     // Trigger download of modified PDF
-        //     const link = document.createElement('a');
-        //     link.href = modifiedPdfUrl;
-        //     link.download = 'modified_pdf.pdf';
-        //     link.click();
-        // },
-
-        // async savePDF() {
-        //     if (!this.signature) {
-        //         alert('Upload a signature image first!');
-        //         return;
-        //     }
-
-        //     const img = this.$refs.signatureImage;
-        //     const signatureX = parseFloat(img.getAttribute('data-x')) || 0;
-        //     const signatureY = parseFloat(img.getAttribute('data-y')) || 0;
-        //     const signatureWidth = img.width;
-        //     const signatureHeight = img.height;
-
-        //     // Load the original PDF
-        //     const pdfBlob = await this.getPdfArrayBuffer(this.filePath + '/' + this.detailAttach.file_id + '/' + this.detailAttach.path);
-        //     const pdfDoc = await PDFDocument.load(pdfBlob);
-
-        //     // Embed the signature image
-        //     const signatureBlob = await this.getPdfArrayBuffer(this.signature);
-        //     const signatureImage = await pdfDoc.embedPng(signatureBlob);
-
-        //     // PDF and Canvas scaling (assuming no scaling applied initially)
-        //     const scale = 1;
-
-        //     // Adjust the Y coordinate to the PDF's coordinate system
-        //     const pdfPages = pdfDoc.getPages();
-        //     let remainingHeight = signatureY;
-        //     let targetPage = null;
-
-        //     // Determine the target page and adjusted Y position
-        //     for (const page of pdfPages) {
-        //         const pageHeight = page.getHeight();
-
-        //         if (remainingHeight <= pageHeight) {
-        //             targetPage = page;
-        //             break;
-        //         }
-        //         remainingHeight -= pageHeight;
-        //     }
-
-        //     if (!targetPage) {
-        //         alert('The signature image is placed below the last page.');
-        //         return;
-        //     }
-
-        //     // Adjust for PDF's coordinate system (from bottom-left)
-        //     const adjustedY = targetPage.getHeight() - remainingHeight - signatureHeight ;
-
-        //     // Draw the signature image on the target page
-        //     targetPage.drawImage(signatureImage, {
-        //         x: signatureX, // X coordinate is straightforward
-        //         y: adjustedY, // Adjusted Y position
-        //         width: signatureWidth ,
-        //         height: signatureHeight * scale,
-        //     });
-
-        //     // Save the modified PDF
-        //     const pdfBytes = await pdfDoc.save();
-
-        //     // Create a blob from the PDF bytes
-        //     const modifiedPdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
-
-        //     // Create an object URL for the modified PDF
-        //     const modifiedPdfUrl = URL.createObjectURL(modifiedPdfBlob);
-
-        //     // Trigger download of the modified PDF
-        //     const link = document.createElement('a');
-        //     link.href = modifiedPdfUrl;
-        //     // link.download = 'modified_pdf.pdf';
-        //     link.download = this.detailAttach.path;
-        //     link.click();
-        // },
-
 
         async savePDF() {
             if (!this.signature) {
@@ -424,23 +237,56 @@ export default {
                 height: scaledHeight,
             });
 
+            // // Save the modified PDF
+            // const pdfBytes = await pdfDoc.save();
+
+            // // Create a blob from PDF bytes
+            // const modifiedPdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
+
+            // // Create object URL for modified PDF
+            // const modifiedPdfUrl = URL.createObjectURL(modifiedPdfBlob);
+
+            // // Trigger download of modified PDF
+            // const link = document.createElement('a');
+            // link.href = modifiedPdfUrl;
+            // link.download = this.detailAttach.path;
+            // link.click();
+
+            // //update file pdf 
+            // this.goBack();
+
             // Save the modified PDF
             const pdfBytes = await pdfDoc.save();
 
             // Create a blob from PDF bytes
             const modifiedPdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
 
-            // Create object URL for modified PDF
-            const modifiedPdfUrl = URL.createObjectURL(modifiedPdfBlob);
+            // Update file PDF
+            try {
+                this.overlay = true;
+                const id = this.$route.params.idAttach;
 
-            // Trigger download of modified PDF
-            const link = document.createElement('a');
-            link.href = modifiedPdfUrl;
-            link.download = this.detailAttach.path;
-            link.click();
+                const formData = new FormData();
+                formData.append("doc", new File([modifiedPdfBlob], this.detailAttach.path, { type: 'application/pdf' }));
+                formData.append("_method", "PUT");
 
-            // this.getDetailAttach();
-            this.goBack();
+                const response = await mainURL.post(
+                    `/user/signature/${id}`,
+                    formData
+                );
+                if (response.status === 200) {
+                    this.overlay = false;
+                    this.$showToast("success", "Success", response.data.message);
+                    this.goBack();
+                } else {
+                    this.overlay = false;
+                    this.$showToast("error", "Sorry", response.data.data.message);
+                }
+            } catch (error) {
+                this.overlay = false;
+                window.location.reload();
+                this.$showToast("error", "Error", "Failed to update the signed document");
+            }
         },
 
         async getDetailAttach() {
@@ -465,7 +311,6 @@ export default {
     },
     async mounted() {
         await this.getDetailAttach();
-        // await this.renderPDF(this.filePath + this.file);
     },
 };
 </script>

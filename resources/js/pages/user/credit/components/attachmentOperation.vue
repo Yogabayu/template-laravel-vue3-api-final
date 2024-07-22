@@ -1,36 +1,34 @@
 <template>
-    <v-overlay :model-value="overlay" class="align-center justify-center">
-        <v-progress-circular color="blue-lighten-3" indeterminate :size="41" :width="5"></v-progress-circular>
-        Loading...
-    </v-overlay>
-    <v-card color="warning">
-        <v-card-title class="py-2">
+    <v-card>
+        <v-card-text class="py-1 header-color">
             <v-row align="center" no-gutters>
-                <v-col cols="auto">
-                    <span class="text-h6 font-weight-medium">Phase Operation 📄</span>
+                <v-col cols="auto" class="mr-auto">
+                    <span class="text-subtitle-1 font-weight-bold ml-2">Phase Operation 📄</span>
                 </v-col>
-                <v-spacer></v-spacer>
                 <v-col cols="auto">
                     <v-bottom-sheet max-width="400">
                         <template v-slot:activator="{ props }">
                             <v-btn icon v-bind="props" color="on-primary" variant="text">
-                                <v-icon color="on-primary">mdi-help-circle-outline</v-icon>
+                                <v-icon color="white">mdi-help-circle-outline</v-icon>
                             </v-btn>
                         </template>
                         <v-card>
-                            <v-card-title class="text-h6 py-2 px-4">
+                            <v-card-text class="text-h6 py-2 px-4">
                                 Penjelasan Phase Operation
-                            </v-card-title>
+                            </v-card-text>
                             <v-card-text class="py-2 px-4">
-                                Tahap Operation merupakan fase implementasi dan pengelolaan kredit setelah disetujui. Tujuan utama tahap ini adalah memastikan kredit berjalan sesuai dengan ketentuan yang disepakati dan meminimalkan risiko operasional.
+                                Tahap Operation merupakan fase implementasi dan pengelolaan kredit setelah disetujui.
+                                Tujuan utama tahap ini
+                                adalah memastikan kredit berjalan sesuai dengan ketentuan yang disepakati dan
+                                meminimalkan risiko operasional.
                             </v-card-text>
                         </v-card>
                     </v-bottom-sheet>
                 </v-col>
             </v-row>
-        </v-card-title>
+        </v-card-text>
 
-        <div v-for="(attachment, index) in data" :key="index">
+        <!-- <div v-for="(attachment, index) in data" :key="index">
             <v-list density="compact">
                 <v-list-item>
                     <template v-slot:prepend>
@@ -84,6 +82,71 @@
                     </template>
                 </v-list-item>
             </v-list>
+        </div> -->
+
+        <div v-for="(attachment, index) in data" :key="index" class="pa-1">
+            <v-row no-gutters align="center" :class="parseInt(attachment.isSecret) ? 'bg-grey-lighten-4' : ''">
+                <v-col cols="auto" class="mr-2">
+                    <v-icon :color="parseInt(attachment.isApprove) ? 'success' : 'error'" size="small">
+                        {{ parseInt(attachment.isApprove) ? 'mdi-check-circle' : 'mdi-close-circle' }}
+                    </v-icon>
+                    <!-- <v-icon icon="mdi-file" size="small" class="ml-1"></v-icon> -->
+                </v-col>
+
+                <v-col>
+                    <div class="text-subtitle-2 font-weight-medium">{{ attachment.name }}</div>
+                    <div v-if="attachment.note !== 'null'" class="text-caption text-grey-darken-1">{{ attachment.note }}
+                    </div>
+                </v-col>
+
+                <v-col cols="auto">
+                    <div class="d-flex">
+                        <v-tooltip location="top" text="Lihat File" v-if="canViewFile(attachment)">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-link-external" size="small" color="primary"
+                                    variant="text" class="mr-2" :href="getFileUrl(attachment)" target="_blank"
+                                    rel="noopener noreferrer">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+
+                        <v-tooltip location="top" text="Upload File" v-if="canUploadFile(attachment)">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-upload" size="small" color="primary" variant="text"
+                                    class="mr-2" @click="openModal(1, attachment)">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+
+                        <v-tooltip location="top" text="Edit File" v-if="canEditFile(attachment)">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-edit" size="small" color="info" variant="text"
+                                    class="mr-2" @click="openModal(1, attachment)">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+
+                        <v-tooltip location="top" text="Tanda Tangan File"
+                            v-if="userAccessPhase4 && parseInt(userAccessPhase4.canApprove) && phase < 5">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-pen" size="small" color="info" variant="text"
+                                    class="mr-2" @click="toSignature(attachment)">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+
+                        <v-tooltip location="top" text="Hapus File" v-if="canDeleteFile(attachment)">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-trash" size="small" color="error" variant="text"
+                                    @click="deleteAttachment(attachment.id)">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+                    </div>
+                </v-col>
+            </v-row>
+
+            <v-divider v-if="index < data.length - 1" class="mt-3"></v-divider>
         </div>
     </v-card>
 
@@ -168,25 +231,20 @@ export default {
             type: Function,
             required: true,
         },
-        // openModal: {
-        //     type: Function,
-        //     required: true,
-        // },
-
         getDetailFile: {
             type: Function,
             required: true,
         },
-        
-        phase : {
+
+        phase: {
             type: Number,
             required: true,
         },
     },
+    inject: ['loading'],
     data() {
         return {
             userAccessPhase5: null,
-            overlay: false,
             uploadProgress: null,
             rules: {
                 required: (value) => !!value || "Required",
@@ -204,6 +262,40 @@ export default {
         }
     },
     methods: {
+        canViewFile(attachment) {
+            if (parseInt(attachment.isSecret)) {
+                return (attachment.path !== 'null' || attachment.link !== null) &&
+                    this.userAccessPhase5 &&
+                    parseInt(this.userAccessPhase5.isSecret) === 1;
+            } else {
+                return attachment.path !== 'null' || attachment.link !== null;
+            }
+        },
+
+        canUploadFile(attachment) {
+            return this.phase < 6 && (attachment.path === 'null' && attachment.link === null) &&
+                this.userAccessPhase5 &&
+                parseInt(this.userAccessPhase5.canInsertData) == 1;
+        },
+
+        canEditFile(attachment) {
+            return this.phase < 6 && this.userAccessPhase5 &&
+                parseInt(this.userAccessPhase5.canUpdateData) == 1 && this.phase != 6;
+        },
+
+        canDeleteFile(attachment) {
+            return this.phase < 6 && this.userAccessPhase5 &&
+                parseInt(this.userAccessPhase5.canDeleteData) == 1 && this.phase != 6;
+        },
+
+        getFileUrl(attachment) {
+            if (attachment.path !== 'null') {
+                return `${this.filePath}/${this.fileId}/${attachment.path}`;
+            } else if (attachment.link !== null) {
+                return attachment.link;
+            }
+            return '#'; // Atau URL default jika tidak ada yang cocok
+        },
         openModal(type, item = null) {
             if (type == 1) {
                 this.formsp3k.id = item.id;
@@ -221,7 +313,7 @@ export default {
                 this.formsp3k.path = null;
                 this.formsp3k.isApprove = 0;
                 this.isSp3k = false;
-            } 
+            }
         },
 
         handleFileChange(event) {
@@ -249,7 +341,7 @@ export default {
 
         async insertSpk3k() {
             try {
-                this.overlay = true;
+                this.loading.show();
                 const formData = new FormData();
                 formData.append("name", this.formsp3k.name);
                 formData.append("path", this.formsp3k.path);
@@ -278,13 +370,13 @@ export default {
                     config
                 );
                 if (response.status === 200) {
-                    this.overlay = false;
+                    this.loading.hide();
                     this.closeModal(1);
                     this.getDetailFile(this.fileId);
                     this.uploadProgress = null;
                     this.$showToast("success", "Success", response.data.message);
                 } else {
-                    this.overlay = false;
+                    this.loading.hide();
                     this.closeModal(1);
                     this.uploadProgress = null;
                     this.getDetailFile(this.fileId);
@@ -302,3 +394,8 @@ export default {
     },
 }
 </script>
+<style scoped>
+.header-color {
+    background-color: #FFAB00;
+}
+</style>

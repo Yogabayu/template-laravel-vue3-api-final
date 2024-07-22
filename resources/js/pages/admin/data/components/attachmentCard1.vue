@@ -56,9 +56,7 @@
                                     </template>
                                 </v-tooltip>
 
-                                <v-tooltip location="top" text="Edit File" v-if="
-                                    userAccess && parseInt(userAccess.canUpdateData) && phase < 5
-                                ">
+                                <v-tooltip location="top" text="Edit File" >
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="openModal(2, attachment)">
                                             <VIcon size="20" icon="bx-edit" color="blue" />
@@ -66,9 +64,7 @@
                                     </template>
                                 </v-tooltip>
 
-                                <v-tooltip location="top" text="Hapus File" v-if="
-                                    userAccess && parseInt(userAccess.canDeleteData) && phase < 5
-                                ">
+                                <v-tooltip location="top" text="Hapus File" >
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="deleteAttachment(attachment.id)">
                                             <VIcon size="20" icon="bx-trash" color="red" />
@@ -109,9 +105,7 @@
                                 </v-tooltip>
 
 
-                                <v-tooltip location="top" text="Edit File" v-if="
-                                    userAccess && parseInt(userAccess.canUpdateData) && phase < 5
-                                ">
+                                <v-tooltip location="top" text="Edit File">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="openModal(2, attachment)">
                                             <VIcon size="20" icon="bx-edit" color="blue" />
@@ -119,8 +113,7 @@
                                     </template>
                                 </v-tooltip>
 
-                                <v-tooltip location="top" text="Hapus File"
-                                    v-if="userAccess && parseInt(userAccess.canDeleteData) && phase < 5">
+                                <v-tooltip location="top" text="Hapus File">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="deleteAttachment(attachment.id)">
                                             <VIcon size="20" icon="bx-trash" color="red" />
