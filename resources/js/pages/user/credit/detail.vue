@@ -415,7 +415,7 @@
           <EasyDataTable :headers="timerHeaders" :items="dataFile.phase_times">
             <template #item-timeDiff="item">{{
               calculateTimeDiff(item.startTime, item.endTime)
-            }}</template>
+              }}</template>
           </EasyDataTable>
         </template>
       </v-card>
@@ -462,8 +462,11 @@
 
     <v-dialog v-model="isChangeStatusCredit" width="auto" transition="dialog-top-transition">
       <v-card>
-        <template v-slot:title> Ubah Status File </template>
+        <template v-slot:title> Ubah Status Kredit </template>
         <template v-slot:text>
+          <v-alert
+            text="Merubah status data lewat fitur ini dapat menyebabkan ketidaksesuaian alur proses. Harap pastikan data yang diubah sesuai dengan kebutuhan. Jika ada kesalahan, silahkan hubungi Admin. Terima kasih"
+            title="Perhatian" type="warning" class="mb-2"></v-alert>
           <v-form @submit.prevent="updateStatusCredit">
             <v-row>
               <VCol md="12" cols="12">
@@ -713,7 +716,7 @@ export default {
       return this.dataFile.notes.slice(startIndex, endIndex);
     },
   },
-  
+
   inject: ['loading'],
   methods: {
     async updateStatusCredit() {
