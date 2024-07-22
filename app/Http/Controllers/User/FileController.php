@@ -2045,6 +2045,7 @@ class FileController extends Controller
             $userPos = User::where('id', Auth::user()->id)->first();
             $getPostionData = Position::where('id', $userPos->position_id)->first();
             $role = Role::where('id', $getPostionData->role_id)->first();
+            $currentDate = Carbon::now();
 
             if ($userNow->position->name == 'Account Officer' || $userNow->position->name == 'AO' || $userNow->position->name == 'ao' || $userNow->position->name == 'account officer' || $userNow->position->name == 'Account Officer Executive' || $userNow->position->name == 'account officer executive' || $userNow->position->name == 'Account Officer / Executive AO' || $userNow->position->name == 'AO / RO') {
 
@@ -2078,7 +2079,12 @@ class FileController extends Controller
                         break;
                     }
                 }
-                $files = File::where('user_id', Auth::user()->id)->with('user', 'user.position.offices', 'attachments')->orderBy('created_at', 'desc')->get();
+                $files = File::where('user_id', Auth::user()->id)
+                    ->with('user', 'user.position.offices', 'attachments')
+                    ->whereMonth('created_at', $currentDate->month)
+                    ->whereYear('created_at', $currentDate->year)
+                    ->orderBy('created_at', 'desc')
+                    ->get();
 
                 ActivityHelper::userActivity(Auth::user()->id, 'Mengakses halaman File Credit');
 
@@ -2118,7 +2124,12 @@ class FileController extends Controller
                 // Inisialisasi array untuk menampung semua file yang terkait
                 $files = [];
 
-                $fileAll = File::with('user', 'user.position.offices', 'attachments')->orderBy('created_at', 'desc')->get();
+                $fileAll = File::with('user', 'user.position.offices', 'attachments')
+                    ->orderBy('created_at', 'desc')
+                    ->whereMonth('created_at', $currentDate->month)
+                    ->whereYear('created_at', $currentDate->year)
+                    ->get();
+
                 foreach ($fileAll as $eachFile) {
                     // Periksa posisi pengguna yang mengunggah file
                     $uploaderPositionId = DB::table('users')

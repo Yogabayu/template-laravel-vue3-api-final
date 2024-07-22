@@ -136,6 +136,7 @@
 <script>
 export default {
     name: "AttachmentCard1",
+    inject: ['loading'],
     props: {
         data: {
             type: Object,

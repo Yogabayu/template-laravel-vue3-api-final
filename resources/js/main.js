@@ -12,6 +12,7 @@ import Swal from 'sweetalert2'
 import { createApp } from 'vue'
 import Vue3EasyDataTable from 'vue3-easy-data-table'
 import 'vue3-easy-data-table/dist/style.css'
+import loadingOverlay from './plugins/loadingOverlay'
 
 loadFonts()
 
@@ -19,26 +20,26 @@ loadFonts()
 const app = createApp(App)
 
 // Use plugins
+app.use(loadingOverlay)
 app.use(vuetify)
 app.component('EasyDataTable', Vue3EasyDataTable);
 app.use(createPinia())
 app.use(router)
 
-app.config.globalProperties.$handleRightClick =(event)=>{
-  event.preventDefault();
-};
+// app.config.globalProperties.$handleRightClick =(event)=>{
+//   event.preventDefault();
+// };
 
-app.directive('prevent-right-click', {
-  beforeMount: (el, binding) => {
-    el.addEventListener('contextmenu', (e) => {
-      e.preventDefault();
-    });
-  },
-  unmounted: (el,binding) => {
-    el.removeEventListener('contextmenu', binding.value);
-  },
-});
-
+// app.directive('prevent-right-click', {
+//   beforeMount: (el, binding) => {
+//     el.addEventListener('contextmenu', (e) => {
+//       e.preventDefault();
+//     });
+//   },
+//   unmounted: (el,binding) => {
+//     el.removeEventListener('contextmenu', binding.value);
+//   },
+// });
 
 // Mount vue app
 app.mount('#app')

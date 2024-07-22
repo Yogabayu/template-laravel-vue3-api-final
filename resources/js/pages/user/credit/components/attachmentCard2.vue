@@ -1,8 +1,4 @@
 <template>
-    <v-overlay :model-value="overlay" class="align-center justify-center">
-        <v-progress-circular color="blue-lighten-3" indeterminate :size="41" :width="5"></v-progress-circular>
-        Loading...
-    </v-overlay>
     <v-card>
         <v-card-text class="py-1 header-color">
             <v-row align="center" no-gutters>
@@ -762,7 +758,6 @@ export default {
     data() {
         return {
             userAccessPhase2: null,
-            overlay: false,
             selectedOption: "",
             uploadProgress: null,
             rules: {
@@ -1053,7 +1048,7 @@ export default {
         },
         async insertSlik() {
             try {
-                this.overlay = true;
+                this.loading.show();
                 const formData = new FormData();
                 formData.append("name", this.formDetailSlik.name);
                 if (this.formDetailSlik.note != null) {
@@ -1091,14 +1086,14 @@ export default {
                     config
                 );
                 if (response.status === 200) {
-                    this.overlay = false;
+                    this.loading.hide();
                     this.closeModal(1);
                     this.closeModal(2);
                     this.getDetailFile(this.fileId);
                     this.uploadProgress = null;
                     this.$showToast("success", "Success", response.data.message);
                 } else {
-                    this.overlay = false;
+                    this.loading.hide();
                     this.closeModal(1);
                     this.closeModal(2);
                     this.uploadProgress = null;
@@ -1106,7 +1101,7 @@ export default {
                     this.$showToast("error", "Sorry", response.data.message);
                 }
             } catch (error) {
-                this.overlay = false;
+                this.loading.hide();
                 this.closeModal(1);
                 this.closeModal(2);
                 this.getDetailFile(this.fileId);
@@ -1115,7 +1110,7 @@ export default {
         },
         async insertAnalytic() {
             try {
-                this.overlay = true;
+                this.loading.show();
                 const formData = new FormData();
                 formData.append("name", this.formAnalytic.name);
                 formData.append("note", this.formAnalytic.note);
@@ -1152,20 +1147,20 @@ export default {
                     config
                 );
                 if (response.status === 200) {
-                    this.overlay = false;
+                    this.loading.hide();
                     this.closeModal(3);
                     this.getDetailFile(this.fileId);
                     this.uploadProgress = null;
                     this.$showToast("success", "Success", response.data.message);
                 } else {
-                    this.overlay = false;
+                    this.loading.hide();
                     this.closeModal(3);
                     this.uploadProgress = null;
                     this.getDetailFile(this.fileId);
                     this.$showToast("error", "Sorry", response.data.message);
                 }
             } catch (error) {
-                this.overlay = false;
+                this.loading.hide();
                 this.closeModal(3);
                 this.getDetailFile(this.fileId);
                 this.$showToast("error", "Sorry", error.response.data.message);
@@ -1173,7 +1168,7 @@ export default {
         },
         async insertAppeal() {
             try {
-                this.overlay = true;
+                this.loading.show();
                 const formData = new FormData();
                 formData.append("name", this.formAppeal.name);
                 formData.append("note", this.formAppeal.note);
@@ -1208,20 +1203,20 @@ export default {
                     config
                 );
                 if (response.status === 200) {
-                    this.overlay = false;
+                    this.loading.hide();
                     this.closeModal(4);
                     this.getDetailFile(this.fileId);
                     this.uploadProgress = null;
                     this.$showToast("success", "Success", response.data.message);
                 } else {
-                    this.overlay = false;
+                    this.loading.hide();
                     this.closeModal(4);
                     this.uploadProgress = null;
                     this.getDetailFile(this.fileId);
                     this.$showToast("error", "Sorry", response.data.message);
                 }
             } catch (error) {
-                this.overlay = false;
+                this.loading.hide();
                 this.closeModal(4);
                 this.getDetailFile(this.fileId);
                 this.$showToast("error", "Sorry", error.response.data.message);

@@ -1,8 +1,4 @@
 <template>
-    <v-overlay :model-value="overlay" class="align-center justify-center">
-        <v-progress-circular color="blue-lighten-3" indeterminate :size="41" :width="5"></v-progress-circular>
-        Loading...
-    </v-overlay>
     <v-card>
         <v-card-text class="py-1 header-color">
             <v-row align="center" no-gutters>
@@ -513,10 +509,6 @@ export default {
             type: Function,
             required: true,
         },
-        // openModal: {
-        //     type: Function,
-        //     required: true,
-        // },
 
         getDetailFile: {
             type: Function,
@@ -550,7 +542,6 @@ export default {
         return {
             userAccessPhase3: null,
             selectedOption: "",
-            overlay: false,
             uploadProgress: null,
             rules: {
                 required: (value) => !!value || "Required",
@@ -699,7 +690,7 @@ export default {
 
         async insertAnalisa() {
             try {
-                this.overlay = true;
+                this.loading.show();
                 const formData = new FormData();
                 formData.append("name", this.formAnalisaKredit.name);
                 formData.append("isSecret", this.formAnalisaKredit.isSecret);
@@ -734,20 +725,20 @@ export default {
                     config
                 );
                 if (response.status === 200) {
-                    this.overlay = false;
+                    this.loading.hide();
                     this.closeModal(1);
                     this.getDetailFile(this.fileId);
                     this.uploadProgress = null;
                     this.$showToast("success", "Success", response.data.message);
                 } else {
-                    this.overlay = false;
+                    this.loading.hide();
                     this.closeModal(1);
                     this.uploadProgress = null;
                     this.getDetailFile(this.fileId);
                     this.$showToast("error", "Sorry", response.data.message);
                 }
             } catch (error) {
-                this.overlay = false;
+                this.loading.hide();
                 this.uploadProgress = null;
                 this.closeModal(1);
                 this.getDetailFile(this.fileId);
@@ -757,12 +748,12 @@ export default {
 
         async insertSubmission() {
             try {
-                this.overlay = true;
+                this.loading.show();
 
                 if (this.formSubmission.link == null && this.formSubmission.path == null) {
                     this.isSubmission = false;
                     this.$showToast("error", "Error", "File / Link harus diisi");
-                    this.overlay = false;
+                    this.loading.hide();
                     return;
                 }
 
@@ -800,20 +791,20 @@ export default {
                     config
                 );
                 if (response.status === 200) {
-                    this.overlay = false;
+                    this.loading.hide();
                     this.closeModal(2);
                     this.getDetailFile(this.fileId);
                     this.uploadProgress = null;
                     this.$showToast("success", "Success", response.data.message);
                 } else {
-                    this.overlay = false;
+                    this.loading.hide();
                     this.closeModal(2);
                     this.uploadProgress = null;
                     this.getDetailFile(this.fileId);
                     this.$showToast("error", "Sorry", response.data.message);
                 }
             } catch (error) {
-                this.overlay = false;
+                this.loading.hide();
                 this.uploadProgress = null;
                 this.closeModal(2);
                 this.getDetailFile(this.fileId);
@@ -828,20 +819,20 @@ export default {
                 );
                 if (!confirmDelete) return;
 
-                this.overlay = true;
+                this.loading.show();
                 const response = await mainURL.delete(`/user/file-submission/${id}`);
 
                 if (response.status === 200) {
-                    this.overlay = false;
+                    this.loading.hide();
                     this.getDetailFile(this.fileId);
                     this.$showToast("success", "Berhasill", response.data.message);
                 } else {
-                    this.overlay = false;
+                    this.loading.hide();
                     this.getDetailFile(this.fileId);
                     this.$showToast("error", "Sorry", "Terjadi Kesalahan Silahkan Coba Lagi");
                 }
             } catch (error) {
-                this.overlay = false;
+                this.loading.hide();
                 this.closeModal(2);
                 this.getDetailFile(this.fileId);
                 this.$showToast("error", "Sorry", error.response.data.message);
@@ -850,7 +841,7 @@ export default {
 
         async updateSubmission() {
             try {
-                this.overlay = true;
+                this.loading.show();
                 const formData = new FormData();
                 formData.append("file_id", this.formSubmission.file_id);
                 formData.append("name", this.formSubmission.name);
@@ -885,20 +876,20 @@ export default {
                     config
                 );
                 if (response.status === 200) {
-                    this.overlay = false;
+                    this.loading.hide();
                     this.closeModal(3);
                     this.getDetailFile(this.fileId);
                     this.uploadProgress = null;
                     this.$showToast("success", "Success", response.data.message);
                 } else {
-                    this.overlay = false;
+                    this.loading.hide();
                     this.closeModal(3);
                     this.uploadProgress = null;
                     this.getDetailFile(this.fileId);
                     this.$showToast("error", "Sorry", response.data.message);
                 }
             } catch (error) {
-                this.overlay = false;
+                this.loading.hide();
                 this.uploadProgress = null;
                 this.closeModal(3);
                 this.getDetailFile(this.fileId);

@@ -96,7 +96,8 @@ export default {
   components: {
     AnalyticsCongratulations,
     Line
-  },
+  },  
+  inject: ['loading'],
   data() {
     return {
       userData: null,
@@ -223,7 +224,6 @@ export default {
           this.$showToast("error", "Sorry", errorMessage);
         }
       } catch (error) {
-        console.log(error);
         const errorMessage =
           error.response && error.response.data && error.response.data.message
             ? error.response.data.message
@@ -236,6 +236,7 @@ export default {
   beforeMount() {
     this.getUserData();
     this.getRekapCredit();
+    this.loading.hide();
   },
 };
 </script>

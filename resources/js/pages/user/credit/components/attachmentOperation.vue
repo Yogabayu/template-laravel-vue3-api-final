@@ -1,8 +1,4 @@
 <template>
-    <v-overlay :model-value="overlay" class="align-center justify-center">
-        <v-progress-circular color="blue-lighten-3" indeterminate :size="41" :width="5"></v-progress-circular>
-        Loading...
-    </v-overlay>
     <v-card>
         <v-card-text class="py-1 header-color">
             <v-row align="center" no-gutters>
@@ -232,11 +228,6 @@ export default {
             type: Function,
             required: true,
         },
-        // openModal: {
-        //     type: Function,
-        //     required: true,
-        // },
-
         getDetailFile: {
             type: Function,
             required: true,
@@ -250,7 +241,6 @@ export default {
     data() {
         return {
             userAccessPhase5: null,
-            overlay: false,
             uploadProgress: null,
             rules: {
                 required: (value) => !!value || "Required",
@@ -347,7 +337,7 @@ export default {
 
         async insertSpk3k() {
             try {
-                this.overlay = true;
+                this.loading.show();
                 const formData = new FormData();
                 formData.append("name", this.formsp3k.name);
                 formData.append("path", this.formsp3k.path);
@@ -376,13 +366,13 @@ export default {
                     config
                 );
                 if (response.status === 200) {
-                    this.overlay = false;
+                    this.loading.hide();
                     this.closeModal(1);
                     this.getDetailFile(this.fileId);
                     this.uploadProgress = null;
                     this.$showToast("success", "Success", response.data.message);
                 } else {
-                    this.overlay = false;
+                    this.loading.hide();
                     this.closeModal(1);
                     this.uploadProgress = null;
                     this.getDetailFile(this.fileId);

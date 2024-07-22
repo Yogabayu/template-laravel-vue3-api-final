@@ -1,16 +1,7 @@
 <template>
-  <v-overlay :absolute="true" v-model="overlay" contained persistent class="align-center justify-center">
-    <v-col>
-      <v-progress-circular color="primary" size="32" indeterminate>
-      </v-progress-circular>
-      <br />
-      <span class="font-weight-bold text-lg">Loading....</span>
-    </v-col>
-  </v-overlay>
-
   <v-card>
     <VCardTitle class="text-2xl font-weight-bold d-flex justify-left">
-      List Kredit
+      List Kredit Bulan ini
       <v-spacer></v-spacer>
     </VCardTitle>
     <v-tabs v-model="tab" class="v-tabs-pill" bg-color="secondary">
@@ -264,7 +255,7 @@
 
               <v-divider :thickness="5"></v-divider>
               <!-- <VCol md="12" cols="12" v-if="dataForm.hasFile2"> -->
-              
+
 
               <!-- <VCol md="12" cols="12" v-if="dataForm.hasFile2">
                 <span style="color: red">*</span>
@@ -380,6 +371,7 @@
 <script lang="ts">
 import mainURL from "@/axios";
 export default {
+  inject: ['loading'],
   computed: {
     formattedPlafon: {
       get() {
@@ -594,7 +586,9 @@ export default {
     getNestedValue(obj, path) {
       return path.split('.').reduce((o, key) => (o && o[key] !== undefined) ? o[key] : null, obj);
     },
-    toPage() {
+    async toPage() {
+      this.loading.show();
+      await this.$nextTick();
       this.$router.push(`/u-indexfilter`);
     },
     formatDate(dateString: any) {
@@ -603,13 +597,13 @@ export default {
     },
     async downloadFile(id) {
       try {
-        this.overlay = true;
+        this.loading.show();
         const response = await mainURL.get(`/download-all/${id}`, {
           responseType: 'blob' // tambahkan ini untuk mengunduh file sebagai Blob
         });
 
         if (response.status === 200) {
-          this.overlay = false;
+          this.loading.hide();
           const url = window.URL.createObjectURL(new Blob([response.data]));
           const link = document.createElement('a');
           link.href = url;
@@ -620,11 +614,11 @@ export default {
 
           this.$showToast("success", "Berhasil", "File berhasil diunduh");
         } else {
-          this.overlay = false;
+          this.loading.hide();
           this.$showToast("error", "Error", "Gagal mengunduh file");
         }
       } catch (error) {
-        this.overlay = false;
+        this.loading.hide();
         this.$showToast("error", "Error", "Terjadi kesalahan saat mengunduh file");
       }
     },
@@ -639,7 +633,7 @@ export default {
     },
     async deleteFile(item: { id: any }) {
       try {
-        this.overlay = true;
+        this.loading.show();
         const confirmDelete = window.confirm(
           "Apakah Anda yakin ingin menghapus data? Semua Data akan terhapus secara permanen."
         );
@@ -648,16 +642,16 @@ export default {
         const response = await mainURL.delete(`/user/credit/${item.id}`);
 
         if (response.status === 200) {
-          this.overlay = false;
+          this.loading.hide();
           this.getAllFiles();
           this.$showToast("success", "Berhasill", response.data.message);
         } else {
-          this.overlay = false;
+          this.loading.hide();
           this.getAllFiles();
           this.$showToast("error", "Sorry", response.data.message);
         }
       } catch (error) {
-        this.overlay = false;
+        this.loading.hide();
         this.getAllFiles();
         this.$showToast("error", "Sorry", error.response.data.message);
       }
@@ -791,7 +785,7 @@ export default {
     },
     async insertData() {
       try {
-        this.overlay = true;
+        this.loading.show();
         const formData = new FormData();
         formData.append("name", this.dataForm.name);
         formData.append("nik_pemohon", this.dataForm.nik_pemohon);
@@ -856,19 +850,19 @@ export default {
 
         const response = await mainURL.post("/user/credit", formData, config);
         if (response.status === 200) {
-          this.overlay = false;
+          this.loading.hide();
           this.closeModal(1);
           this.getAllFiles();
           this.uploadProgress = null;
           this.$showToast("success", "Success", response.data.message);
         } else {
-          this.overlay = false;
+          this.loading.hide();
           this.uploadProgress = null;
           this.getAllFiles();
           this.$showToast("error", "Sorry", response.data.message);
         }
       } catch (error) {
-        this.overlay = false;
+        this.loading.hide();
         this.uploadProgress = null;
         this.closeModal(1);
         this.getAllFiles();
@@ -876,9 +870,18 @@ export default {
       }
     },
   },
-  mounted() {
-    this.getAllFiles();
-    this.getUserData();
+  async mounted() {
+    try {
+      this.loading.show();
+      await Promise.all([
+        this.getAllFiles(),
+        this.getUserData()
+      ]);
+    } catch (error) {
+      console.error('Error in mounted:', error);
+    } finally {
+      this.loading.hide();
+    }
   },
 };
 </script>

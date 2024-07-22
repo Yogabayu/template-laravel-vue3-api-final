@@ -1,8 +1,4 @@
 <template>
-  <v-overlay :model-value="overlay" class="align-center justify-center">
-    <v-progress-circular color="blue-lighten-3" indeterminate :size="41" :width="5"></v-progress-circular>
-    Loading...
-  </v-overlay>
   <v-card color="backgroundCard" min-width="100%" class="v-card-custom">
     <!-- <v-card-title class="text-2xl font-weight-bold d-flex justify-center"
       v-if="!['Account Officer', 'AO', 'ao', 'account officer', 'Account Officer Executive', 'account officer executive', 'Account Officer / Executive AO', 'AO / RO'].includes(userData.position.name)">
@@ -469,9 +465,9 @@ export default {
       required: true,
     },
   },
+  inject:['loading'],
   data() {
     return {
-      overlay: false,
       userAccessNow: null,
       userAccessPhase1: null,
       filePath: this.$filePath,
@@ -536,13 +532,13 @@ export default {
     },
     async generateReport(id) {
       try {
-        this.overlay = true;
+        this.loading.show();
         const response = await mainURL.get(`/user/generatereport/${id}`, {
           responseType: "blob", // tambahkan ini untuk mengunduh file sebagai Blob
         });
 
         if (response.status == 200) {
-          this.overlay = false;
+          this.loading.hide();
           const url = window.URL.createObjectURL(new Blob([response.data]));
           const link = document.createElement("a");
           link.href = url;
@@ -553,12 +549,12 @@ export default {
 
           this.$showToast("success", "Berhasil", "File berhasil diunduh");
         } else {
-          this.overlay = false;
+          this.loading.hide();
           this.$showToast("error", "Error", "Gagal mengunduh file");
         }
       } catch (error) {
         console.log(error);
-        this.overlay = false;
+        this.loading.hide();
         this.$showToast(
           "error",
           "Error",
