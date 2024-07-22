@@ -39,8 +39,7 @@
             <v-col cols="12" sm="6" md="8">
               <span>Informasi Umum ℹ️</span>
             </v-col>
-            <v-col cols="12" sm="6" md="4" class="text-sm-right text-md-right"
-              v-if="userAccess && userAccess.canUpdateData">
+            <v-col cols="12" sm="6" md="4" class="text-sm-right text-md-right">
               <span>
                 <v-btn color="primary" size="small" class="my-3 mx-3" @click="openModal(4)">
                   Edit Data
@@ -252,7 +251,8 @@
     <!-- Approval -->
     <v-card-text v-if="dataFile && parseInt(dataFile.phase) < 6">
       <v-card>
-        <v-card-title> Status Approval Phase ✅ </v-card-title>
+        <v-card-title> Status Approval Phase ✅ <v-chip @click="openModal(11)"> <v-icon>mdi-plus</v-icon> Approval</v-chip><v-chip @click="openModal(12)" class="ml-2"><v-icon>mdi-minus-box</v-icon> Approval</v-chip>
+        </v-card-title>
         <v-card-text>
           <div v-if="dataFile && dataFile.approvals && dataFile.approvals.length">
             <template v-for="(app, index) in dataFile.approvals" :key="index">
@@ -374,6 +374,7 @@
           v-if="dataFile && parseInt(dataFile.phase) < 4"></v-btn>
       </v-col> -->
     </v-card-actions>
+
   </v-card>
 </template>
 

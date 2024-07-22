@@ -754,7 +754,8 @@ export default {
             return (!this.formAppeal.path || this.formAppeal.path == 'null') &&
                 (!this.formAppeal.link || this.formAppeal.link == null);
         }
-    },
+    },    
+    inject: ['loading'],
     data() {
         return {
             userAccessPhase2: null,

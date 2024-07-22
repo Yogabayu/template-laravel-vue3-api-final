@@ -461,6 +461,7 @@ export default {
             }
         },
     },
+    inject: ['loading'],
     mounted() {
         this.userAccessPhase4 = this.userAccess['4'];
     },

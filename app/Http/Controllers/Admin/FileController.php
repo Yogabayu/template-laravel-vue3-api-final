@@ -34,6 +34,55 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class FileController extends Controller
 {
+    public function addNewApproval(Request $request)
+    {
+        try {
+            $request->validate([
+                'file_id' => 'required|exists:files,id',
+                'user_id' => 'required|exists:users,id',
+                'phase' => 'required',
+                'approved' => 'required',
+            ]);
+
+            $cekApproval = Approval::where('file_id', $request->file_id)
+                ->where('user_id', $request->user_id)
+                ->where('phase', $request->phase)
+                ->first();
+            if ($cekApproval) {
+                return ResponseHelper::errorRes('data user sudah ada');
+            }
+
+            $approval = new Approval();
+            $approval->file_id = $request->file_id;
+            $approval->user_id = $request->user_id;
+            $approval->phase = $request->phase;
+            $approval->approved = $request->approved;
+            $approval->save();
+            return ResponseHelper::successRes('Berhasil mendapatkan user', $approval);
+        } catch (\Exception $e) {
+            return ResponseHelper::errorRes($e->getMessage());
+        }
+    }
+
+    public function deleteApproval(Request $request)
+    {
+        try {
+            $request->validate([
+                'idApproval' => 'required',
+            ]);
+
+            $approval = Approval::findOrFail($request->idApproval);
+            if ($approval) {
+                $approval->delete();
+                return ResponseHelper::successRes('Berhasil menghapus user', $approval);
+            }
+
+            return ResponseHelper::errorRes('data user tidak ditemukan');
+        } catch (\Exception $e) {
+            return ResponseHelper::errorRes($e->getMessage());
+        }
+    }
+
     public function getSignatureUser($idAttchment)
     {
         try {

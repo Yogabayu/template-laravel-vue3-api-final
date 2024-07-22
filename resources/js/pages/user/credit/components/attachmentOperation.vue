@@ -17,7 +17,10 @@
                                 Penjelasan Phase Operation
                             </v-card-text>
                             <v-card-text class="py-2 px-4">
-                                Tahap Operation merupakan fase implementasi dan pengelolaan kredit setelah disetujui. Tujuan utama tahap ini adalah memastikan kredit berjalan sesuai dengan ketentuan yang disepakati dan meminimalkan risiko operasional.
+                                Tahap Operation merupakan fase implementasi dan pengelolaan kredit setelah disetujui.
+                                Tujuan utama tahap ini
+                                adalah memastikan kredit berjalan sesuai dengan ketentuan yang disepakati dan
+                                meminimalkan risiko operasional.
                             </v-card-text>
                         </v-card>
                     </v-bottom-sheet>
@@ -80,7 +83,7 @@
                 </v-list-item>
             </v-list>
         </div> -->
-        
+
         <div v-for="(attachment, index) in data" :key="index" class="pa-1">
             <v-row no-gutters align="center" :class="parseInt(attachment.isSecret) ? 'bg-grey-lighten-4' : ''">
                 <v-col cols="auto" class="mr-2">
@@ -232,12 +235,13 @@ export default {
             type: Function,
             required: true,
         },
-        
-        phase : {
+
+        phase: {
             type: Number,
             required: true,
         },
     },
+    inject: ['loading'],
     data() {
         return {
             userAccessPhase5: null,
@@ -269,7 +273,7 @@ export default {
         },
 
         canUploadFile(attachment) {
-            return this.phase < 6 &&  (attachment.path === 'null' && attachment.link === null) &&
+            return this.phase < 6 && (attachment.path === 'null' && attachment.link === null) &&
                 this.userAccessPhase5 &&
                 parseInt(this.userAccessPhase5.canInsertData) == 1;
         },
@@ -280,7 +284,7 @@ export default {
         },
 
         canDeleteFile(attachment) {
-            return this.phase < 6 &&  this.userAccessPhase5 &&
+            return this.phase < 6 && this.userAccessPhase5 &&
                 parseInt(this.userAccessPhase5.canDeleteData) == 1 && this.phase != 6;
         },
 
@@ -309,7 +313,7 @@ export default {
                 this.formsp3k.path = null;
                 this.formsp3k.isApprove = 0;
                 this.isSp3k = false;
-            } 
+            }
         },
 
         handleFileChange(event) {

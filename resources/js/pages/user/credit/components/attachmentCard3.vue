@@ -97,8 +97,7 @@
         </div> -->
 
         <div v-for="(attachment, index) in data" :key="index" class="pa-1">
-            <v-row no-gutters align="center"
-                :class="parseInt(attachment.isSecret) ? 'bg-grey-lighten-4' : ''">
+            <v-row no-gutters align="center" :class="parseInt(attachment.isSecret) ? 'bg-grey-lighten-4' : ''">
                 <v-col cols="auto" class="mr-2">
                     <v-icon :color="parseInt(attachment.isApprove) ? 'success' : 'error'" size="small">
                         {{ parseInt(attachment.isApprove) ? 'mdi-check-circle' : 'mdi-close-circle' }}
@@ -221,7 +220,7 @@
                     </template>
                 </v-list-item>
             </v-list> -->
-            
+
             <v-row no-gutters align="center" class="pa-2">
                 <v-col cols="auto" class="mr-2">
                     <v-icon color="success" size="small" icon="mdi-check-circle">
@@ -239,13 +238,14 @@
                         <v-tooltip location="top" text="Lihat File" v-if="(sub.path !== 'null' || sub.link !== null)">
                             <template v-slot:activator="{ props }">
                                 <v-btn v-bind="props" icon="bx-link-external" size="small" color="primary"
-                                    variant="text" class="mr-2" :href="`${filePath}/${fileId}/${sub.path}`" target="_blank"
-                                    rel="noopener noreferrer">
+                                    variant="text" class="mr-2" :href="`${filePath}/${fileId}/${sub.path}`"
+                                    target="_blank" rel="noopener noreferrer">
                                 </v-btn>
                             </template>
                         </v-tooltip>
 
-                        <v-tooltip location="top" text="Edit File" v-if="userAccessPhase3 && parseInt(userAccessPhase3.canAppeal) && phase < 4">
+                        <v-tooltip location="top" text="Edit File"
+                            v-if="userAccessPhase3 && parseInt(userAccessPhase3.canAppeal) && phase < 4">
                             <template v-slot:activator="{ props }">
                                 <v-btn v-bind="props" icon="bx-edit" size="small" color="info" variant="text"
                                     class="mr-2" @click="openModal(3, sub)">
@@ -253,7 +253,8 @@
                             </template>
                         </v-tooltip>
 
-                        <v-tooltip location="top" text="Hapus File" v-if="userAccessPhase3 && parseInt(userAccessPhase3.canAppeal) && phase < 4">
+                        <v-tooltip location="top" text="Hapus File"
+                            v-if="userAccessPhase3 && parseInt(userAccessPhase3.canAppeal) && phase < 4">
                             <template v-slot:activator="{ props }">
                                 <v-btn v-bind="props" icon="bx-trash" size="small" color="error" variant="text"
                                     @click="deleteSubmission(sub.id)">
@@ -538,6 +539,8 @@ export default {
             });
         }
     },
+
+    inject: ['loading'],
     data() {
         return {
             userAccessPhase3: null,
@@ -590,13 +593,13 @@ export default {
         },
 
         canEditFile(attachment) {
-            return  this.phase < 5 && this.userAccessPhase3 &&
-                parseInt(this.userAccessPhase3.canUpdateData)==1 && this.phase != 6;
+            return this.phase < 5 && this.userAccessPhase3 &&
+                parseInt(this.userAccessPhase3.canUpdateData) == 1 && this.phase != 6;
         },
 
         canDeleteFile(attachment) {
             return this.phase < 5 && this.userAccessPhase3 &&
-                parseInt(this.userAccessPhase3.canDeleteData)==1 && this.phase != 6;
+                parseInt(this.userAccessPhase3.canDeleteData) == 1 && this.phase != 6;
         },
 
         getFileUrl(attachment) {

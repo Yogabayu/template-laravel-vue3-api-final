@@ -67,9 +67,7 @@
                                     </template>
                                 </v-tooltip>
                                 <v-tooltip location="top" text="Upload File" v-if="
-                                    (attachment.path === 'null' && attachment.link === null) &&
-                                    userAccess &&
-                                    parseInt(userAccess.canInsertData) == 1
+                                    (attachment.path === 'null' && attachment.link === null)
                                 ">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="openModal(1, attachment)">
@@ -77,16 +75,14 @@
                                         </button>
                                     </template>
                                 </v-tooltip>
-                                <v-tooltip location="top" text="Edit File"
-                                    v-if="userAccess && parseInt(userAccess.canUpdateData) && phase < 3">
+                                <v-tooltip location="top" text="Edit File">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="openModal(1, attachment)">
                                             <VIcon size="20" icon="bx-edit" color="blue" />
                                         </button>
                                     </template>
                                 </v-tooltip>
-                                <v-tooltip location="top" text="Hapus File"
-                                    v-if="userAccess && parseInt(userAccess.canDeleteData) && phase < 3">
+                                <v-tooltip location="top" text="Hapus File">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="deleteAttachment(attachment.id)">
                                             <VIcon size="20" icon="bx-trash" color="red" />
@@ -132,19 +128,14 @@
                                         </a>
                                     </template>
                                 </v-tooltip>
-                                <v-tooltip location="top" text="Upload File / Link" v-if="
-                                    (formAnalytic.path == null && formAnalytic.path == 'null' && formAnalytic.link == null) &&
-                                    userAccess &&
-                                    parseInt(userAccess.canAppeal) == 1
-                                ">
+                                <v-tooltip location="top" text="Upload File / Link" >
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="openModal(2, formAnalytic)">
                                             <VIcon size="20" icon="bx-upload" color="blue" />
                                         </button>
                                     </template>
                                 </v-tooltip>
-                                <v-tooltip location="top" text="Edit File"
-                                    v-if="userAccess && parseInt(userAccess.canAppeal) == 1 && phase < 3">
+                                <v-tooltip location="top" text="Edit File">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="openModal(2, formAnalytic)">
                                             <VIcon size="20" icon="bx-edit" color="blue" />
@@ -205,27 +196,21 @@
                                         </a>
                                     </template>
                                 </v-tooltip>
-                                <v-tooltip location="top" text="Upload File / Link" v-if="
-                                    (formAppeal.path == null && formAppeal.path == 'null') &&
-                                    userAccess &&
-                                    parseInt(userAccess.canAppeal) == 1
-                                ">
+                                <v-tooltip location="top" text="Upload File / Link" >
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="openModal(3, formAppeal)">
                                             <VIcon size="20" icon="bx-upload" color="blue" />
                                         </button>
                                     </template>
                                 </v-tooltip>
-                                <v-tooltip location="top" text="Edit File"
-                                    v-if="userAccess && parseInt(userAccess.canAppeal) == 1 && phase < 3">
+                                <v-tooltip location="top" text="Edit File">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="openModal(3, formAppeal)">
                                             <VIcon size="20" icon="bx-edit" color="blue" />
                                         </button>
                                     </template>
                                 </v-tooltip>
-                                <v-tooltip location="top" text="Hapus File"
-                                    v-if="userAccess && parseInt(userAccess.canInsertData) == 1 && phase < 3">
+                                <v-tooltip location="top" text="Hapus File">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="deleteAttachment(formAppeal.id)">
                                             <VIcon size="20" icon="bx-trash" color="red" />

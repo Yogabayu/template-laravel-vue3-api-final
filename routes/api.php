@@ -94,6 +94,8 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1', 'throttle:60,1'], function
         Route::post('change-status', [FileController::class, 'changeStatus']);
         Route::get('list-approval/{id}', [AdminFileController::class, 'getSignatureUser']);
         Route::put('signature/{id}', [AdminFileController::class, 'signaturefile']);
+        Route::post('add-approval', [AdminFileController::class, 'addNewApproval']);
+        Route::post('delete-approval', [AdminFileController::class, 'deleteApproval']);
 
         ////filter
         Route::get('userAccess', [AdminFileController::class, 'userAccess']);
