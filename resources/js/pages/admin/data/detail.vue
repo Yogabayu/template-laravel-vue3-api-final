@@ -6,6 +6,9 @@
     </v-overlay>
 
     <v-card>
+      <v-btn prepend-icon="mdi-arrow-left" variant="text" class="mt-2" @click="back">
+        Kembali
+      </v-btn>
       <VCardTitle class="text-2xl font-weight-bold d-flex justify-left">
         Kredit
       </VCardTitle>
@@ -285,9 +288,15 @@
           <v-form @submit.prevent="updateGeneralInfo">
             <v-row>
               <VCol md="12" cols="12">
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih Jenis Kredit:
+                </span>
+                <v-select :items="typeCreditList" autofocus v-model="generalInfo.type"
+                  prepend-icon="mdi-help-rhombus"></v-select>
+              </VCol>
+              <VCol md="12" cols="12">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">Nama Pemohon: </span>
 
-                <VTextField class="my-3" v-model="generalInfo.name" autofocus :rules="[rules.required]" />
+                <VTextField class="my-3" v-model="generalInfo.name" :rules="[rules.required]" />
               </VCol>
               <VCol md="12" cols="12">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">Jumlah Plafon: </span>
@@ -656,6 +665,7 @@ export default {
         order_source: null,
         status_kredit: null,
         plafon: null,
+        type: null,
         nik_pemohon: null,
         nik_pasangan: null,
         nik_jaminan: null,
@@ -678,6 +688,7 @@ export default {
         address: null,
         no_hp: null,
         plafon: "0",
+        type: null,
         surveyResult: "-",
         otsResult: "-",
         cekLingResult: "-",
@@ -691,6 +702,10 @@ export default {
         reasonRejected: "",
       },
       filePath: this.$filePath,
+      typeCreditList: [
+        { value: 1, title: 'Reguler' },
+        { value: 2, title: 'Restruktur' },
+      ],
 
       //=>timers header
       timerHeaders: [
@@ -786,7 +801,10 @@ export default {
       return this.dataFile.notes.slice(startIndex, endIndex);
     },
   },
-  methods: {
+  methods: {    
+    back() {
+      this.$router.go(-1);
+    },
     async updateStatusCredit() {
       try {
         this.overlay = true;
@@ -1023,6 +1041,7 @@ export default {
           this.generalInfo.order_source = this.dataFile.order_source;
           this.generalInfo.status_kredit = this.dataFile.status_kredit;
           this.generalInfo.plafon = this.dataFile.plafon;
+          this.generalInfo.type = this.dataFile.type;
           this.generalInfo.nik_pemohon = this.dataFile.nik_pemohon;
           this.generalInfo.nik_pasangan = this.dataFile.nik_pasangan;
           this.generalInfo.nik_jaminan = this.dataFile.nik_jaminan;
@@ -1130,6 +1149,7 @@ export default {
 
         const formData = new FormData();
         formData.append("name", this.generalInfo.name);
+        formData.append("type", this.generalInfo.type);
         formData.append("plafon", this.generalInfo.plafon.replace(/\D/g, ""));
         formData.append("type_bussiness", this.generalInfo.type_bussiness);
         formData.append("desc_bussiness", this.generalInfo.desc_bussiness);

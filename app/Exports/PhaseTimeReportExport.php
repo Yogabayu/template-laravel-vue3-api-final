@@ -26,6 +26,7 @@ class PhaseTimeReportExport implements FromArray, WithHeadings
             'AO / RO',
             'Nama Kredit',
             'Plafon',
+            'Tipe Kredit',
             'Status',
             'Alamat',
             'No HP',

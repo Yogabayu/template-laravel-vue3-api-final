@@ -209,6 +209,7 @@ class FileController extends Controller
                     'files.nik_pasangan as nikPasangan',
                     'files.nik_jaminan as nikJaminan',
                     'files.plafon as plafon',
+                    'files.type as type',
                     'files.address as address',
                     'files.no_hp as no_hp',
                     'files.order_source as sumberOrder',
@@ -266,6 +267,11 @@ class FileController extends Controller
                 $row['namaAO'] = $phases->first()->nameAO;
                 $row['nameFile'] = $fileName;
                 $row['plafon'] = $phases->first()->plafon;
+                $row['type'] =  match ($phases->first()->type) {
+                    1 => 'Reguler',
+                    2 => 'Restruktur',
+                    default => 'Reguler',
+                };
                 $row['status'] =  match ($phases->first()->isApproved) {
                     1 => 'Approved',
                     2 => 'Pending',
@@ -332,6 +338,7 @@ class FileController extends Controller
                         'files.nik_pasangan as nikPasangan',
                         'files.nik_jaminan as nikJaminan',
                         'files.plafon as plafon',
+                        'files.type as type',
                         'files.address as address',
                         'files.no_hp as no_hp',
                         'files.order_source as sumberOrder',
@@ -355,6 +362,11 @@ class FileController extends Controller
                     $row['namaAO'] = $phases->first()->nameAO;
                     $row['nameFile'] = $fileName;
                     $row['plafon'] = $phases->first()->plafon;
+                    $row['type'] =  match ($phases->first()->type) {
+                        1 => 'Reguler',
+                        2 => 'Restrukur',
+                        default => 'Reguler',
+                    };
                     $row['status'] =  match ($phases->first()->isApproved) {
                         1 => 'Approved',
                         2 => 'Pending',
@@ -433,6 +445,7 @@ class FileController extends Controller
                         'files.nik_pasangan as nikPasangan',
                         'files.nik_jaminan as nikJaminan',
                         'files.plafon as plafon',
+                        'files.type as type',
                         'files.address as address',
                         'files.no_hp as no_hp',
                         'files.order_source as sumberOrder',
@@ -456,6 +469,11 @@ class FileController extends Controller
                     $row['namaAO'] = $phases->first()->nameAO;
                     $row['nameFile'] = $fileName;
                     $row['plafon'] = $phases->first()->plafon;
+                    $row['type'] =  match ($phases->first()->isApproved) {
+                        1 => 'Reguler',
+                        2 => 'Restruktur',
+                        default => 'Reguler',
+                    };
                     $row['status'] =  match ($phases->first()->isApproved) {
                         1 => 'Approved',
                         2 => 'Pending',
@@ -918,6 +936,7 @@ class FileController extends Controller
         try {
             $file = File::findOrFail($id);
             $file->plafon = $request->plafon;
+            $file->type = $request->type;
             $file->name = $request->name;
             $file->type_bussiness = $request->type_bussiness;
             $file->desc_bussiness = $request->desc_bussiness;
@@ -2286,6 +2305,7 @@ class FileController extends Controller
             $request->validate([
                 'name'   => 'required',
                 'plafon' => 'required',
+                'type' => 'required',
                 'type_bussiness' => 'required',
                 'desc_bussiness' => 'required',
                 'nik_pemohon' => 'required',
@@ -2311,6 +2331,7 @@ class FileController extends Controller
             $file->user_id = Auth::user()->id;
             $file->name = $request->name;
             $file->plafon = $request->plafon;
+            $file->type = $request->type;
             $file->type_bussiness = $request->type_bussiness;
             $file->desc_bussiness = $request->desc_bussiness;
             $file->order_source = $request->order_source;

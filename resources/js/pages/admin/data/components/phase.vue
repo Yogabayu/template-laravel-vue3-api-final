@@ -160,6 +160,16 @@
                   {{ dataFile.status_kredit }}
                 </strong></v-list-item>
             </v-list-item>
+            <v-list-item>
+              <template v-slot:prepend>
+                <v-icon icon="mdi-office-building" size="x-small"></v-icon>
+              </template>
+              <v-list-item-title> Tipe Kredit</v-list-item-title>
+              <v-list-item>
+                <strong>
+                  {{ dataFile.type==1 ? 'Reguler' : 'Restruktur' }}
+                </strong></v-list-item>
+            </v-list-item>
           </v-list>
         </v-card-text>
       </v-card>
