@@ -150,6 +150,15 @@
                       </strong>
                     </v-list-item>
                   </v-list-item>
+                  <v-list-item v-if="dataFile.type">
+                    <v-list-item-title><v-icon icon="mdi-arrow-right-drop-circle-outline" size="small">
+                      </v-icon> Jenis Kredit</v-list-item-title>
+                    <v-list-item>
+                      <strong>
+                        {{ dataFile.type == 1 ? "Reguler" : "Restruktur" }}
+                      </strong>
+                    </v-list-item>
+                  </v-list-item>
                 </v-list>
               </v-card-text>
             </v-card>

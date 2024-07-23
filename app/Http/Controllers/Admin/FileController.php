@@ -572,6 +572,7 @@ class FileController extends Controller
         try {
             $file = File::findOrFail($id);
             $file->plafon = $request->plafon;
+            $file->type = $request->type;
             $file->name = $request->name;
             $file->type_bussiness = $request->type_bussiness;
             $file->desc_bussiness = $request->desc_bussiness;
@@ -1750,6 +1751,7 @@ class FileController extends Controller
                 'user_id'   => 'required',
                 'name'   => 'required',
                 'plafon' => 'required',
+                'type' => 'required',
                 'type_bussiness' => 'required',
                 'desc_bussiness' => 'required',
                 'nik_pemohon' => 'required',
@@ -1775,6 +1777,7 @@ class FileController extends Controller
             $file->user_id = $request->user_id;
             $file->name = $request->name;
             $file->plafon = $request->plafon;
+            $file->type = $request->type;
             $file->type_bussiness = $request->type_bussiness;
             $file->desc_bussiness = $request->desc_bussiness;
             $file->order_source = $request->order_source;

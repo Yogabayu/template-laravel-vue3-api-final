@@ -86,6 +86,11 @@
                                         <span v-if="parseInt(item.isApproved) == 3"> Rejected</span>
                                         <span v-if="parseInt(item.isApproved) == 4"> Cancel by Debitur</span>
                                     </template>
+                                    <template #item-type="item">
+                                        <span v-if="parseInt(item.type) == 1"> Reguler</span>
+                                        <span v-if="parseInt(item.type) == 2"> Restruktur</span>
+                                        <span v-else> -</span>
+                                    </template>
                                     <template #item-aoro="item">
                                         <span>{{ item.user.name }}</span>
                                     </template>
@@ -165,7 +170,10 @@
                 </v-window>
             </v-card-text>
 
-            <v-dialog v-model="insert" width="auto" persistent transition="dialog-top-transition">
+            <InsertModal v-model="insert" :order-list="orderList" :status-credit-list="statusCreditList"
+                :close-modal="closeModal" />
+
+            <!-- <v-dialog v-model="insert" width="auto" persistent transition="dialog-top-transition">
                 <v-card>
                     <template v-slot:title> Tambah Data</template>
 
@@ -267,7 +275,6 @@
                                 </VCol>
 
                                 <v-divider :thickness="5"></v-divider>
-                                <!-- sudah menikah -->
                                 <VCol cols="12" md="12">
                                     <v-checkbox v-model="dataForm.hasFile2" label="Apakah pemohon sudah menikah?"
                                         @change="resetFile('file2'), dataForm.nik_pasangan = null"></v-checkbox>
@@ -322,7 +329,6 @@
 
                                 <v-divider :thickness="5"></v-divider>
 
-                                <!-- ktp atas nama jaminan -->
                                 <VCol cols="12" md="12">
                                     <v-checkbox v-model="dataForm.hasFile3"
                                         label="Apakah agunan bukan atas nama pemohon?"
@@ -381,15 +387,19 @@
                         <v-progress-linear v-model="uploadProgress" color="amber" height="25"></v-progress-linear>
                     </template>
                 </v-card>
-            </v-dialog>
+            </v-dialog> -->
         </v-card>
     </v-container>
 </template>
 
 <script lang="ts">
 import mainURL from "@/axios";
+import InsertModal from "./components/insertKredit.vue";
 export default {
     inject: ['loading'],
+    components: {
+        InsertModal
+    },
     computed: {
         formattedPlafon: {
             get() {
@@ -444,6 +454,7 @@ export default {
             headers: [
                 { text: "Nama", value: "name", sortable: true },
                 { text: "Plafon", value: "plafon", sortable: true },
+                { text: "Tipe", value: "type", sortable: true },
                 { text: "Status", value: "isApproved", sortable: true },
                 { text: "AO/RO", value: "aoro", sortable: true },
                 { text: "Kantor", value: "office_names", sortable: true },

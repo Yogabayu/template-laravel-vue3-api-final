@@ -22,7 +22,7 @@
       <v-tab value="0">Semua</v-tab>
       <v-tab value="1">Approved</v-tab>
       <v-tab value="2">Pending</v-tab>
-      <v-tab value="3">Rejected</v-tab>      
+      <v-tab value="3">Rejected</v-tab>
       <v-tab value="7">Cancel by Debitur</v-tab>
       |
       <v-tab value="4">Pooling</v-tab>
@@ -48,7 +48,7 @@
 
             <div class="table-container" @touchstart.stop @touchmove.stop>
               <EasyDataTable show-index :headers="headers" :items="searchableItems" :search-value="searchValue"
-              :search-field="searchField" border-cell buttons-pagination :rows-per-page=500>
+                :search-field="searchField" border-cell buttons-pagination :rows-per-page=500>
                 <template #empty-message>
                   <p>Data Kosong</p>
                 </template>
@@ -146,14 +146,21 @@
           <VForm @submit.prevent="insertData">
             <VRow>
               <VCol md="12" cols="12">
+                <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih Jenis
+                  Kredit:
+                </span>
+                <v-select :items="typeCreditList" autofocus v-model="dataForm.type"
+                  prepend-icon="mdi-help-rhombus"></v-select>
+              </VCol>
+              <VCol md="12" cols="12">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih AO/RO: </span>
-                <v-select :items="users" autofocus v-model="dataForm.user_id"
+                <v-select :items="users" v-model="dataForm.user_id"
                   prepend-icon="mdi-help-rhombus"></v-select>
               </VCol>
               <VCol md="12" cols="12">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">Nama Pemohon: </span>
 
-                <VTextField class="my-3" v-model="dataForm.name" autofocus :rules="[rules.required]" />
+                <VTextField class="my-3" v-model="dataForm.name" :rules="[rules.required]" />
               </VCol>
               <VCol md="12" cols="12">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">Jumlah Plafon: </span>
@@ -178,13 +185,13 @@
 
               <VCol md="12" cols="12">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih sumber order: </span>
-                <v-select :items="orderList" autofocus v-model="dataForm.order_source"
+                <v-select :items="orderList" v-model="dataForm.order_source"
                   prepend-icon="mdi-help-rhombus"></v-select>
               </VCol>
 
               <VCol md="12" cols="12">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih status order: </span>
-                <v-select :items="statusCreditList" autofocus v-model="dataForm.status_kredit"
+                <v-select :items="statusCreditList" v-model="dataForm.status_kredit"
                   prepend-icon="mdi-help-rhombus"></v-select>
               </VCol>
 
@@ -411,7 +418,7 @@ export default {
         { text: "Aksi", value: "operation", width: 100 },
       ],
       phases: [
-      { value: 0 },
+        { value: 0 },
         { value: 1 },
         { value: 2 },
         { value: 3 },
@@ -443,6 +450,7 @@ export default {
         user_id: null,
         name: "",
         plafon: null,
+        type: null,
         type_bussiness: null,
         desc_bussiness: null,
         nik_pemohon: null,
@@ -487,6 +495,10 @@ export default {
         { value: 'REPEAT ORDER', title: 'REPEAT ORDER' },
         { value: 'TOPUP', title: 'TOPUP' },
       ],
+      typeCreditList: [
+        { value: 1, title: 'Reguler' },
+        { value: 2, title: 'Restruktur' },
+      ],
     };
   },
   watch: {
@@ -503,7 +515,7 @@ export default {
         this.filterDataStatus(5); // slik
       } else if (newVal == 6) {
         this.filterDataStatus(6); // komite
-      }else if (newVal == 7) {
+      } else if (newVal == 7) {
         this.filterDataStatus(7); // cancel
       }
       else {
@@ -746,6 +758,7 @@ export default {
         id: null,
         name: "",
         plafon: null,
+        type: null,
         order_source: null,
         status_kredit: null,
         file1: null, //ktp pemohon
@@ -775,7 +788,7 @@ export default {
       if (!value) return '';
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     },
-    
+
     getUserData() {
       const savedUserData = localStorage.getItem("userData");
       if (savedUserData) {
@@ -821,6 +834,7 @@ export default {
         const formData = new FormData();
         formData.append("name", this.dataForm.name);
         formData.append("user_id", this.dataForm.user_id);
+        formData.append("type", this.dataForm.type);
         formData.append("nik_pemohon", this.dataForm.nik_pemohon);
         formData.append("address", this.dataForm.address);
         formData.append("no_hp", this.dataForm.no_hp);

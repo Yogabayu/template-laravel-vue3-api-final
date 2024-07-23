@@ -323,6 +323,19 @@ const router = createRouter({
         },
       ],
     },
+    {
+      path: "/u-qna",
+      component: () => import("../layouts/user/default.vue"),
+      children: [
+        {
+          path: "",
+          component: () => import("../pages/other/qna.vue"),
+          beforeEnter: (to, from, next) => {
+            checkLogin(next);
+          },
+        },
+      ],
+    },
   ],
 });
 

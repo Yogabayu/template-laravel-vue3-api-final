@@ -189,6 +189,13 @@
                         <VForm @submit.prevent="insertData">
                             <VRow>
                                 <VCol md="12" cols="12">
+                                    <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih Jenis
+                                        Kredit:
+                                    </span>
+                                    <v-select :items="typeCreditList" autofocus v-model="dataForm.type"
+                                        prepend-icon="mdi-help-rhombus"></v-select>
+                                </VCol>
+                                <VCol md="12" cols="12">
                                     <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih AO/RO:
                                     </span>
                                     <v-select :items="users" autofocus v-model="dataForm.user_id"
@@ -484,6 +491,10 @@ export default {
                 { value: 6 },
                 { value: 7 },
             ],
+            typeCreditList: [
+                { value: 1, title: 'Reguler' },
+                { value: 2, title: 'Restruktur' },
+            ],
             orderList: [
                 { value: 'AO SENDIRI', title: 'AO SENDIRI' },
                 { value: 'C. SERVIS / KANTOR', title: 'C. SERVIS / KANTOR' },
@@ -521,9 +532,10 @@ export default {
             ],
             dataForm: {
                 id: null,
-                user_id:null,
+                user_id: null,
                 name: "",
                 plafon: null,
+                type: null,
                 type_bussiness: null,
                 desc_bussiness: null,
                 nik_pemohon: null,
@@ -657,7 +669,7 @@ export default {
             return value;
         },
         toDetail(item: any) {
-            this.$router.push(`/u-credit/${item.id}`);
+            this.$router.push(`/a-credit/${item.id}`);
         },
         async deleteFile(item: { id: any }) {
             try {
@@ -809,6 +821,7 @@ export default {
                 user_id: null,
                 name: "",
                 plafon: null,
+                type: null,
                 file1: null, //ktp pemohon
                 hasFile2: false,
                 file2: null, //ktp pasangan
@@ -881,6 +894,7 @@ export default {
                 const formData = new FormData();
                 formData.append("user_id", this.dataForm.user_id);
                 formData.append("name", this.dataForm.name);
+                formData.append("type", this.dataForm.type);
                 formData.append("nik_pemohon", this.dataForm.nik_pemohon);
                 formData.append("address", this.dataForm.address);
                 formData.append("no_hp", this.dataForm.no_hp);

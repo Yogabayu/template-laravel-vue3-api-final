@@ -24,7 +24,7 @@ const userData = JSON.parse(localStorage.getItem("userData"));
       <div class="d-flex h-100 align-center">
         <!-- 👉 Vertical nav toggle in overlay mode -->
         <IconBtn class="ms-n3 d-lg-none" @click="toggleVerticalOverlayNavActive(true)">
-          <VIcon icon="bx-menu"/>
+          <VIcon icon="bx-menu" />
         </IconBtn>
 
         <VSpacer />
@@ -41,11 +41,9 @@ const userData = JSON.parse(localStorage.getItem("userData"));
         icon: 'bx-home',
         to: '/user-dashboard',
       }" />
-      <VerticalNavSectionTitle v-if="userData.position.approval_level_id!=1"
-        :item="{
-          heading: 'Pengajuan Kredit',
-        }"
-      />
+      <VerticalNavSectionTitle v-if="userData.position.approval_level_id != 1" :item="{
+        heading: 'Pengajuan Kredit',
+      }" />
       <VerticalNavLink :item="{
         title: 'Semua Data Kredit',
         icon: 'bx-file',
@@ -56,7 +54,16 @@ const userData = JSON.parse(localStorage.getItem("userData"));
         icon: 'bx-file',
         to: '/u-perkantor'
       }" />
-      
+
+      <VerticalNavSectionTitle :item="{
+        heading: 'Frequently Asked Questions',
+      }" />
+      <VerticalNavLink :item="{
+        title: 'FAQ',
+        icon: 'bx-file',
+        to: '/u-qna'
+      }" />
+
       <!--       
       <VerticalNavSectionTitle v-if="userData.position.approval_level_id!=1"
         :item="{
