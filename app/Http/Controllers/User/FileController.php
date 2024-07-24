@@ -697,7 +697,7 @@ class FileController extends Controller
                 'file_id' => 'required ',
                 'phase' => 'required',
                 'name' => 'required',
-                'note' => 'required',
+                'note' => 'requiredif:name,Lain-lain',
                 'link' => 'nullable|url|required_without:path',
                 'path' => 'nullable|file|mimes:jpeg,jpg,png,pdf,doc,docx,xls,xlsx|required_without:link',
                 'isApprove' => 'required',
@@ -1110,7 +1110,7 @@ class FileController extends Controller
                         ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Merubah Status Kredit Menjadi Disetujui');
                         ActivityHelper::userActivity(Auth::user()->id, 'Merubah Status Kredit Menjadi Disetujui: ' . $file->name);
 
-                        EmailHelper::AddUpdate($file->id);
+                        // EmailHelper::AddUpdate($file->id);
                         TelegramHelper::AgreementPhase4($file->id, "File Status Telah diubah menjadi disetujui" . ($filephase), $file->user_id);
 
                         return ResponseHelper::successRes('File Status Telah diubah menjadi disetujui', $file);
@@ -1246,7 +1246,7 @@ class FileController extends Controller
                         ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Merubah Phase Kredit ');
                         ActivityHelper::userActivity(Auth::user()->id, 'Merubah Phase Kredit: ' . $file->name);
                         TelegramHelper::AddUpdatePhase($file->id, "User mengubah Phase menjadi " . ($filephase), $file->user_id);
-                        EmailHelper::AddUpdate($file->id);
+                        // EmailHelper::AddUpdate($file->id);
 
                         return ResponseHelper::successRes('Berhasill Melakukan Perubahan Tahapan Kredit', $file);
                     }
@@ -1484,7 +1484,7 @@ class FileController extends Controller
                         ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Merubah Phase Kredit ');
                         ActivityHelper::userActivity(Auth::user()->id, 'Merubah Phase Kredit: ' . $file->name);
 
-                        EmailHelper::AddUpdate($file->id);
+                        // EmailHelper::AddUpdate($file->id);
                         TelegramHelper::AddUpdatePhase($file->id, "User mengubah Phase menjadi " . ($filephase), $file->user_id);
 
                         return ResponseHelper::successRes('Berhasill Melakukan Perubahan Tahapan Kredit', $file);
@@ -1510,7 +1510,7 @@ class FileController extends Controller
                         ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Merubah Status Kredit Menjadi Disetujui');
                         ActivityHelper::userActivity(Auth::user()->id, 'Merubah Status Kredit Menjadi Disetujui: ' . $file->name);
 
-                        EmailHelper::AddUpdate($file->id);
+                        // EmailHelper::AddUpdate($file->id);
                         TelegramHelper::AgreementPhase4($file->id, "File Status Telah diubah menjadi disetujui" . ($filephase), $file->user_id);
 
                         return ResponseHelper::successRes('File Status Telah diubah menjadi disetujui', $file);
@@ -1720,7 +1720,7 @@ class FileController extends Controller
                         ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Merubah Phase Kredit ');
                         ActivityHelper::userActivity(Auth::user()->id, 'Merubah Phase Kredit: ' . $file->name);
 
-                        EmailHelper::AddUpdate($file->id);
+                        // EmailHelper::AddUpdate($file->id);
                         TelegramHelper::AddUpdatePhase($file->id, "User mengubah Phase menjadi " . ($filephase), $file->user_id);
 
                         return ResponseHelper::successRes('Berhasill Melakukan Perubahan Tahapan Kredit', $file);
@@ -2025,7 +2025,7 @@ class FileController extends Controller
                 ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Merubah Phase Kredit ');
                 ActivityHelper::userActivity(Auth::user()->id, 'Merubah Phase Kredit: ' . $file->name);
 
-                EmailHelper::AddUpdate($file->id);
+                // EmailHelper::AddUpdate($file->id);
                 TelegramHelper::AddUpdatePhase($file->id, "User mengubah Phase menjadi " . ($filephase), $file->user_id);
 
                 return ResponseHelper::successRes('Phase updated successfully', $file);
@@ -2406,7 +2406,7 @@ class FileController extends Controller
             ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Menambahkan Data Kredit');
             ActivityHelper::userActivity(Auth::user()->id, 'Menambahkan Data Kredit' . $file->name);
 
-            EmailHelper::AddUpdate($file->id);
+            // EmailHelper::AddUpdate($file->id);
             TelegramHelper::AddFile($file->id);
 
             return ResponseHelper::successRes('Berhasil menambahkan data, Silahkan menambahkan data form permohonan SLIK dengan membuka data yang baru diinput', $file);
