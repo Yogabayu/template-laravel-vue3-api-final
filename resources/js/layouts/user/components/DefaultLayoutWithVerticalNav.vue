@@ -46,7 +46,7 @@ const userData = JSON.parse(localStorage.getItem("userData"));
         heading: 'Pengajuan Kredit',
       }" />
       <VerticalNavLink :item="{
-        title: 'Semua Data Kredit',
+        title: 'Data Kredit bulan ini',
         icon: 'bx-file',
         to: '/u-credit'
       }" />
