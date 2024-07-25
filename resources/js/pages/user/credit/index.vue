@@ -9,11 +9,12 @@
       <v-tab value="1">Approved</v-tab>
       <v-tab value="2">Pending</v-tab>
       <v-tab value="3">Rejected</v-tab>
-      <v-tab value="7">Cancel by Debitur</v-tab>
+      <v-tab value="7">Cancel</v-tab>
       |
       <v-tab value="4">Pooling</v-tab>
       <v-tab value="5">SLIK</v-tab>
       <v-tab value="6">Komite</v-tab>
+      <v-tab value="8">OPS</v-tab>
     </v-tabs>
 
     <v-card-text>
@@ -197,6 +198,7 @@ export default {
         { value: 5 },
         { value: 6 },
         { value: 7 },
+        { value: 8 },
       ],
       searchField: [
         "name",
@@ -257,8 +259,9 @@ export default {
         this.filterDataStatus(6); // komite
       } else if (newVal == 7) {
         this.filterDataStatus(7); // cancel
-      }
-      else {
+      } else if (newVal == 8) {
+        this.filterDataStatus(8); // ops
+      } else {
         this.items = [...this.originalItems];
       }
     },
@@ -270,6 +273,7 @@ export default {
         2: (item: any) => item.isApproved == 2,
         3: (item: any) => item.isApproved == 3,
         4: (item: any) => parseInt(item.phase) == 1,
+        8: (item: any) => parseInt(item.phase) == 5,
         5: (item: any) => item.attachments.some(attachment =>
           attachment.name.includes('SLIK') &&
           parseInt(attachment.phase) == 2 &&
