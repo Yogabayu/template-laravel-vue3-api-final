@@ -64,10 +64,10 @@
                     <template v-for="phase in phases">
                         <v-window-item :value="phase.value">
                             <v-row class="d-flex justify-end pa-3">
-                                <v-btn color="primary" size="small" class="my-3 mx-3"
+                                <!-- <v-btn color="primary" size="small" class="my-3 mx-3"
                                     v-if="userAccess && parseInt(userAccess.canInsertData)" @click="openModal(1)">
                                     <v-icon icon="mdi-plus"></v-icon> Tambah Data
-                                </v-btn>
+                                </v-btn> -->
                                 <v-btn color="primary" size="small" class="my-3 mx-3" @click="openModal(2)">
                                     <v-icon icon="mdi-download"></v-icon> Rekap Data
                                 </v-btn>

@@ -122,9 +122,9 @@
                 </template>
               </EasyDataTable>
 
-              <p>
+              <!-- <p>
                 Total Plafon Bulan ini : Rp. {{ formatInput(totalPlafon) }},-
-              </p>
+              </p> -->
             </div>
 
           </v-window-item>

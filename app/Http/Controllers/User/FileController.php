@@ -1046,6 +1046,11 @@ class FileController extends Controller
             $file->nik_pemohon = $request->nik_pemohon;
 
             $file->nik_pasangan = $request->nik_pasangan || $request->nik_pasangan != 'null' ? $request->nik_pasangan : null;
+
+            if ($request->name_pasangan) {
+                $file->name_pasangan = $request->name_pasangan;
+            }
+
             $file->nik_jaminan = $request->nik_jaminan || $request->nik_jaminan != 'null' ? $request->nik_jaminan : null;
 
             $file->address = $request->address;
@@ -2443,6 +2448,7 @@ class FileController extends Controller
             $file->phase = 1;
             if ($request->hasFile('file2')) {
                 $file->nik_pasangan = $request->nik_pasangan;
+                $file->name_pasangan = $request->name_pasangan;
             }
 
             if ($request->hasFile('file3')) {
@@ -2450,7 +2456,7 @@ class FileController extends Controller
             }
             $file->save();
 
-            for ($i = 1; $i <= 11; $i++) {
+            for ($i = 1; $i <= 12; $i++) {
 
                 // Skip file6 as it's not in the validation rules
                 if ($i == 6) continue;
@@ -2474,7 +2480,15 @@ class FileController extends Controller
                     $attch = new Attachment();
                     $attch->phase = 1;
                     $attch->file_id = $file->id;
-                    $attch->name =  $request->{$noteFile};
+
+                    if ($i == 12) {
+                        $attch->name = 'Form Permohonan SLIK';
+                        $attch->isApprove = 0;
+                    } else {
+                        $attch->name = $request->{$noteFile};
+                        $attch->isApprove = 1;
+                    }
+
                     $attch->path = $fileimage;
                     $attch->isSecret = 0;
                     $attch->isApprove = 1;
@@ -2484,16 +2498,16 @@ class FileController extends Controller
                 }
             }
 
-            $attch = new Attachment();
-            $attch->phase = 1;
-            $attch->file_id = $file->id;
-            $attch->name =  'Form Permohonan SLIK';
-            $attch->path = 'null';
-            $attch->isSecret = 0;
-            $attch->isApprove = 0;
-            $attch->startTime = Carbon::now();
-            $attch->endTime = Carbon::now();
-            $attch->save();
+            // $attch = new Attachment();
+            // $attch->phase = 1;
+            // $attch->file_id = $file->id;
+            // $attch->name =  'Form Permohonan SLIK';
+            // $attch->path = 'null';
+            // $attch->isSecret = 0;
+            // $attch->isApprove = 0;
+            // $attch->startTime = Carbon::now();
+            // $attch->endTime = Carbon::now();
+            // $attch->save();
 
             // //add user to approval
             Approval::firstOrCreate(
@@ -2509,7 +2523,7 @@ class FileController extends Controller
             // EmailHelper::AddUpdate($file->id);
             TelegramHelper::AddFile($file->id);
 
-            return ResponseHelper::successRes('Berhasil menambahkan data, Silahkan menambahkan data form permohonan SLIK dengan membuka data yang baru diinput', $file);
+            return ResponseHelper::successRes('Berhasil menambahkan data, Silahkan buka file dan klik next', $file);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }

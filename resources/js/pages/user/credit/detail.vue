@@ -344,6 +344,13 @@
               </VCol>
 
               <VCol md="12" cols="12">
+                <span class="subtitle-1 text-center">Nama Pasangan (kosongkan jika tidak ada): </span>
+
+                <VTextField type="text" class="my-3" v-model="generalInfo.name_pasangan"
+                  hint="kosongkan jika tidak ada" />
+              </VCol>
+
+              <VCol md="12" cols="12">
                 <span class="subtitle-1 text-center">NIK Pemilik Jaminan (kosongkan jika tidak ada): </span>
 
                 <VTextField type="number" class="my-3" v-model="generalInfo.nik_jaminan"
@@ -351,6 +358,7 @@
               </VCol>
 
               <VCol md="12" cols="12">
+                <span style="color: red">*</span> 
                 <span class="subtitle-1 text-center">No. HP: </span>
 
                 <VTextField class="my-3" v-model="generalInfo.no_hp" :rules="[rules.required]" />
@@ -580,6 +588,7 @@ export default {
         plafon: null,
         type: null,
         nik_pemohon: null,
+        name_pasangan: null,
         nik_pasangan: null,
         nik_jaminan: null,
         address: null,
@@ -983,10 +992,11 @@ export default {
           this.generalInfo.plafon = this.dataFile.plafon;
           this.generalInfo.type = this.dataFile.type;
           this.generalInfo.nik_pemohon = this.dataFile.nik_pemohon;
+          this.generalInfo.name_pasangan = this.dataFile.name_pasangan;
           this.generalInfo.nik_pasangan = this.dataFile.nik_pasangan;
           this.generalInfo.nik_jaminan = this.dataFile.nik_jaminan;
           this.generalInfo.address = this.dataFile.address;
-          this.generalInfo.no_hp = this.dataFile.no_hp;
+          this.generalInfo.no_hp = this.dataFile.no_hp;         
 
           for (let index = 0; index < 5; index++) {
             this.separateNotesByPhase(this.dataFile, index);
@@ -1082,6 +1092,7 @@ export default {
         }
         if (this.generalInfo.nik_pasangan != "" && this.generalInfo.nik_pasangan != null && this.generalInfo.nik_pasangan != 'null' && this.generalInfo.nik_pasangan != '-') {
           formData.append("nik_pasangan", this.generalInfo.nik_pasangan);
+          formData.append("name_pasangan", this.generalInfo.name_pasangan ?? null);
         }
         if (this.generalInfo.nik_jaminan != "" && this.generalInfo.nik_jaminan != null && this.generalInfo.nik_jaminan != 'null' && this.generalInfo.nik_jaminan != '-') {
           formData.append("nik_jaminan", this.generalInfo.nik_jaminan);

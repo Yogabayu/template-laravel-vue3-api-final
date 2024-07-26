@@ -13,6 +13,7 @@ class File extends Model
         'type',
         'nik_pemohon',
         'nik_pasangan',
+        'name_pasangan',
         'nik_jaminan',
         'address',
         'no_hp',

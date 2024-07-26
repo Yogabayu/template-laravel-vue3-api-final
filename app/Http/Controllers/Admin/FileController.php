@@ -581,6 +581,9 @@ class FileController extends Controller
             $file->nik_pemohon = $request->nik_pemohon;
 
             $file->nik_pasangan = $request->nik_pasangan || $request->nik_pasangan != 'null' ? $request->nik_pasangan : null;
+            if ($request->name_pasangan) {
+                $file->name_pasangan = $request->name_pasangan;
+            }
             $file->nik_jaminan = $request->nik_jaminan || $request->nik_jaminan != 'null' ? $request->nik_jaminan : null;
 
             $file->address = $request->address;
@@ -1820,7 +1823,13 @@ class FileController extends Controller
                     $attch = new Attachment();
                     $attch->phase = 1;
                     $attch->file_id = $file->id;
-                    $attch->name =  $request->{$noteFile};
+                    if ($i == 12) {
+                        $attch->name = 'Form Permohonan SLIK';
+                        $attch->isApprove = 0;
+                    } else {
+                        $attch->name = $request->{$noteFile};
+                        $attch->isApprove = 1;
+                    }
                     $attch->path = $fileimage;
                     $attch->isSecret = 0;
                     $attch->isApprove = 1;
@@ -1830,16 +1839,16 @@ class FileController extends Controller
                 }
             }
 
-            $attch = new Attachment();
-            $attch->phase = 1;
-            $attch->file_id = $file->id;
-            $attch->name =  'Form Permohonan SLIK';
-            $attch->path = 'null';
-            $attch->isSecret = 0;
-            $attch->isApprove = 0;
-            $attch->startTime = Carbon::now();
-            $attch->endTime = Carbon::now();
-            $attch->save();
+            // $attch = new Attachment();
+            // $attch->phase = 1;
+            // $attch->file_id = $file->id;
+            // $attch->name =  'Form Permohonan SLIK';
+            // $attch->path = 'null';
+            // $attch->isSecret = 0;
+            // $attch->isApprove = 0;
+            // $attch->startTime = Carbon::now();
+            // $attch->endTime = Carbon::now();
+            // $attch->save();
 
             // //add user to approval
             Approval::firstOrCreate(

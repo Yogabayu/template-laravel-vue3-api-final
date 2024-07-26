@@ -104,6 +104,15 @@
                       </strong>
                     </v-list-item>
                   </v-list-item>
+                  <v-list-item v-if="dataFile.nik_pasangan">
+                    <v-list-item-title><v-icon icon="mdi-arrow-right-drop-circle-outline" size="small">
+                      </v-icon> Nama Pasangan</v-list-item-title>
+                    <v-list-item>
+                      <strong>
+                        {{ dataFile.name_pasangan ?? "-" }}
+                      </strong>
+                    </v-list-item>
+                  </v-list-item>
                   <v-list-item v-if="dataFile.nik_jaminan">
                     <v-list-item-title>
                       <v-icon icon="mdi-arrow-right-drop-circle-outline" size="small">
