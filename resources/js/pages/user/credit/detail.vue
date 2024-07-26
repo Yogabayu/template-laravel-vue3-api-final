@@ -605,6 +605,7 @@ export default {
         order_source: "",
         status_kredit: "",
         nik_pemohon: null,
+        name_pasangan: null,
         nik_pasangan: null,
         nik_jaminan: null,
         address: null,
