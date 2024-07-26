@@ -527,19 +527,93 @@ class FileController extends Controller
             ]);
 
             $file = File::findOrFail($validated['id']);
+            $oldPhase = $file->phase;
             $oldStatus = $file->isApproved;
             $file->isApproved = $validated['status'];
 
             switch ($validated['status']) {
                 case 1: // Approved
                     $file->creditScoring = $file->phase;
-                    // $file->phase = 5;
+                    $file->phase = 5;
+                    $filephase = 5;
+
+                    $userUploaded = User::where('id', $file->user_id)->first();
+                    $userPosition = Position::where('id', $userUploaded->position_id)->first();
+                    $userOffices = PositionToOffice::where('position_id', $userPosition->id)->get();
+                    $notifPositions = [];
+
+                    //add user to approval
+                    foreach ($userOffices as $userOffice) {
+                        $notificationConfigurations = DB::table('notification_configurations')
+                            ->where('office_id', $userOffice->office_id)
+                            ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
+                            ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
+                            ->where('phase', $filephase)
+                            ->where('canApprove', 1)
+                            ->get();
+
+                        $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
+                    }
+                    $notifUser = [];
+                    foreach ($notifPositions as $notifPosition) {
+                        $users = DB::table('users')
+                            ->where('position_id', $notifPosition->position_id)
+                            ->where('isActive', 1)
+                            ->get();
+                        $notifUser = array_merge($notifUser, $users->toArray());
+                    }
+
+                    foreach ($notifPositions as $pos) {
+                        foreach ($notifUser as $user) {
+                            if ($pos->position_id == $user->position_id && $userUploaded->position_id != $pos->position_id) {
+                                Approval::firstOrCreate(
+                                    ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
+                                    ['approved' => 0]
+                                );
+                            }
+                        }
+                    }
+
+                    // $currentPhase = $file->phase;
+                    for ($i = $oldPhase; $i <= 5; $i++) {
+                        $phaseTime = PhaseTime::firstOrCreate([
+                            'file_id' => $file->id,
+                            'phase' => $i
+                        ]);
+                        // dd($phaseTime);
+                        if ($i == $oldPhase) {
+                            $phaseTime->endTime = Carbon::now();
+                        } elseif ($i == 5) {
+                            $phaseTime->startTime = Carbon::now();
+                        } else {
+                            $phaseTime->startTime = Carbon::now();
+                            $phaseTime->endTime = Carbon::now();
+                        }
+
+                        $phaseTime->save();
+                    }
+
                     $message = 'Disetujui';
                     break;
                 case 2: // Pending
+                    $oldPhases = $file->creditScoring;
                     if ($oldStatus != 2) {
                         $file->phase = $file->creditScoring ?? $file->phase;
                         $file->creditScoring = null;
+                    }
+
+                    for ($i = $oldPhases; $i <= 5; $i++) {
+                        $phaseTime = PhaseTime::firstOrCreate([
+                            'file_id' => $file->id,
+                            'phase' => $i
+                        ]);
+
+                        if ($i == $oldPhases) {
+                            $phaseTime->endTime = null;
+                            $phaseTime->save();
+                        } else {
+                            $phaseTime->delete();
+                        }
                     }
                     $message = 'Pending (kembali ke phase terakhir sebelumnya)';
                     break;
@@ -563,6 +637,33 @@ class FileController extends Controller
             }
 
             $file->save();
+
+            if ($file->phase == 5) {
+                $attachments = [
+                    ['name' => 'SP3K', 'path' => 'null', 'isSecret' => 0, 'isApprove' => 0, 'phase' => 5, 'file_id' => $file->id,],
+                    ['name' => 'Notaris', 'path' => 'null', 'isSecret' => 0, 'isApprove' => 0, 'phase' => 5, 'file_id' => $file->id,],
+                ];
+
+                foreach ($attachments as $data) {
+                    $existingAttachment = Attachment::where('file_id', $data['file_id'])
+                        ->where('name', $data['name'])
+                        ->where('phase', $data['phase'])
+                        ->first();
+
+                    if (!$existingAttachment) {
+                        // Only create a new attachment if it doesn't already exist
+                        $attachment = new Attachment();
+                        $attachment->phase = $data['phase'];
+                        $attachment->file_id = $data['file_id'];
+                        $attachment->name = $data['name'];
+                        $attachment->path = $data['path'];
+                        $attachment->isSecret = $data['isSecret'];
+                        $attachment->isApprove = $data['isApprove'];
+                        $attachment->startTime = Carbon::now();
+                        $attachment->save();
+                    }
+                }
+            }
 
             ActivityHelper::fileActivity($file->id, Auth::id(), 'Mengganti status kredit');
             ActivityHelper::userActivity(Auth::id(), "Mengganti status kredit {$file->name}");
@@ -1210,7 +1311,6 @@ class FileController extends Controller
                                 }
                             }
                         }
-
 
                         if (!$matchFound) {
                             return ResponseHelper::errorRes('Error1, user yang memiliki akses approve tidak ditemukan, mohon tambahkan User yang dapat memberi aproval di tahap selanjutnya');
@@ -2562,8 +2662,8 @@ class FileController extends Controller
             $approv->save();
 
             $file = File::find($approv->file_id);
-            ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Menghapus Data Kredit ');
-            ActivityHelper::userActivity(Auth::user()->id, 'Menghapus Data Kredit: ' . $file->name);
+            ActivityHelper::fileActivity($file->id, Auth::user()->id,  "User merubah Status menjadi " . ($approv->approved ? "Disetujui" : "Ditolak") . " | Kredit: " . $file->name);
+            ActivityHelper::userActivity(Auth::user()->id, "User merubah Status menjadi " . ($approv->approved ? "Disetujui" : "Ditolak") . " | Kredit: " . $file->name);
             TelegramHelper::AddUpdatePhase($approv->file_id, "User merubah Status menjadi " . ($approv->approved ? "Disetujui" : "Ditolak"), $approv->user_id);
 
             return ResponseHelper::successRes('Berhasill mengubah status', $approv);
