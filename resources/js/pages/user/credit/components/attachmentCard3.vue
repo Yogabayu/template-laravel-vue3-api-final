@@ -235,10 +235,18 @@
 
                 <v-col cols="auto">
                     <div class="d-flex">
-                        <v-tooltip location="top" text="Lihat File" v-if="(sub.path !== 'null' || sub.link !== null)">
+                        <v-tooltip location="top" text="Lihat File" v-if="(sub.path != null)">
                             <template v-slot:activator="{ props }">
                                 <v-btn v-bind="props" icon="bx-link-external" size="small" color="primary"
                                     variant="text" class="mr-2" :href="`${filePath}/${fileId}/${sub.path}`"
+                                    target="_blank" rel="noopener noreferrer">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+                        <v-tooltip location="top" text="Lihat File" v-else>
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-link-external" size="small" color="primary"
+                                    variant="text" class="mr-2" :href="`${sub.link}`"
                                     target="_blank" rel="noopener noreferrer">
                                 </v-btn>
                             </template>
