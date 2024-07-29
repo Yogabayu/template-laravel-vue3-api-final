@@ -59,6 +59,16 @@
                     <v-list-item-title>
                       <v-icon icon="mdi-arrow-right-drop-circle-outline" size="small">
                       </v-icon>
+                      Nama AO/RO
+                    </v-list-item-title>
+                    <v-list-item>
+                      <strong> {{ dataFile.user.name }} </strong>
+                    </v-list-item>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-list-item-title>
+                      <v-icon icon="mdi-arrow-right-drop-circle-outline" size="small">
+                      </v-icon>
                       Nama Pemohon
                     </v-list-item-title>
                     <v-list-item>
