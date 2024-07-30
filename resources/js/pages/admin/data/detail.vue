@@ -50,7 +50,7 @@
                 :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
                 :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2"
                 :phase3Attachments="dataAttachPhase3" :phase4Attachments="dataAttachPhase4"
-                :phase5Attachments="dataAttachPhase5" />
+                :phase5Attachments="dataAttachPhase5" :submissions="fileSubmissions"/>
             </v-stepper-window-item>
             <v-stepper-window-item value="1" v-else>
               <div style="
@@ -73,7 +73,7 @@
                 :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
                 :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2"
                 :phase3Attachments="dataAttachPhase3" :phase4Attachments="dataAttachPhase4"
-                :phase5Attachments="dataAttachPhase5" />
+                :phase5Attachments="dataAttachPhase5" :submissions="fileSubmissions"/>
             </v-stepper-window-item>
             <v-stepper-window-item value="2" v-else>
               <div style="
@@ -96,7 +96,7 @@
                 :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
                 :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2"
                 :phase3Attachments="dataAttachPhase3" :phase4Attachments="dataAttachPhase4"
-                :phase5Attachments="dataAttachPhase5" />
+                :phase5Attachments="dataAttachPhase5" :submissions="fileSubmissions" />
             </v-stepper-window-item>
             <v-stepper-window-item value="3" v-else>
               <div style="
@@ -119,7 +119,7 @@
                 :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
                 :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2"
                 :phase3Attachments="dataAttachPhase3" :phase4Attachments="dataAttachPhase4"
-                :phase5Attachments="dataAttachPhase5" />
+                :phase5Attachments="dataAttachPhase5" :submissions="fileSubmissions"/>
             </v-stepper-window-item>
             <v-stepper-window-item value="4" v-else>
               <div style="
@@ -141,7 +141,7 @@
                 :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
                 :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2"
                 :phase3Attachments="dataAttachPhase3" :phase4Attachments="dataAttachPhase4"
-                :phase5Attachments="dataAttachPhase5" />
+                :phase5Attachments="dataAttachPhase5" :submissions="fileSubmissions"/>
             </v-stepper-window-item>
             <v-stepper-window-item value="6">
               <phase :dataFile="dataFile" :userData="userData" :insert-note="insertNote"
@@ -152,7 +152,7 @@
                 :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
                 :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2"
                 :phase3Attachments="dataAttachPhase3" :phase4Attachments="dataAttachPhase4"
-                :phase5Attachments="dataAttachPhase5" />
+                :phase5Attachments="dataAttachPhase5" :submissions="fileSubmissions"/>
             </v-stepper-window-item>
           </v-stepper-window>
         </v-stepper>
@@ -800,6 +800,7 @@ export default {
       dataAttachPhase3: [],
       dataAttachPhase4: [],
       dataAttachPhase5: [],
+      fileSubmissions: [],
     };
   },
   computed: {
@@ -1001,6 +1002,8 @@ export default {
           this.dataFile = response.data.data.file;
           this.attachments = this.dataFile.attachments.filter(item => item.path && item.path !== 'null' || item.link && item.link !== 'null');
           this.userAccess = response.data.data.userAccess;
+          this.fileSubmissions = this.dataFile.filesubmissions;
+          
           //attach
           this.dataAttachPhase1 = response.data.data.file.attachments.filter(
             (item: { phase: number }) => item.phase == 1

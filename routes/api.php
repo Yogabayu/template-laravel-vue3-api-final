@@ -122,7 +122,6 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1', 'throttle:60,1'], function
         Route::put('file-submission/{id}', [AdminFileController::class, 'updateFileSubmission']);
         Route::delete('file-submission/{id}', [AdminFileController::class, 'destroyFileSubmission']);
 
-
         //////// Route User \\\\\\\\\
         Route::group(['prefix' => 'user'], function () {
             Route::get('generatereport/{id}', [FileController::class, 'generateReport']);

@@ -1931,6 +1931,7 @@ class FileController extends Controller
                 'approvals.user',
                 'approvals.user.position',
                 'phaseTimes',
+                'filesubmissions',
             ])->findOrFail($id);
 
             $userAccess = [

@@ -206,7 +206,7 @@
             <attachmentCard3 v-if="parseInt(dataFile.phase) > 2" :data="phase3Attachments"
               :fileId="parseInt(dataFile.id)" :filePath="filePath" :userAccess="userAccess"
               :deleteAttachment="deleteAttachment" :getDetailFile="getDetailFile" 
-              :phase="parseInt(dataFile.phase)"></attachmentCard3>
+              :phase="parseInt(dataFile.phase)" :submission="submissions"></attachmentCard3>
           </div>
           <div class="mb-5">
             <attachmentCard4 v-if="parseInt(dataFile.phase) > 3" :data="phase4Attachments"
@@ -497,6 +497,10 @@ export default {
     },
     modalNote: {
       type: Function,
+      required: true,
+    },
+    submissions: {
+      type: Object,
       required: true,
     },
   },
