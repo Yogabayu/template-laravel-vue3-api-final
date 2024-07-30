@@ -253,7 +253,7 @@
                         </v-tooltip>
 
                         <v-tooltip location="top" text="Edit File"
-                            v-if="userAccessPhase3 && parseInt(userAccessPhase3.canAppeal) && phase < 4">
+                            v-if="phase < 5">
                             <template v-slot:activator="{ props }">
                                 <v-btn v-bind="props" icon="bx-edit" size="small" color="info" variant="text"
                                     class="mr-2" @click="openModal(3, sub)">
@@ -262,7 +262,7 @@
                         </v-tooltip>
 
                         <v-tooltip location="top" text="Hapus File"
-                            v-if="userAccessPhase3 && parseInt(userAccessPhase3.canAppeal) && phase < 4">
+                            v-if="phase < 5">
                             <template v-slot:activator="{ props }">
                                 <v-btn v-bind="props" icon="bx-trash" size="small" color="error" variant="text"
                                     @click="deleteSubmission(sub.id)">
