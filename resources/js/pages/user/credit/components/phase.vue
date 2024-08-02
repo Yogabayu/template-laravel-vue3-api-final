@@ -240,7 +240,11 @@
     <!-- Approval -->
     <v-card-text class="pa-4" v-if="dataFile && parseInt(dataFile.phase) < 6">
       <v-card>
-        <v-card-text class="d-flex justify-center text-center pa-3 font-weight-bold">
+        <v-card-text class="d-flex justify-center text-center pa-3 font-weight-bold"
+          v-if="dataFile && (parseInt(dataFile.phase) === 2 || parseInt(dataFile.phase) === 3)">
+          Status Approval Phase ✅ (khusus SLIK dan Survei hanya perlu 1 approval)
+        </v-card-text>
+        <v-card-text class="d-flex justify-center text-center pa-3 font-weight-bold" v-else>
           Status Approval Phase ✅
         </v-card-text>
         <v-card-text class="pa-3">
@@ -496,7 +500,7 @@ export default {
       required: true,
     },
   },
-  inject:['loading'],
+  inject: ['loading'],
   data() {
     return {
       userAccessNow: null,

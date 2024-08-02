@@ -261,8 +261,13 @@
     <!-- Approval -->
     <v-card-text v-if="dataFile && parseInt(dataFile.phase) < 6">
       <v-card>
-        <v-card-title> Status Approval Phase ✅ <v-chip @click="openModal(11)"> <v-icon>mdi-plus</v-icon> Approval</v-chip><v-chip @click="openModal(12)" class="ml-2"><v-icon>mdi-minus-box</v-icon> Approval</v-chip>
-        </v-card-title>
+        <v-card-text class="d-flex justify-center text-center pa-3 font-weight-bold"
+          v-if="dataFile && (parseInt(dataFile.phase) === 2 || parseInt(dataFile.phase) === 3)">
+          Status Approval Phase ✅ (khusus SLIK dan Survei hanya perlu 1 approval)
+        </v-card-text>
+        <v-card-text class="d-flex justify-center text-center pa-3 font-weight-bold" v-else>
+          Status Approval Phase ✅
+        </v-card-text>
         <v-card-text>
           <div v-if="dataFile && dataFile.approvals && dataFile.approvals.length">
             <template v-for="(app, index) in dataFile.approvals" :key="index">

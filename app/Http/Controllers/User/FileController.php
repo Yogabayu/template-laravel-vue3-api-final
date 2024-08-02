@@ -1082,13 +1082,26 @@ class FileController extends Controller
             }
 
             if ($request->type == 'next') {
-                $cekAllApprove = Approval::where('file_id', $file->id)
-                    ->where('phase', $file->phase)
-                    ->get();
+                if ($file->phase == 2 || $file->phase == 3) {
+                    $cekAllApprove = Approval::where('file_id', $file->id)
+                        ->where('phase', $file->phase)
+                        ->get();
 
-                if ($cekAllApprove->where('approved', 0)->count() > 0) {
-                    return ResponseHelper::errorRes('Maaf, ada Jabatan / User yang masih belum memberikan approve');
+                    // Cek apakah ada minimal 1 approve
+                    if ($cekAllApprove->where('approved', 1)->count() == 0) {
+                        return ResponseHelper::errorRes('Maaf, minimal harus ada 1 approve untuk melanjutkan');
+                    }
+                } else {
+                    $cekAllApprove = Approval::where('file_id', $file->id)
+                        ->where('phase', $file->phase)
+                        ->get();
+
+                    // Cek apakah semua sudah approve
+                    if ($cekAllApprove->where('approved', 0)->count() > 0) {
+                        return ResponseHelper::errorRes('Maaf, ada Jabatan / User yang masih belum memberikan approve');
+                    }
                 }
+
                 // $cekAttchApproval = Attachment::where('file_id', $file->id)->where('phase', $file->phase)
                 //     ->get();
                 // Memeriksa apakah terdapat lampiran "File Banding" yang nilai atributnya bukan string "null"
@@ -1174,17 +1187,8 @@ class FileController extends Controller
                         return ResponseHelper::errorRes('Maaf, ada Lampiran yang masih belum disetujui / diyakini kebenarannya / Kosong');
                     }
 
-                    // if (($detailSlikApproved > 0 && $resumeSlikApproved > 0) && ($cekFileBanding > 0 || $cekAnalystAo > 0)) {
-
-
-                    // } else {
-                    //     // Jika kondisi tidak terpenuhi, kembalikan pesan error
-                    //     return ResponseHelper::errorRes('Maaf, ada Lampiran yang masih belum disetujui / diyakini kebenarannya / Kosong');
-                    // }
-
                     $filephase = $file->phase + 1;
 
-                    // if ($file->plafon >= 25000000) {
                     if ($file->phase > 6) {
                         return ResponseHelper::errorRes('Sistem hanya sampai phase 5(Operation)');
                     }
@@ -1356,7 +1360,6 @@ class FileController extends Controller
                         return ResponseHelper::successRes('Berhasill Melakukan Perubahan Tahapan Kredit', $file);
                     }
                     if ($file->phase < 4) {
-                        // if ($detailSlikApproved > 0 && $resumeSlikApproved > 0) {
                         if ($resumeSlikApproved > 0) {
 
                             // Memeriksa apakah terdapat lampiran "Analisa Awal Kredit AO" yang nilai atributnya bukan string "null"

@@ -611,12 +611,24 @@ class FileController extends Controller
             $file = File::findOrFail($request->id);
 
             if ($request->type == 'next') {
-                $cekAllApprove = Approval::where('file_id', $file->id)
-                    ->where('phase', $file->phase)
-                    ->get();
+                if ($file->phase == 2 || $file->phase == 3) {
+                    $cekAllApprove = Approval::where('file_id', $file->id)
+                        ->where('phase', $file->phase)
+                        ->get();
 
-                if ($cekAllApprove->where('approved', 0)->count() > 0) {
-                    return ResponseHelper::errorRes('Maaf, ada Jabatan / User yang masih belum memberikan approve');
+                    // Cek apakah ada minimal 1 approve
+                    if ($cekAllApprove->where('approved', 1)->count() == 0) {
+                        return ResponseHelper::errorRes('Maaf, minimal harus ada 1 approve untuk melanjutkan');
+                    }
+                } else {
+                    $cekAllApprove = Approval::where('file_id', $file->id)
+                        ->where('phase', $file->phase)
+                        ->get();
+
+                    // Cek apakah semua sudah approve
+                    if ($cekAllApprove->where('approved', 0)->count() > 0) {
+                        return ResponseHelper::errorRes('Maaf, ada Jabatan / User yang masih belum memberikan approve');
+                    }
                 }
                 // $cekAttchApproval = Attachment::where('file_id', $file->id)->where('phase', $file->phase)
                 //     ->get();
