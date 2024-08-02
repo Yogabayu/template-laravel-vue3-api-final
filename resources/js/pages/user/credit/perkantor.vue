@@ -152,8 +152,7 @@
                                                     </template>
                                                 </v-tooltip> -->
 
-                                                <v-tooltip location="top" text="Download Semua File Kredit"
-                                                    v-if="role && role.canDownload == 1">
+                                                <v-tooltip location="top" text="Download Semua File Kredit">
                                                     <template v-slot:activator="{ props }">
                                                         <button v-bind="props" @click="downloadFile(item.id)">
                                                             <VIcon size="20" icon="bx-download" color="red" />

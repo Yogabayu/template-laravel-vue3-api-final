@@ -111,12 +111,13 @@ export default {
         } else {
           this.loading.hide();
           const errorMessage =
-            response && response.data && response.data.message
-              ? response.data.message
-              : "Gagal login. Silakan coba lagi.";
+          response && response.data && response.data.message
+          ? response.data.message
+          : "Gagal login. Silakan coba lagi.";
           this.$showToast("error", "Sorry", errorMessage);
         }
       } catch (error) {
+        this.loading.hide();
         const errorMessage =
           error.response && error.response.data && error.response.data.message
             ? error.response.data.message
