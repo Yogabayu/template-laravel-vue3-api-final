@@ -591,6 +591,15 @@ export default {
 
                 this.loading.show();
                 const [year, month] = this.selectedMonth.split('-');
+
+                const filterState = {
+                    year,
+                    month,
+                    office_id: this.selectedOffice
+                };
+
+                localStorage.setItem('filterState', JSON.stringify(filterState));
+
                 const formData = new FormData();
                 formData.append("year", year);
                 formData.append("month", month);
@@ -610,6 +619,14 @@ export default {
             } catch (error) {
                 this.loading.hide();
                 this.$showToast("error", "Error", "Terjadi kesalahan saat filter data");
+            }
+        },
+        async restoreAndApplyFilter() {
+            const filterState = JSON.parse(localStorage.getItem('filterState'));
+            if (filterState) {
+                this.selectedMonth = `${filterState.year}-${filterState.month}`;
+                this.selectedOffice = filterState.office_id;
+                await this.applyFilter();
             }
         },
         openMonthPicker() {
@@ -1004,6 +1021,7 @@ export default {
         }
     },
     mounted() {
+        this.restoreAndApplyFilter();
         this.getUserData();
         this.getUserAccess();
     },
