@@ -20,6 +20,7 @@ class DashboardController extends Controller
         try {
             // Mengambil tanggal 3 bulan yang lalu dari sekarang
             $threeMonthsAgo = Carbon::now()->subMonths(3)->format('Y-m-d H:i:s');
+            $currentDate = Carbon::now();
 
             // Mengambil data rata-rata selisih waktu per fase selama 3 bulan terakhir
             $averageTimes = DB::table('phase_times')
@@ -80,7 +81,10 @@ class DashboardController extends Controller
                         break;
                     }
                 }
-                $files = File::where('user_id', Auth::user()->id)->get();
+                $files = File::where('user_id', Auth::user()->id)
+                    ->whereMonth('created_at', $currentDate->month)
+                    ->whereYear('created_at', $currentDate->year)
+                    ->get();
 
                 ActivityHelper::userActivity(Auth::user()->id, 'Mengakses halaman File Credit');
 
@@ -119,7 +123,9 @@ class DashboardController extends Controller
                 // Inisialisasi array untuk menampung semua file yang terkait
                 $files = [];
 
-                $fileAll = File::all();
+                $fileAll = File::whereMonth('created_at', $currentDate->month)
+                    ->whereYear('created_at', $currentDate->year)
+                    ->get();
                 foreach ($fileAll as $eachFile) {
                     // Periksa posisi pengguna yang mengunggah file
                     $uploaderPositionId = DB::table('users')

@@ -16,6 +16,11 @@ if (typeof window !== 'undefined') {
 }
 
 const userData = JSON.parse(localStorage.getItem("userData"));
+
+const handleNavClick = (type) => {
+  localStorage.setItem('creditType', type);
+
+};
 </script>
 
 <template>
@@ -39,20 +44,45 @@ const userData = JSON.parse(localStorage.getItem("userData"));
     <template #vertical-nav-content>
       <VerticalNavLink :item="{
         title: 'Dashboard',
-        icon: 'bx-home',
+        icon: 'bx-home-alt',
         to: '/user-dashboard',
       }" />
-      <VerticalNavSectionTitle v-if="userData.position.approval_level_id != 1" :item="{
-        heading: 'Pengajuan Kredit',
+      <VerticalNavSectionTitle :item="{
+        heading: 'Pengajuan Kredit Bulan Ini',
       }" />
       <VerticalNavLink :item="{
-        title: 'Data Kredit bulan ini',
-        icon: 'bx-file',
+        title: 'Approve',
+        icon: 'bx-check-circle',
+        to: '/u-approve'
+      }" :onCustomClick="() => handleNavClick(1)" />
+      <VerticalNavLink :item="{
+        title: 'Pending',
+        icon: 'bx-time',
+        to: '/u-pending'
+      }" :onCustomClick="() => handleNavClick(2)" />
+      <VerticalNavLink :item="{
+        title: 'Reject',
+        icon: 'bx-x-circle',
+        to: '/u-reject'
+      }" :onCustomClick="() => handleNavClick(3)" />
+      <VerticalNavLink :item="{
+        title: 'Cancel',
+        icon: 'bx-block',
+        to: '/u-cancel'
+      }" :onCustomClick="() => handleNavClick(4)" />
+      <VerticalNavLink :item="{
+        title: 'Data Kredit Bulan ini',
+        icon: 'bx-folder',
         to: '/u-credit'
       }" />
+
+      <VerticalNavSectionTitle :item="{
+        heading: 'Pengajuan Kredit Bulan Lalu',
+      }" />
+
       <VerticalNavLink :item="{
         title: 'Data Kredit per Bulan',
-        icon: 'bx-file',
+        icon: 'bx-calendar',
         to: '/u-perkantor'
       }" />
 
@@ -61,25 +91,11 @@ const userData = JSON.parse(localStorage.getItem("userData"));
       }" />
       <VerticalNavLink :item="{
         title: 'FAQ',
-        icon: 'bx-file',
+        icon: 'bx-help-circle',
         to: '/u-qna'
       }" />
 
-      <!--       
-      <VerticalNavSectionTitle v-if="userData.position.approval_level_id!=1"
-        :item="{
-          heading: 'Pengajuan Draft',
-        }"
-      />
-      <VerticalNavLink v-if="userData.position.approval_level_id!=1" :item="{
-        title: 'Draft',
-        icon: 'bx-file',
-        to:'/u-draft'
-      }" /> -->
-
-
     </template>
-
 
     <!-- 👉 Pages -->
     <slot />

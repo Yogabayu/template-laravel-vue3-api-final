@@ -50,6 +50,7 @@
                 <template #item-type="item">
                   <span v-if="parseInt(item.type) === 1"> Reguler</span>
                   <span v-if="parseInt(item.type) === 2"> Restruktur</span>
+                  <span v-if="parseInt(item.type) === 3"> Pensiunan</span>
                 </template>
                 <template #item-aoro="item">
                   <span>{{ item.user.name }}</span>

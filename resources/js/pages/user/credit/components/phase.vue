@@ -173,8 +173,14 @@
                     <v-list-item-title><v-icon icon="mdi-arrow-right-drop-circle-outline" size="small">
                       </v-icon> Jenis Kredit</v-list-item-title>
                     <v-list-item>
-                      <strong>
-                        {{ dataFile.type == 1 ? "Reguler" : "Restruktur" }}
+                      <strong v-if="dataFile.type == 1">
+                        Regular
+                      </strong>
+                      <strong v-if="dataFile.type == 2">
+                        Restruktur
+                      </strong>
+                      <strong v-if="dataFile.type == 3">
+                        Pensiunan
                       </strong>
                     </v-list-item>
                   </v-list-item>

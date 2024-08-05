@@ -2184,6 +2184,7 @@ class FileController extends Controller
                     'files.nik_pasangan as nikPasangan',
                     'files.nik_jaminan as nikJaminan',
                     'files.plafon as plafon',
+                    'files.type as type',
                     'files.address as address',
                     'files.no_hp as no_hp',
                     'files.order_source as sumberOrder',
@@ -2204,6 +2205,18 @@ class FileController extends Controller
                 $row = ['no' => count($reportData) + 1];
                 $fileName = $phases->first()->fileName;
                 $row['namaAO'] = $phases->first()->nameAO;
+                $row['type'] =  match ($phases->first()->type) {
+                    1 => 'Reguler',
+                    2 => 'Restruktur',
+                    3 => 'Pensiunan',
+                    default => 'Reguler',
+                };
+                $row['status'] =  match ($phases->first()->isApproved) {
+                    1 => 'Approved',
+                    2 => 'Pending',
+                    4 => 'Cancel by Debitur',
+                    default => 'Rejected',
+                };
                 $row['nameFile'] = $fileName;
                 $row['plafon'] = $phases->first()->plafon;
                 $row['alamat'] = $phases->first()->address;
@@ -2331,6 +2344,7 @@ class FileController extends Controller
                     'files.nik_pasangan as nikPasangan',
                     'files.nik_jaminan as nikJaminan',
                     'files.plafon as plafon',
+                    'files.type as type',
                     'files.address as address',
                     'files.no_hp as no_hp',
                     'files.order_source as sumberOrder',
@@ -2380,6 +2394,12 @@ class FileController extends Controller
                 $fileName = $phases->first()->fileName;
                 $row['namaAO'] = $phases->first()->nameAO;
                 $row['nameFile'] = $fileName;
+                $row['type'] =  match ($phases->first()->type) {
+                    1 => 'Reguler',
+                    2 => 'Restruktur',
+                    3 => 'Pensiunan',
+                    default => 'Reguler',
+                };
                 $row['status'] =  match ($phases->first()->isApproved) {
                     1 => 'Approved',
                     2 => 'Pending',

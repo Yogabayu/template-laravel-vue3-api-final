@@ -3,34 +3,52 @@
     <VCol cols="12" md="12">
       <AnalyticsCongratulations />
     </VCol>
-    <v-container>
-      <v-row>
-        <VCol cols="4" md="6">
-          <CardStatisticsVertical v-bind="{
-            title: 'Kredit Disetujui',
-            image: docs,
-            stats: `${tApproved}`,
-            link: '/u-credit',
-          }" />
-        </VCol>
-        <VCol cols="4" md="6">
-          <CardStatisticsVertical v-bind="{
-            title: 'Kredit Pending',
-            image: docs,
-            stats: `${tPending}`,
-            link: '/u-credit',
-          }" />
-        </VCol>
-        <VCol cols="4" md="6">
-          <CardStatisticsVertical v-bind="{
-            title: 'Kredit Ditolak',
-            image: docs,
-            stats: `${tRejected}`,
-            link: '/u-credit',
-          }" />
-        </VCol>
-      </v-row>
-    </v-container>
+    <VCol cols="12" md="12">
+      <v-card>
+        <v-card-title> Kredit Bulan Ini </v-card-title>
+        <v-card-text>
+          <v-row>
+            <VCol cols="4" md="6">
+              <CardStatisticsVertical v-bind="{
+                title: 'Kredit Disetujui',
+                image: docs,
+                stats: `${tApproved}`,
+                link: '/u-approve',
+                type: 1,
+              }" class="card-style" />
+            </VCol>
+            <VCol cols="4" md="6">
+              <CardStatisticsVertical v-bind="{
+                title: 'Kredit Pending',
+                image: docs,
+                stats: `${tPending}`,
+                link: '/u-pending',
+                type: 2,
+              }" class="card-style" />
+            </VCol>
+            <VCol cols="4" md="6">
+              <CardStatisticsVertical v-bind="{
+                title: 'Kredit Ditolak',
+                image: docs,
+                stats: `${tRejected}`,
+                link: '/u-reject',
+                type: 3,
+              }" class="card-style" />
+            </VCol>
+            <VCol cols="4" md="6">
+              <CardStatisticsVertical v-bind="{
+                title: 'Kredit Cancel',
+                image: docs,
+                stats: `${tCancel}`,
+                link: '/u-cancel',
+                type: 4,
+              }" class="card-style" />
+            </VCol>
+          </v-row>
+        </v-card-text>
+      </v-card>
+
+    </VCol>
 
     <VCol cols="12" md="12" v-if="results.length > 0">
       <v-card class="mx-5 my-5">
@@ -96,7 +114,7 @@ export default {
   components: {
     AnalyticsCongratulations,
     Line
-  },  
+  },
   inject: ['loading'],
   data() {
     return {
@@ -114,6 +132,7 @@ export default {
       tApproved: 0,
       tPending: 0,
       tRejected: 0,
+      tCancel: 0,
       newestFile: {},
       results: [],
       data: null,
@@ -126,6 +145,20 @@ export default {
     };
   },
   methods: {
+    // async handleNavClick(type) {
+    //   localStorage.setItem('creditType', type);
+    //   this.loading.show();
+    //   await this.$nextTick();
+    //   if (type == 1) {
+    //     this.$router.push(`/u-approve`);
+    //   } else if (type == 2) {
+    //     this.$router.push(`/u-pending`);
+    //   } else if (type == 3) {
+    //     this.$router.push(`/u-reject`);
+    //   } else if (type == 4) {
+    //     this.$router.push(`/u-cancel`);
+    //   }
+    // },
     getUserData() {
       const savedUserData = localStorage.getItem("userData");
 
@@ -143,7 +176,8 @@ export default {
           const isApprovedCounts = {
             isApproved1: 0,
             isApproved2: 0,
-            isApproved3: 0
+            isApproved3: 0,
+            isApproved4: 0,
           };
 
           files.forEach(file => {
@@ -158,12 +192,16 @@ export default {
               case 3:
                 isApprovedCounts.isApproved3++;
                 break;
+              case 4:
+                isApprovedCounts.isApproved4++;
+                break;
             }
           });
 
           this.tApproved = isApprovedCounts.isApproved1;
           this.tPending = isApprovedCounts.isApproved2;
           this.tRejected = isApprovedCounts.isApproved3;
+          this.tCancel = isApprovedCounts.isApproved4;
 
           // this.renderLineChart();
 
@@ -243,6 +281,6 @@ export default {
 
 <style scoped>
 .card-style {
-  box-shadow: 9px 9px 9px rgba(20, 20, 20, 0.6);
+  box-shadow: 9px 9px 9px 9px rgba(0, 0, 0, 0.1)
 }
 </style>

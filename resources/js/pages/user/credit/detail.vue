@@ -692,6 +692,7 @@ export default {
       typeCreditList: [
         { value: 1, title: 'Reguler' },
         { value: 2, title: 'Restruktur' },
+        { value: 3, title: 'Pensiunan' },
       ],
       orderList: [
         { value: 'AO SENDIRI', title: 'AO SENDIRI' },
