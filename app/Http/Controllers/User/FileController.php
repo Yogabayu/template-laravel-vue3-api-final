@@ -1095,18 +1095,55 @@ class FileController extends Controller
                         return ResponseHelper::errorRes('Maaf, minimal harus ada 1 approve untuk melanjutkan');
                     }
                 } else {
-                    $cekAllApprove = Approval::where('file_id', $file->id)
-                        ->where('phase', $file->phase)
-                        ->get();
+                    // $cekAllApprove = Approval::with('user')
+                    //     ->where('file_id', $file->id)
+                    //     ->where('phase', $file->phase)
+                    //     ->get();
 
-                    // Cek apakah semua sudah approve
-                    if ($cekAllApprove->where('approved', 0)->count() > 0) {
-                        return ResponseHelper::errorRes('Maaf, ada Jabatan / User yang masih belum memberikan approve');
+                    // // Cek apakah semua sudah approve
+                    // if ($cekAllApprove->where('approved', 0)->count() > 0) {
+                    //     return ResponseHelper::errorRes('Maaf, ada Jabatan / User yang masih belum memberikan approve');
+                    // }
+                    if ($file->phase == 4) {
+                        $cekAllApprove = Approval::with('user.position')
+                            ->where('file_id', $file->id)
+                            ->where('phase', $file->phase)
+                            ->get();
+
+                        $creditAnalystApprovals = $cekAllApprove->filter(function ($approval) {
+                            return strtolower($approval->user->position->name) == 'credit analyst';
+                        });
+
+                        $otherApprovals = $cekAllApprove->filter(function ($approval) {
+                            return strtolower($approval->user->position->name) != 'credit analyst';
+                        });
+
+                        // Check if at least one Credit Analyst has approved
+                        $creditAnalystApproved = $creditAnalystApprovals->where('approved', 1)->count() > 0;
+
+                        // Check if all other positions have approved
+                        $allOthersApproved = $otherApprovals->where('approved', 0)->count() == 0;
+
+                        if (!$creditAnalystApproved || !$allOthersApproved) {
+                            if (!$creditAnalystApproved) {
+                                return ResponseHelper::errorRes('Maaf, belum ada Credit Analyst yang memberikan approve');
+                            } else {
+                                return ResponseHelper::errorRes('Maaf, ada Jabatan / User yang masih belum memberikan approve');
+                            }
+                        }
+                    } else {
+                        $cekAllApprove = Approval::with('user')
+                            ->where('file_id', $file->id)
+                            ->where('phase', $file->phase)
+                            ->get();
+
+                        // Cek apakah semua sudah approve
+                        if ($cekAllApprove->where('approved', 0)->count() > 0) {
+                            return ResponseHelper::errorRes('Maaf, ada Jabatan / User yang masih belum memberikan approve');
+                        }
                     }
                 }
 
-                // $cekAttchApproval = Attachment::where('file_id', $file->id)->where('phase', $file->phase)
-                //     ->get();
                 // Memeriksa apakah terdapat lampiran "File Banding" yang nilai atributnya bukan string "null"
                 $cekFileBanding = Attachment::where('file_id', $file->id)
                     ->where('phase', 2)
@@ -1292,12 +1329,21 @@ class FileController extends Controller
 
                         //add user to approval
                         foreach ($userOffices as $userOffice) {
+                            // $notificationConfigurations = DB::table('notification_configurations')
+                            //     ->where('office_id', $userOffice->office_id)
+                            //     ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
+                            //     ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
+                            //     ->where('phase', $filephase)
+                            //     ->where('canApprove', 1)
+                            //     ->get();
                             $notificationConfigurations = DB::table('notification_configurations')
-                                ->where('office_id', $userOffice->office_id)
-                                ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
-                                ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
-                                ->where('phase', $filephase)
-                                ->where('canApprove', 1)
+                                ->join('positions', 'positions.id', '=', 'notification_configurations.position_id')
+                                ->where('notification_configurations.office_id', $userOffice->office_id)
+                                ->whereRaw('CAST(notification_configurations.minPlafon AS UNSIGNED) <= ?', [$file->plafon])
+                                ->whereRaw('CAST(notification_configurations.maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
+                                ->where('notification_configurations.phase', $filephase)
+                                ->where('notification_configurations.canApprove', 1)
+                                ->select('notification_configurations.*', 'positions.name as position_name')
                                 ->get();
 
                             $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
@@ -1364,7 +1410,6 @@ class FileController extends Controller
                     }
                     if ($file->phase < 4) {
                         if ($resumeSlikApproved > 0) {
-
                             // Memeriksa apakah terdapat lampiran "Analisa Awal Kredit AO" yang nilai atributnya bukan string "null"
                             $cekAnalystAoApproved = Attachment::where('file_id', $file->id)
                                 ->where('phase', 2)
@@ -1403,11 +1448,13 @@ class FileController extends Controller
                         //add user to approval50852
                         foreach ($userOffices as $userOffice) {
                             $notificationConfigurations = DB::table('notification_configurations')
-                                ->where('office_id', $userOffice->office_id)
-                                ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
-                                ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
-                                ->where('phase', $filephase)
-                                ->where('canApprove', 1)
+                                ->join('positions', 'positions.id', '=', 'notification_configurations.position_id')
+                                ->where('notification_configurations.office_id', $userOffice->office_id)
+                                ->whereRaw('CAST(notification_configurations.minPlafon AS UNSIGNED) <= ?', [$file->plafon])
+                                ->whereRaw('CAST(notification_configurations.maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
+                                ->where('notification_configurations.phase', $filephase)
+                                ->where('notification_configurations.canApprove', 1)
+                                ->select('notification_configurations.*', 'positions.name as position_name')
                                 ->get();
 
                             $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
@@ -1425,7 +1472,9 @@ class FileController extends Controller
                         if ($file->phase == 3) {
                             foreach ($notifPositions as $pos) {
                                 foreach ($notifUser as $user) {
-                                    if ($pos->position_id == $user->position_id && $userUploaded->position_id != $pos->position_id) {
+                                    if (
+                                        $pos->position_id == $user->position_id && $userUploaded->position_id != $pos->position_id
+                                    ) {
                                         Approval::firstOrCreate(
                                             ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
                                             ['approved' => 0]
@@ -1439,7 +1488,48 @@ class FileController extends Controller
                                 ['file_id' => $file->id, 'user_id' => $userUploaded->id, 'phase' => $pos->phase],
                                 ['approved' => 0]
                             );
-                        } else {
+                        }
+
+                        //menmbuat agar approval hanya dilakukan oleh salah satu ca
+                        // if ($file->phase == 3) {
+                        //     foreach ($notifPositions as $pos) {
+                        //         foreach ($notifUser as $user) {
+                        //             if ($pos->position_id == $user->position_id && $userUploaded->position_id != $pos->position_id) {
+                        //                 if (str_contains(strtolower($pos->position_name), 'credit analyst')) {
+                        //                     // Check if a Credit Analyst has approved in phase 3
+                        //                     $creditAnalystApproval = Approval::where('file_id', $file->id)
+                        //                         ->where('user_id', $user->id)
+                        //                         ->where('phase', 3)
+                        //                         ->where('approved', 1)
+                        //                         ->first();
+
+
+                        //                     if ($creditAnalystApproval) {
+                        //                         Approval::firstOrCreate(
+                        //                             ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
+                        //                             ['approved' => 0]
+                        //                         );
+                        //                         $matchFound = true;
+                        //                     }
+                        //                 } else {
+                        //                     Approval::firstOrCreate(
+                        //                         ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
+                        //                         ['approved' => 0]
+                        //                     );
+                        //                     $matchFound = true;
+                        //                 }
+                        //             }
+                        //         }
+                        //     }
+
+                        //     // Add approval for the user who uploaded the file
+                        //     Approval::firstOrCreate(
+                        //         ['file_id' => $file->id, 'user_id' => $userUploaded->id, 'phase' => $pos->phase],
+                        //         ['approved' => 0]
+                        //     );
+                        // } 
+
+                        else {
                             foreach ($notifPositions as $pos) {
                                 foreach ($notifUser as $user) {
                                     if ($pos->position_id == $user->position_id) {
@@ -2167,7 +2257,6 @@ class FileController extends Controller
             return ResponseHelper::errorRes($e->getMessage());
         }
     }
-
     public function getFilesByType($type)
     {
         try {
@@ -2530,7 +2619,6 @@ class FileController extends Controller
             return ResponseHelper::errorRes($e->getMessage());
         }
     }
-
     public function store(Request $request)
     {
         try {

@@ -232,40 +232,6 @@
       </v-card>
     </v-card-text>
 
-    <!-- <v-card-text v-if="dataFile.phase > 2">
-      <v-card class="mb-5">
-        <v-card-title>
-          <v-row class="d-flex justify-space-between">
-            <v-col cols="12" sm="6" md="8">
-              <span>Survey Lapangan ℹ️</span>
-            </v-col>
-            <v-col cols="12" sm="6" md="4" class="text-sm-right text-md-right"
-              v-if="userAccess && userAccess.canInsertData">
-              <span>
-                <v-btn color="primary" size="small" class="my-3 mx-3" @click="openModal(5)">
-                  Edit Data
-                </v-btn>
-              </span>
-            </v-col>
-          </v-row>
-        </v-card-title>
-        <v-card-text>
-          <v-list density="compact">
-            <v-list-item>
-              <template v-slot:prepend>
-                <v-icon icon="mdi-note-text-outline"></v-icon>
-              </template>
-              <v-list-item-title> Hasil Survei</v-list-item-title>
-              <v-list-item-title>
-                <strong>
-                  {{ dataFile.surveyResult }}
-                </strong></v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-card-text>
-      </v-card>
-    </v-card-text> -->
-
     <!-- Approval -->
     <v-card-text v-if="dataFile && parseInt(dataFile.phase) < 6">
       <v-card>
@@ -276,6 +242,17 @@
         <v-card-text class="d-flex justify-center text-center pa-3 font-weight-bold" v-else>
           Status Approval Phase ✅
         </v-card-text>
+        <v-card-text class="d-flex justify-center">
+          <v-chip @click="openModal(11)">
+            <v-icon left>mdi-plus</v-icon>
+            Tambah Data
+          </v-chip>
+          <v-chip @click="openModal(12)">
+            <v-icon left>mdi-delete</v-icon>
+            Hapus Data
+          </v-chip>
+        </v-card-text>
+
         <v-card-text>
           <div v-if="dataFile && dataFile.approvals && dataFile.approvals.length">
             <template v-for="(app, index) in dataFile.approvals" :key="index">
