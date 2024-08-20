@@ -203,6 +203,7 @@ class FileController extends Controller
                     'phase_times.startTime',
                     'phase_times.endTime',
                     'users.name as nameAO',
+                    'phase_times.created_at as phase_created_at',
                     'files.name as fileName',
                     'files.isApproved as isApproved',
                     'files.nik_pemohon as nikPemohon',
@@ -294,8 +295,10 @@ class FileController extends Controller
                         $endTime = $phase->endTime ? strtotime($phase->endTime) : time();
                         $duration = $endTime - $startTime;
                         $row['phase' . $i . 'Time'] = gmdate('H:i:s', $duration);
+                        $row['phase' . $i . 'CreatedAt'] = $phase->phase_created_at;
                     } else {
                         $row['phase' . $i . 'Time'] = 'N/A';
+                        $row['phase' . $i . 'CreatedAt'] = 'N/A';
                     }
                 }
                 $reportData[] = $row;

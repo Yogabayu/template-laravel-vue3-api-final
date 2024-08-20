@@ -35,11 +35,16 @@ class PhaseTimeReportExport implements FromArray, WithHeadings
             'NIK Pemohon',
             'NIK Pasangan',
             'NIK Atas Nama Jaminan',
-            'Fase Pooling',
-            'Fase SLIK',
-            'Fase Survei',
-            'Fase Komite',
-            'Fase Operation',
+            'Fase Pooling (Durasi)',
+            'Fase Pooling (Dibuat)',
+            'Fase SLIK (Durasi)',
+            'Fase SLIK (Dibuat)',
+            'Fase Survei (Durasi)',
+            'Fase Survei (Dibuat)',
+            'Fase Komite (Durasi)',
+            'Fase Komite (Dibuat)',
+            'Fase Operation (Durasi)',
+            'Fase Operation (Dibuat)',
         ];
     }
 }
