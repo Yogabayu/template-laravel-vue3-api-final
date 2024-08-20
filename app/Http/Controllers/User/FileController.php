@@ -3064,11 +3064,45 @@ class FileController extends Controller
                 'filesubmissions',
             ])->findOrFail($id);
 
-            $pdf = pdf::loadView('report.approve', compact('file'));
+            // Menyiapkan data fase
+            $phases = [
+                1 => 'Pooling',
+                2 => 'SLIK',
+                3 => 'Survei',
+                4 => 'Komite',
+                5 => 'Operation'
+            ];
+
+            $phaseData = [];
+            foreach ($phases as $phaseNumber => $phaseName) {
+                $phaseTime = $file->phaseTimes->where('phase', $phaseNumber)->first();
+                if ($phaseTime) {
+                    $phaseData[$phaseName] = [
+                        'duration' => $this->calculateDuration($phaseTime->startTime, $phaseTime->endTime),
+                        'created_at' => $phaseTime->created_at->format('Y-m-d H:i:s')
+                    ];
+                } else {
+                    $phaseData[$phaseName] = [
+                        'duration' => 'N/A',
+                        'created_at' => 'N/A'
+                    ];
+                }
+            }
+
+            $pdf = PDF::loadView('report.approve', compact('file', 'phaseData'));
 
             return $pdf->download('laporan-generated.pdf');
         } catch (\Exception $e) {
             dd($e->getMessage());
         }
+    }
+
+    private function calculateDuration($startTime, $endTime)
+    {
+        if (!$startTime) return 'N/A';
+        $start = new \DateTime($startTime);
+        $end = $endTime ? new \DateTime($endTime) : new \DateTime();
+        $duration = $start->diff($end);
+        return $duration->format('%H:%I:%S');
     }
 }

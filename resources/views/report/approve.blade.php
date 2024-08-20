@@ -178,6 +178,29 @@
                 </table>
             </div>
 
+            <!-- Tambahkan ini setelah bagian "Informasi Umum Kredit" -->
+            <div class="card">
+                <div class="card-title">Informasi Fase</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fase</th>
+                            <th>Durasi</th>
+                            <th>Waktu Pembuatan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($phaseData as $phaseName => $data)
+                            <tr>
+                                <th>{{ $phaseName }}</th>
+                                <td>{{ $data['duration'] }}</td>
+                                <td>{{ $data['created_at'] }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
             <div class="card">
                 <div class="card-title">Attachments</div>
                 <table>
