@@ -843,13 +843,13 @@ export default {
         canEditFile(attachment) {
             return this.userAccessPhase2 &&
                 parseInt(this.userAccessPhase2.canUpdateData) &&
-                this.phase < 3;
+                this.phase < 4;
         },
 
         canDeleteFile(attachment) {
             return this.userAccessPhase2 &&
                 parseInt(this.userAccessPhase2.canDeleteData) &&
-                this.phase < 3;
+                this.phase < 4;
         },
 
         getFileUrl(attachment) {
@@ -1226,6 +1226,7 @@ export default {
     },
     mounted() {
         this.userAccessPhase2 = this.userAccess['2'];
+        console.log(this.userAccessPhase2);        
     },
 };
 </script>
