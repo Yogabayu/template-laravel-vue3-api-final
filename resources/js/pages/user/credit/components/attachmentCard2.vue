@@ -17,13 +17,12 @@
                                 Penjelasan Phase SLIK
                             </v-card-text>
                             <v-card-text class="py-2 px-4">
-                                Tahap ini melibatkan proses pengecekan riwayat kredit nasabah melalui Sistem Layanan
-                                Informasi Keuangan (SLIK).
-                                SLIK merupakan sistem yang dikelola oleh Otoritas Jasa Keuangan (OJK) untuk menyediakan
-                                informasi pinjaman
-                                debitur. Hasil analisis SLIK digunakan untuk menilai kelayakan kredit dan risiko nasabah
-                                berdasarkan catatan
-                                keuangan sebelumnya.
+                                Tahap ini melibatkan proses pengecekan riwayat kredit nasabah
+                                melalui Sistem Layanan Informasi Keuangan (SLIK). SLIK merupakan
+                                sistem yang dikelola oleh Otoritas Jasa Keuangan (OJK) untuk
+                                menyediakan informasi pinjaman debitur. Hasil analisis SLIK
+                                digunakan untuk menilai kelayakan kredit dan risiko nasabah
+                                berdasarkan catatan keuangan sebelumnya.
                             </v-card-text>
                         </v-card>
                     </v-bottom-sheet>
@@ -120,13 +119,20 @@
                 :class="parseInt(attachment.isSecret) ? 'bg-grey-lighten-4' : ''">
                 <v-col cols="auto" class="mr-2">
                     <v-icon :color="parseInt(attachment.isApprove) ? 'success' : 'error'" size="small">
-                        {{ parseInt(attachment.isApprove) ? 'mdi-check-circle' : 'mdi-close-circle' }}
+                        {{
+                            parseInt(attachment.isApprove)
+                                ? "mdi-check-circle"
+                                : "mdi-close-circle"
+                        }}
                     </v-icon>
                 </v-col>
 
                 <v-col>
-                    <div class="text-subtitle-2 font-weight-medium">{{ attachment.name }}</div>
-                    <div v-if="attachment.note !== 'null'" class="text-caption text-grey-darken-1">{{ attachment.note }}
+                    <div class="text-subtitle-2 font-weight-medium">
+                        {{ attachment.name }}
+                    </div>
+                    <div v-if="attachment.note !== 'null'" class="text-caption text-grey-darken-1">
+                        {{ attachment.note }}
                     </div>
                 </v-col>
 
@@ -241,14 +247,21 @@
             <v-row no-gutters align="center" :class="parseInt(formAnalytic.isSecret) ? 'bg-grey-lighten-4' : ''">
                 <v-col cols="auto" class="mr-2">
                     <v-icon :color="parseInt(formAnalytic.isApprove) ? 'success' : 'error'" size="small">
-                        {{ parseInt(formAnalytic.isApprove) ? 'mdi-check-circle' : 'mdi-close-circle' }}
+                        {{
+                            parseInt(formAnalytic.isApprove)
+                                ? "mdi-check-circle"
+                                : "mdi-close-circle"
+                        }}
                     </v-icon>
                 </v-col>
 
                 <v-col>
-                    <div class="text-subtitle-2 font-weight-medium">{{ formAnalytic.name }}</div>
-                    <div v-if="formAnalytic.note != null" class="text-caption text-grey-darken-1">{{ formAnalytic.note
-                        }}</div>
+                    <div class="text-subtitle-2 font-weight-medium">
+                        {{ formAnalytic.name }}
+                    </div>
+                    <div v-if="formAnalytic.note != null" class="text-caption text-grey-darken-1">
+                        {{ formAnalytic.note }}
+                    </div>
                 </v-col>
 
                 <v-col cols="auto">
@@ -355,12 +368,18 @@
             <v-row no-gutters align="center" :class="parseInt(formAppeal.isSecret) ? 'bg-grey-lighten-4' : ''">
                 <v-col cols="auto" class="mr-2">
                     <v-icon :color="parseInt(formAppeal.isApprove) ? 'success' : 'error'" size="small">
-                        {{ parseInt(formAppeal.isApprove) ? 'mdi-check-circle' : 'mdi-close-circle' }}
+                        {{
+                            parseInt(formAppeal.isApprove)
+                                ? "mdi-check-circle"
+                                : "mdi-close-circle"
+                        }}
                     </v-icon>
                 </v-col>
 
                 <v-col>
-                    <div class="text-subtitle-2 font-weight-medium">{{ formAppeal.name }}</div>
+                    <div class="text-subtitle-2 font-weight-medium">
+                        {{ formAppeal.name }} 
+                    </div>
                 </v-col>
 
                 <v-col cols="auto">
@@ -437,8 +456,10 @@
 
                             <v-file-input class="my-3"
                                 accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                                placeholder="Pick an image" :rules="[rules.required]"
-                                @change="handleFileChange($event); formDetailSlik.link = null"></v-file-input>
+                                placeholder="Pick an image" :rules="[rules.required]" @change="
+                                    handleFileChange($event);
+                                formDetailSlik.link = null;
+                                "></v-file-input>
                         </VCol>
                         <VCol md="12" cols="12" v-if="selectedOption === 'link'">
                             <span style="color: red">*</span>
@@ -471,9 +492,7 @@
                         </VCol>
                         <VCol cols="12" class="d-flex flex-wrap gap-4">
                             <!-- <VBtn type="submit" :disabled="(formDetailSlik.name && formDetailSlik.path&& formDetailSlik.isApprove!=1) == null"> -->
-                            <VBtn type="submit">
-                                Simpan
-                            </VBtn>
+                            <VBtn type="submit"> Simpan </VBtn>
                             <button type="button" class="btn btn-blue" @click="closeModal(1)">
                                 Batal
                             </button>
@@ -516,8 +535,10 @@
 
                             <v-file-input class="my-3"
                                 accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                                placeholder="Pick an image" :rules="[rules.required]"
-                                @change="handleFileChange($event); formDetailSlik.link = null"></v-file-input>
+                                placeholder="Pick an image" :rules="[rules.required]" @change="
+                                    handleFileChange($event);
+                                formDetailSlik.link = null;
+                                "></v-file-input>
                         </VCol>
                         <VCol md="12" cols="12" v-if="selectedOption === 'link'">
                             <span style="color: red">*</span>
@@ -549,9 +570,7 @@
                         </VCol>
                         <VCol cols="12" class="d-flex flex-wrap gap-4">
                             <!-- <VBtn type="submit" :disabled="(formDetailSlik.name && formDetailSlik.path && formDetailSlik.isApprove!=1) == null"> -->
-                            <VBtn type="submit">
-                                Simpan
-                            </VBtn>
+                            <VBtn type="submit"> Simpan </VBtn>
                             <button type="button" class="btn btn-blue" @click="closeModal(2)">
                                 Batal
                             </button>
@@ -595,8 +614,10 @@
 
                             <v-file-input class="my-3"
                                 accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                                placeholder="Pick an image" :rules="[rules.required]"
-                                @change="handleAnalyticChange($event); formAnalytic.link = null"></v-file-input>
+                                placeholder="Pick an image" :rules="[rules.required]" @change="
+                                    handleAnalyticChange($event);
+                                formAnalytic.link = null;
+                                "></v-file-input>
                         </VCol>
                         <VCol md="12" cols="12" v-if="selectedOption === 'link'">
                             <span style="color: red">*</span>
@@ -614,9 +635,7 @@
                         </VCol>
                         <VCol cols="12" class="d-flex flex-wrap gap-4">
                             <!-- <VBtn type="submit" :disabled="isSaveDisabled"> -->
-                            <VBtn type="submit">
-                                Simpan
-                            </VBtn>
+                            <VBtn type="submit"> Simpan </VBtn>
                             <button type="button" class="btn btn-blue" @click="closeModal(3)">
                                 Batal
                             </button>
@@ -659,8 +678,10 @@
 
                             <v-file-input class="my-3"
                                 accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                                placeholder="Pick an image" :rules="[rules.required]"
-                                @change="handleAppealChange($event); formAppeal.link = null"></v-file-input>
+                                placeholder="Pick an image" :rules="[rules.required]" @change="
+                                    handleAppealChange($event);
+                                formAppeal.link = null;
+                                "></v-file-input>
                         </VCol>
                         <VCol md="12" cols="12" v-if="selectedOption === 'link'">
                             <span style="color: red">*</span>
@@ -670,8 +691,10 @@
                                 hint="Pastikan menggunakan https://" :rules="[rules.required]"
                                 @change="formAppeal.path = null" />
                         </VCol>
-                        <VCol md="12" cols="12"
-                            v-if="userAccessPhase2 && parseInt(userAccessPhase2.canApproveAppeal) == 1">
+                        <VCol md="12" cols="12" v-if="
+                            userAccessPhase2 &&
+                            parseInt(userAccessPhase2.canApproveAppeal) == 1
+                        ">
                             <v-select label="Apakah Anda menyetujui file ini ?" :items="[
                                 { value: 1, title: 'Setuju' },
                                 { value: 0, title: 'Tidak Setuju' },
@@ -679,9 +702,7 @@
                         </VCol>
                         <VCol cols="12" class="d-flex flex-wrap gap-4">
                             <!-- <VBtn type="submit" :disabled="isFormAppealDisabled"> -->
-                            <VBtn type="submit">
-                                Simpan
-                            </VBtn>
+                            <VBtn type="submit"> Simpan </VBtn>
                             <button type="button" class="btn btn-blue" @click="closeModal(4)">
                                 Batal
                             </button>
@@ -722,6 +743,10 @@ export default {
             type: Function,
             required: true,
         },
+        isApprove: {
+            type: Number,
+            required: true,
+        },
         // openModal: {
         //     type: Function,
         //     required: true,
@@ -738,24 +763,28 @@ export default {
     },
     watch: {
         selectedOption(newVal) {
-            if (newVal === 'file') {
+            if (newVal === "file") {
                 this.formDetailSlik.link = null;
-            } else if (newVal === 'link') {
+            } else if (newVal === "link") {
                 this.formDetailSlik.path = null;
             }
-        }
+        },
     },
     computed: {
         isSaveDisabled() {
-            return (!this.formAnalytic.path || this.formAnalytic.path == 'null') &&
-                (!this.formAnalytic.link || this.formAnalytic.link == null);
+            return (
+                (!this.formAnalytic.path || this.formAnalytic.path == "null") &&
+                (!this.formAnalytic.link || this.formAnalytic.link == null)
+            );
         },
         isFormAppealDisabled() {
-            return (!this.formAppeal.path || this.formAppeal.path == 'null') &&
-                (!this.formAppeal.link || this.formAppeal.link == null);
-        }
-    },    
-    inject: ['loading'],
+            return (
+                (!this.formAppeal.path || this.formAppeal.path == "null") &&
+                (!this.formAppeal.link || this.formAppeal.link == null)
+            );
+        },
+    },
+    inject: ["loading"],
     data() {
         return {
             userAccessPhase2: null,
@@ -819,51 +848,60 @@ export default {
     methods: {
         canViewFile(attachment) {
             if (parseInt(attachment.isSecret)) {
-                return (attachment.path !== 'null' || attachment.link !== null) &&
+                return (
+                    (attachment.path !== "null" || attachment.link !== null) &&
                     this.userAccessPhase2 &&
-                    parseInt(this.userAccessPhase2.isSecret) === 1;
+                    parseInt(this.userAccessPhase2.isSecret) === 1
+                );
             } else {
-                return attachment.path !== 'null' || attachment.link !== null;
+                return attachment.path != "null" || attachment.link != null;
             }
         },
 
         canUploadFile(attachment) {
-            return (attachment.path === 'null' && attachment.link === null) &&
+            return (
+                attachment.path === "null" &&
+                attachment.link === null &&
                 this.userAccessPhase2 &&
-                parseInt(this.userAccessPhase2.canInsertData) === 1;
+                parseInt(this.userAccessPhase2.canInsertData) === 1
+            );
         },
 
         canAppealFile(attachment) {
             let result = false;
-            result = this.userAccessPhase2 &&
-                (parseInt(this.userAccessPhase2.canAppeal) == 1 || parseInt(this.userAccessPhase2.canApproveAppeal) == 1);
+            result =
+                this.userAccessPhase2 &&
+                (parseInt(this.userAccessPhase2.canAppeal) == 1 ||
+                    parseInt(this.userAccessPhase2.canApproveAppeal) == 1);
             return result;
         },
 
         canEditFile(attachment) {
-            return this.userAccessPhase2 &&
+            return (
+                this.userAccessPhase2 &&
                 parseInt(this.userAccessPhase2.canUpdateData) &&
-                this.phase < 4;
+                this.phase < 4
+            );
         },
 
         canDeleteFile(attachment) {
-            return this.userAccessPhase2 &&
+            return (
+                this.userAccessPhase2 &&
                 parseInt(this.userAccessPhase2.canDeleteData) &&
-                this.phase < 4;
+                this.phase < 4
+            );
         },
 
         getFileUrl(attachment) {
-            if (attachment.path !== 'null') {
+            if (attachment.path != "null") {
                 return `${this.filePath}/${this.fileId}/${attachment.path}`;
-            } else if (attachment.link !== null) {
+            } else if (attachment.link != null) {
                 return attachment.link;
             }
-            return '#'; // Atau URL default jika tidak ada yang cocok
+            return "#"; // Atau URL default jika tidak ada yang cocok
         },
         shouldDisplay(attachment) {
-            if (
-                attachment.name === "Analisa Awal Kredit AO"
-            ) {
+            if (attachment.name === "Analisa Awal Kredit AO") {
                 return false;
             }
             if (attachment.name === "File Banding") {
@@ -872,32 +910,68 @@ export default {
             return true;
         },
         showAnalisaAwalCredit() {
+            // const containsApprovedSLIK = this.data.filter(
+            //     (att) => att.name.includes("SLIK") && att.isApprove == 1 && (att.path != 'null' || att.link != null)
+            // );
             const containsApprovedSLIK = this.data.filter(
-                (att) => att.name.includes("SLIK") && att.isApprove == 1 && (att.path != 'null' || att.link != null)
+                (att) =>
+                    att.name.includes("SLIK") && (att.path != "null" || att.link != null)
             );
-            if (containsApprovedSLIK.length > 0) {
-                let analytic = this.data.find((att) => att.name === "Analisa Awal Kredit AO");
+            if (containsApprovedSLIK.length > 0 && this.isApprove != 3) {
+                let analytic = this.data.find(
+                    (att) => att.name === "Analisa Awal Kredit AO"
+                );
                 if (analytic != null) {
                     this.formAnalytic.id = analytic.id;
                     this.formAnalytic.isApprove = parseInt(analytic.isApprove);
                     this.formAnalytic.isSecret = parseInt(analytic.isSecret);
                     this.formAnalytic.path = analytic.path;
                     this.formAnalytic.link = analytic.link;
-                    return true
+                    return true;
                 }
             }
             return false;
         },
         showFileBanding() {
-            const containsUnapprovedSLIK = this.data.filter(
-                (att) => att.name.includes("SLIK") && att.isApprove == 0 && (att.path !== 'null' || att.link !== null)
+            const containSLIK = this.data.filter(
+                (att) =>
+                    att.name.includes("SLIK") && (att.path != "null" || att.link != null)
             );
 
+            // const containsUnapprovedSLIK = this.data.filter(
+            //     (att) => att.name.includes("SLIK") && att.isApprove == 0 && (att.path !== 'null' || att.link !== null)
+            // );
             const cekFileBanding = this.data.filter(
-                (att) => att.name == 'File Banding' && (att.path !== 'null' || att.link !== null)
+                (att) =>
+                    att.name == "File Banding" &&
+                    (att.path !== "null" || att.link !== null)
             );
-            if (containsUnapprovedSLIK.length > 0 || cekFileBanding.length > 0) {
-                let appeal = this.data.find((att) => att.name === "File Banding");
+            if (cekFileBanding.length > 0) {                
+                if (containSLIK.length > 0 && this.isApprove == 3) {
+                    let appeal = this.data.find((att) => att.name == "File Banding");  
+                    if (appeal != null) {
+                        this.formAppeal.id = appeal.id;
+                        this.formAppeal.isApprove = parseInt(appeal.isApprove);
+                        this.formAppeal.isSecret = parseInt(appeal.isSecret);
+                        this.formAppeal.path = appeal.path;
+                        this.formAppeal.link = appeal.link;
+                        return true;
+                    }
+                } else if (containSLIK.length > 0) {
+                    let appeal = this.data.find((att) => att.name == "File Banding");  
+                    if (appeal != null) {
+                        this.formAppeal.id = appeal.id;
+                        this.formAppeal.isApprove = parseInt(appeal.isApprove);
+                        this.formAppeal.isSecret = parseInt(appeal.isSecret);
+                        this.formAppeal.path = appeal.path;
+                        this.formAppeal.link = appeal.link;
+                        return true;
+                    }
+                }
+            } else {
+                if (containSLIK.length > 0 && this.isApprove == 3) {
+                let appeal = this.data.find((att) => att.name == "File Banding");
+                
                 if (appeal != null) {
                     this.formAppeal.id = appeal.id;
                     this.formAppeal.isApprove = parseInt(appeal.isApprove);
@@ -906,10 +980,10 @@ export default {
                     return true;
                 }
             }
+            }
 
             return false;
         },
-
 
         handleFileChange(event) {
             const selectedFile = event.target.files[0];
@@ -1115,12 +1189,11 @@ export default {
                 const formData = new FormData();
                 formData.append("name", this.formAnalytic.name);
                 formData.append("note", this.formAnalytic.note);
-                if (this.formAnalytic.path != 'null') {
+                if (this.formAnalytic.path != "null") {
                     formData.append("path", this.formAnalytic.path);
-                } else
-                    if (this.formAnalytic.link != null) {
-                        formData.append("link", this.formAnalytic.link);
-                    }
+                } else if (this.formAnalytic.link != null) {
+                    formData.append("link", this.formAnalytic.link);
+                }
                 formData.append("phase", this.formAnalytic.phase);
                 formData.append("isSecret", this.formAnalytic.isSecret);
                 formData.append("file_id", this.formAnalytic.file_id);
@@ -1173,17 +1246,27 @@ export default {
                 const formData = new FormData();
                 formData.append("name", this.formAppeal.name);
                 formData.append("note", this.formAppeal.note);
-                if (this.formAppeal.path != null && this.formAppeal.path != '') {
+                if (this.formAppeal.path != null && this.formAppeal.path != "") {
                     formData.append("path", this.formAppeal.path);
-                }
-                else if (this.formAppeal.link != null && this.formAppeal.link != '') {
+                } else if (this.formAppeal.link != null && this.formAppeal.link != "") {
                     formData.append("link", this.formAppeal.link);
                 }
                 formData.append("phase", this.formAppeal.phase);
-                formData.append("isSecret", this.formAppeal.isSecret);
+                formData.append("isSecret", 0);
                 formData.append("file_id", this.formAppeal.file_id);
-                formData.append("isApprove", this.formAppeal.isApprove);
+                formData.append("isApprove", 1);
                 formData.append("_method", "PUT");
+
+                // formData.forEach((value, key) => {
+                //     if (Array.isArray(value)) {
+                //         console.log(key + ":");
+                //         value.forEach((item) => {
+                //             console.log(item);
+                //         });
+                //     } else {
+                //         console.log(key + ": " + value);
+                //     }
+                // });
                 const config = {
                     onUploadProgress: (progressEvent) => {
                         try {
@@ -1225,13 +1308,12 @@ export default {
         },
     },
     mounted() {
-        this.userAccessPhase2 = this.userAccess['2'];
-        console.log(this.userAccessPhase2);        
+        this.userAccessPhase2 = this.userAccess["2"];
     },
 };
 </script>
 <style scoped>
 .header-color {
-    background-color: #FFAB00;
+    background-color: #ffab00;
 }
 </style>

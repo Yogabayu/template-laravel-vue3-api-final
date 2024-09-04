@@ -36,6 +36,18 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class FileController extends Controller
 {
+    public function cekNIK($nik)
+    {
+        try {
+            $nik = str_replace('-', '', $nik);
+            $result = File::where('nik_pemohon', $nik)->get()->count();
+
+            return ResponseHelper::successRes('berhasil melakukan cek data', $result);
+        } catch (ValidationException $e) {
+            return ResponseHelper::errorRes($e->getMessage());
+        }
+    }
+
     public function signaturefile(Request $request, $id)
     {
         try {
@@ -1433,7 +1445,10 @@ class FileController extends Controller
                             $cekFileBandingApproved = Attachment::where('file_id', $file->id)
                                 ->where('phase', 2)
                                 ->whereRaw('LOWER(name) = ?', [Str::lower('File Banding')])
-                                ->where('path', '!=', 'null') // Asumsi atribut yang dicek bernama 'path'
+                                ->where(function ($query) {
+                                    $query->where('link', '!=', 'null')
+                                        ->orWhere('path', '!=', 'null');
+                                }) // Asumsi atribut yang dicek bernama 'path'
                                 ->count();
 
                             if ($cekFileBandingApproved == 0) {

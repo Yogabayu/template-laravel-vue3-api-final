@@ -212,7 +212,7 @@
                   <AttachmentCard2 v-if="parseInt(dataFile.phase) > 1" :data="phase2Attachments"
                     :fileId="parseInt(dataFile.id)" :filePath="filePath" :userAccess="userAccess"
                     :deleteAttachment="deleteAttachment" :getDetailFile="getDetailFile"
-                    :phase="parseInt(dataFile.phase)">
+                    :phase="parseInt(dataFile.phase)" :isApprove="parseInt(dataFile.isApproved)">
                   </AttachmentCard2>
                 </div>
                 <div class="mb-5">

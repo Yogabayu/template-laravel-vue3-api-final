@@ -24,26 +24,36 @@
 
                             <VTextField class="my-3" v-model="formattedPlafon" type="text" @input="formatInputIn" />
                         </VCol>
+
                         <VCol md="12" cols="12">
                             <span style="color: red">*</span><span class="subtitle-1 text-center">NIK Pemohon: </span>
 
+                            <!-- <VTextField class="my-3" v-model="dataForm.nik_pemohon" type="number"
+                                :rules="[rules.required]" @input="cekNIK()" /> -->
                             <VTextField class="my-3" v-model="dataForm.nik_pemohon" type="number"
                                 :rules="[rules.required]" />
+                            <span class="subtitle-1 text-center" style="color: red"
+                                v-if="!statusNIK && !cekNIKLoading && dataForm.nik_pemohon">NIK Sudah pernah di lakukan
+                                pengecekan SLIK dalam kurun waktu kurang dari 6 bulan, silahkan kontak tim Kredit analis
+                            </span>
+                            <span class="subtitle-1 text-center" style="color: red" v-if="cekNIKLoading">
+                                Sistem melakukan pengecekan NIK ......
+                            </span>
                         </VCol>
-                        <VCol md="12" cols="12">
+                        <VCol md="12" cols="12" v-if="statusNIK">
                             <span style="color: red">*</span><span class="subtitle-1 text-center">Alamat Pemohon:
                             </span>
 
                             <VTextField class="my-3" v-model="dataForm.address" :rules="[rules.required]" />
                         </VCol>
-                        <VCol md="12" cols="12">
+                        <VCol md="12" cols="12" v-if="statusNIK">
                             <span style="color: red">*</span><span class="subtitle-1 text-center">No. HP Pemohon:
                             </span>
 
                             <VTextField class="my-3" v-model="dataForm.no_hp" :rules="[rules.required]" />
                         </VCol>
 
-                        <VCol md="12" cols="12">
+                        <VCol md="12" cols="12" v-if="statusNIK">
                             <span style="color: red">*</span><span class="subtitle-1 text-center">KTP Pemohon : </span>
 
                             <v-file-input class="my-3"
@@ -53,22 +63,24 @@
                         </VCol>
 
                         <!-- <VCol md="12" cols="12" v-if="dataForm.hasFile2"> -->
-                        <VCol md="12" cols="12">
+                        <VCol md="12" cols="12" v-if="statusNIK">
                             <!-- <span style="color: red">*</span> -->
-                            <span class="subtitle-1 text-center">Nama Pasangan / Pendamping : </span>
+                            <span class="subtitle-1 text-center">Nama Pasangan / Pendamping :
+                            </span>
 
                             <!-- <VTextField class="my-3" type="number" v-model="dataForm.nik_pasangan" :rules="[rules.required]" /> -->
                             <VTextField class="my-3" type="text" v-model="dataForm.name_pasangan" />
                         </VCol>
-                        <VCol md="12" cols="12">
+                        <VCol md="12" cols="12" v-if="statusNIK">
                             <!-- <span style="color: red">*</span> -->
-                            <span class="subtitle-1 text-center">NIK Pasangan / Pendamping : </span>
+                            <span class="subtitle-1 text-center">NIK Pasangan / Pendamping :
+                            </span>
 
                             <!-- <VTextField class="my-3" type="number" v-model="dataForm.nik_pasangan" :rules="[rules.required]" /> -->
                             <VTextField class="my-3" type="number" v-model="dataForm.nik_pasangan" />
                         </VCol>
 
-                        <VCol md="12" cols="12">
+                        <VCol md="12" cols="12" v-if="statusNIK">
                             <!-- <span style="color: red">*</span> -->
                             <span class="subtitle-1 text-center">KTP Pasangan / Pendamping Pemohon :
                             </span>
@@ -79,21 +91,24 @@
                                 @change="(event) => handleFileChange(event, 'file2')"></v-file-input>
                         </VCol>
 
-                        <VCol cols="12" md="12">
+                        <VCol cols="12" md="12" v-if="statusNIK">
                             <v-checkbox v-model="dataForm.hasFile2" label="Apakah pemohon sudah menikah?"
                                 @change="resetFile('file5')"></v-checkbox>
                         </VCol>
 
                         <!-- <VCol md="12" cols="12"> -->
-                        <VCol md="12" cols="12" v-if="dataForm.hasFile2">
+                        <VCol md="12" cols="12" v-if="dataForm.hasFile2 && statusNIK">
                             <span class="subtitle-1 text-center">Buku Nikah:</span>
                             <v-file-input class="my-3"
                                 accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                                placeholder="Pick an image" :rules="[rules.required]"
-                                @change="handleFileChange($event, 'file5'); resetFile('file7'); resetFile('file8')"></v-file-input>
+                                placeholder="Pick an image" :rules="[rules.required]" @change="
+                                    handleFileChange($event, 'file5');
+                                resetFile('file7');
+                                resetFile('file8');
+                                "></v-file-input>
                         </VCol>
 
-                        <VCol md="12" cols="12">
+                        <VCol md="12" cols="12" v-if="statusNIK">
                             <span style="color: red">*</span><span class="subtitle-1 text-center">Kartu Keluarga :
                             </span>
 
@@ -102,21 +117,21 @@
                                 placeholder="Pick an image" :rules="[rules.required]"
                                 @change="(event) => handleFileChange(event, 'file4')"></v-file-input>
                         </VCol>
-                        <VCol md="12" cols="12">
+                        <VCol md="12" cols="12" v-if="statusNIK">
                             <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih sumber order:
                             </span>
                             <v-select :items="orderList" autofocus v-model="dataForm.order_source"
                                 prepend-icon="mdi-help-rhombus"></v-select>
                         </VCol>
 
-                        <VCol md="12" cols="12">
+                        <VCol md="12" cols="12" v-if="statusNIK">
                             <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih status order:
                             </span>
                             <v-select :items="statusCreditList" autofocus v-model="dataForm.status_kredit"
                                 prepend-icon="mdi-help-rhombus"></v-select>
                         </VCol>
 
-                        <VCol md="12" cols="12">
+                        <VCol md="12" cols="12" v-if="statusNIK">
                             <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih Jenis Bukti
                                 Kunjungan :
                             </span>
@@ -126,31 +141,35 @@
                             </v-radio-group>
                         </VCol>
 
-                        <VCol md="12" cols="12" v-if="selectedPhoto === 'fotoKunjungan'">
+                        <VCol md="12" cols="12" v-if="selectedPhoto === 'fotoKunjungan' && statusNIK">
                             <span style="color: red">*</span>
                             <span class="subtitle-1 text-center">Foto Kunjungan :</span>
                             <v-file-input class="my-3"
                                 accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                                placeholder="Pick an image" :rules="[rules.required]"
-                                @change="handleFileChange($event, 'file10'); resetFile('file11')"></v-file-input>
+                                placeholder="Pick an image" :rules="[rules.required]" @change="
+                                    handleFileChange($event, 'file10');
+                                resetFile('file11');
+                                "></v-file-input>
                         </VCol>
 
-                        <VCol md="12" cols="12" v-if="selectedPhoto === 'fotoWhatsApp'">
+                        <VCol md="12" cols="12" v-if="selectedPhoto === 'fotoWhatsApp' && statusNIK">
                             <span style="color: red">*</span>
                             <span class="subtitle-1 text-center">Foto WhatsApp :</span>
                             <v-file-input class="my-3"
                                 accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                                placeholder="Pick an image" :rules="[rules.required]"
-                                @change="handleFileChange($event, 'file11'); resetFile('file10')"></v-file-input>
+                                placeholder="Pick an image" :rules="[rules.required]" @change="
+                                    handleFileChange($event, 'file11');
+                                resetFile('file10');
+                                "></v-file-input>
                         </VCol>
-                        <v-divider :thickness="5"></v-divider>
+                        <v-divider :thickness="5" v-if="statusNIK"></v-divider>
 
                         <!-- ktp atas nama jaminan -->
-                        <VCol cols="12" md="12">
+                        <VCol cols="12" md="12" v-if="statusNIK">
                             <v-checkbox v-model="dataForm.hasFile3" label="Apakah agunan bukan atas nama pemohon?"
-                                @change="resetFile('file3'), dataForm.nik_jaminan = null"></v-checkbox>
+                                @change="resetFile('file3'), (dataForm.nik_jaminan = null)"></v-checkbox>
                         </VCol>
-                        <VCol md="12" cols="12" v-if="dataForm.hasFile3">
+                        <VCol md="12" cols="12" v-if="dataForm.hasFile3 && statusNIK">
                             <span style="color: red">*</span>
                             <span class="subtitle-1 text-center">KTP atas nama Jaminan :
                             </span>
@@ -160,7 +179,7 @@
                                 placeholder="Pick an image" :rules="[rules.required]"
                                 @change="(event) => handleFileChange(event, 'file3')"></v-file-input>
                         </VCol>
-                        <VCol md="12" cols="12" v-if="dataForm.hasFile3">
+                        <VCol md="12" cols="12" v-if="dataForm.hasFile3 && statusNIK">
                             <span style="color: red">*</span><span class="subtitle-1 text-center">NIK Pemilik Jaminan:
                             </span>
 
@@ -168,20 +187,20 @@
                                 :rules="[rules.required]" />
                         </VCol>
 
-                        <v-divider :thickness="5"></v-divider>
+                        <v-divider :thickness="5" v-if="statusNIK"></v-divider>
 
-                        <VCol md="12" cols="12">
+                        <VCol md="12" cols="12" v-if="statusNIK">
                             <span style="color: red">*</span><span class="subtitle-1 text-center">Jenis Usaha: </span>
 
                             <VTextField class="my-3" v-model="dataForm.type_bussiness" :rules="[rules.required]" />
                         </VCol>
-                        <VCol md="12" cols="12">
+                        <VCol md="12" cols="12" v-if="statusNIK">
                             <span style="color: red">*</span><span class="subtitle-1 text-center">Deskripsi Usaha:
                             </span>
 
                             <VTextField class="my-3" v-model="dataForm.desc_bussiness" :rules="[rules.required]" />
                         </VCol>
-                        <VCol md="12" cols="12">
+                        <VCol md="12" cols="12" v-if="statusNIK">
                             <span style="color: red">*</span>
                             <span class="subtitle-1 text-center">Form Permohonan SLIK :
                             </span>
@@ -193,8 +212,17 @@
                         </VCol>
 
                         <VCol cols="12" class="d-flex flex-wrap gap-4">
-                            <VBtn type="submit"
-                                :disabled="(dataForm.name == null || dataForm.plafon == null || dataForm.type_bussiness == null || dataForm.desc_bussiness == null || dataForm.order_source == null || dataForm.status_kredit == null) || (dataForm.file1 == null || dataForm.file4 == null) || (dataForm.file10 == null && dataForm.file11 == null) || dataForm.file12 == null">
+                            <VBtn type="submit" :disabled="dataForm.name == null ||
+                                dataForm.plafon == null ||
+                                dataForm.type_bussiness == null ||
+                                dataForm.desc_bussiness == null ||
+                                dataForm.order_source == null ||
+                                dataForm.status_kredit == null ||
+                                dataForm.file1 == null ||
+                                dataForm.file4 == null ||
+                                (dataForm.file10 == null && dataForm.file11 == null) ||
+                                dataForm.file12 == null
+                                ">
                                 Simpan
                             </VBtn>
 
@@ -214,20 +242,19 @@
 </template>
 
 <script lang="ts">
-import mainURL from '@/axios';
-
+import mainURL from "@/axios";
 
 export default {
-    name: 'InsertModal',
+    name: "InsertModal",
     props: {
         modelValue: Boolean,
         orderList: {
             type: Array,
-            required: true
+            required: true,
         },
         statusCreditList: {
             type: Array,
-            required: true
+            required: true,
         },
         closeModal: {
             type: Function,
@@ -236,12 +263,14 @@ export default {
         getAllFiles: {
             type: Function,
             required: false,
-        }
+        },
     },
-    inject: ['loading'],
-    emits: ['update:modelValue', 'insert'],
+    inject: ["loading"],
+    emits: ["update:modelValue", "insert"],
     data() {
         return {
+            statusNIK: true,
+            cekNIKLoading: false,
             dataForm: {
                 id: null,
                 name: "",
@@ -279,13 +308,43 @@ export default {
             uploadProgress: 0,
             selectedPhoto: null,
             typeCreditList: [
-                { value: 1, title: 'Reguler' },
-                { value: 2, title: 'Restruktur' },
-                { value: 3, title: 'Pensiunan' },
+                { value: 1, title: "Reguler" },
+                { value: 2, title: "Restruktur" },
+                { value: 3, title: "Pensiunan" },
             ],
         };
     },
     methods: {
+        async cekNIK() {
+            try {
+                this.cekNIKLoading = true;
+                const nik = this.dataForm.nik_pemohon;
+                const response = await mainURL.get(`/user/cekNIK/${nik}`);
+                if (response.status === 200) {
+                    console.log(response.data.data);
+
+                    if (response.data.data === 0) {
+                        console.log(response.data);
+                        this.cekNIKLoading = false;
+                        this.statusNIK = true;
+                    } else {
+                        this.cekNIKLoading = false;
+                        this.statusNIK = false;
+                    }
+                } else {
+                    this.cekNIKLoading = false;
+                    this.statusNIK = false;
+                }
+
+            } catch (error) {
+                this.statusNIK = false;
+                this.loading.hide();
+                this.uploadProgress = null;
+                this.closeModal(1);
+                this.getAllFiles();
+                this.$showToast("error", "Sorry", error.response.data.message);
+            }
+        },
         async insertData() {
             try {
                 this.loading.show();
@@ -302,11 +361,11 @@ export default {
                 formData.append("desc_bussiness", this.dataForm.desc_bussiness);
 
                 if (this.dataForm.file2 != null) {
-                    formData.append('nik_pasangan', this.dataForm.nik_pasangan);
-                    formData.append('name_pasangan', this.dataForm.name_pasangan);
+                    formData.append("nik_pasangan", this.dataForm.nik_pasangan);
+                    formData.append("name_pasangan", this.dataForm.name_pasangan);
                 }
                 if (this.dataForm.file3 != null) {
-                    formData.append('nik_jaminan', this.dataForm.nik_jaminan);
+                    formData.append("nik_jaminan", this.dataForm.nik_jaminan);
                 }
 
                 // Append files to formData
@@ -384,7 +443,7 @@ export default {
                 "image/png",
                 "application/pdf",
                 "application/msword", // for .doc
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document" // for .docx
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // for .docx
             ];
             if (selectedFile && allowedTypes.includes(selectedFile.type)) {
                 this.dataForm[fileKey] = selectedFile; // Menambahkan catatan file sesuai dengan file yang dipilih
@@ -431,14 +490,14 @@ export default {
             event.target.value = value;
         },
         formatNumber(value) {
-            if (!value) return '';
-            return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            if (!value) return "";
+            return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         },
     },
     computed: {
         rules() {
             return {
-                required: value => !!value || 'Field ini harus diisi.',
+                required: (value) => !!value || "Field ini harus diisi.",
             };
         },
         formattedPlafon: {
@@ -446,16 +505,16 @@ export default {
                 return this.formatNumber(this.dataForm.plafon);
             },
             set(value) {
-                this.dataForm.plafon = value.replace(/\D/g, '');
-            }
+                this.dataForm.plafon = value.replace(/\D/g, "");
+            },
         },
         formattedMaxPlafon: {
             get() {
                 return this.formatNumber(this.dataForm.plafon);
             },
             set(value) {
-                this.dataForm.plafon = value.replace(/\D/g, '');
-            }
+                this.dataForm.plafon = value.replace(/\D/g, "");
+            },
         },
     },
 };

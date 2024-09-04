@@ -147,6 +147,7 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1', 'throttle:60,1'], function
             Route::post('change-status', [FileController::class, 'changeStatus']);
             Route::get('dashboardCredit', [UserHelperController::class, 'getYears']);
             Route::post('getCredit', [FileController::class, 'getFile']);
+            Route::get('cekNIK/{nik}', [FileController::class, 'cekNIK']);
             //bulan ini
             Route::get('getCredit/{id}', [FileController::class, 'getFilesByType']);
 
