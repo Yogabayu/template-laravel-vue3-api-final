@@ -40,9 +40,33 @@ class FileController extends Controller
     {
         try {
             $nik = str_replace('-', '', $nik);
-            $result = File::where('nik_pemohon', $nik)->get()->count();
 
-            return ResponseHelper::successRes('berhasil melakukan cek data', $result);
+            // Get the file with the matching NIK
+            $file = File::where('nik_pemohon', $nik)
+                ->where('isApproved', '3')
+                ->where(function ($query) {
+                    $query->where('reasonRejected', 'LIKE', '%SLIK%')
+                        ->orWhere('reasonRejected', 'LIKE', '%slik%')
+                        ->orWhere('reasonRejected', 'LIKE', '%KOL%');
+                })
+                ->first();
+
+            // return ResponseHelper::successRes('Data ditemukan',  $file);
+
+            // // Check if a file with the matching NIK exists
+            if (!$file) {
+                return ResponseHelper::successRes('Data tidak ditemukan', 0);
+            }
+
+            // // Calculate the difference between the file's creation date and current date
+            $diff = now()->diffInMonths($file->created_at);
+
+            // // Check if the difference is less than 6 months
+            if ($diff < 6) {
+                return ResponseHelper::successRes('Berhasil melakukan cek data', $file);
+            } else {
+                return ResponseHelper::successRes('Data sudah lebih dari 6 bulan', 0);
+            }
         } catch (ValidationException $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }

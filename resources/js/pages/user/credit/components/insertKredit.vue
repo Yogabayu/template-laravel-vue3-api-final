@@ -28,13 +28,12 @@
                         <VCol md="12" cols="12">
                             <span style="color: red">*</span><span class="subtitle-1 text-center">NIK Pemohon: </span>
 
-                            <!-- <VTextField class="my-3" v-model="dataForm.nik_pemohon" type="number"
-                                :rules="[rules.required]" @input="cekNIK()" /> -->
                             <VTextField class="my-3" v-model="dataForm.nik_pemohon" type="number"
-                                :rules="[rules.required]" />
+                                :rules="[rules.required]" @input="cekNIK()" />
+                            <!-- <VTextField class="my-3" v-model="dataForm.nik_pemohon" type="number"
+                                :rules="[rules.required]" /> -->
                             <span class="subtitle-1 text-center" style="color: red"
-                                v-if="!statusNIK && !cekNIKLoading && dataForm.nik_pemohon">NIK Sudah pernah di lakukan
-                                pengecekan SLIK dalam kurun waktu kurang dari 6 bulan, silahkan kontak tim Kredit analis
+                                v-if="!statusNIK && !cekNIKLoading && dataForm.nik_pemohon"> {{ noteSLIK }}
                             </span>
                             <span class="subtitle-1 text-center" style="color: red" v-if="cekNIKLoading">
                                 Sistem melakukan pengecekan NIK ......
@@ -269,8 +268,9 @@ export default {
     emits: ["update:modelValue", "insert"],
     data() {
         return {
-            statusNIK: true,
+            statusNIK: false,
             cekNIKLoading: false,
+            noteSLIK: 'NIK Sudah pernah di lakukan pengecekan SLIK (status Reject SLIK) dalam kurun waktu kurang dari 6 bulan, silahkan kontak tim Kredit analis.',
             dataForm: {
                 id: null,
                 name: "",
@@ -317,26 +317,33 @@ export default {
     methods: {
         async cekNIK() {
             try {
+                this.noteSLIK = 'NIK Sudah pernah di lakukan pengecekan SLIK (status Reject SLIK) dalam kurun waktu kurang dari 6 bulan, silahkan kontak tim Kredit analis.';
                 this.cekNIKLoading = true;
                 const nik = this.dataForm.nik_pemohon;
+                if (nik == null) {
+                    this.cekNIKLoading = false;
+                    this.statusNIK = false;
+                }
                 const response = await mainURL.get(`/user/cekNIK/${nik}`);
                 if (response.status === 200) {
-                    console.log(response.data.data);
-
-                    if (response.data.data === 0) {
-                        console.log(response.data);
+                    if (response.data.data == 0) {
                         this.cekNIKLoading = false;
                         this.statusNIK = true;
                     } else {
+                        if (response.data.data && response.data.data.reasonRejected) {
+                            this.noteSLIK = this.noteSLIK + ' Keterangan: ' + response.data.data.reasonRejected;
+                        }
                         this.cekNIKLoading = false;
                         this.statusNIK = false;
                     }
                 } else {
+                    this.noteSLIK = 'NIK Sudah pernah di lakukan pengecekan SLIK (status Reject SLIK) dalam kurun waktu kurang dari 6 bulan, silahkan kontak tim Kredit analis.';
                     this.cekNIKLoading = false;
                     this.statusNIK = false;
                 }
 
             } catch (error) {
+                this.noteSLIK = 'NIK Sudah pernah di lakukan pengecekan SLIK (status Reject SLIK) dalam kurun waktu kurang dari 6 bulan, silahkan kontak tim Kredit analis.';
                 this.statusNIK = false;
                 this.loading.hide();
                 this.uploadProgress = null;
