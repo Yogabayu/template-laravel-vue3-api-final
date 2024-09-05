@@ -154,8 +154,7 @@
               </VCol>
               <VCol md="12" cols="12">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih AO/RO: </span>
-                <v-select :items="users" v-model="dataForm.user_id"
-                  prepend-icon="mdi-help-rhombus"></v-select>
+                <v-select :items="users" v-model="dataForm.user_id" prepend-icon="mdi-help-rhombus"></v-select>
               </VCol>
               <VCol md="12" cols="12">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">Nama Pemohon: </span>
@@ -185,8 +184,7 @@
 
               <VCol md="12" cols="12">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih sumber order: </span>
-                <v-select :items="orderList" v-model="dataForm.order_source"
-                  prepend-icon="mdi-help-rhombus"></v-select>
+                <v-select :items="orderList" v-model="dataForm.order_source" prepend-icon="mdi-help-rhombus"></v-select>
               </VCol>
 
               <VCol md="12" cols="12">
@@ -262,6 +260,13 @@
 
                 <VTextField class="my-3" type="number" v-model="dataForm.nik_pasangan" :rules="[rules.required]" />
               </VCol>
+              <VCol md="12" cols="12"  v-if="dataForm.hasFile2">
+                <!-- <span style="color: red">*</span> -->
+                <span class="subtitle-1 text-center">Nama Pasangan / Pendamping : </span>
+
+                <!-- <VTextField class="my-3" type="number" v-model="dataForm.nik_pasangan" :rules="[rules.required]" /> -->
+                <VTextField class="my-3" type="text" v-model="dataForm.name_pasangan" />
+              </VCol>
 
               <!-- <v-divider :thickness="5"></v-divider> -->
               <!-- <VCol md="12" cols="12">
@@ -335,10 +340,20 @@
 
                 <VTextField class="my-3" v-model="dataForm.desc_bussiness" :rules="[rules.required]" />
               </VCol>
+              <VCol md="12" cols="12">
+                <span style="color: red">*</span>
+                <span class="subtitle-1 text-center">Form Permohonan SLIK :
+                </span>
+
+                <v-file-input class="my-3"
+                  accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                  placeholder="Pick an image" :rules="[rules.required]"
+                  @change="(event) => handleFileChange(event, 'file12')"></v-file-input>
+              </VCol>
 
               <VCol cols="12" class="d-flex flex-wrap gap-4">
                 <VBtn type="submit"
-                  :disabled="(dataForm.name == null || dataForm.plafon == null || dataForm.type_bussiness == null || dataForm.desc_bussiness == null || dataForm.order_source == null) || (dataForm.file1 == null || dataForm.file4 == null) || (dataForm.file10 == null && dataForm.file11 == null)">
+                  :disabled="(dataForm.name == null || dataForm.plafon == null || dataForm.type_bussiness == null || dataForm.desc_bussiness == null || dataForm.order_source == null) || (dataForm.file1 == null || dataForm.file4 == null) || (dataForm.file10 == null && dataForm.file11 == null || dataForm.file12 == null)">
                   Simpan
                 </VBtn>
 
@@ -455,6 +470,7 @@ export default {
         desc_bussiness: null,
         nik_pemohon: null,
         nik_pasangan: null,
+        name_pasangan: null,
         nik_jaminan: null,
         address: null,
         no_hp: null,
@@ -477,6 +493,7 @@ export default {
         file10: null, // foto kunjungan
         hasFile11: false,
         file11: null, // foto wa
+        file12: null, // foto form permohonan slik
       },
       orderList: [
         { value: 'AO SENDIRI', title: 'AO SENDIRI' },
@@ -683,6 +700,8 @@ export default {
           this.dataForm.noteFile10 = "Foto Kunjungan";
         } else if (fileKey == "file11") {
           this.dataForm.noteFile11 = "Foto WhatsApp";
+        } else if (fileKey == "file12") {
+          this.dataForm.noteFile12 = "Form Permohonan SLIK";
         }
       } else {
         this.overlay = false;
@@ -776,6 +795,9 @@ export default {
         file9: null, //foto detail mesin
         hasFile10: false,
         file10: null, // foto kunjungan
+        hasFile11: false,
+        file11: null, // foto wa
+        file12: null, // foto form permohonan slik
       };
     },
     formatInputIn(event: { target: { value: any } }) {
@@ -847,13 +869,14 @@ export default {
 
         if (this.dataForm.file2 != null) {
           formData.append('nik_pasangan', this.dataForm.nik_pasangan);
+          formData.append('name_pasangan', this.dataForm.name_pasangan);
         }
         if (this.dataForm.file3 != null) {
           formData.append('nik_jaminan', this.dataForm.nik_jaminan);
         }
 
         // Append files to formData
-        for (let i = 1; i <= 11; i++) {
+        for (let i = 1; i <= 12; i++) {
           if (i === 6) continue;
 
           let fileKey = "file" + i;

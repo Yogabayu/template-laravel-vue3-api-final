@@ -127,7 +127,7 @@
                         </v-tooltip>
 
                         <v-tooltip location="top" text="Tanda Tangan File"
-                            v-if="userAccessPhase4 && parseInt(userAccessPhase4.canApprove) && phase < 5">
+                            v-if="userAccessPhase5 && parseInt(userAccessPhase5.canApprove) && phase < 5">
                             <template v-slot:activator="{ props }">
                                 <v-btn v-bind="props" icon="bx-pen" size="small" color="info" variant="text"
                                     class="mr-2" @click="toSignature(attachment)">

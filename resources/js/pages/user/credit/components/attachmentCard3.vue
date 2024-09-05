@@ -173,54 +173,6 @@
             <v-list><v-list-item>Belum ada file</v-list-item></v-list>
         </div>
         <div v-for="(sub, index) in sortedSubmission" :key="index" v-if="sortedSubmission.length > 0">
-            <!-- <v-list density="compact">
-                <v-list-item>
-                    <v-list-item-title> {{ sub.name }} </v-list-item-title>
-                    <v-list-item-subtitle v-if="sub.type == 1"> Dokumen Penunjang Analisa </v-list-item-subtitle>
-                    <v-list-item-subtitle v-if="sub.type == 2"> Dokumen Jaminan </v-list-item-subtitle>
-                    <template v-slot:append>
-                        <div class="operation-wrapper">
-                            <div class="d-flex justify-space-between">
-                                <v-tooltip location="top" text="Lihat File"
-                                    v-if="(sub.path !== 'null' || sub.link !== null)">
-                                    <template v-slot:activator="{ props }">
-                                        <a v-if="sub.path !== null" v-bind="props"
-                                            :href="`${filePath}/${fileId}/${sub.path}`" target="_blank"
-                                            rel="noopener noreferrer">
-                                            <button>
-                                                <VIcon size="20" icon="bx-link-external" color="blue" />
-                                            </button>
-                                        </a>
-                                        <a v-bind="props" :href="`${sub.link}`" target="_blank"
-                                            rel="noopener noreferrer" v-if="sub.link !== null">
-                                            <button>
-                                                <VIcon size="20" icon="bx-link-external" color="blue" />
-                                            </button>
-                                        </a>
-                                    </template>
-                                </v-tooltip>
-                                <v-tooltip location="top" text="Edit File"
-                                    v-if="userAccessPhase3 && parseInt(userAccessPhase3.canAppeal) && phase < 4">
-                                    <template v-slot:activator="{ props }">
-                                        <button v-bind="props" @click="openModal(3, sub)">
-                                            <VIcon size="20" icon="bx-edit" color="blue" />
-                                        </button>
-                                    </template>
-                                </v-tooltip>
-                                <v-tooltip location="top" text="Hapus File"
-                                    v-if="userAccessPhase3 && parseInt(userAccessPhase3.canAppeal) && phase < 4">
-                                    <template v-slot:activator="{ props }">
-                                        <button v-bind="props" @click="deleteSubmission(sub.id)">
-                                            <VIcon size="20" icon="bx-trash" color="red" />
-                                        </button>
-                                    </template>
-                                </v-tooltip>
-                            </div>
-                        </div>
-                    </template>
-                </v-list-item>
-            </v-list> -->
-
             <v-row no-gutters align="center" class="pa-2">
                 <v-col cols="auto" class="mr-2">
                     <v-icon color="success" size="small" icon="mdi-check-circle">
@@ -231,11 +183,13 @@
                     <div class="text-subtitle-2 font-weight-medium">{{ sub.name }}</div>
                     <div v-if="sub.type == 1" class="text-caption text-grey-darken-1">Dokumen Penunjang Analisa
                     </div>
+                    <div v-if="sub.type == 2" class="text-caption text-grey-darken-1">Dokumen Jaminan
+                    </div>
                 </v-col>
 
                 <v-col cols="auto">
                     <div class="d-flex">
-                        <v-tooltip location="top" text="Lihat File" v-if="(sub.path !== 'null' || sub.link !== null)">
+                        <v-tooltip location="top" text="Lihat File" v-if="(sub.path != null)">
                             <template v-slot:activator="{ props }">
                                 <v-btn v-bind="props" icon="bx-link-external" size="small" color="primary"
                                     variant="text" class="mr-2" :href="`${filePath}/${fileId}/${sub.path}`"
@@ -243,9 +197,17 @@
                                 </v-btn>
                             </template>
                         </v-tooltip>
+                        <v-tooltip location="top" text="Lihat File" v-else>
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-link-external" size="small" color="primary"
+                                    variant="text" class="mr-2" :href="`${sub.link}`"
+                                    target="_blank" rel="noopener noreferrer">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
 
                         <v-tooltip location="top" text="Edit File"
-                            v-if="userAccessPhase3 && parseInt(userAccessPhase3.canAppeal) && phase < 4">
+                            v-if="phase < 5">
                             <template v-slot:activator="{ props }">
                                 <v-btn v-bind="props" icon="bx-edit" size="small" color="info" variant="text"
                                     class="mr-2" @click="openModal(3, sub)">
@@ -254,7 +216,7 @@
                         </v-tooltip>
 
                         <v-tooltip location="top" text="Hapus File"
-                            v-if="userAccessPhase3 && parseInt(userAccessPhase3.canAppeal) && phase < 4">
+                            v-if="phase < 5">
                             <template v-slot:activator="{ props }">
                                 <v-btn v-bind="props" icon="bx-trash" size="small" color="error" variant="text"
                                     @click="deleteSubmission(sub.id)">
@@ -481,8 +443,6 @@
 
 <script>
 import mainURL from '@/axios';
-
-
 export default {
     name: 'AttachmentCard3',
     props: {

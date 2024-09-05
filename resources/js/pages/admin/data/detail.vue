@@ -50,7 +50,7 @@
                 :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
                 :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2"
                 :phase3Attachments="dataAttachPhase3" :phase4Attachments="dataAttachPhase4"
-                :phase5Attachments="dataAttachPhase5" />
+                :phase5Attachments="dataAttachPhase5" :submissions="fileSubmissions"/>
             </v-stepper-window-item>
             <v-stepper-window-item value="1" v-else>
               <div style="
@@ -73,7 +73,7 @@
                 :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
                 :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2"
                 :phase3Attachments="dataAttachPhase3" :phase4Attachments="dataAttachPhase4"
-                :phase5Attachments="dataAttachPhase5" />
+                :phase5Attachments="dataAttachPhase5" :submissions="fileSubmissions"/>
             </v-stepper-window-item>
             <v-stepper-window-item value="2" v-else>
               <div style="
@@ -96,7 +96,7 @@
                 :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
                 :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2"
                 :phase3Attachments="dataAttachPhase3" :phase4Attachments="dataAttachPhase4"
-                :phase5Attachments="dataAttachPhase5" />
+                :phase5Attachments="dataAttachPhase5" :submissions="fileSubmissions" />
             </v-stepper-window-item>
             <v-stepper-window-item value="3" v-else>
               <div style="
@@ -119,7 +119,7 @@
                 :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
                 :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2"
                 :phase3Attachments="dataAttachPhase3" :phase4Attachments="dataAttachPhase4"
-                :phase5Attachments="dataAttachPhase5" />
+                :phase5Attachments="dataAttachPhase5" :submissions="fileSubmissions"/>
             </v-stepper-window-item>
             <v-stepper-window-item value="4" v-else>
               <div style="
@@ -141,7 +141,7 @@
                 :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
                 :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2"
                 :phase3Attachments="dataAttachPhase3" :phase4Attachments="dataAttachPhase4"
-                :phase5Attachments="dataAttachPhase5" />
+                :phase5Attachments="dataAttachPhase5" :submissions="fileSubmissions"/>
             </v-stepper-window-item>
             <v-stepper-window-item value="6">
               <phase :dataFile="dataFile" :userData="userData" :insert-note="insertNote"
@@ -152,7 +152,7 @@
                 :note-phase2="notePhase2" :note-phase3="notePhase3" :note-phase4="notePhase4" :modal-note="modalNote"
                 :phase1Attachments="dataAttachPhase1" :phase2Attachments="dataAttachPhase2"
                 :phase3Attachments="dataAttachPhase3" :phase4Attachments="dataAttachPhase4"
-                :phase5Attachments="dataAttachPhase5" />
+                :phase5Attachments="dataAttachPhase5" :submissions="fileSubmissions"/>
             </v-stepper-window-item>
           </v-stepper-window>
         </v-stepper>
@@ -342,6 +342,12 @@
                 <span class="subtitle-1 text-center">NIK Pemilik Jaminan (kosongkan jika tidak ada): </span>
 
                 <VTextField class="my-3" v-model="generalInfo.nik_jaminan" hint="Kosongkan jika tidak ada" />
+              </VCol>
+              <VCol md="12" cols="12">
+                <span class="subtitle-1 text-center">Nama Pasangan (kosongkan jika tidak ada): </span>
+
+                <VTextField type="text" class="my-3" v-model="generalInfo.name_pasangan"
+                  hint="kosongkan jika tidak ada" />
               </VCol>
               <VCol md="12" cols="12">
                 <span class="subtitle-1 text-center">No. HP: </span>
@@ -667,6 +673,7 @@ export default {
         plafon: null,
         type: null,
         nik_pemohon: null,
+        name_pasangan: null,
         nik_pasangan: null,
         nik_jaminan: null,
         address: null,
@@ -684,6 +691,7 @@ export default {
         status_kredit: "",
         nik_pemohon: null,
         nik_pasangan: null,
+        name_pasangan: null,
         nik_jaminan: null,
         address: null,
         no_hp: null,
@@ -705,6 +713,7 @@ export default {
       typeCreditList: [
         { value: 1, title: 'Reguler' },
         { value: 2, title: 'Restruktur' },
+        { value: 3, title: 'Pensiunan' },
       ],
 
       //=>timers header
@@ -792,6 +801,7 @@ export default {
       dataAttachPhase3: [],
       dataAttachPhase4: [],
       dataAttachPhase5: [],
+      fileSubmissions: [],
     };
   },
   computed: {
@@ -993,6 +1003,8 @@ export default {
           this.dataFile = response.data.data.file;
           this.attachments = this.dataFile.attachments.filter(item => item.path && item.path !== 'null' || item.link && item.link !== 'null');
           this.userAccess = response.data.data.userAccess;
+          this.fileSubmissions = this.dataFile.filesubmissions;
+          
           //attach
           this.dataAttachPhase1 = response.data.data.file.attachments.filter(
             (item: { phase: number }) => item.phase == 1
@@ -1043,6 +1055,7 @@ export default {
           this.generalInfo.plafon = this.dataFile.plafon;
           this.generalInfo.type = this.dataFile.type;
           this.generalInfo.nik_pemohon = this.dataFile.nik_pemohon;
+          this.generalInfo.name_pasangan = this.dataFile.name_pasangan;
           this.generalInfo.nik_pasangan = this.dataFile.nik_pasangan;
           this.generalInfo.nik_jaminan = this.dataFile.nik_jaminan;
           this.generalInfo.address = this.dataFile.address;
@@ -1160,6 +1173,7 @@ export default {
         }
         if (this.generalInfo.nik_pasangan !== "" && this.generalInfo.nik_pasangan !== null && this.generalInfo.nik_pasangan !== "null" && this.generalInfo.nik_pasangan != '-') {
           formData.append("nik_pasangan", this.generalInfo.nik_pasangan);
+          formData.append("name_pasangan", this.generalInfo.name_pasangan ?? null);
         }
         if (this.generalInfo.nik_jaminan !== "" && this.generalInfo.nik_jaminan !== null && this.generalInfo.nik_jaminan !== "null" && this.generalInfo.nik_jaminan != '-') {
           formData.append("nik_jaminan", this.generalInfo.nik_jaminan);

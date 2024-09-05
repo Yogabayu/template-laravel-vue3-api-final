@@ -336,6 +336,71 @@ const router = createRouter({
         },
       ],
     },
+    {
+      path: "/u-pending",
+      component: () => import("../layouts/user/default.vue"),
+      children: [
+        {
+          path: "",
+          component: () => import("../pages/user/credit/type/pending.vue"),
+          beforeEnter: (to, from, next) => {
+            checkLogin(next);
+          },
+        },
+      ],
+    },
+    {
+      path: "/u-approve",
+      component: () => import("../layouts/user/default.vue"),
+      children: [
+        {
+          path: "",
+          component: () => import("../pages/user/credit/type/approve.vue"),
+          beforeEnter: (to, from, next) => {
+            checkLogin(next);
+          },
+        },
+      ],
+    },
+    {
+      path: "/u-reject",
+      component: () => import("../layouts/user/default.vue"),
+      children: [
+        {
+          path: "",
+          component: () => import("../pages/user/credit/type/reject.vue"),
+          beforeEnter: (to, from, next) => {
+            checkLogin(next);
+          },
+        },
+      ],
+    },
+    {
+      path: "/u-cancel",
+      component: () => import("../layouts/user/default.vue"),
+      children: [
+        {
+          path: "",
+          component: () => import("../pages/user/credit/type/cancel.vue"),
+          beforeEnter: (to, from, next) => {
+            checkLogin(next);
+          },
+        },
+      ],
+    },
+    // {
+    //   path: "/u-pertype",
+    //   component: () => import("../layouts/user/default.vue"),
+    //   children: [
+    //     {
+    //       path: "",
+    //       component: () => import("../pages/user/credit/pertype.vue"),
+    //       beforeEnter: (to, from, next) => {
+    //         checkLogin(next);
+    //       },
+    //     },
+    //   ],
+    // },
   ],
 });
 

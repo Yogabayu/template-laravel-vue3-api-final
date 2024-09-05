@@ -109,6 +109,7 @@ export default {
       isPasswordVisible: false,
     };
   },
+  inject: ['loading'],
   methods: {
     async connectTelegram(type) {
       try {

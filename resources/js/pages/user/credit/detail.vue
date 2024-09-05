@@ -1,10 +1,5 @@
 <template>
   <div>
-    <!-- <v-overlay :model-value="overlay" class="align-center justify-center">
-      <v-progress-circular color="blue-lighten-3" indeterminate :size="41" :width="5"></v-progress-circular>
-      Loading...
-    </v-overlay> -->
-
     <v-card v-if="dataLoaded">
       <v-btn prepend-icon="mdi-arrow-left" variant="text" class="mt-2" @click="back">
         Kembali
@@ -173,10 +168,11 @@
           <v-form @submit.prevent="insertAttachment">
             <v-row>
               <VCol md="12" cols="12">
-                <v-select label="Pilih Keterangan File" :items="nameFileList" autofocus v-model="attachFile.name"
-                  prepend-icon="mdi-help-rhombus"></v-select>
+                <!-- <v-select label="Pilih Keterangan File" :items="nameFileList" autofocus v-model="attachFile.name"
+                  prepend-icon="mdi-help-rhombus" autocomplete filter></v-select> -->
+                <v-combobox label="Pilih Tipe File" :items="nameFileList" v-model="attachFile.name"></v-combobox>
               </VCol>
-              <VCol md="12" cols="12">
+              <VCol md="12" cols="12" v-if="attachFile && attachFile.name && attachFile.name.value == 'Lain-lain'">
                 <span style="color: red">*</span><span class="subtitle-1 text-center">Note: </span>
                 <VTextField class="my-3" v-model="attachFile.note" :rules="[rules.required]" />
               </VCol>
@@ -218,7 +214,7 @@
               </VCol>
               <VCol cols="12" class="d-flex flex-wrap gap-4">
                 <VBtn type="submit"
-                  :disabled="!(attachFile.name && (attachFile.path || attachFile.link) && attachFile.note !== null)">
+                  :disabled="!isFormValid">
                   Simpan
                 </VBtn>
 
@@ -348,6 +344,13 @@
               </VCol>
 
               <VCol md="12" cols="12">
+                <span class="subtitle-1 text-center">Nama Pasangan (kosongkan jika tidak ada): </span>
+
+                <VTextField type="text" class="my-3" v-model="generalInfo.name_pasangan"
+                  hint="kosongkan jika tidak ada" />
+              </VCol>
+
+              <VCol md="12" cols="12">
                 <span class="subtitle-1 text-center">NIK Pemilik Jaminan (kosongkan jika tidak ada): </span>
 
                 <VTextField type="number" class="my-3" v-model="generalInfo.nik_jaminan"
@@ -355,6 +358,7 @@
               </VCol>
 
               <VCol md="12" cols="12">
+                <span style="color: red">*</span> 
                 <span class="subtitle-1 text-center">No. HP: </span>
 
                 <VTextField class="my-3" v-model="generalInfo.no_hp" :rules="[rules.required]" />
@@ -424,7 +428,7 @@
           <EasyDataTable :headers="timerHeaders" :items="dataFile.phase_times">
             <template #item-timeDiff="item">{{
               calculateTimeDiff(item.startTime, item.endTime)
-              }}</template>
+            }}</template>
           </EasyDataTable>
         </template>
       </v-card>
@@ -547,7 +551,7 @@ export default {
         { value: 'Buku Nikah', title: 'Buku Nikah' },
         { value: 'SHM', title: 'Jaminan SHM' },
         { value: 'BPKB', title: 'Jaminan BPKB' },
-        // { value: 'Mesin', title: 'Jaminan Mesin Produksi' },
+        { value: 'Form Permohonan SLIK', title: 'Form Permohonan SLIK' },
         { value: 'KTP Pasangan', title: 'KTP Pasangan' },
         { value: 'KTP Atas Nama Jaminan', title: 'KTP Atas Nama Jaminan' },
         { value: 'Resume SLIK', title: 'Resume SLIK' },
@@ -584,6 +588,7 @@ export default {
         plafon: null,
         type: null,
         nik_pemohon: null,
+        name_pasangan: null,
         nik_pasangan: null,
         nik_jaminan: null,
         address: null,
@@ -600,6 +605,7 @@ export default {
         order_source: "",
         status_kredit: "",
         nik_pemohon: null,
+        name_pasangan: null,
         nik_pasangan: null,
         nik_jaminan: null,
         address: null,
@@ -686,6 +692,7 @@ export default {
       typeCreditList: [
         { value: 1, title: 'Reguler' },
         { value: 2, title: 'Restruktur' },
+        { value: 3, title: 'Pensiunan' },
       ],
       orderList: [
         { value: 'AO SENDIRI', title: 'AO SENDIRI' },
@@ -725,6 +732,15 @@ export default {
     };
   },
   computed: {
+    isFormValid() {
+      const hasNameAndPathOrLink = this.attachFile.name && (this.attachFile.path || this.attachFile.link);
+
+      if (this.attachFile && this.attachFile.name && this.attachFile.name.value == 'Lain-lain') {
+        return hasNameAndPathOrLink && this.attachFile.note;
+      } else {
+        return hasNameAndPathOrLink;
+      }
+    },
     paginatedNotes() {
       const startIndex = (this.currentPage - 1) * this.itemsPerPage;
       const endIndex = startIndex + this.itemsPerPage;
@@ -978,10 +994,11 @@ export default {
           this.generalInfo.plafon = this.dataFile.plafon;
           this.generalInfo.type = this.dataFile.type;
           this.generalInfo.nik_pemohon = this.dataFile.nik_pemohon;
+          this.generalInfo.name_pasangan = this.dataFile.name_pasangan;
           this.generalInfo.nik_pasangan = this.dataFile.nik_pasangan;
           this.generalInfo.nik_jaminan = this.dataFile.nik_jaminan;
           this.generalInfo.address = this.dataFile.address;
-          this.generalInfo.no_hp = this.dataFile.no_hp;
+          this.generalInfo.no_hp = this.dataFile.no_hp;         
 
           for (let index = 0; index < 5; index++) {
             this.separateNotesByPhase(this.dataFile, index);
@@ -1042,6 +1059,7 @@ export default {
         this.resetAttch();
         this.insertAttch = false;
       } else if (type === 2) {
+        this.resetAttch();
         this.updateAttch = false;
       } else if (type === 3) {
         this.resetNote();
@@ -1076,6 +1094,7 @@ export default {
         }
         if (this.generalInfo.nik_pasangan != "" && this.generalInfo.nik_pasangan != null && this.generalInfo.nik_pasangan != 'null' && this.generalInfo.nik_pasangan != '-') {
           formData.append("nik_pasangan", this.generalInfo.nik_pasangan);
+          formData.append("name_pasangan", this.generalInfo.name_pasangan ?? null);
         }
         if (this.generalInfo.nik_jaminan != "" && this.generalInfo.nik_jaminan != null && this.generalInfo.nik_jaminan != 'null' && this.generalInfo.nik_jaminan != '-') {
           formData.append("nik_jaminan", this.generalInfo.nik_jaminan);
@@ -1292,14 +1311,16 @@ export default {
         const formData = new FormData();
         formData.append("file_id", this.attachFile.file_id);
         formData.append("phase", this.dataFile.phase);
-        formData.append("name", this.attachFile.name);
+        formData.append("name", this.attachFile.name.value);
         if (this.attachFile.path != null) {
           formData.append("path", this.attachFile.path);
         }
         if (this.attachFile.link != null) {
           formData.append("link", this.attachFile.link);
         }
-        formData.append("note", this.attachFile.note);
+        if (this.attachFile.note != null) {
+          formData.append("note", this.attachFile.note);
+        }
         formData.append("isApprove", this.attachFile.isApprove);
         if (this.dataFile.phase >= 2) {
           if (this.attachFile.isSecret === false) {
@@ -1312,6 +1333,7 @@ export default {
         }
 
         formData.append("_method", "POST");
+
         const config = {
           onUploadProgress: (progressEvent) => {
             try {

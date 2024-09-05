@@ -581,6 +581,9 @@ class FileController extends Controller
             $file->nik_pemohon = $request->nik_pemohon;
 
             $file->nik_pasangan = $request->nik_pasangan || $request->nik_pasangan != 'null' ? $request->nik_pasangan : null;
+            if ($request->name_pasangan) {
+                $file->name_pasangan = $request->name_pasangan;
+            }
             $file->nik_jaminan = $request->nik_jaminan || $request->nik_jaminan != 'null' ? $request->nik_jaminan : null;
 
             $file->address = $request->address;
@@ -608,15 +611,65 @@ class FileController extends Controller
             $file = File::findOrFail($request->id);
 
             if ($request->type == 'next') {
-                $cekAllApprove = Approval::where('file_id', $file->id)
-                    ->where('phase', $file->phase)
-                    ->get();
+                if ($file->phase == 2 || $file->phase == 3) {
+                    $cekAllApprove = Approval::where('file_id', $file->id)
+                        ->where('phase', $file->phase)
+                        ->get();
 
-                if ($cekAllApprove->where('approved', 0)->count() > 0) {
-                    return ResponseHelper::errorRes('Maaf, ada Jabatan / User yang masih belum memberikan approve');
+                    // Cek apakah ada minimal 1 approve
+                    if ($cekAllApprove->where('approved', 1)->count() == 0) {
+                        return ResponseHelper::errorRes('Maaf, minimal harus ada 1 approve untuk melanjutkan');
+                    }
+                } else {
+                    // $cekAllApprove = Approval::where('file_id', $file->id)
+                    //     ->where('phase', $file->phase)
+                    //     ->get();
+
+                    // // Cek apakah semua sudah approve
+                    // if ($cekAllApprove->where('approved', 0)->count() > 0) {
+                    //     return ResponseHelper::errorRes('Maaf, ada Jabatan / User yang masih belum memberikan approve');
+                    // }
+
+                    if ($file->phase == 4) {
+                        $cekAllApprove = Approval::with('user.position')
+                            ->where('file_id', $file->id)
+                            ->where('phase', $file->phase)
+                            ->get();
+
+                        $creditAnalystApprovals = $cekAllApprove->filter(function ($approval) {
+                            return strtolower($approval->user->position->name) == 'credit analyst';
+                        });
+
+                        $otherApprovals = $cekAllApprove->filter(function ($approval) {
+                            return strtolower($approval->user->position->name) != 'credit analyst';
+                        });
+
+                        // Check if at least one Credit Analyst has approved
+                        $creditAnalystApproved = $creditAnalystApprovals->where('approved', 1)->count() > 0;
+
+                        // Check if all other positions have approved
+                        $allOthersApproved = $otherApprovals->where('approved', 0)->count() == 0;
+
+                        if (!$creditAnalystApproved || !$allOthersApproved) {
+                            if (!$creditAnalystApproved) {
+                                return ResponseHelper::errorRes('Maaf, belum ada Credit Analyst yang memberikan approve');
+                            } else {
+                                return ResponseHelper::errorRes('Maaf, ada Jabatan / User yang masih belum memberikan approve');
+                            }
+                        }
+                    } else {
+                        $cekAllApprove = Approval::with('user')
+                            ->where('file_id', $file->id)
+                            ->where('phase', $file->phase)
+                            ->get();
+
+                        // Cek apakah semua sudah approve
+                        if ($cekAllApprove->where('approved', 0)->count() > 0) {
+                            return ResponseHelper::errorRes('Maaf, ada Jabatan / User yang masih belum memberikan approve');
+                        }
+                    }
                 }
-                // $cekAttchApproval = Attachment::where('file_id', $file->id)->where('phase', $file->phase)
-                //     ->get();
+
                 // Memeriksa apakah terdapat lampiran "File Banding" yang nilai atributnya bukan string "null"
                 $cekFileBanding = Attachment::where('file_id', $file->id)
                     ->where('phase', 2)
@@ -812,11 +865,13 @@ class FileController extends Controller
                         //add user to approval
                         foreach ($userOffices as $userOffice) {
                             $notificationConfigurations = DB::table('notification_configurations')
-                                ->where('office_id', $userOffice->office_id)
-                                ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
-                                ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
-                                ->where('phase', $filephase)
-                                ->where('canApprove', 1)
+                                ->join('positions', 'positions.id', '=', 'notification_configurations.position_id')
+                                ->where('notification_configurations.office_id', $userOffice->office_id)
+                                ->whereRaw('CAST(notification_configurations.minPlafon AS UNSIGNED) <= ?', [$file->plafon])
+                                ->whereRaw('CAST(notification_configurations.maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
+                                ->where('notification_configurations.phase', $filephase)
+                                ->where('notification_configurations.canApprove', 1)
+                                ->select('notification_configurations.*', 'positions.name as position_name')
                                 ->get();
 
                             $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
@@ -885,7 +940,6 @@ class FileController extends Controller
                     if ($file->phase < 4) {
                         // if ($detailSlikApproved > 0 && $resumeSlikApproved > 0) {
                         if ($resumeSlikApproved > 0) {
-
                             // Memeriksa apakah terdapat lampiran "Analisa Awal Kredit AO" yang nilai atributnya bukan string "null"
                             $cekAnalystAoApproved = Attachment::where('file_id', $file->id)
                                 ->where('phase', 2)
@@ -925,11 +979,13 @@ class FileController extends Controller
                         //add user to approval
                         foreach ($userOffices as $userOffice) {
                             $notificationConfigurations = DB::table('notification_configurations')
-                                ->where('office_id', $userOffice->office_id)
-                                ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
-                                ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
-                                ->where('phase', $filephase)
-                                ->where('canApprove', 1)
+                                ->join('positions', 'positions.id', '=', 'notification_configurations.position_id')
+                                ->where('notification_configurations.office_id', $userOffice->office_id)
+                                ->whereRaw('CAST(notification_configurations.minPlafon AS UNSIGNED) <= ?', [$file->plafon])
+                                ->whereRaw('CAST(notification_configurations.maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
+                                ->where('notification_configurations.phase', $filephase)
+                                ->where('notification_configurations.canApprove', 1)
+                                ->select('notification_configurations.*', 'positions.name as position_name')
                                 ->get();
 
                             $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
@@ -961,7 +1017,47 @@ class FileController extends Controller
                                 ['file_id' => $file->id, 'user_id' => $userUploaded->id, 'phase' => $pos->phase],
                                 ['approved' => 0]
                             );
-                        } else {
+                        }
+                        //menmbuat agar approval hanya dilakukan oleh salah satu ca
+                        // if ($file->phase == 3) {
+                        //     foreach ($notifPositions as $pos) {
+                        //         foreach ($notifUser as $user) {
+                        //             if ($pos->position_id == $user->position_id && $userUploaded->position_id != $pos->position_id) {
+                        //                 if (str_contains(strtolower($pos->position_name), 'credit analyst')) {
+                        //                     // Check if a Credit Analyst has approved in phase 3
+                        //                     $creditAnalystApproval = Approval::where('file_id', $file->id)
+                        //                         ->where('user_id', $user->id)
+                        //                         ->where('phase', 3)
+                        //                         ->where('approved', 1)
+                        //                         ->first();
+
+
+                        //                     if ($creditAnalystApproval) {
+                        //                         Approval::firstOrCreate(
+                        //                             ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
+                        //                             ['approved' => 0]
+                        //                         );
+                        //                         $matchFound = true;
+                        //                     }
+                        //                 } else {
+                        //                     Approval::firstOrCreate(
+                        //                         ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
+                        //                         ['approved' => 0]
+                        //                     );
+                        //                     $matchFound = true;
+                        //                 }
+                        //             }
+                        //         }
+                        //     }
+
+                        //     // Add approval for the user who uploaded the file
+                        //     Approval::firstOrCreate(
+                        //         ['file_id' => $file->id, 'user_id' => $userUploaded->id, 'phase' => $pos->phase],
+                        //         ['approved' => 0]
+                        //     );
+                        // }
+
+                        else {
                             foreach ($notifPositions as $pos) {
                                 foreach ($notifUser as $user) {
                                     if ($pos->position_id == $user->position_id) {
@@ -1820,7 +1916,13 @@ class FileController extends Controller
                     $attch = new Attachment();
                     $attch->phase = 1;
                     $attch->file_id = $file->id;
-                    $attch->name =  $request->{$noteFile};
+                    if ($i == 12) {
+                        $attch->name = 'Form Permohonan SLIK';
+                        $attch->isApprove = 0;
+                    } else {
+                        $attch->name = $request->{$noteFile};
+                        $attch->isApprove = 1;
+                    }
                     $attch->path = $fileimage;
                     $attch->isSecret = 0;
                     $attch->isApprove = 1;
@@ -1830,16 +1932,16 @@ class FileController extends Controller
                 }
             }
 
-            $attch = new Attachment();
-            $attch->phase = 1;
-            $attch->file_id = $file->id;
-            $attch->name =  'Form Permohonan SLIK';
-            $attch->path = 'null';
-            $attch->isSecret = 0;
-            $attch->isApprove = 0;
-            $attch->startTime = Carbon::now();
-            $attch->endTime = Carbon::now();
-            $attch->save();
+            // $attch = new Attachment();
+            // $attch->phase = 1;
+            // $attch->file_id = $file->id;
+            // $attch->name =  'Form Permohonan SLIK';
+            // $attch->path = 'null';
+            // $attch->isSecret = 0;
+            // $attch->isApprove = 0;
+            // $attch->startTime = Carbon::now();
+            // $attch->endTime = Carbon::now();
+            // $attch->save();
 
             // //add user to approval
             Approval::firstOrCreate(
@@ -1922,6 +2024,7 @@ class FileController extends Controller
                 'approvals.user',
                 'approvals.user.position',
                 'phaseTimes',
+                'filesubmissions',
             ])->findOrFail($id);
 
             $userAccess = [
@@ -2162,6 +2265,7 @@ class FileController extends Controller
                     'files.nik_pasangan as nikPasangan',
                     'files.nik_jaminan as nikJaminan',
                     'files.plafon as plafon',
+                    'files.type as type',
                     'files.address as address',
                     'files.no_hp as no_hp',
                     'files.order_source as sumberOrder',
@@ -2182,6 +2286,18 @@ class FileController extends Controller
                 $row = ['no' => count($reportData) + 1];
                 $fileName = $phases->first()->fileName;
                 $row['namaAO'] = $phases->first()->nameAO;
+                $row['type'] =  match ($phases->first()->type) {
+                    1 => 'Reguler',
+                    2 => 'Restruktur',
+                    3 => 'Pensiunan',
+                    default => 'Reguler',
+                };
+                $row['status'] =  match ($phases->first()->isApproved) {
+                    1 => 'Approved',
+                    2 => 'Pending',
+                    4 => 'Cancel by Debitur',
+                    default => 'Rejected',
+                };
                 $row['nameFile'] = $fileName;
                 $row['plafon'] = $phases->first()->plafon;
                 $row['alamat'] = $phases->first()->address;
@@ -2309,6 +2425,7 @@ class FileController extends Controller
                     'files.nik_pasangan as nikPasangan',
                     'files.nik_jaminan as nikJaminan',
                     'files.plafon as plafon',
+                    'files.type as type',
                     'files.address as address',
                     'files.no_hp as no_hp',
                     'files.order_source as sumberOrder',
@@ -2358,6 +2475,12 @@ class FileController extends Controller
                 $fileName = $phases->first()->fileName;
                 $row['namaAO'] = $phases->first()->nameAO;
                 $row['nameFile'] = $fileName;
+                $row['type'] =  match ($phases->first()->type) {
+                    1 => 'Reguler',
+                    2 => 'Restruktur',
+                    3 => 'Pensiunan',
+                    default => 'Reguler',
+                };
                 $row['status'] =  match ($phases->first()->isApproved) {
                     1 => 'Approved',
                     2 => 'Pending',

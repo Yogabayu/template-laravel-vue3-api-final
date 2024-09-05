@@ -9,11 +9,12 @@
       <v-tab value="1">Approved</v-tab>
       <v-tab value="2">Pending</v-tab>
       <v-tab value="3">Rejected</v-tab>
-      <v-tab value="7">Cancel by Debitur</v-tab>
+      <v-tab value="7">Cancel</v-tab>
       |
       <v-tab value="4">Pooling</v-tab>
       <v-tab value="5">SLIK</v-tab>
       <v-tab value="6">Komite</v-tab>
+      <v-tab value="8">OPS</v-tab>
     </v-tabs>
 
     <v-card-text>
@@ -47,9 +48,9 @@
                   <span v-if="parseInt(item.isApproved) == 4"> Cancel by Debitur</span>
                 </template>
                 <template #item-type="item">
-                  <span v-if="parseInt(item.type) == 1"> Reguler</span>
-                  <span v-if="parseInt(item.type) == 2"> Restruktur</span>
-                  <span v-else> -</span>
+                  <span v-if="parseInt(item.type) === 1"> Reguler</span>
+                  <span v-if="parseInt(item.type) === 2"> Restruktur</span>
+                  <span v-if="parseInt(item.type) === 3"> Pensiunan</span>
                 </template>
                 <template #item-aoro="item">
                   <span>{{ item.user.name }}</span>
@@ -102,13 +103,13 @@
                         </template>
                       </v-tooltip>
 
-                      <v-tooltip location="top" text="Hapus Kredit" v-if="userData && item.user_id == userData.id">
+                      <!-- <v-tooltip location="top" text="Hapus Kredit" v-if="userData && item.user_id == userData.id">
                         <template v-slot:activator="{ props }">
                           <button v-bind="props" @click="deleteFile(item)">
                             <VIcon size="20" icon="bx-trash" color="red" />
                           </button>
                         </template>
-                      </v-tooltip>
+                      </v-tooltip> -->
 
                       <v-tooltip location="top" text="Download Semua File Kredit" v-if="role && role.canDownload == 1">
                         <template v-slot:activator="{ props }">
@@ -121,6 +122,10 @@
                   </div>
                 </template>
               </EasyDataTable>
+
+              <!-- <p>
+                Total Plafon Bulan ini : Rp. {{ formatInput(totalPlafon) }},-
+              </p> -->
             </div>
 
           </v-window-item>
@@ -143,22 +148,6 @@ export default {
     InsertModal
   },
   computed: {
-    // formattedPlafon: {
-    //   get() {
-    //     return this.formatNumber(this.dataForm.plafon);
-    //   },
-    //   set(value) {
-    //     this.dataForm.plafon = value.replace(/\D/g, '');
-    //   }
-    // },
-    // formattedMaxPlafon: {
-    //   get() {
-    //     return this.formatNumber(this.dataForm.plafon);
-    //   },
-    //   set(value) {
-    //     this.dataForm.plafon = value.replace(/\D/g, '');
-    //   }
-    // },
     searchableItems() {
       return this.items.map(item => ({
         ...item,
@@ -210,6 +199,7 @@ export default {
         { value: 5 },
         { value: 6 },
         { value: 7 },
+        { value: 8 },
       ],
       searchField: [
         "name",
@@ -247,39 +237,11 @@ export default {
         { value: 'TOPUP', title: 'TOPUP' },
       ],
 
-      // dataForm: {
-      //   id: null,
-      //   name: "",
-      //   plafon: null,
-      //   type_bussiness: null,
-      //   desc_bussiness: null,
-      //   nik_pemohon: null,
-      //   nik_pasangan: null,
-      //   nik_jaminan: null,
-      //   address: null,
-      //   no_hp: null,
-      //   order_source: null,
-      //   status_kredit: null,
-      //   file1: null, //ktp pemohon
-      //   hasFile2: false,
-      //   file2: null, //ktp pasangan
-      //   hasFile3: false,
-      //   file3: null, //ktp penjamin
-      //   file4: null, //kk
-      //   file5: null, //buku nikah
-      //   hasFile7: false,
-      //   file7: null, //shm
-      //   hasFile8: false,
-      //   file8: null, //bpkb
-      //   hasFile9: false,
-      //   file9: null, //foto detail mesin
-      //   hasFile10: false,
-      //   file10: null, // foto kunjungan
-      //   hasFile11: false,
-      //   file11: null, // foto wa
-      // },
       isStatusPhase: false,
       statusPhase: 0,
+
+      //footer
+      totalPlafon: '0',
     };
   },
   watch: {
@@ -298,8 +260,9 @@ export default {
         this.filterDataStatus(6); // komite
       } else if (newVal == 7) {
         this.filterDataStatus(7); // cancel
-      }
-      else {
+      } else if (newVal == 8) {
+        this.filterDataStatus(8); // ops
+      } else {
         this.items = [...this.originalItems];
       }
     },
@@ -311,6 +274,7 @@ export default {
         2: (item: any) => item.isApproved == 2,
         3: (item: any) => item.isApproved == 3,
         4: (item: any) => parseInt(item.phase) == 1,
+        8: (item: any) => parseInt(item.phase) == 5,
         5: (item: any) => item.attachments.some(attachment =>
           attachment.name.includes('SLIK') &&
           parseInt(attachment.phase) == 2 &&
@@ -432,51 +396,7 @@ export default {
         this.dataForm[fileKey] = null;
       }
     },
-    // handleFileChange(
-    //   event: { target: { files: any[]; value: null } },
-    //   fileKey: string | number
-    // ) {
-    //   const selectedFile = event.target.files[0];
-    //   const allowedTypes = [
-    //     "image/jpeg", // for .jpeg and .jpg
-    //     "image/png",
-    //     "application/pdf",
-    //     "application/msword", // for .doc
-    //     "application/vnd.openxmlformats-officedocument.wordprocessingml.document" // for .docx
-    //   ];
-    //   if (selectedFile && allowedTypes.includes(selectedFile.type)) {
-    //     this.dataForm[fileKey] = selectedFile; // Menambahkan catatan file sesuai dengan file yang dipilih
-    //     if (fileKey == "file1") {
-    //       this.dataForm.noteFile1 = "KTP Pemohon";
-    //     } else if (fileKey == "file2") {
-    //       this.dataForm.noteFile2 = "KTP Pasangan";
-    //     } else if (fileKey == "file3") {
-    //       this.dataForm.noteFile3 = "KTP Atas Nama Jaminan";
-    //     } else if (fileKey == "file4") {
-    //       this.dataForm.noteFile4 = "Kartu Keluarga";
-    //     } else if (fileKey == "file5") {
-    //       this.dataForm.noteFile5 = "Buku Nikah";
-    //     } else if (fileKey == "file7") {
-    //       this.dataForm.noteFile7 = "Jaminan SHM";
-    //     } else if (fileKey == "file8") {
-    //       this.dataForm.noteFile8 = "Jaminan BPKB";
-    //     } else if (fileKey == "file9") {
-    //       this.dataForm.noteFile9 = "Foto Detail Mesin";
-    //     } else if (fileKey == "file10") {
-    //       this.dataForm.noteFile10 = "Foto Kunjungan";
-    //     } else if (fileKey == "file11") {
-    //       this.dataForm.noteFile11 = "Foto WhatsApp";
-    //     }
-    //   } else {
-    //     this.overlay = false;
-    //     this.$showToast(
-    //       "error",
-    //       "Error",
-    //       "Hanya file JPG, JPEG, PNG, dan PDF, WORD yang diizinkan."
-    //     );
-    //     event.target.value = null;
-    //   }
-    // },
+   
     async openModal(type: number, item = null) {
       if (type === 1) {
         this.insert = true;
@@ -516,16 +436,6 @@ export default {
         file10: null, // foto kunjungan
       };
     },
-    // formatInputIn(event: { target: { value: any } }) {
-    //   let value = event.target.value;
-    //   value = value.replace(/\D/g, ""); // Remove non-digit characters
-    //   value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ","); // Add comma as thousand separator
-    //   event.target.value = value;
-    // },
-    // formatNumber(value) {
-    //   if (!value) return '';
-    //   return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    // },
     getUserData() {
       const savedUserData = localStorage.getItem("userData");
       if (savedUserData) {
@@ -548,98 +458,7 @@ export default {
         this.$showToast("error", "Sorry", error.response.data.message);
       }
     },
-    // formatInputPlafon(event: { target: { value: any } }) {
-    //   let value = event.target.value;
-    //   value = value.replace(/\D/g, ""); // Remove non-digit characters
-    //   value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ","); // Add comma as thousand separator
-    //   event.target.value = value;
-    // },
-    // async insertData() {
-    //   try {
-    //     this.loading.show();
-    //     const formData = new FormData();
-    //     formData.append("name", this.dataForm.name);
-    //     formData.append("nik_pemohon", this.dataForm.nik_pemohon);
-    //     formData.append("address", this.dataForm.address);
-    //     formData.append("no_hp", this.dataForm.no_hp);
-    //     formData.append("order_source", this.dataForm.order_source);
-    //     formData.append("status_kredit", this.dataForm.status_kredit);
-    //     formData.append("plafon", this.dataForm.plafon.replace(/\D/g, ""));
-    //     formData.append("type_bussiness", this.dataForm.type_bussiness);
-    //     formData.append("desc_bussiness", this.dataForm.desc_bussiness);
-
-    //     if (this.dataForm.file2 != null) {
-    //       formData.append('nik_pasangan', this.dataForm.nik_pasangan);
-    //     }
-    //     if (this.dataForm.file3 != null) {
-    //       formData.append('nik_jaminan', this.dataForm.nik_jaminan);
-    //     }
-
-    //     // Append files to formData
-    //     for (let i = 1; i <= 11; i++) {
-    //       if (i === 6) continue;
-
-    //       let fileKey = "file" + i;
-    //       let noteFileKey = "noteFile" + i;
-    //       let hasFileKey = "hasFile" + i;
-
-    //       // Check if the file has a corresponding hasFile property
-    //       if (
-    //         (this.dataForm.hasOwnProperty(hasFileKey) &&
-    //           this.dataForm[hasFileKey]) ||
-    //         this.dataForm[fileKey]
-    //       ) {
-    //         // If it does, check if the file exists
-    //         if (this.dataForm[fileKey]) {
-    //           formData.append(fileKey, this.dataForm[fileKey]);
-    //           formData.append(noteFileKey, this.dataForm[noteFileKey]);
-    //         }
-    //       } else {
-    //         // If it doesn't, just check if the file exists
-    //         if (this.dataForm[fileKey]) {
-    //           formData.append(fileKey, this.dataForm[fileKey]);
-    //         }
-    //       }
-    //     }
-
-    //     formData.append("_method", "POST");
-
-    //     const config = {
-    //       onUploadProgress: (progressEvent) => {
-    //         try {
-    //           this.uploadProgress = Math.round(
-    //             (progressEvent.loaded * 100) / progressEvent.total
-    //           );
-    //         } catch (error) {
-    //           console.error("Error calculating progress:", error);
-    //         }
-    //       },
-    //       headers: {
-    //         "Content-Type": "multipart/form-data",
-    //       },
-    //     };
-
-    //     const response = await mainURL.post("/user/credit", formData, config);
-    //     if (response.status === 200) {
-    //       this.loading.hide();
-    //       this.closeModal(1);
-    //       this.getAllFiles();
-    //       this.uploadProgress = null;
-    //       this.$showToast("success", "Success", response.data.message);
-    //     } else {
-    //       this.loading.hide();
-    //       this.uploadProgress = null;
-    //       this.getAllFiles();
-    //       this.$showToast("error", "Sorry", response.data.message);
-    //     }
-    //   } catch (error) {
-    //     this.loading.hide();
-    //     this.uploadProgress = null;
-    //     this.closeModal(1);
-    //     this.getAllFiles();
-    //     this.$showToast("error", "Sorry", error.response.data.message);
-    //   }
-    // },
+   
   },
   async mounted() {
     try {

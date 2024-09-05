@@ -22,11 +22,17 @@ const props = defineProps({
     type: Number,
     required: false,
   },
+  type :{
+    type: Number,
+    required: false,
+  }
 })
 
 const isPositive = controlledComputed(() => props.change, () => Math.sign(props.change) === 1)
 const router = useRouter();
 const handleButtonClick = (link) => {
+  
+  localStorage.setItem('creditType', props.type);
   if (router) {
     router.push(link);
   }

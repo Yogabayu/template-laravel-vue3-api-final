@@ -122,7 +122,6 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1', 'throttle:60,1'], function
         Route::put('file-submission/{id}', [AdminFileController::class, 'updateFileSubmission']);
         Route::delete('file-submission/{id}', [AdminFileController::class, 'destroyFileSubmission']);
 
-
         //////// Route User \\\\\\\\\
         Route::group(['prefix' => 'user'], function () {
             Route::get('generatereport/{id}', [FileController::class, 'generateReport']);
@@ -148,6 +147,9 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1', 'throttle:60,1'], function
             Route::post('change-status', [FileController::class, 'changeStatus']);
             Route::get('dashboardCredit', [UserHelperController::class, 'getYears']);
             Route::post('getCredit', [FileController::class, 'getFile']);
+            Route::get('cekNIK/{nik}', [FileController::class, 'cekNIK']);
+            //bulan ini
+            Route::get('getCredit/{id}', [FileController::class, 'getFilesByType']);
 
             ////filter
             Route::get('userAccess', [FileController::class, 'userAccess']);

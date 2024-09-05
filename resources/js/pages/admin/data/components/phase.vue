@@ -1,8 +1,7 @@
-
 <template>
   <v-card color="backgroundCard">
     <v-card-title class="text-2xl font-weight-bold d-flex justify-center"
-      v-if="!['Account Officer', 'AO', 'ao', 'account officer', 'Account Officer Executive', 'account officer executive','Account Officer / Executive AO','AO / RO'].includes(userData.position.name)">
+      v-if="!['Account Officer', 'AO', 'ao', 'account officer', 'Account Officer Executive', 'account officer executive', 'Account Officer / Executive AO', 'AO / RO'].includes(userData.position.name)">
       Detail
       <v-chip color="success" v-if="parseInt(dataFile.isApproved) == 1" @click="openModal(9)">Approved</v-chip>
       <v-chip color="warning" v-if="parseInt(dataFile.isApproved) == 2" @click="openModal(9)">Pending</v-chip>
@@ -98,7 +97,8 @@
                   Rp {{ formatInput(dataFile.plafon) }}
                 </strong></v-list-item>
             </v-list-item>
-            <v-list-item v-if="dataFile.nik_pasangan != null && dataFile.nik_pasangan != '' && dataFile.nik_pasangan !='null'">
+            <v-list-item
+              v-if="dataFile.nik_pasangan != null && dataFile.nik_pasangan != '' && dataFile.nik_pasangan != 'null'">
               <template v-slot:prepend>
                 <v-icon icon="mdi-code-greater-than" size="x-small"></v-icon>
               </template>
@@ -109,7 +109,8 @@
                 </strong>
               </v-list-item>
             </v-list-item>
-            <v-list-item v-if="dataFile.nik_jaminan != null && dataFile.nik_jaminan != '' && dataFile.nik_jaminan !='null'">
+            <v-list-item
+              v-if="dataFile.nik_jaminan != null && dataFile.nik_jaminan != '' && dataFile.nik_jaminan != 'null'">
               <template v-slot:prepend>
                 <v-icon icon="mdi-code-greater-than" size="x-small"></v-icon>
               </template>
@@ -139,7 +140,7 @@
                 <strong>
                   {{ dataFile.desc_bussiness }}
                 </strong></v-list-item>
-            </v-list-item>            
+            </v-list-item>
             <v-list-item>
               <template v-slot:prepend>
                 <v-icon icon="mdi-office-building" size="x-small"></v-icon>
@@ -166,9 +167,16 @@
               </template>
               <v-list-item-title> Tipe Kredit</v-list-item-title>
               <v-list-item>
-                <strong>
-                  {{ dataFile.type==1 ? 'Reguler' : 'Restruktur' }}
-                </strong></v-list-item>
+                <strong v-if="dataFile.type == 1">
+                  Regular
+                </strong>
+                <strong v-if="dataFile.type == 2">
+                  Restruktur
+                </strong>
+                <strong v-if="dataFile.type == 3">
+                  Pensiunan
+                </strong>
+              </v-list-item>
             </v-list-item>
           </v-list>
         </v-card-text>
@@ -193,76 +201,58 @@
         <v-card-text>
           <div class="mb-5">
             <AttachmentCard1 :data="phase1Attachments" :fileId="parseInt(dataFile.id)" :filePath="filePath"
-              :userAccess="userAccess" :deleteAttachment="deleteAttachment" :openModal="openModal" 
+              :userAccess="userAccess" :deleteAttachment="deleteAttachment" :openModal="openModal"
               :phase="parseInt(dataFile.phase)"></AttachmentCard1>
           </div>
           <div class="mb-5">
             <AttachmentCard2 v-if="parseInt(dataFile.phase) > 1" :data="phase2Attachments"
               :fileId="parseInt(dataFile.id)" :filePath="filePath" :userAccess="userAccess"
-              :deleteAttachment="deleteAttachment" :getDetailFile="getDetailFile" 
-              :phase="parseInt(dataFile.phase)"></AttachmentCard2>
+              :deleteAttachment="deleteAttachment" :getDetailFile="getDetailFile" :phase="parseInt(dataFile.phase)">
+            </AttachmentCard2>
           </div>
           <div class="mb-5">
             <attachmentCard3 v-if="parseInt(dataFile.phase) > 2" :data="phase3Attachments"
               :fileId="parseInt(dataFile.id)" :filePath="filePath" :userAccess="userAccess"
-              :deleteAttachment="deleteAttachment" :getDetailFile="getDetailFile" 
-              :phase="parseInt(dataFile.phase)"></attachmentCard3>
+              :deleteAttachment="deleteAttachment" :getDetailFile="getDetailFile" :phase="parseInt(dataFile.phase)"
+              :submission="submissions"></attachmentCard3>
           </div>
           <div class="mb-5">
             <attachmentCard4 v-if="parseInt(dataFile.phase) > 3" :data="phase4Attachments"
               :fileId="parseInt(dataFile.id)" :filePath="filePath" :userAccess="userAccess"
-              :deleteAttachment="deleteAttachment" :getDetailFile="getDetailFile" 
-              :phase="parseInt(dataFile.phase)"></attachmentCard4>
+              :deleteAttachment="deleteAttachment" :getDetailFile="getDetailFile" :phase="parseInt(dataFile.phase)">
+            </attachmentCard4>
           </div>
           <div class="mb-5">
             <attachmentOperation v-if="parseInt(dataFile.phase) > 4" :data="phase5Attachments"
               :fileId="parseInt(dataFile.id)" :filePath="filePath" :userAccess="userAccess"
-              :deleteAttachment="deleteAttachment" :getDetailFile="getDetailFile" 
-              :phase="parseInt(dataFile.phase)"></attachmentOperation>
+              :deleteAttachment="deleteAttachment" :getDetailFile="getDetailFile" :phase="parseInt(dataFile.phase)">
+            </attachmentOperation>
           </div>
         </v-card-text>
       </v-card>
     </v-card-text>
 
-    <!-- <v-card-text v-if="dataFile.phase > 2">
-      <v-card class="mb-5">
-        <v-card-title>
-          <v-row class="d-flex justify-space-between">
-            <v-col cols="12" sm="6" md="8">
-              <span>Survey Lapangan ℹ️</span>
-            </v-col>
-            <v-col cols="12" sm="6" md="4" class="text-sm-right text-md-right"
-              v-if="userAccess && userAccess.canInsertData">
-              <span>
-                <v-btn color="primary" size="small" class="my-3 mx-3" @click="openModal(5)">
-                  Edit Data
-                </v-btn>
-              </span>
-            </v-col>
-          </v-row>
-        </v-card-title>
-        <v-card-text>
-          <v-list density="compact">
-            <v-list-item>
-              <template v-slot:prepend>
-                <v-icon icon="mdi-note-text-outline"></v-icon>
-              </template>
-              <v-list-item-title> Hasil Survei</v-list-item-title>
-              <v-list-item-title>
-                <strong>
-                  {{ dataFile.surveyResult }}
-                </strong></v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-card-text>
-      </v-card>
-    </v-card-text> -->
-
     <!-- Approval -->
     <v-card-text v-if="dataFile && parseInt(dataFile.phase) < 6">
       <v-card>
-        <v-card-title> Status Approval Phase ✅ <v-chip @click="openModal(11)"> <v-icon>mdi-plus</v-icon> Approval</v-chip><v-chip @click="openModal(12)" class="ml-2"><v-icon>mdi-minus-box</v-icon> Approval</v-chip>
-        </v-card-title>
+        <v-card-text class="d-flex justify-center text-center pa-3 font-weight-bold"
+          v-if="dataFile && (parseInt(dataFile.phase) === 2 || parseInt(dataFile.phase) === 3)">
+          Status Approval Phase ✅ (khusus SLIK dan Survei hanya perlu 1 approval)
+        </v-card-text>
+        <v-card-text class="d-flex justify-center text-center pa-3 font-weight-bold" v-else>
+          Status Approval Phase ✅
+        </v-card-text>
+        <v-card-text class="d-flex justify-center">
+          <v-chip @click="openModal(11)">
+            <v-icon left>mdi-plus</v-icon>
+            Tambah Data
+          </v-chip>
+          <v-chip @click="openModal(12)">
+            <v-icon left>mdi-delete</v-icon>
+            Hapus Data
+          </v-chip>
+        </v-card-text>
+
         <v-card-text>
           <div v-if="dataFile && dataFile.approvals && dataFile.approvals.length">
             <template v-for="(app, index) in dataFile.approvals" :key="index">
@@ -396,7 +386,7 @@ import attachmentCard3, { default as AttachmentCard3 } from './attachmentCard3.v
 import attachmentCard4, { default as AttachmentCard4 } from './attachmentCard4.vue';
 import attachmentOperation from './attachmentOperation.vue';
 export default {
-  components: { AttachmentCard1, AttachmentCard2, AttachmentCard3, attachmentCard3, AttachmentCard4, attachmentCard4,attachmentOperation },
+  components: { AttachmentCard1, AttachmentCard2, AttachmentCard3, attachmentCard3, AttachmentCard4, attachmentCard4, attachmentOperation },
   name: "Phase",
   props: {
     phase1Attachments: {
@@ -497,6 +487,10 @@ export default {
     },
     modalNote: {
       type: Function,
+      required: true,
+    },
+    submissions: {
+      type: Object,
       required: true,
     },
   },

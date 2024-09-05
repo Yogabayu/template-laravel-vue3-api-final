@@ -49,6 +49,7 @@
                 <v-tab value="4">Pooling</v-tab>
                 <v-tab value="5">SLIK</v-tab>
                 <v-tab value="6">Komite</v-tab>
+                <v-tab value="8">Ops</v-tab>
             </v-tabs>
 
             <v-card-text>
@@ -151,8 +152,7 @@
                                                     </template>
                                                 </v-tooltip> -->
 
-                                                <v-tooltip location="top" text="Download Semua File Kredit"
-                                                    v-if="role && role.canDownload == 1">
+                                                <v-tooltip location="top" text="Download Semua File Kredit">
                                                     <template v-slot:activator="{ props }">
                                                         <button v-bind="props" @click="downloadFile(item.id)">
                                                             <VIcon size="20" icon="bx-download" color="red" />
@@ -472,6 +472,7 @@ export default {
                 { value: 5 },
                 { value: 6 },
                 { value: 7 },
+                { value: 8 },
             ],
             orderList: [
                 { value: 'AO SENDIRI', title: 'AO SENDIRI' },
@@ -559,6 +560,8 @@ export default {
                 this.filterDataStatus(6); // komite
             } else if (newVal == 7) {
                 this.filterDataStatus(7); // cancel
+            } else if (newVal == 8) {
+                this.filterDataStatus(8); // ops
             }
             else {
                 this.items = [...this.originalItems];
@@ -588,6 +591,15 @@ export default {
 
                 this.loading.show();
                 const [year, month] = this.selectedMonth.split('-');
+
+                const filterState = {
+                    year,
+                    month,
+                    office_id: this.selectedOffice
+                };
+
+                localStorage.setItem('filterState', JSON.stringify(filterState));
+
                 const formData = new FormData();
                 formData.append("year", year);
                 formData.append("month", month);
@@ -607,6 +619,14 @@ export default {
             } catch (error) {
                 this.loading.hide();
                 this.$showToast("error", "Error", "Terjadi kesalahan saat filter data");
+            }
+        },
+        async restoreAndApplyFilter() {
+            const filterState = JSON.parse(localStorage.getItem('filterState'));
+            if (filterState) {
+                this.selectedMonth = `${filterState.year}-${filterState.month}`;
+                this.selectedOffice = filterState.office_id;
+                await this.applyFilter();
             }
         },
         openMonthPicker() {
@@ -858,6 +878,7 @@ export default {
                 2: (item: any) => item.isApproved == 2,
                 3: (item: any) => item.isApproved == 3,
                 4: (item: any) => parseInt(item.phase) == 1,
+                8: (item: any) => parseInt(item.phase) == 5,
                 5: (item: any) => item.attachments.some(attachment =>
                     attachment.name.includes('SLIK') &&
                     parseInt(attachment.phase) == 2 &&
@@ -1000,6 +1021,7 @@ export default {
         }
     },
     mounted() {
+        this.restoreAndApplyFilter();
         this.getUserData();
         this.getUserAccess();
     },

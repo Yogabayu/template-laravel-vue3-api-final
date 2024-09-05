@@ -68,7 +68,7 @@
                                     </template>
                                 </v-tooltip>
                                 <v-tooltip location="top" text="Upload File / Link" v-if="
-                                    (attachment.path == 'null' && attachment.link == null) 
+                                    (attachment.path == 'null' && attachment.link == null)
                                 ">
                                     <template v-slot:activator="{ props }">
                                         <button v-bind="props" @click="openModal(1, attachment)">
@@ -95,6 +95,81 @@
                     </template>
                 </v-list-item>
             </v-list>
+        </div>
+    </v-card>
+
+    <v-card class="mt-2">
+        <v-card-text class="py-1 header-color">
+            <v-row align="center" no-gutters>
+                <v-col cols="auto" class="mr-auto">
+                    <span class="text-subtitle-1 font-weight-bold ml-2">Dokumen Penunjang Kredit / Jaminan 📄</span>
+                </v-col>
+                <v-col cols="auto">
+                    <span>
+                        <v-btn color="primary" size="x-small" class="my-3 mx-3" @click="openModal(2)">
+                            Tambah Data Lain
+                        </v-btn>
+                    </span>
+                </v-col>
+            </v-row>
+        </v-card-text>
+
+
+        <div v-if="submission.length == 0">
+            <v-list><v-list-item>Belum ada file</v-list-item></v-list>
+        </div>
+        <div v-for="(sub, index) in sortedSubmission" :key="index" v-if="sortedSubmission.length > 0">
+            <v-row no-gutters align="center" class="pa-2">
+                <v-col cols="auto" class="mr-2">
+                    <v-icon color="success" size="small" icon="mdi-check-circle">
+                    </v-icon>
+                </v-col>
+
+                <v-col>
+                    <div class="text-subtitle-2 font-weight-medium">{{ sub.name }}</div>
+                    <div v-if="sub.type == 1" class="text-caption text-grey-darken-1">Dokumen Penunjang Analisa
+                    </div>
+                    <div v-if="sub.type == 2" class="text-caption text-grey-darken-1">Dokumen Jaminan
+                    </div>
+                </v-col>
+
+                <v-col cols="auto">
+                    <div class="d-flex">
+                        <v-tooltip location="top" text="Lihat File" v-if="(sub.path != null)">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-link-external" size="small" color="primary"
+                                    variant="text" class="mr-2" :href="`${filePath}/${fileId}/${sub.path}`"
+                                    target="_blank" rel="noopener noreferrer">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+                        <v-tooltip location="top" text="Lihat File" v-else>
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-link-external" size="small" color="primary"
+                                    variant="text" class="mr-2" :href="`${sub.link}`" target="_blank"
+                                    rel="noopener noreferrer">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+
+                        <v-tooltip location="top" text="Edit File" v-if="phase < 5">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-edit" size="small" color="info" variant="text"
+                                    class="mr-2" @click="openModal(3, sub)">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+
+                        <v-tooltip location="top" text="Hapus File" v-if="phase < 5">
+                            <template v-slot:activator="{ props }">
+                                <v-btn v-bind="props" icon="bx-trash" size="small" color="error" variant="text"
+                                    @click="deleteSubmission(sub.id)">
+                                </v-btn>
+                            </template>
+                        </v-tooltip>
+                    </div>
+                </v-col>
+            </v-row>
         </div>
     </v-card>
 
@@ -127,7 +202,7 @@
                             <v-file-input class="my-3"
                                 accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                                 placeholder="Pick an image" :rules="[rules.required]"
-                                @change="handleFileChange($event); formAnalisaKredit.link = null"></v-file-input>
+                                @change="handleFileChange($event, this.formAnalisaKredit, 'path'); formAnalisaKredit.link = null"></v-file-input>
                         </VCol>
                         <VCol md="12" cols="12" v-if="selectedOption === 'link'">
                             <span style="color: red">*</span>
@@ -136,15 +211,6 @@
                             <VTextField class="my-3" v-model="formAnalisaKredit.link" type="link"
                                 hint="Pastikan menggunakan https://" :rules="[rules.required]" />
                         </VCol>
-                        <!-- <VCol md="12" cols="12">
-                            <span style="color: red">*</span>
-                            <span class="subtitle-1 text-center"> Upload File: </span>
-
-                            <v-file-input class="my-3"
-                                accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                                placeholder="Pick an image" :rules="[rules.required]"
-                                @change="(event) => handleFileChange(event)"></v-file-input>
-                        </VCol> -->
                         <VCol md="12" cols="12">
                             <v-select label="Apakah Termasuk File Rahasia ? (Detail SLIK, dll)" :items="[
                                 { value: 1, title: 'Ya' },
@@ -175,15 +241,149 @@
             </template>
         </v-card>
     </v-dialog>
+
+    <v-dialog v-model="isSubmission" width="auto" persistent transition="dialog-top-transition">
+        <v-card>
+            <template v-slot:title> Tambah Data </template>
+
+            <template v-slot:text>
+                <v-form @submit.prevent="insertSubmission">
+                    <v-row>
+                        <VCol md="12" cols="12">
+                            <span style="color: red">*</span><span class="subtitle-1 text-center">Keterangan File:
+                            </span>
+
+                            <VTextField class="my-3" v-model="formSubmission.name" autofocus
+                                :rules="[rules.required]" />
+                        </VCol>
+                        <VCol md="12" cols="12">
+                            <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih Salah Satu :
+                            </span>
+                            <v-radio-group v-model="selectedOption" :mandatory="true" row>
+                                <v-radio label="File" value="file"></v-radio>
+                                <v-radio label="Link" value="link"></v-radio>
+                            </v-radio-group>
+                        </VCol>
+                        <VCol md="12" cols="12" v-if="selectedOption === 'file'">
+                            <span style="color: red">*</span>
+                            <span class="subtitle-1 text-center"> Upload File: </span>
+
+                            <v-file-input class="my-3"
+                                accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                placeholder="Pick an image" :rules="[rules.required]"
+                                @change="
+                                    handleFileChange($event, this.formSubmission, 'path'); formSubmission.link = null"></v-file-input>
+                        </VCol>
+                        <VCol md="12" cols="12" v-if="selectedOption === 'link'">
+                            <span style="color: red">*</span>
+                            <span class="subtitle-1 text-center"> Upload Link: </span>
+
+                            <VTextField class="my-3" v-model="formSubmission.link" type="link"
+                                hint="Pastikan menggunakan https://" :rules="[rules.required]" />
+                        </VCol>
+
+                        <VCol md="12" cols="12">
+                            <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih Jenis Dokumen :
+                            </span>
+                            <v-radio-group v-model="formSubmission.type" :mandatory="true" row>
+                                <v-radio label="Dokumen Penunjang Analisa" value=1></v-radio>
+                                <v-radio label="Dokumen Jaminan" value=2></v-radio>
+                            </v-radio-group>
+                        </VCol>
+                        <VCol cols="12" class="d-flex flex-wrap gap-4">
+                            <VBtn type="submit">
+                                Simpan
+                            </VBtn>
+                            <button type="button" class="btn btn-blue" @click="closeModal(2)">
+                                Batal
+                            </button>
+                        </VCol>
+                    </v-row>
+                </v-form>
+            </template>
+
+            <template v-slot:actions>
+                <v-progress-linear v-model="uploadProgress" color="amber" height="25"></v-progress-linear>
+            </template>
+        </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="isUpdateSubmission" width="auto" persistent transition="dialog-top-transition">
+        <v-card>
+            <template v-slot:title> Update Data </template>
+
+            <template v-slot:text>
+                <v-form @submit.prevent="updateSubmission">
+                    <v-row>
+                        <VCol md="12" cols="12">
+                            <span style="color: red">*</span><span class="subtitle-1 text-center">Keterangan File:
+                            </span>
+
+                            <VTextField class="my-3" v-model="formSubmission.name" autofocus
+                                :rules="[rules.required]" />
+                        </VCol>
+                        <VCol md="12" cols="12">
+                            <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih Salah Satu :
+                            </span>
+                            <v-radio-group v-model="selectedOption" :mandatory="true" row>
+                                <v-radio label="File" value="file"></v-radio>
+                                <v-radio label="Link" value="link"></v-radio>
+                            </v-radio-group>
+                        </VCol>
+                        <VCol md="12" cols="12" v-if="selectedOption === 'file'">
+                            <span style="color: red">*</span>
+                            <span class="subtitle-1 text-center"> Upload File: </span>
+
+                            <v-file-input class="my-3"
+                                accept="image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                placeholder="Pick an image" :rules="[rules.required]"
+                                @change="
+                                    handleFileChange($event, this.formSubmission, 'path'); formSubmission.link = null"></v-file-input>
+                        </VCol>
+                        <VCol md="12" cols="12" v-if="selectedOption === 'link'">
+                            <span style="color: red">*</span>
+                            <span class="subtitle-1 text-center"> Upload Link: </span>
+
+                            <VTextField class="my-3" v-model="formSubmission.link" type="link"
+                                hint="Pastikan menggunakan https://" :rules="[rules.required]" />
+                        </VCol>
+
+                        <VCol md="12" cols="12">
+                            <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih Jenis Dokumen :
+                            </span>
+                            <v-radio-group v-model="formSubmission.type" :mandatory="true" row>
+                                <v-radio label="Dokumen Penunjang Kredit" :value="1"></v-radio>
+                                <v-radio label="Dokumen Jaminan" :value="2"></v-radio>
+                            </v-radio-group>
+                        </VCol>
+                        <VCol cols="12" class="d-flex flex-wrap gap-4">
+                            <VBtn type="submit">
+                                Simpan
+                            </VBtn>
+                            <button type="button" class="btn btn-blue" @click="closeModal(3)">
+                                Batal
+                            </button>
+                        </VCol>
+                    </v-row>
+                </v-form>
+            </template>
+
+            <template v-slot:actions>
+                <v-progress-linear v-model="uploadProgress" color="amber" height="25"></v-progress-linear>
+            </template>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script>
 import mainURL from '@/axios';
-
-
 export default {
     name: 'AttachmentCard3',
     props: {
+        submission: {
+            type: Object,
+            required: true,
+        },
         data: {
             type: Object,
             required: true,
@@ -218,6 +418,16 @@ export default {
             required: true,
         },
     },
+    computed: {
+        sortedSubmission() {
+            return this.submission.slice().sort((a, b) => {
+                // Sort to have type 2 (Dokumen Jaminan) before type 1 (Dokumen Penunjang Kredit)
+                if (a.type === 2 && b.type !== 2) return -1;
+                if (a.type !== 2 && b.type === 2) return 1;
+                return 0; // Maintain the order for other types
+            });
+        }
+    },
     watch: {
         selectedOption(newVal) {
             if (newVal === 'file') {
@@ -246,6 +456,19 @@ export default {
                 isApprove: 0,
                 isSecret: 0,
             },
+
+            isSubmission: false,
+            isUpdateSubmission: false,
+            formSubmission: {
+                id: null,
+                file_id: null,
+                phase: null,
+                name: null,
+                path: null,
+                link: null,
+                note: null,
+                type: null,
+            },
         }
     },
     methods: {
@@ -259,6 +482,17 @@ export default {
                 this.formAnalisaKredit.isApprove = parseInt(item.isApprove);
 
                 this.isAnalisaKredit = true;
+            } else if (type == 2) {
+                this.formSubmission.file_id = this.fileId;
+                this.formSubmission.phase = 3;
+                this.isSubmission = true;
+            } else if (type == 3) {
+                this.formSubmission.id = item.id;
+                this.formSubmission.file_id = this.fileId;
+                this.formSubmission.phase = 3;
+                this.formSubmission.name = item.name;
+                this.formSubmission.type = item.type;
+                this.isUpdateSubmission = true;
             }
         },
         closeModal(type) {
@@ -267,10 +501,34 @@ export default {
                 this.formAnalisaKredit.isSecret = 0;
                 this.formAnalisaKredit.isApprove = 0;
                 this.isAnalisaKredit = false;
+            } else if (type == 2) {
+                this.formSubmission.id = null;
+                this.formSubmission.file_id = null;
+                this.formSubmission.phase = null;
+                this.formSubmission.name = null;
+                this.formSubmission.path = null;
+                this.formSubmission.link = null;
+                this.formSubmission.note = null;
+                this.formSubmission.type = null;
+                this.selectedOption = "";
+
+                this.isSubmission = false;
+            } else if (type == 3) {
+                this.formSubmission.id = null;
+                this.formSubmission.file_id = null;
+                this.formSubmission.phase = null;
+                this.formSubmission.name = null;
+                this.formSubmission.path = null;
+                this.formSubmission.link = null;
+                this.formSubmission.note = null;
+                this.formSubmission.type = null;
+                this.selectedOption = "";
+
+                this.isUpdateSubmission = false;
             }
         },
 
-        handleFileChange(event) {
+        handleFileChange(event, formObject, property) {
             const selectedFile = event.target.files[0];
             const allowedTypes = [
                 "image/jpeg", // for .jpeg and .jpg
@@ -281,8 +539,9 @@ export default {
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // for .xlsx
                 "application/vnd.ms-excel",
             ];
+
             if (selectedFile && allowedTypes.includes(selectedFile.type)) {
-                this.formAnalisaKredit.path = selectedFile;
+                formObject[property] = selectedFile;
             } else {
                 this.$showToast(
                     "error",
@@ -349,6 +608,162 @@ export default {
                 this.$showToast("error", "Sorry", error.response.data.message);
             }
         },
+
+        async insertSubmission() {
+            try {
+                this.overlay = true;
+
+                if (this.formSubmission.link == null && this.formSubmission.path == null) {
+                    this.isSubmission = false;
+                    this.$showToast("error", "Error", "File / Link harus diisi");
+                    this.overlay = false;
+                    return;
+                }
+                
+                const formData = new FormData();
+                formData.append("file_id", this.formSubmission.file_id);
+                formData.append("name", this.formSubmission.name);
+                formData.append("type", this.formSubmission.type);
+                formData.append("phase", this.formSubmission.phase);
+                if (this.formSubmission.path != null && this.formSubmission.path != null) {
+                    formData.append("path", this.formSubmission.path);
+                } else
+                if (this.formSubmission.link != null) {
+                    formData.append("link", this.formSubmission.link);
+                }
+                formData.append("_method", "POST");
+                
+                const config = {
+                    onUploadProgress: (progressEvent) => {
+                        try {
+                            this.uploadProgress = Math.round(
+                                (progressEvent.loaded * 100) / progressEvent.total
+                            );
+                        } catch (error) {
+                            console.error("Error calculating progress:", error);
+                        }
+                    },
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                };
+                
+                const response = await mainURL.post(
+                    `/file-submission`,
+                    formData,
+                    config
+                );
+                if (response.status === 200) {
+                    this.overlay = false;
+                    this.closeModal(2);
+                    this.getDetailFile(this.fileId);
+                    this.uploadProgress = null;
+                    this.$showToast("success", "Success", response.data.message);
+                } else {
+                    this.overlay = false;
+                    this.closeModal(2);
+                    this.uploadProgress = null;
+                    this.getDetailFile(this.fileId);
+                    this.$showToast("error", "Sorry", response.data.message);
+                }
+            } catch (error) {
+                this.overlay = false;
+                this.uploadProgress = null;
+                this.closeModal(2);
+                this.getDetailFile(this.fileId);
+                this.$showToast("error", "Sorry", error.response.data.message);
+            }
+        },
+        
+        async deleteSubmission(id) {
+            try {
+                const confirmDelete = window.confirm(
+                    "Apakah Anda yakin ingin menghapus data? Data akan terhapus secara permanen."
+                );
+                if (!confirmDelete) return;
+
+                this.overlay = true;
+                const response = await mainURL.delete(`/file-submission/${id}`);
+                
+                if (response.status === 200) {
+                    this.overlay = false;
+                    this.getDetailFile(this.fileId);
+                    this.$showToast("success", "Berhasill", response.data.message);
+                } else {
+                    this.overlay = false;
+                    this.getDetailFile(this.fileId);
+                    this.$showToast("error", "Sorry", "Terjadi Kesalahan Silahkan Coba Lagi");
+                }
+            } catch (error) {
+                this.overlay = false;
+                this.closeModal(2);
+                this.getDetailFile(this.fileId);
+                this.$showToast("error", "Sorry", error.response.data.message);
+            }
+        },
+        
+        async updateSubmission() {
+            try {
+                this.overlay = true;
+                const formData = new FormData();
+                formData.append("file_id", this.formSubmission.file_id);
+                formData.append("name", this.formSubmission.name);
+                formData.append("type", this.formSubmission.type);
+                formData.append("phase", this.formSubmission.phase);
+                if (this.formSubmission.path != null && this.formSubmission.path != null) {
+                    formData.append("path", this.formSubmission.path);
+                } else
+                if (this.formSubmission.link != null) {
+                    formData.append("link", this.formSubmission.link);
+                }
+                formData.append("_method", "PUT");
+                
+                const config = {
+                    onUploadProgress: (progressEvent) => {
+                        try {
+                            this.uploadProgress = Math.round(
+                                (progressEvent.loaded * 100) / progressEvent.total
+                            );
+                        } catch (error) {
+                            console.error("Error calculating progress:", error);
+                        }
+                    },
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                };
+                
+                const response = await mainURL.post(
+                    `/file-submission/${this.formSubmission.id}`,
+                    formData,
+                    config
+                );
+                if (response.status === 200) {
+                    this.overlay = false;
+                    this.closeModal(3);
+                    this.getDetailFile(this.fileId);
+                    this.uploadProgress = null;
+                    this.$showToast("success", "Success", response.data.message);
+                } else {
+                    this.overlay = false;
+                    this.closeModal(3);
+                    this.uploadProgress = null;
+                    this.getDetailFile(this.fileId);
+                    this.$showToast("error", "Sorry", response.data.message);
+                }
+            } catch (error) {
+                this.overlay = false;
+                this.uploadProgress = null;
+                this.closeModal(3);
+                this.getDetailFile(this.fileId);
+                this.$showToast("error", "Sorry", error.response.data.message);
+            }
+        }
     },
 }
 </script>
+<style scoped>
+.header-color {
+    background-color: #FFAB00;
+}
+</style>

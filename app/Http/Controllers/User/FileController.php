@@ -39,6 +39,42 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class FileController extends Controller
 {
+    public function cekNIK($nik)
+    {
+        try {
+            $nik = str_replace('-', '', $nik);
+
+            // Get the file with the matching NIK
+            $file = File::where('nik_pemohon', $nik)
+                ->where('isApproved', '3')
+                ->where(function ($query) {
+                    $query->where('reasonRejected', 'LIKE', '%SLIK%')
+                        ->orWhere('reasonRejected', 'LIKE', '%slik%')
+                        ->orWhere('reasonRejected', 'LIKE', '%KOL%');
+                })
+                ->first();
+
+            // return ResponseHelper::successRes('Data ditemukan',  $file);
+
+            // // Check if a file with the matching NIK exists
+            if (!$file) {
+                return ResponseHelper::successRes('Data tidak ditemukan', 0);
+            }
+
+            // // Calculate the difference between the file's creation date and current date
+            $diff = now()->diffInMonths($file->created_at);
+
+            // // Check if the difference is less than 6 months
+            if ($diff < 6) {
+                return ResponseHelper::successRes('Berhasil melakukan cek data', $file);
+            } else {
+                return ResponseHelper::successRes('Data sudah lebih dari 6 bulan', 0);
+            }
+        } catch (ValidationException $e) {
+            return ResponseHelper::errorRes($e->getMessage());
+        }
+    }
+
     public function signaturefile(Request $request, $id)
     {
         try {
@@ -206,6 +242,7 @@ class FileController extends Controller
                     'phase_times.startTime',
                     'phase_times.endTime',
                     'users.name as nameAO',
+                    'phase_times.created_at as phase_created_at',
                     'files.name as fileName',
                     'files.isApproved as isApproved',
                     'files.nik_pemohon as nikPemohon',
@@ -273,6 +310,7 @@ class FileController extends Controller
                 $row['type'] =  match ($phases->first()->type) {
                     1 => 'Reguler',
                     2 => 'Restruktur',
+                    3 => 'Pensiunan',
                     default => 'Reguler',
                 };
                 $row['status'] =  match ($phases->first()->isApproved) {
@@ -296,8 +334,10 @@ class FileController extends Controller
                         $endTime = $phase->endTime ? strtotime($phase->endTime) : time();
                         $duration = $endTime - $startTime;
                         $row['phase' . $i . 'Time'] = gmdate('H:i:s', $duration);
+                        $row['phase' . $i . 'CreatedAt'] = $phase->phase_created_at;
                     } else {
                         $row['phase' . $i . 'Time'] = 'N/A';
+                        $row['phase' . $i . 'CreatedAt'] = 'N/A';
                     }
                 }
                 $reportData[] = $row;
@@ -368,6 +408,7 @@ class FileController extends Controller
                     $row['type'] =  match ($phases->first()->type) {
                         1 => 'Reguler',
                         2 => 'Restrukur',
+                        2 => 'Pensiunan',
                         default => 'Reguler',
                     };
                     $row['status'] =  match ($phases->first()->isApproved) {
@@ -475,6 +516,7 @@ class FileController extends Controller
                     $row['type'] =  match ($phases->first()->isApproved) {
                         1 => 'Reguler',
                         2 => 'Restruktur',
+                        2 => 'Pensiunan',
                         default => 'Reguler',
                     };
                     $row['status'] =  match ($phases->first()->isApproved) {
@@ -530,19 +572,93 @@ class FileController extends Controller
             ]);
 
             $file = File::findOrFail($validated['id']);
+            $oldPhase = $file->phase;
             $oldStatus = $file->isApproved;
             $file->isApproved = $validated['status'];
 
             switch ($validated['status']) {
                 case 1: // Approved
                     $file->creditScoring = $file->phase;
-                    // $file->phase = 5;
+                    $file->phase = 5;
+                    $filephase = 5;
+
+                    $userUploaded = User::where('id', $file->user_id)->first();
+                    $userPosition = Position::where('id', $userUploaded->position_id)->first();
+                    $userOffices = PositionToOffice::where('position_id', $userPosition->id)->get();
+                    $notifPositions = [];
+
+                    //add user to approval
+                    foreach ($userOffices as $userOffice) {
+                        $notificationConfigurations = DB::table('notification_configurations')
+                            ->where('office_id', $userOffice->office_id)
+                            ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
+                            ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
+                            ->where('phase', $filephase)
+                            ->where('canApprove', 1)
+                            ->get();
+
+                        $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
+                    }
+                    $notifUser = [];
+                    foreach ($notifPositions as $notifPosition) {
+                        $users = DB::table('users')
+                            ->where('position_id', $notifPosition->position_id)
+                            ->where('isActive', 1)
+                            ->get();
+                        $notifUser = array_merge($notifUser, $users->toArray());
+                    }
+
+                    foreach ($notifPositions as $pos) {
+                        foreach ($notifUser as $user) {
+                            if ($pos->position_id == $user->position_id && $userUploaded->position_id != $pos->position_id) {
+                                Approval::firstOrCreate(
+                                    ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
+                                    ['approved' => 0]
+                                );
+                            }
+                        }
+                    }
+
+                    // $currentPhase = $file->phase;
+                    for ($i = $oldPhase; $i <= 5; $i++) {
+                        $phaseTime = PhaseTime::firstOrCreate([
+                            'file_id' => $file->id,
+                            'phase' => $i
+                        ]);
+                        // dd($phaseTime);
+                        if ($i == $oldPhase) {
+                            $phaseTime->endTime = Carbon::now();
+                        } elseif ($i == 5) {
+                            $phaseTime->startTime = Carbon::now();
+                        } else {
+                            $phaseTime->startTime = Carbon::now();
+                            $phaseTime->endTime = Carbon::now();
+                        }
+
+                        $phaseTime->save();
+                    }
+
                     $message = 'Disetujui';
                     break;
                 case 2: // Pending
+                    $oldPhases = $file->creditScoring;
                     if ($oldStatus != 2) {
                         $file->phase = $file->creditScoring ?? $file->phase;
                         $file->creditScoring = null;
+                    }
+
+                    for ($i = $oldPhases; $i <= 5; $i++) {
+                        $phaseTime = PhaseTime::firstOrCreate([
+                            'file_id' => $file->id,
+                            'phase' => $i
+                        ]);
+
+                        if ($i == $oldPhases) {
+                            $phaseTime->endTime = null;
+                            $phaseTime->save();
+                        } else {
+                            $phaseTime->delete();
+                        }
                     }
                     $message = 'Pending (kembali ke phase terakhir sebelumnya)';
                     break;
@@ -566,6 +682,33 @@ class FileController extends Controller
             }
 
             $file->save();
+
+            if ($file->phase == 5) {
+                $attachments = [
+                    ['name' => 'SP3K', 'path' => 'null', 'isSecret' => 0, 'isApprove' => 0, 'phase' => 5, 'file_id' => $file->id,],
+                    ['name' => 'Notaris', 'path' => 'null', 'isSecret' => 0, 'isApprove' => 0, 'phase' => 5, 'file_id' => $file->id,],
+                ];
+
+                foreach ($attachments as $data) {
+                    $existingAttachment = Attachment::where('file_id', $data['file_id'])
+                        ->where('name', $data['name'])
+                        ->where('phase', $data['phase'])
+                        ->first();
+
+                    if (!$existingAttachment) {
+                        // Only create a new attachment if it doesn't already exist
+                        $attachment = new Attachment();
+                        $attachment->phase = $data['phase'];
+                        $attachment->file_id = $data['file_id'];
+                        $attachment->name = $data['name'];
+                        $attachment->path = $data['path'];
+                        $attachment->isSecret = $data['isSecret'];
+                        $attachment->isApprove = $data['isApprove'];
+                        $attachment->startTime = Carbon::now();
+                        $attachment->save();
+                    }
+                }
+            }
 
             ActivityHelper::fileActivity($file->id, Auth::id(), 'Mengganti status kredit');
             ActivityHelper::userActivity(Auth::id(), "Mengganti status kredit {$file->name}");
@@ -700,7 +843,7 @@ class FileController extends Controller
                 'file_id' => 'required ',
                 'phase' => 'required',
                 'name' => 'required',
-                'note' => 'required',
+                'note' => 'requiredif:name,Lain-lain',
                 'link' => 'nullable|url|required_without:path',
                 'path' => 'nullable|file|mimes:jpeg,jpg,png,pdf,doc,docx,xls,xlsx|required_without:link',
                 'isApprove' => 'required',
@@ -948,6 +1091,11 @@ class FileController extends Controller
             $file->nik_pemohon = $request->nik_pemohon;
 
             $file->nik_pasangan = $request->nik_pasangan || $request->nik_pasangan != 'null' ? $request->nik_pasangan : null;
+
+            if ($request->name_pasangan) {
+                $file->name_pasangan = $request->name_pasangan;
+            }
+
             $file->nik_jaminan = $request->nik_jaminan || $request->nik_jaminan != 'null' ? $request->nik_jaminan : null;
 
             $file->address = $request->address;
@@ -979,15 +1127,65 @@ class FileController extends Controller
             }
 
             if ($request->type == 'next') {
-                $cekAllApprove = Approval::where('file_id', $file->id)
-                    ->where('phase', $file->phase)
-                    ->get();
+                if ($file->phase == 2 || $file->phase == 3) {
+                    $cekAllApprove = Approval::where('file_id', $file->id)
+                        ->where('phase', $file->phase)
+                        ->get();
 
-                if ($cekAllApprove->where('approved', 0)->count() > 0) {
-                    return ResponseHelper::errorRes('Maaf, ada Jabatan / User yang masih belum memberikan approve');
+                    // Cek apakah ada minimal 1 approve
+                    if ($cekAllApprove->where('approved', 1)->count() == 0) {
+                        return ResponseHelper::errorRes('Maaf, minimal harus ada 1 approve untuk melanjutkan');
+                    }
+                } else {
+                    // $cekAllApprove = Approval::with('user')
+                    //     ->where('file_id', $file->id)
+                    //     ->where('phase', $file->phase)
+                    //     ->get();
+
+                    // // Cek apakah semua sudah approve
+                    // if ($cekAllApprove->where('approved', 0)->count() > 0) {
+                    //     return ResponseHelper::errorRes('Maaf, ada Jabatan / User yang masih belum memberikan approve');
+                    // }
+                    if ($file->phase == 4) {
+                        $cekAllApprove = Approval::with('user.position')
+                            ->where('file_id', $file->id)
+                            ->where('phase', $file->phase)
+                            ->get();
+
+                        $creditAnalystApprovals = $cekAllApprove->filter(function ($approval) {
+                            return strtolower($approval->user->position->name) == 'credit analyst';
+                        });
+
+                        $otherApprovals = $cekAllApprove->filter(function ($approval) {
+                            return strtolower($approval->user->position->name) != 'credit analyst';
+                        });
+
+                        // Check if at least one Credit Analyst has approved
+                        $creditAnalystApproved = $creditAnalystApprovals->where('approved', 1)->count() > 0;
+
+                        // Check if all other positions have approved
+                        $allOthersApproved = $otherApprovals->where('approved', 0)->count() == 0;
+
+                        if (!$creditAnalystApproved || !$allOthersApproved) {
+                            if (!$creditAnalystApproved) {
+                                return ResponseHelper::errorRes('Maaf, belum ada Credit Analyst yang memberikan approve');
+                            } else {
+                                return ResponseHelper::errorRes('Maaf, ada Jabatan / User yang masih belum memberikan approve');
+                            }
+                        }
+                    } else {
+                        $cekAllApprove = Approval::with('user')
+                            ->where('file_id', $file->id)
+                            ->where('phase', $file->phase)
+                            ->get();
+
+                        // Cek apakah semua sudah approve
+                        if ($cekAllApprove->where('approved', 0)->count() > 0) {
+                            return ResponseHelper::errorRes('Maaf, ada Jabatan / User yang masih belum memberikan approve');
+                        }
+                    }
                 }
-                // $cekAttchApproval = Attachment::where('file_id', $file->id)->where('phase', $file->phase)
-                //     ->get();
+
                 // Memeriksa apakah terdapat lampiran "File Banding" yang nilai atributnya bukan string "null"
                 $cekFileBanding = Attachment::where('file_id', $file->id)
                     ->where('phase', 2)
@@ -1071,17 +1269,8 @@ class FileController extends Controller
                         return ResponseHelper::errorRes('Maaf, ada Lampiran yang masih belum disetujui / diyakini kebenarannya / Kosong');
                     }
 
-                    // if (($detailSlikApproved > 0 && $resumeSlikApproved > 0) && ($cekFileBanding > 0 || $cekAnalystAo > 0)) {
-
-
-                    // } else {
-                    //     // Jika kondisi tidak terpenuhi, kembalikan pesan error
-                    //     return ResponseHelper::errorRes('Maaf, ada Lampiran yang masih belum disetujui / diyakini kebenarannya / Kosong');
-                    // }
-
                     $filephase = $file->phase + 1;
 
-                    // if ($file->plafon >= 25000000) {
                     if ($file->phase > 6) {
                         return ResponseHelper::errorRes('Sistem hanya sampai phase 5(Operation)');
                     }
@@ -1113,7 +1302,7 @@ class FileController extends Controller
                         ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Merubah Status Kredit Menjadi Disetujui');
                         ActivityHelper::userActivity(Auth::user()->id, 'Merubah Status Kredit Menjadi Disetujui: ' . $file->name);
 
-                        EmailHelper::AddUpdate($file->id);
+                        // EmailHelper::AddUpdate($file->id);
                         TelegramHelper::AgreementPhase4($file->id, "File Status Telah diubah menjadi disetujui" . ($filephase), $file->user_id);
 
                         return ResponseHelper::successRes('File Status Telah diubah menjadi disetujui', $file);
@@ -1182,12 +1371,21 @@ class FileController extends Controller
 
                         //add user to approval
                         foreach ($userOffices as $userOffice) {
+                            // $notificationConfigurations = DB::table('notification_configurations')
+                            //     ->where('office_id', $userOffice->office_id)
+                            //     ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
+                            //     ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
+                            //     ->where('phase', $filephase)
+                            //     ->where('canApprove', 1)
+                            //     ->get();
                             $notificationConfigurations = DB::table('notification_configurations')
-                                ->where('office_id', $userOffice->office_id)
-                                ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
-                                ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
-                                ->where('phase', $filephase)
-                                ->where('canApprove', 1)
+                                ->join('positions', 'positions.id', '=', 'notification_configurations.position_id')
+                                ->where('notification_configurations.office_id', $userOffice->office_id)
+                                ->whereRaw('CAST(notification_configurations.minPlafon AS UNSIGNED) <= ?', [$file->plafon])
+                                ->whereRaw('CAST(notification_configurations.maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
+                                ->where('notification_configurations.phase', $filephase)
+                                ->where('notification_configurations.canApprove', 1)
+                                ->select('notification_configurations.*', 'positions.name as position_name')
                                 ->get();
 
                             $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
@@ -1213,7 +1411,6 @@ class FileController extends Controller
                                 }
                             }
                         }
-
 
                         if (!$matchFound) {
                             return ResponseHelper::errorRes('Error1, user yang memiliki akses approve tidak ditemukan, mohon tambahkan User yang dapat memberi aproval di tahap selanjutnya');
@@ -1249,14 +1446,12 @@ class FileController extends Controller
                         ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Merubah Phase Kredit ');
                         ActivityHelper::userActivity(Auth::user()->id, 'Merubah Phase Kredit: ' . $file->name);
                         TelegramHelper::AddUpdatePhase($file->id, "User mengubah Phase menjadi " . ($filephase), $file->user_id);
-                        EmailHelper::AddUpdate($file->id);
+                        // EmailHelper::AddUpdate($file->id);
 
                         return ResponseHelper::successRes('Berhasill Melakukan Perubahan Tahapan Kredit', $file);
                     }
                     if ($file->phase < 4) {
-                        // if ($detailSlikApproved > 0 && $resumeSlikApproved > 0) {
                         if ($resumeSlikApproved > 0) {
-
                             // Memeriksa apakah terdapat lampiran "Analisa Awal Kredit AO" yang nilai atributnya bukan string "null"
                             $cekAnalystAoApproved = Attachment::where('file_id', $file->id)
                                 ->where('phase', 2)
@@ -1277,7 +1472,10 @@ class FileController extends Controller
                             $cekFileBandingApproved = Attachment::where('file_id', $file->id)
                                 ->where('phase', 2)
                                 ->whereRaw('LOWER(name) = ?', [Str::lower('File Banding')])
-                                ->where('path', '!=', 'null') // Asumsi atribut yang dicek bernama 'path'
+                                ->where(function ($query) {
+                                    $query->where('link', '!=', 'null')
+                                        ->orWhere('path', '!=', 'null');
+                                }) // Asumsi atribut yang dicek bernama 'path'
                                 ->count();
 
                             if ($cekFileBandingApproved == 0) {
@@ -1292,14 +1490,16 @@ class FileController extends Controller
                         $userPosition = Position::where('id', $userUploaded->position_id)->first();
                         $userOffices = PositionToOffice::where('position_id', $userPosition->id)->get();
                         $notifPositions = [];
-                        //add user to approval
+                        //add user to approval50852
                         foreach ($userOffices as $userOffice) {
                             $notificationConfigurations = DB::table('notification_configurations')
-                                ->where('office_id', $userOffice->office_id)
-                                ->whereRaw('CAST(minPlafon AS UNSIGNED) <= ?', [$file->plafon])
-                                ->whereRaw('CAST(maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
-                                ->where('phase', $filephase)
-                                ->where('canApprove', 1)
+                                ->join('positions', 'positions.id', '=', 'notification_configurations.position_id')
+                                ->where('notification_configurations.office_id', $userOffice->office_id)
+                                ->whereRaw('CAST(notification_configurations.minPlafon AS UNSIGNED) <= ?', [$file->plafon])
+                                ->whereRaw('CAST(notification_configurations.maxPlafon AS UNSIGNED) >= ?', [$file->plafon])
+                                ->where('notification_configurations.phase', $filephase)
+                                ->where('notification_configurations.canApprove', 1)
+                                ->select('notification_configurations.*', 'positions.name as position_name')
                                 ->get();
 
                             $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
@@ -1317,7 +1517,9 @@ class FileController extends Controller
                         if ($file->phase == 3) {
                             foreach ($notifPositions as $pos) {
                                 foreach ($notifUser as $user) {
-                                    if ($pos->position_id == $user->position_id && $userUploaded->position_id != $pos->position_id) {
+                                    if (
+                                        $pos->position_id == $user->position_id && $userUploaded->position_id != $pos->position_id
+                                    ) {
                                         Approval::firstOrCreate(
                                             ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
                                             ['approved' => 0]
@@ -1331,7 +1533,48 @@ class FileController extends Controller
                                 ['file_id' => $file->id, 'user_id' => $userUploaded->id, 'phase' => $pos->phase],
                                 ['approved' => 0]
                             );
-                        } else {
+                        }
+
+                        //menmbuat agar approval hanya dilakukan oleh salah satu ca
+                        // if ($file->phase == 3) {
+                        //     foreach ($notifPositions as $pos) {
+                        //         foreach ($notifUser as $user) {
+                        //             if ($pos->position_id == $user->position_id && $userUploaded->position_id != $pos->position_id) {
+                        //                 if (str_contains(strtolower($pos->position_name), 'credit analyst')) {
+                        //                     // Check if a Credit Analyst has approved in phase 3
+                        //                     $creditAnalystApproval = Approval::where('file_id', $file->id)
+                        //                         ->where('user_id', $user->id)
+                        //                         ->where('phase', 3)
+                        //                         ->where('approved', 1)
+                        //                         ->first();
+
+
+                        //                     if ($creditAnalystApproval) {
+                        //                         Approval::firstOrCreate(
+                        //                             ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
+                        //                             ['approved' => 0]
+                        //                         );
+                        //                         $matchFound = true;
+                        //                     }
+                        //                 } else {
+                        //                     Approval::firstOrCreate(
+                        //                         ['file_id' => $file->id, 'user_id' => $user->id, 'phase' => $pos->phase],
+                        //                         ['approved' => 0]
+                        //                     );
+                        //                     $matchFound = true;
+                        //                 }
+                        //             }
+                        //         }
+                        //     }
+
+                        //     // Add approval for the user who uploaded the file
+                        //     Approval::firstOrCreate(
+                        //         ['file_id' => $file->id, 'user_id' => $userUploaded->id, 'phase' => $pos->phase],
+                        //         ['approved' => 0]
+                        //     );
+                        // } 
+
+                        else {
                             foreach ($notifPositions as $pos) {
                                 foreach ($notifUser as $user) {
                                     if ($pos->position_id == $user->position_id) {
@@ -1487,7 +1730,7 @@ class FileController extends Controller
                         ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Merubah Phase Kredit ');
                         ActivityHelper::userActivity(Auth::user()->id, 'Merubah Phase Kredit: ' . $file->name);
 
-                        EmailHelper::AddUpdate($file->id);
+                        // EmailHelper::AddUpdate($file->id);
                         TelegramHelper::AddUpdatePhase($file->id, "User mengubah Phase menjadi " . ($filephase), $file->user_id);
 
                         return ResponseHelper::successRes('Berhasill Melakukan Perubahan Tahapan Kredit', $file);
@@ -1513,7 +1756,7 @@ class FileController extends Controller
                         ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Merubah Status Kredit Menjadi Disetujui');
                         ActivityHelper::userActivity(Auth::user()->id, 'Merubah Status Kredit Menjadi Disetujui: ' . $file->name);
 
-                        EmailHelper::AddUpdate($file->id);
+                        // EmailHelper::AddUpdate($file->id);
                         TelegramHelper::AgreementPhase4($file->id, "File Status Telah diubah menjadi disetujui" . ($filephase), $file->user_id);
 
                         return ResponseHelper::successRes('File Status Telah diubah menjadi disetujui', $file);
@@ -1723,7 +1966,7 @@ class FileController extends Controller
                         ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Merubah Phase Kredit ');
                         ActivityHelper::userActivity(Auth::user()->id, 'Merubah Phase Kredit: ' . $file->name);
 
-                        EmailHelper::AddUpdate($file->id);
+                        // EmailHelper::AddUpdate($file->id);
                         TelegramHelper::AddUpdatePhase($file->id, "User mengubah Phase menjadi " . ($filephase), $file->user_id);
 
                         return ResponseHelper::successRes('Berhasill Melakukan Perubahan Tahapan Kredit', $file);
@@ -2028,7 +2271,7 @@ class FileController extends Controller
                 ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Merubah Phase Kredit ');
                 ActivityHelper::userActivity(Auth::user()->id, 'Merubah Phase Kredit: ' . $file->name);
 
-                EmailHelper::AddUpdate($file->id);
+                // EmailHelper::AddUpdate($file->id);
                 TelegramHelper::AddUpdatePhase($file->id, "User mengubah Phase menjadi " . ($filephase), $file->user_id);
 
                 return ResponseHelper::successRes('Phase updated successfully', $file);
@@ -2055,6 +2298,126 @@ class FileController extends Controller
 
             TelegramHelper::AddUpdate($attch->file_id, 'Menghapus Lampiran : ' . $attchName, Auth::user()->id);
             return ResponseHelper::successRes('Attachment deleted successfully', $attch);
+        } catch (\Exception $e) {
+            return ResponseHelper::errorRes($e->getMessage());
+        }
+    }
+    public function getFilesByType($type)
+    {
+        try {
+            $userNow = User::with('position')->where('id', Auth::user()->id)->first();
+            $userPos = User::where('id', Auth::user()->id)->first();
+            $getPostionData = Position::where('id', $userPos->position_id)->first();
+            $role = Role::where('id', $getPostionData->role_id)->first();
+            $currentDate = Carbon::now();
+
+            if ($userNow->position->name == 'Account Officer' || $userNow->position->name == 'AO' || $userNow->position->name == 'ao' || $userNow->position->name == 'account officer' || $userNow->position->name == 'Account Officer Executive' || $userNow->position->name == 'account officer executive' || $userNow->position->name == 'Account Officer / Executive AO' || $userNow->position->name == 'AO / RO') {
+
+                $positionId = Auth::user()->position_id;
+                $position = Position::with('offices')->where('id', $positionId)->first();
+
+                // Dapatkan semua kantor yang terkait dengan posisi
+                $offices = $position->offices;
+
+                //get list access for user
+                $notifPositions = [];
+                foreach ($offices as $office) {
+                    $notificationConfigurations = DB::table('notification_configurations')
+                        ->where('office_id', $office->id)
+                        ->where('phase', 1)
+                        ->get();
+
+                    $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
+                }
+                $userPosNow = User::where('id', Auth::user()->id)->first();
+                $userAccess = [];
+
+                foreach ($notifPositions as $notifPosition) {
+                    if ($notifPosition->position_id == $userPosNow->position_id) {
+                        $userAccess = [
+                            'canAppeal' => $notifPosition->canAppeal,
+                            'canApprove' => $notifPosition->canApprove,
+                            'canInsertData' => $notifPosition->canInsertData,
+                            'isSecret' => $notifPosition->isSecret,
+                        ];
+                        break;
+                    }
+                }
+                $files = File::where('user_id', Auth::user()->id)
+                    ->with('user', 'user.position.offices', 'attachments')
+                    ->whereMonth('created_at', $currentDate->month)
+                    ->whereYear('created_at', $currentDate->year)
+                    ->orderBy('created_at', 'desc')
+                    ->where('isApproved', $type)
+                    ->get();
+
+                ActivityHelper::userActivity(Auth::user()->id, 'Mengakses halaman File Credit');
+
+                return ResponseHelper::successRes('Berhasil menampilkan datas', ['files' => $files, 'userAccess' => $userAccess, 'role' => $role]);
+            } else {
+                $positionId = Auth::user()->position_id;
+                $position = Position::with('offices')->where('id', $positionId)->first();
+
+                // Dapatkan semua kantor yang terkait dengan posisi
+                $offices = $position->offices;
+
+                //get list access for user
+                $notifPositions = [];
+                foreach ($offices as $office) {
+                    $notificationConfigurations = DB::table('notification_configurations')
+                        ->where('office_id', $office->id)
+                        ->where('phase', 1)
+                        ->get();
+
+                    $notifPositions = array_merge($notifPositions, $notificationConfigurations->toArray());
+                }
+                $userPosNow = User::where('id', Auth::user()->id)->first();
+                $userAccess = [];
+
+                foreach ($notifPositions as $notifPosition) {
+                    if ($notifPosition->position_id == $userPosNow->position_id) {
+                        $userAccess = [
+                            'canAppeal' => $notifPosition->canAppeal,
+                            'canApprove' => $notifPosition->canApprove,
+                            'canInsertData' => $notifPosition->canInsertData,
+                            'isSecret' => $notifPosition->isSecret,
+                        ];
+                        break;
+                    }
+                }
+
+                // Inisialisasi array untuk menampung semua file yang terkait
+                $files = [];
+
+                $fileAll = File::with('user', 'user.position.offices', 'attachments')
+                    ->orderBy('created_at', 'desc')
+                    ->whereMonth('created_at', $currentDate->month)
+                    ->whereYear('created_at', $currentDate->year)
+                    ->where('isApproved', $type)
+                    ->get();
+
+                foreach ($fileAll as $eachFile) {
+                    // Periksa posisi pengguna yang mengunggah file
+                    $uploaderPositionId = DB::table('users')
+                        ->where('id', $eachFile->user_id)
+                        ->value('position_id');
+
+                    // Dapatkan daftar kantor yang terkait dengan posisi pengguna
+                    $uploaderOfficeIds = DB::table('positiontooffices')
+                        ->where('position_id', $uploaderPositionId)
+                        ->pluck('office_id')
+                        ->toArray();
+
+                    // Periksa apakah ada kantor yang sama antara kantor pengguna dan kantor-kantor yang terkait dengan posisi yang dicari
+                    if (array_intersect($uploaderOfficeIds, $offices->pluck('id')->toArray())) {
+                        // Jika ada, tambahkan file ke dalam array files
+                        $files[] = $eachFile;
+                    }
+                }
+                ActivityHelper::userActivity(Auth::user()->id, 'Mengakses halaman File Credit');
+
+                return ResponseHelper::successRes('Berhasil menampilkan datas', ['files' => $files, 'userAccess' => $userAccess, 'role' => $role]);
+            }
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -2301,7 +2664,6 @@ class FileController extends Controller
             return ResponseHelper::errorRes($e->getMessage());
         }
     }
-
     public function store(Request $request)
     {
         try {
@@ -2346,6 +2708,7 @@ class FileController extends Controller
             $file->phase = 1;
             if ($request->hasFile('file2')) {
                 $file->nik_pasangan = $request->nik_pasangan;
+                $file->name_pasangan = $request->name_pasangan;
             }
 
             if ($request->hasFile('file3')) {
@@ -2353,7 +2716,7 @@ class FileController extends Controller
             }
             $file->save();
 
-            for ($i = 1; $i <= 11; $i++) {
+            for ($i = 1; $i <= 12; $i++) {
 
                 // Skip file6 as it's not in the validation rules
                 if ($i == 6) continue;
@@ -2377,7 +2740,15 @@ class FileController extends Controller
                     $attch = new Attachment();
                     $attch->phase = 1;
                     $attch->file_id = $file->id;
-                    $attch->name =  $request->{$noteFile};
+
+                    if ($i == 12) {
+                        $attch->name = 'Form Permohonan SLIK';
+                        $attch->isApprove = 0;
+                    } else {
+                        $attch->name = $request->{$noteFile};
+                        $attch->isApprove = 1;
+                    }
+
                     $attch->path = $fileimage;
                     $attch->isSecret = 0;
                     $attch->isApprove = 1;
@@ -2387,16 +2758,16 @@ class FileController extends Controller
                 }
             }
 
-            $attch = new Attachment();
-            $attch->phase = 1;
-            $attch->file_id = $file->id;
-            $attch->name =  'Form Permohonan SLIK';
-            $attch->path = 'null';
-            $attch->isSecret = 0;
-            $attch->isApprove = 0;
-            $attch->startTime = Carbon::now();
-            $attch->endTime = Carbon::now();
-            $attch->save();
+            // $attch = new Attachment();
+            // $attch->phase = 1;
+            // $attch->file_id = $file->id;
+            // $attch->name =  'Form Permohonan SLIK';
+            // $attch->path = 'null';
+            // $attch->isSecret = 0;
+            // $attch->isApprove = 0;
+            // $attch->startTime = Carbon::now();
+            // $attch->endTime = Carbon::now();
+            // $attch->save();
 
             // //add user to approval
             Approval::firstOrCreate(
@@ -2412,32 +2783,7 @@ class FileController extends Controller
             // EmailHelper::AddUpdate($file->id);
             TelegramHelper::AddFile($file->id);
 
-            // send data to spreadsheet
-            $user = User::where('id', Auth::user()->id)->first();
-            $position = Position::where('id', $user->position_id)->first();
-            $positiontooffice = PositionToOffice::where('position_id', $position->id)->first();
-            $office = Office::where('id', $positiontooffice->office_id)->first();
-
-            $spreadsheetResult = $this->sendDataGoogle(
-                $office->code,
-                $user->name,
-                $request->name,
-                $request->nik_pemohon,
-                $request->nik_pasangan,
-                $request->nik_jaminan,
-                $request->address,
-                $request->no_hp,
-                $request->order_source,
-                $request->plafon,
-                $request->status_kredit
-            );
-
-            if (!$spreadsheetResult['success']) {
-                Log::error('Gagal mengirim data ke spreadsheet: ' . $spreadsheetResult['message']);
-                // Atau jika Anda ingin mengembalikan error ke client:
-                // return ResponseHelper::errorRes('Berhasil menyimpan data, tapi gagal mengirim ke spreadsheet: ' . $spreadsheetResult['message']);
-            }
-            return ResponseHelper::successRes('Berhasil menambahkan data', $file);
+            return ResponseHelper::successRes('Berhasil menambahkan data, Silahkan buka file dan klik next', $file);
         } catch (\Exception $e) {
             return ResponseHelper::errorRes($e->getMessage());
         }
@@ -2646,8 +2992,8 @@ class FileController extends Controller
             $approv->save();
 
             $file = File::find($approv->file_id);
-            ActivityHelper::fileActivity($file->id, Auth::user()->id, 'Merubah apporval Data Kredit ');
-            ActivityHelper::userActivity(Auth::user()->id, 'Merubah Approval Data Kredit: ' . $file->name);
+            ActivityHelper::fileActivity($file->id, Auth::user()->id,  "User merubah Status menjadi " . ($approv->approved ? "Disetujui" : "Ditolak") . " | Kredit: " . $file->name);
+            ActivityHelper::userActivity(Auth::user()->id, "User merubah Status menjadi " . ($approv->approved ? "Disetujui" : "Ditolak") . " | Kredit: " . $file->name);
             TelegramHelper::AddUpdatePhase($approv->file_id, "User merubah Status menjadi " . ($approv->approved ? "Disetujui" : "Ditolak"), $approv->user_id);
 
             return ResponseHelper::successRes('Berhasill mengubah status', $approv);
@@ -2816,11 +3162,45 @@ class FileController extends Controller
                 'filesubmissions',
             ])->findOrFail($id);
 
-            $pdf = pdf::loadView('report.approve', compact('file'));
+            // Menyiapkan data fase
+            $phases = [
+                1 => 'Pooling',
+                2 => 'SLIK',
+                3 => 'Survei',
+                4 => 'Komite',
+                5 => 'Operation'
+            ];
+
+            $phaseData = [];
+            foreach ($phases as $phaseNumber => $phaseName) {
+                $phaseTime = $file->phaseTimes->where('phase', $phaseNumber)->first();
+                if ($phaseTime) {
+                    $phaseData[$phaseName] = [
+                        'duration' => $this->calculateDuration($phaseTime->startTime, $phaseTime->endTime),
+                        'created_at' => $phaseTime->created_at->format('Y-m-d H:i:s')
+                    ];
+                } else {
+                    $phaseData[$phaseName] = [
+                        'duration' => 'N/A',
+                        'created_at' => 'N/A'
+                    ];
+                }
+            }
+
+            $pdf = PDF::loadView('report.approve', compact('file', 'phaseData'));
 
             return $pdf->download('laporan-generated.pdf');
         } catch (\Exception $e) {
             dd($e->getMessage());
         }
+    }
+
+    private function calculateDuration($startTime, $endTime)
+    {
+        if (!$startTime) return 'N/A';
+        $start = new \DateTime($startTime);
+        $end = $endTime ? new \DateTime($endTime) : new \DateTime();
+        $duration = $start->diff($end);
+        return $duration->format('%H:%I:%S');
     }
 }

@@ -59,6 +59,16 @@
                     <v-list-item-title>
                       <v-icon icon="mdi-arrow-right-drop-circle-outline" size="small">
                       </v-icon>
+                      Nama AO/RO
+                    </v-list-item-title>
+                    <v-list-item>
+                      <strong> {{ dataFile.user.name }} </strong>
+                    </v-list-item>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-list-item-title>
+                      <v-icon icon="mdi-arrow-right-drop-circle-outline" size="small">
+                      </v-icon>
                       Nama Pemohon
                     </v-list-item-title>
                     <v-list-item>
@@ -101,6 +111,15 @@
                     <v-list-item>
                       <strong>
                         {{ dataFile.nik_pasangan }}
+                      </strong>
+                    </v-list-item>
+                  </v-list-item>
+                  <v-list-item v-if="dataFile.nik_pasangan">
+                    <v-list-item-title><v-icon icon="mdi-arrow-right-drop-circle-outline" size="small">
+                      </v-icon> Nama Pasangan</v-list-item-title>
+                    <v-list-item>
+                      <strong>
+                        {{ dataFile.name_pasangan ?? "-" }}
                       </strong>
                     </v-list-item>
                   </v-list-item>
@@ -154,8 +173,14 @@
                     <v-list-item-title><v-icon icon="mdi-arrow-right-drop-circle-outline" size="small">
                       </v-icon> Jenis Kredit</v-list-item-title>
                     <v-list-item>
-                      <strong>
-                        {{ dataFile.type == 1 ? "Reguler" : "Restruktur" }}
+                      <strong v-if="dataFile.type == 1">
+                        Regular
+                      </strong>
+                      <strong v-if="dataFile.type == 2">
+                        Restruktur
+                      </strong>
+                      <strong v-if="dataFile.type == 3">
+                        Pensiunan
                       </strong>
                     </v-list-item>
                   </v-list-item>
@@ -172,7 +197,7 @@
                   <!-- <v-btn v-if="parseInt(dataFile.phase) < 5 && (userAccessNow && parseInt(userAccessNow.canInsertData) == 1)" color="primary" size="x-small" class="mt-2" @click="openModal(1)">
                     Tambah Data Lain
                   </v-btn> -->
-                  <v-btn v-if="parseInt(dataFile.phase) < 5" color="primary" size="x-small" class="mt-2" @click="openModal(1)">
+                  <v-btn color="primary" size="x-small" class="mt-2" @click="openModal(1)">
                     Tambah Data Lain
                   </v-btn>
                 </v-row>
@@ -187,7 +212,7 @@
                   <AttachmentCard2 v-if="parseInt(dataFile.phase) > 1" :data="phase2Attachments"
                     :fileId="parseInt(dataFile.id)" :filePath="filePath" :userAccess="userAccess"
                     :deleteAttachment="deleteAttachment" :getDetailFile="getDetailFile"
-                    :phase="parseInt(dataFile.phase)">
+                    :phase="parseInt(dataFile.phase)" :isApprove="parseInt(dataFile.isApproved)">
                   </AttachmentCard2>
                 </div>
                 <div class="mb-5">
@@ -221,7 +246,11 @@
     <!-- Approval -->
     <v-card-text class="pa-4" v-if="dataFile && parseInt(dataFile.phase) < 6">
       <v-card>
-        <v-card-text class="d-flex justify-center text-center pa-3 font-weight-bold">
+        <v-card-text class="d-flex justify-center text-center pa-3 font-weight-bold"
+          v-if="dataFile && (parseInt(dataFile.phase) === 2 || parseInt(dataFile.phase) === 3)">
+          Status Approval Phase ✅ (khusus SLIK dan Survei hanya perlu 1 approval)
+        </v-card-text>
+        <v-card-text class="d-flex justify-center text-center pa-3 font-weight-bold" v-else>
           Status Approval Phase ✅
         </v-card-text>
         <v-card-text class="pa-3">
@@ -477,7 +506,7 @@ export default {
       required: true,
     },
   },
-  inject:['loading'],
+  inject: ['loading'],
   data() {
     return {
       userAccessNow: null,
