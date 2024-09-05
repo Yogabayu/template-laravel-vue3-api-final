@@ -1455,7 +1455,7 @@ class FileController extends Controller
                                 ->whereRaw('LOWER(name) = ?', [Str::lower('Analisa Awal Kredit AO')])
                                 ->where(function ($query) {
                                     $query->where('link', '!=', 'null')
-                                        ->orWhere('path', '!=', 'null');
+                                        ->orWhere('path', '!=', null);
                                 })
                                 ->count();
 
@@ -1471,7 +1471,7 @@ class FileController extends Controller
                                 ->whereRaw('LOWER(name) = ?', [Str::lower('File Banding')])
                                 ->where(function ($query) {
                                     $query->where('link', '!=', 'null')
-                                        ->orWhere('path', '!=', 'null');
+                                        ->orWhere('path', '!=', null);
                                 }) // Asumsi atribut yang dicek bernama 'path'
                                 ->count();
 
