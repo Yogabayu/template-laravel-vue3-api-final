@@ -378,7 +378,7 @@
 
                 <v-col>
                     <div class="text-subtitle-2 font-weight-medium">
-                        {{ formAppeal.name }} 
+                        {{ formAppeal.name }}
                     </div>
                 </v-col>
 
@@ -603,12 +603,12 @@
                         <VCol md="12" cols="12">
                             <span style="color: red">*</span><span class="subtitle-1 text-center">Pilih Salah Satu :
                             </span>
-                            <v-radio-group v-model="selectedOption" :mandatory="true" row>
+                            <v-radio-group v-model="selectedAnalytic" :mandatory="true" row>
                                 <v-radio label="File" value="file"></v-radio>
                                 <v-radio label="Link" value="link"></v-radio>
                             </v-radio-group>
                         </VCol>
-                        <VCol md="12" cols="12" v-if="selectedOption === 'file'">
+                        <VCol md="12" cols="12" v-if="selectedAnalytic === 'file'">
                             <span style="color: red">*</span>
                             <span class="subtitle-1 text-center"> Upload File: </span>
 
@@ -619,7 +619,7 @@
                                 formAnalytic.link = null;
                                 "></v-file-input>
                         </VCol>
-                        <VCol md="12" cols="12" v-if="selectedOption === 'link'">
+                        <VCol md="12" cols="12" v-if="selectedAnalytic === 'link'">
                             <span style="color: red">*</span>
                             <span class="subtitle-1 text-center"> Upload Link: </span>
 
@@ -763,10 +763,18 @@ export default {
     },
     watch: {
         selectedOption(newVal) {
-            if (newVal === "file") {
+            if (newVal == "file") {               
                 this.formDetailSlik.link = null;
-            } else if (newVal === "link") {
-                this.formDetailSlik.path = null;
+            } else if (newVal == "link") {
+                this.formDetailSlik.path = "null";
+                console.log(this.formDetailSlik.path);       
+            }
+        },
+        selectedAnalytic(newVal) {
+            if (newVal == "file") {               
+                this.formAnalytic.link = null;
+            } else if (newVal == "link") {
+                this.formAnalytic.path = "null";      
             }
         },
     },
@@ -789,6 +797,7 @@ export default {
         return {
             userAccessPhase2: null,
             selectedOption: "",
+            selectedAnalytic: "",
             uploadProgress: null,
             rules: {
                 required: (value) => !!value || "Required",
@@ -946,9 +955,9 @@ export default {
                     att.name == "File Banding" &&
                     (att.path !== "null" || att.link !== null)
             );
-            if (cekFileBanding.length > 0) {                
+            if (cekFileBanding.length > 0) {
                 if (containSLIK.length > 0 && this.isApprove == 3) {
-                    let appeal = this.data.find((att) => att.name == "File Banding");  
+                    let appeal = this.data.find((att) => att.name == "File Banding");
                     if (appeal != null) {
                         this.formAppeal.id = appeal.id;
                         this.formAppeal.isApprove = parseInt(appeal.isApprove);
@@ -958,7 +967,7 @@ export default {
                         return true;
                     }
                 } else if (containSLIK.length > 0) {
-                    let appeal = this.data.find((att) => att.name == "File Banding");  
+                    let appeal = this.data.find((att) => att.name == "File Banding");
                     if (appeal != null) {
                         this.formAppeal.id = appeal.id;
                         this.formAppeal.isApprove = parseInt(appeal.isApprove);
@@ -970,16 +979,16 @@ export default {
                 }
             } else {
                 if (containSLIK.length > 0 && this.isApprove == 3) {
-                let appeal = this.data.find((att) => att.name == "File Banding");
-                
-                if (appeal != null) {
-                    this.formAppeal.id = appeal.id;
-                    this.formAppeal.isApprove = parseInt(appeal.isApprove);
-                    this.formAppeal.isSecret = parseInt(appeal.isSecret);
-                    this.formAppeal.path = appeal.path;
-                    return true;
+                    let appeal = this.data.find((att) => att.name == "File Banding");
+
+                    if (appeal != null) {
+                        this.formAppeal.id = appeal.id;
+                        this.formAppeal.isApprove = parseInt(appeal.isApprove);
+                        this.formAppeal.isSecret = parseInt(appeal.isSecret);
+                        this.formAppeal.path = appeal.path;
+                        return true;
+                    }
                 }
-            }
             }
 
             return false;
@@ -1184,7 +1193,7 @@ export default {
             }
         },
         async insertAnalytic() {
-            try {
+            try {                
                 this.loading.show();
                 const formData = new FormData();
                 formData.append("name", this.formAnalytic.name);
