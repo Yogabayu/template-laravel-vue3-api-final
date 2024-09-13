@@ -2286,18 +2286,26 @@ class FileController extends Controller
                 $row = ['no' => count($reportData) + 1];
                 $fileName = $phases->first()->fileName;
                 $row['namaAO'] = $phases->first()->nameAO;
-                $row['type'] =  match ($phases->first()->type) {
-                    1 => 'Reguler',
-                    2 => 'Restruktur',
-                    3 => 'Pensiunan',
-                    default => 'Reguler',
-                };
-                $row['status'] =  match ($phases->first()->isApproved) {
-                    1 => 'Approved',
-                    2 => 'Pending',
-                    4 => 'Cancel by Debitur',
-                    default => 'Rejected',
-                };
+                if ($phases->first()->type == 1) {
+                    $row['type'] = 'Reguler';
+                } elseif ($phases->first()->type == 2) {
+                    $row['type'] = 'Restruktur';
+                } elseif ($phases->first()->type == 3) {
+                    $row['type'] = 'Pensiunan';
+                } else {
+                    $row['type'] = 'Unknown';
+                }
+                if ($phases->first()->isApproved == 1) {
+                    $row['status'] = 'Approved';
+                } elseif ($phases->first()->isApproved == 2) {
+                    $row['status'] = 'Pending';
+                } elseif ($phases->first()->isApproved == 3) {
+                    $row['status'] = 'Rejected';
+                } elseif ($phases->first()->isApproved == 4) {
+                    $row['status'] = 'Cancel by Debitur';
+                } else {
+                    $row['status'] = 'Unknown';
+                }
                 $row['nameFile'] = $fileName;
                 $row['plafon'] = $phases->first()->plafon;
                 $row['alamat'] = $phases->first()->address;
@@ -2475,18 +2483,26 @@ class FileController extends Controller
                 $fileName = $phases->first()->fileName;
                 $row['namaAO'] = $phases->first()->nameAO;
                 $row['nameFile'] = $fileName;
-                $row['type'] =  match ($phases->first()->type) {
-                    1 => 'Reguler',
-                    2 => 'Restruktur',
-                    3 => 'Pensiunan',
-                    default => 'Reguler',
-                };
-                $row['status'] =  match ($phases->first()->isApproved) {
-                    1 => 'Approved',
-                    2 => 'Pending',
-                    4 => 'Cancel by Debitur',
-                    default => 'Rejected',
-                };
+                if ($phases->first()->type == 1) {
+                    $row['type'] = 'Reguler';
+                } elseif ($phases->first()->type == 2) {
+                    $row['type'] = 'Restruktur';
+                } elseif ($phases->first()->type == 3) {
+                    $row['type'] = 'Pensiunan';
+                } else {
+                    $row['type'] = 'Unknown';
+                }
+                if ($phases->first()->isApproved == 1) {
+                    $row['status'] = 'Approved';
+                } elseif ($phases->first()->isApproved == 2) {
+                    $row['status'] = 'Pending';
+                } elseif ($phases->first()->isApproved == 3) {
+                    $row['status'] = 'Rejected';
+                } elseif ($phases->first()->isApproved == 4) {
+                    $row['status'] = 'Cancel by Debitur';
+                } else {
+                    $row['status'] = 'Unknown';
+                }
                 $row['plafon'] = $phases->first()->plafon;
                 $row['alamat'] = $phases->first()->address;
                 $row['noHp'] = $phases->first()->no_hp;

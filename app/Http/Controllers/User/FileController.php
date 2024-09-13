@@ -318,7 +318,7 @@ class FileController extends Controller
                 } elseif ($phases->first()->type == 3) {
                     $row['type'] = 'Pensiunan';
                 } else {
-                    $row['status'] = 'Unknown';
+                    $row['type'] = 'Unknown';
                 }
                 // Ganti bagian ini dalam loop foreach
                 if ($phases->first()->isApproved == 1) {
@@ -432,7 +432,7 @@ class FileController extends Controller
                     } elseif ($phases->first()->type == 3) {
                         $row['type'] = 'Pensiunan';
                     } else {
-                        $row['status'] = 'Unknown';
+                        $row['type'] = 'Unknown';
                     }
                     if ($phases->first()->isApproved == 1) {
                         $row['status'] = 'Approved';
@@ -549,7 +549,7 @@ class FileController extends Controller
                     } elseif ($phases->first()->type == 3) {
                         $row['type'] = 'Pensiunan';
                     } else {
-                        $row['status'] = 'Unknown';
+                        $row['type'] = 'Unknown';
                     }
 
                     if ($phases->first()->isApproved == 1) {
