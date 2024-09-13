@@ -304,12 +304,22 @@ class FileController extends Controller
                 $row['namaAO'] = $phases->first()->nameAO;
                 $row['nameFile'] = $fileName;
                 $row['plafon'] = $phases->first()->plafon;
-                $row['type'] =  match ($phases->first()->type) {
-                    1 => 'Reguler',
-                    2 => 'Restruktur',
-                    3 => 'Pensiunan',
-                    default => 'Unknown',
-                };
+                // $row['type'] =  match ($phases->first()->type) {
+                //     1 => 'Reguler',
+                //     2 => 'Restruktur',
+                //     3 => 'Pensiunan',
+                //     default => 'Unknown',
+                // };
+                // Ganti bagian ini dalam loop foreach
+                if ($phases->first()->type == 1) {
+                    $row['type'] = 'Reguler';
+                } elseif ($phases->first()->type == 2) {
+                    $row['type'] = 'Restruktur';
+                } elseif ($phases->first()->type == 3) {
+                    $row['type'] = 'Pensiunan';
+                } else {
+                    $row['status'] = 'Unknown';
+                }
                 // Ganti bagian ini dalam loop foreach
                 if ($phases->first()->isApproved == 1) {
                     $row['status'] = 'Approved';
@@ -415,18 +425,26 @@ class FileController extends Controller
                     $row['namaAO'] = $phases->first()->nameAO;
                     $row['nameFile'] = $fileName;
                     $row['plafon'] = $phases->first()->plafon;
-                    $row['type'] =  match ($phases->first()->type) {
-                        1 => 'Reguler',
-                        2 => 'Restrukur',
-                        2 => 'Pensiunan',
-                        default => 'Reguler',
-                    };
-                    $row['status'] =  match ($phases->first()->isApproved) {
-                        1 => 'Approved',
-                        2 => 'Pending',
-                        4 => 'Cancel by Debitur',
-                        default => 'Rejected',
-                    };
+                    if ($phases->first()->type == 1) {
+                        $row['type'] = 'Reguler';
+                    } elseif ($phases->first()->type == 2) {
+                        $row['type'] = 'Restruktur';
+                    } elseif ($phases->first()->type == 3) {
+                        $row['type'] = 'Pensiunan';
+                    } else {
+                        $row['status'] = 'Unknown';
+                    }
+                    if ($phases->first()->isApproved == 1) {
+                        $row['status'] = 'Approved';
+                    } elseif ($phases->first()->isApproved == 2) {
+                        $row['status'] = 'Pending';
+                    } elseif ($phases->first()->isApproved == 3) {
+                        $row['status'] = 'Rejected';
+                    } elseif ($phases->first()->isApproved == 4) {
+                        $row['status'] = 'Cancel by Debitur';
+                    } else {
+                        $row['status'] = 'Unknown';
+                    }
                     $row['alamat'] = $phases->first()->address;
                     $row['noHp'] = $phases->first()->no_hp;
                     $row['order_source'] = $phases->first()->sumberOrder;
@@ -523,18 +541,29 @@ class FileController extends Controller
                     $row['namaAO'] = $phases->first()->nameAO;
                     $row['nameFile'] = $fileName;
                     $row['plafon'] = $phases->first()->plafon;
-                    $row['type'] =  match ($phases->first()->isApproved) {
-                        1 => 'Reguler',
-                        2 => 'Restruktur',
-                        2 => 'Pensiunan',
-                        default => 'Reguler',
-                    };
-                    $row['status'] =  match ($phases->first()->isApproved) {
-                        1 => 'Approved',
-                        2 => 'Pending',
-                        4 => 'Cancel by Debitur',
-                        default => 'Rejected',
-                    };
+
+                    if ($phases->first()->type == 1) {
+                        $row['type'] = 'Reguler';
+                    } elseif ($phases->first()->type == 2) {
+                        $row['type'] = 'Restruktur';
+                    } elseif ($phases->first()->type == 3) {
+                        $row['type'] = 'Pensiunan';
+                    } else {
+                        $row['status'] = 'Unknown';
+                    }
+
+                    if ($phases->first()->isApproved == 1) {
+                        $row['status'] = 'Approved';
+                    } elseif ($phases->first()->isApproved == 2) {
+                        $row['status'] = 'Pending';
+                    } elseif ($phases->first()->isApproved == 3) {
+                        $row['status'] = 'Rejected';
+                    } elseif ($phases->first()->isApproved == 4) {
+                        $row['status'] = 'Cancel by Debitur';
+                    } else {
+                        $row['status'] = 'Unknown';
+                    }
+
                     $row['alamat'] = $phases->first()->address;
                     $row['noHp'] = $phases->first()->no_hp;
                     $row['order_source'] = $phases->first()->sumberOrder;
