@@ -308,13 +308,14 @@ class FileController extends Controller
                     1 => 'Reguler',
                     2 => 'Restruktur',
                     3 => 'Pensiunan',
-                    default => 'Reguler',
+                    default => 'Unknown',
                 };
-                $row['status'] =  match ($phases->first()->isApproved) {
+                $row['status'] = match ($phases->first()->isApproved) {
                     1 => 'Approved',
                     2 => 'Pending',
+                    3 => 'Rejected',
                     4 => 'Cancel by Debitur',
-                    default => 'Rejected',
+                    default => 'Unknown',
                 };
                 $row['alamat'] = $phases->first()->address;
                 $row['noHp'] = $phases->first()->no_hp;
