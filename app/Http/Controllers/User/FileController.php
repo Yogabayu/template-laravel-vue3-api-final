@@ -310,13 +310,14 @@ class FileController extends Controller
                     3 => 'Pensiunan',
                     default => 'Unknown',
                 };
-                $row['status'] = match ($phases->first()->isApproved) {
-                    1 => 'Approved',
-                    2 => 'Pending',
-                    3 => 'Rejected',
-                    4 => 'Cancel by Debitur',
-                    default => 'Unknown',
-                };
+                $row['status'] = $phases->first()->isApproved;
+                // $row['status'] = match ($phases->first()->isApproved) {
+                //     1 => 'Approved',
+                //     2 => 'Pending',
+                //     3 => 'Rejected',
+                //     4 => 'Cancel by Debitur',
+                //     default => 'Unknown',
+                // };
                 $row['alamat'] = $phases->first()->address;
                 $row['noHp'] = $phases->first()->no_hp;
                 $row['order_source'] = $phases->first()->sumberOrder;
