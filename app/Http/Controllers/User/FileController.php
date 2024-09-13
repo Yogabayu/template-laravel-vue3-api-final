@@ -310,7 +310,18 @@ class FileController extends Controller
                     3 => 'Pensiunan',
                     default => 'Unknown',
                 };
-                $row['status'] = $phases->first()->isApproved;
+                // Ganti bagian ini dalam loop foreach
+                if ($phases->first()->isApproved == 1) {
+                    $row['status'] = 'Approved';
+                } elseif ($phases->first()->isApproved == 2) {
+                    $row['status'] = 'Pending';
+                } elseif ($phases->first()->isApproved == 3) {
+                    $row['status'] = 'Rejected';
+                } elseif ($phases->first()->isApproved == 4) {
+                    $row['status'] = 'Cancel by Debitur';
+                } else {
+                    $row['status'] = 'Unknown';
+                }
                 // $row['status'] = match ($phases->first()->isApproved) {
                 //     1 => 'Approved',
                 //     2 => 'Pending',
