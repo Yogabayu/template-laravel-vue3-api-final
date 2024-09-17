@@ -2270,6 +2270,8 @@ class FileController extends Controller
                     'files.no_hp as no_hp',
                     'files.order_source as sumberOrder',
                     'files.status_kredit as statusKredit',
+                    'files.phase as statusPhase',
+                    'files.reasonRejected as reasonRejected',
                 )
                 ->whereMonth('files.created_at', $month)
                 ->whereYear('files.created_at', $year)
@@ -2286,6 +2288,22 @@ class FileController extends Controller
                 $row = ['no' => count($reportData) + 1];
                 $fileName = $phases->first()->fileName;
                 $row['namaAO'] = $phases->first()->nameAO;
+                if ($phases->first()->statusPhase == 1) {
+                    $row['statusPhase'] = 'Pooling Order';
+                } elseif ($phases->first()->statusPhase == 2) {
+                    $row['statusPhase'] = 'SLIK';
+                } elseif ($phases->first()->statusPhase == 3) {
+                    $row['statusPhase'] = 'Survei';
+                } elseif ($phases->first()->statusPhase == 4) {
+                    $row['statusPhase'] = 'Komite';
+                } elseif ($phases->first()->statusPhase == 5) {
+                    $row['statusPhase'] = 'Operation';
+                } elseif ($phases->first()->statusPhase == 6) {
+                    $row['statusPhase'] = 'Pencairan';
+                } else {
+                    $row['statusPhase'] = 'Unknown';
+                }
+
                 if ($phases->first()->type == 1) {
                     $row['type'] = 'Reguler';
                 } elseif ($phases->first()->type == 2) {
@@ -2306,6 +2324,8 @@ class FileController extends Controller
                 } else {
                     $row['status'] = 'Unknown';
                 }
+
+                $row['reasonRejected'] = $phases->first()->reasonRejected;
                 $row['nameFile'] = $fileName;
                 $row['plafon'] = $phases->first()->plafon;
                 $row['alamat'] = $phases->first()->address;
@@ -2331,7 +2351,7 @@ class FileController extends Controller
             }
 
             $date = \Carbon\Carbon::create($year, $month, 1);
-            $fileName = 'phase_time_report_' . $date->format('Y-m') . '.xlsx';
+            $fileName = 'report_' . $date->format('Y-m') . '.xlsx';
 
             return Excel::download(new PhaseTimeReportExport($reportData), $fileName);
         } catch (\Exception $e) {
@@ -2438,12 +2458,13 @@ class FileController extends Controller
                     'files.no_hp as no_hp',
                     'files.order_source as sumberOrder',
                     'files.status_kredit as statusKredit',
+                    'files.phase as statusPhase',
+                    'files.reasonRejected as reasonRejected',
                 )
                 ->whereMonth('files.created_at', $month)
                 ->whereYear('files.created_at', $year)
                 ->orderBy('phase_times.file_id')
                 ->orderBy('phase_times.phase');
-
 
             // Apply office_id filter for other positions
             $dataEksportQuery->whereExists(function ($query) use ($office_id) {
@@ -2483,6 +2504,23 @@ class FileController extends Controller
                 $fileName = $phases->first()->fileName;
                 $row['namaAO'] = $phases->first()->nameAO;
                 $row['nameFile'] = $fileName;
+
+                if ($phases->first()->statusPhase == 1) {
+                    $row['statusPhase'] = 'Pooling Order';
+                } elseif ($phases->first()->statusPhase == 2) {
+                    $row['statusPhase'] = 'SLIK';
+                } elseif ($phases->first()->statusPhase == 3) {
+                    $row['statusPhase'] = 'Survei';
+                } elseif ($phases->first()->statusPhase == 4) {
+                    $row['statusPhase'] = 'Komite';
+                } elseif ($phases->first()->statusPhase == 5) {
+                    $row['statusPhase'] = 'Operation';
+                } elseif ($phases->first()->statusPhase == 6) {
+                    $row['statusPhase'] = 'Pencairan';
+                } else {
+                    $row['statusPhase'] = 'Unknown';
+                }
+
                 if ($phases->first()->type == 1) {
                     $row['type'] = 'Reguler';
                 } elseif ($phases->first()->type == 2) {
@@ -2503,6 +2541,7 @@ class FileController extends Controller
                 } else {
                     $row['status'] = 'Unknown';
                 }
+                $row['reasonRejected'] = $phases->first()->reasonRejected;
                 $row['plafon'] = $phases->first()->plafon;
                 $row['alamat'] = $phases->first()->address;
                 $row['noHp'] = $phases->first()->no_hp;
@@ -2527,7 +2566,7 @@ class FileController extends Controller
             }
 
             $date = \Carbon\Carbon::create($year, $month, 1);
-            $fileName = 'phase_time_report_' . $date->format('Y-m') . '.xlsx';
+            $fileName = 'report_' . $date->format('Y-m') . '.xlsx';
 
             ActivityHelper::userActivity(Auth::user()->id, 'USER MENDOWNLOAD REKAP DATA FILE KREDIT');
 
