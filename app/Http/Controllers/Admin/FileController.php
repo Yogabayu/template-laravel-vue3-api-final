@@ -677,10 +677,10 @@ class FileController extends Controller
                     ->where('path', '!=', 'null') // Asumsi atribut yang dicek bernama 'path'
                     ->count();
 
-                // Memeriksa apakah terdapat lampiran "Analisa Awal Kredit AO" yang nilai atributnya bukan string "null"
+                // Memeriksa apakah terdapat lampiran "Analisa Kredit AO" yang nilai atributnya bukan string "null"
                 $cekAnalystAo = Attachment::where('file_id', $file->id)
                     ->where('phase', 2)
-                    ->whereRaw('LOWER(name) = ?', [Str::lower('Analisa Awal Kredit AO')])
+                    ->whereRaw('LOWER(name) = ?', [Str::lower('Analisa Kredit AO')])
                     ->where(function ($query) {
                         $query->where('link', '!=', 'null')
                             ->orWhere('path', '!=', 'null');
@@ -940,10 +940,10 @@ class FileController extends Controller
                     if ($file->phase < 4) {
                         // if ($detailSlikApproved > 0 && $resumeSlikApproved > 0) {
                         if ($resumeSlikApproved > 0) {
-                            // Memeriksa apakah terdapat lampiran "Analisa Awal Kredit AO" yang nilai atributnya bukan string "null"
+                            // Memeriksa apakah terdapat lampiran "Analisa Kredit AO" yang nilai atributnya bukan string "null"
                             $cekAnalystAoApproved = Attachment::where('file_id', $file->id)
                                 ->where('phase', 2)
-                                ->whereRaw('LOWER(name) = ?', [Str::lower('Analisa Awal Kredit AO')])
+                                ->whereRaw('LOWER(name) = ?', [Str::lower('Analisa Kredit AO')])
                                 ->where(function ($query) {
                                     $query->where('link', '!=', 'null')
                                         ->orWhere('path', '!=', 'null');
@@ -951,7 +951,7 @@ class FileController extends Controller
                                 ->count();
 
                             if ($cekAnalystAoApproved == 0) {
-                                return ResponseHelper::errorRes('Analisa Awal Kredit AO Belum Disetujui');
+                                return ResponseHelper::errorRes('Analisa Kredit AO Belum Disetujui');
                             }
                             // } else if ($detailSlikApproved == 0 && $resumeSlikApproved == 0) {
                         } else if ($resumeSlikApproved == 0) {
@@ -1094,7 +1094,7 @@ class FileController extends Controller
                                 ['name' => 'Detail SLIK', 'path' => 'null', 'isSecret' => 1, 'isApprove' => 0, 'phase' => 2, 'file_id' => $file->id,],
                                 ['name' => 'Resume SLIK', 'path' => 'null', 'isSecret' => 0, 'isApprove' => 0, 'phase' => 2, 'file_id' => $file->id,],
                                 ['name' => 'File Banding', 'path' => 'null', 'isSecret' => 0, 'isApprove' => 0, 'phase' => 2, 'file_id' => $file->id,],
-                                ['name' => 'Analisa Awal Kredit AO', 'path' => 'null', 'isSecret' => 0, 'isApprove' => 0, 'phase' => 2, 'file_id' => $file->id,]
+                                ['name' => 'Analisa Kredit AO', 'path' => 'null', 'isSecret' => 0, 'isApprove' => 0, 'phase' => 2, 'file_id' => $file->id,]
                             ];
 
                             foreach ($attachments as $data) {
@@ -1331,7 +1331,7 @@ class FileController extends Controller
                                 ['name' => 'Detail SLIK', 'path' => 'null', 'isSecret' => 1, 'isApprove' => 0, 'phase' => 2, 'file_id' => $file->id,],
                                 ['name' => 'Resume SLIK', 'path' => 'null', 'isSecret' => 0, 'isApprove' => 0, 'phase' => 2, 'file_id' => $file->id,],
                                 ['name' => 'File Banding', 'path' => 'null', 'isSecret' => 0, 'isApprove' => 0, 'phase' => 2, 'file_id' => $file->id,],
-                                ['name' => 'Analisa Awal Kredit AO', 'path' => 'null', 'isSecret' => 0, 'isApprove' => 0, 'phase' => 2, 'file_id' => $file->id,]
+                                ['name' => 'Analisa Kredit AO', 'path' => 'null', 'isSecret' => 0, 'isApprove' => 0, 'phase' => 2, 'file_id' => $file->id,]
                             ];
 
                             foreach ($attachments as $data) {
@@ -1629,7 +1629,7 @@ class FileController extends Controller
                     //                 ['name' => 'Detail SLIK', 'path' => 'null', 'isSecret' => 1, 'isApprove' => 0, 'phase' => 2, 'file_id' => $file->id,],
                     //                 ['name' => 'Resume SLIK', 'path' => 'null', 'isSecret' => 0, 'isApprove' => 0, 'phase' => 2, 'file_id' => $file->id,],
                     //                 ['name' => 'File Banding', 'path' => 'null', 'isSecret' => 0, 'isApprove' => 0, 'phase' => 2, 'file_id' => $file->id,],
-                    //                 ['name' => 'Analisa Awal Kredit AO', 'path' => 'null', 'isSecret' => 0, 'isApprove' => 0, 'phase' => 2, 'file_id' => $file->id,]
+                    //                 ['name' => 'Analisa Kredit AO', 'path' => 'null', 'isSecret' => 0, 'isApprove' => 0, 'phase' => 2, 'file_id' => $file->id,]
                     //             ];
 
                     //             foreach ($attachments as $data) {

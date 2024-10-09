@@ -847,7 +847,7 @@ export default {
                 link: null,
                 note: null,
                 phase: 2,
-                name: "Analisa Awal Kredit AO",
+                name: "Analisa Kredit AO",
                 path: null,
                 isApprove: 0,
                 isSecret: 0,
@@ -910,7 +910,7 @@ export default {
             return "#"; // Atau URL default jika tidak ada yang cocok
         },
         shouldDisplay(attachment) {
-            if (attachment.name === "Analisa Awal Kredit AO") {
+            if (attachment.name === "Analisa Kredit AO") {
                 return false;
             }
             if (attachment.name === "File Banding") {
@@ -928,7 +928,7 @@ export default {
             );
             if (containsApprovedSLIK.length > 0 && this.isApprove != 3) {
                 let analytic = this.data.find(
-                    (att) => att.name === "Analisa Awal Kredit AO"
+                    (att) => att.name === "Analisa Kredit AO"
                 );
                 if (analytic != null) {
                     this.formAnalytic.id = analytic.id;

@@ -576,7 +576,7 @@ export default {
         },
         hasAnalisaAoAttachment(attachments) {
             return attachments.some(attachment =>
-                attachment.name.includes('Analisa Awal Kredit AO') && parseInt(attachment.phase) == 2 && (attachment.path != 'null' || attachment.link != null)
+                attachment.name.includes('Analisa Kredit AO') && parseInt(attachment.phase) == 2 && (attachment.path != 'null' || attachment.link != null)
             );
         },
         goBack() {

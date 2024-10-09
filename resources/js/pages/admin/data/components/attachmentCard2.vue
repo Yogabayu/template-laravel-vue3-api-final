@@ -644,7 +644,7 @@ export default {
                 link: null,
                 note: null,
                 phase: 2,
-                name: "Analisa Awal Kredit AO",
+                name: "Analisa Kredit AO",
                 path: null,
                 isApprove: 0,
                 isSecret: 0,
@@ -654,7 +654,7 @@ export default {
     methods: {
         shouldDisplay(attachment) {
             if (
-                attachment.name === "Analisa Awal Kredit AO"
+                attachment.name === "Analisa Kredit AO"
             ) {
                 return false;
             }
@@ -669,7 +669,7 @@ export default {
             );
 
             if (containsApprovedSLIK.length > 0) {
-                let analytic = this.data.find((att) => att.name == "Analisa Awal Kredit AO");
+                let analytic = this.data.find((att) => att.name == "Analisa Kredit AO");
                 if (analytic) {
                     this.formAnalytic.id = analytic.id;
                     this.formAnalytic.isApprove = parseInt(analytic.isApprove);

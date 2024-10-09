@@ -627,7 +627,7 @@ export default {
         { value: 'Detail SLIK Pasangan', title: 'Detail SLIK Pasangan' },
         { value: 'Detail SLIK Atas Nama jaminan', title: 'Detail SLIK Atas Nama jaminan' },
         { value: 'File Banding', title: 'File Banding' },
-        { value: 'Analisa Awal Kredit AO', title: 'Analisa Awal Kredit AO' },
+        { value: 'Analisa Kredit AO', title: 'Analisa Kredit AO' },
         { value: 'Analisa Kredit', title: 'Analisa Kredit' },
         { value: 'Lembar Pengesahan', title: 'Lembar Pengesahan' },
         { value: 'Rekomendasi Kepatuhan', title: 'Rekomendasi Kepatuhan' },
