@@ -4,9 +4,9 @@ const mainURL = axios.create({
   /** localhost */
   baseURL: 'http://localhost:8000/api/v1',
   /** development */
-  // baseURL: 'https://templatevue.yogabayuap.com/api/v1',
+  // baseURL: '',
   /** production */
-  // baseURL: 'https://kma.bankarthaya.com/api/v1',
+  // baseURL: '',
 });
 // Interceptor untuk menambahkan token ke header Authorization
 mainURL.interceptors.request.use(

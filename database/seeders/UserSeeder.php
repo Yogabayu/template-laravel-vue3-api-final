@@ -21,12 +21,10 @@ class UserSeeder extends Seeder
         $users = [
             [
                 'id' => Str::uuid(),
-                'nik' => '12345678',
                 'name' => 'Administrator',
                 'email' => 'admin@gmail.com',
                 'password' => Hash::make('12345678'),
                 'isActive' => 1,
-                'position_id' => $positionIds->random(),
             ],
         ];
 
